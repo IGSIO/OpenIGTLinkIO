@@ -1,3 +1,16 @@
+/*==========================================================================
+
+  Portions (c) Copyright 2008-2009 Brigham and Women's Hospital (BWH) All Rights Reserved.
+
+  See Doc/copyright/copyright.txt
+  or http://www.slicer.org/copyright/copyright.txt for details.
+
+  Program:   3D Slicer
+  Module:    $HeadURL:  $
+  Date:      $Date:  $
+  Version:   $Revision: $
+
+==========================================================================*/
 
 // Qt includes
 #include <QtPlugin>
@@ -46,13 +59,16 @@ qSlicerOpenIGTLinkIFModule::~qSlicerOpenIGTLinkIFModule()
 //-----------------------------------------------------------------------------
 QString qSlicerOpenIGTLinkIFModule::helpText()const
 {
-  return QString();
+  //return QString();
+  return "The OpenIGTLink IF module manages communications between 3D Slicer"
+    " and other OpenIGTLink-compliant software through the network.";
 }
 
 //-----------------------------------------------------------------------------
 QString qSlicerOpenIGTLinkIFModule::acknowledgementText()const
 {
-  return "This work was supported by ...";
+  return "This module was developed by Junichi Tokuda. The research was funded by"
+    "NIH (R01CA111288, P41RR019703, P01CA067165 and U54EB005149) and NEDO, Japan.";
 }
 
 //-----------------------------------------------------------------------------
@@ -65,6 +81,8 @@ QIcon qSlicerOpenIGTLinkIFModule::icon()const
 void qSlicerOpenIGTLinkIFModule::setup()
 {
   this->Superclass::setup();
+
+  std::cerr << "qSlicerOpenIGTLinkIFModule::setup() is called." << std::endl;
 }
 
 //-----------------------------------------------------------------------------
