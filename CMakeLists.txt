@@ -13,14 +13,39 @@ SET(qt_module_include_directories
   ${CMAKE_CURRENT_BINARY_DIR}/Widgets
   ${CMAKE_CURRENT_SOURCE_DIR}/Logic
   ${CMAKE_CURRENT_BINARY_DIR}/Logic
+  ${CMAKE_CURRENT_SOURCE_DIR}/Converters
+  ${CMAKE_CURRENT_BINARY_DIR}/Converters
+  ${CMAKE_CURRENT_SOURCE_DIR}/MRML
+  ${CMAKE_CURRENT_BINARY_DIR}/MRML
   )
 
 # Source files
+SET(openigtlinkif_mrml_srcs
+  MRML/vtkIGTLCircularBuffer.cxx
+  MRML/vtkMRMLIGTLConnectorNode.cxx
+  MRML/vtkMRMLIGTLQueryNode.cxx
+  MRML/vtkMRMLIGTLTrackingDataBundleNode.cxx
+  MRML/vtkMRMLIGTLTrackingDataQueryNode.cxx
+  MRML/vtkMRMLImageMetaListNode.cxx
+)
+
+SET(openigtlinkif_converters_srcs
+  Converters/vtkIGTLToMRMLBase.cxx
+  Converters/vtkIGTLToMRMLImage.cxx
+  Converters/vtkIGTLToMRMLImageMetaList.cxx
+  Converters/vtkIGTLToMRMLLinearTransform.cxx
+  Converters/vtkIGTLToMRMLPosition.cxx
+  Converters/vtkIGTLToMRMLTrackingData.cxx
+)
+
 SET(qt_module_SRCS
   qSlicerOpenIGTLinkIFModule.cxx
   qSlicerOpenIGTLinkIFModule.h
   qSlicerOpenIGTLinkIFModuleWidget.cxx
   qSlicerOpenIGTLinkIFModuleWidget.h
+  ${openigtlinkif_logic_srcs}
+  ${openigtlinkif_mrml_srcs}
+  ${openigtlinkif_converters_src}
   )
 
 # Headers that should run through moc
@@ -55,6 +80,9 @@ slicerMacroBuildQtModule(
   RESOURCES ${qt_module_resources}
   )
 
+target_link_libraries(qSlicer${qt_module_name}Module
+  ${OpenIGTLink_LIBRARIES}
+)
 
 if(BUILD_TESTING)
   #add_subdirectory(Testing)
