@@ -23,11 +23,17 @@ public:
 
 public slots:
 
-
 protected:
   QScopedPointer<qSlicerOpenIGTLinkIFModuleWidgetPrivate> d_ptr;
   
   virtual void setup();
+
+protected slots:
+
+  void onAddConnectorButtonClicked();
+  void onRemoveConnectorButtonClicked();
+  void onServerSelected();
+  void onClientSelected();
 
 private:
   Q_DECLARE_PRIVATE(qSlicerOpenIGTLinkIFModuleWidget);

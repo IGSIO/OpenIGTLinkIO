@@ -42,5 +42,33 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   Q_D(qSlicerOpenIGTLinkIFModuleWidget);
   d->setupUi(this);
   this->Superclass::setup();
+
+  this->connect(d->addConnectorButton, SIGNAL(clicked()), this,
+                SLOT(onAddConnectorButtonClicked()));
+  this->connect(d->removeConnectorButton, SIGNAL(clicked()), this,
+                SLOT(onRemoveConnectorButtonClicked()));
+
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerOpenIGTLinkIFModuleWidget::onAddConnectorButtonClicked()
+{
+  std::cerr << "Add Connector Button is clicked." << std::endl;
+}
+
+
+void qSlicerOpenIGTLinkIFModuleWidget::onRemoveConnectorButtonClicked()
+{
+  std::cerr << "Remove Connector Button is clicked." << std::endl;
+}
+
+
+void qSlicerOpenIGTLinkIFModuleWidget::onServerSelected()
+{
+}
+
+
+void qSlicerOpenIGTLinkIFModuleWidget::onClientSelected()
+{
 }
 
