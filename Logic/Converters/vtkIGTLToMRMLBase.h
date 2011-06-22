@@ -15,7 +15,8 @@
 #ifndef __vtkIGTLToMRMLBase_h
 #define __vtkIGTLToMRMLBase_h
 
-#include "qSlicerOpenIGTLinkIFModuleExport.h"
+//#include "qSlicerOpenIGTLinkIFModuleExport.h"
+#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
 
 #include "vtkObject.h"
 #include "vtkMRMLScene.h"

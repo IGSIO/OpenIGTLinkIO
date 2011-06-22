@@ -11,11 +11,25 @@ SET(module_logic_export_directive "VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT"
 
 # Additional directories to include
 SET(module_logic_include_directories
+  ${OpenIGTLinkIFMRML_SOURCE_DIR}
+  ${OpenIGTLinkIFMRML_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/Converters
+  ${CMAKE_CURRENT_BINARY_DIR}/Converters
   )
+
+SET(openigtlinkif_converters_srcs
+  Converters/vtkIGTLToMRMLBase.cxx
+  Converters/vtkIGTLToMRMLImage.cxx
+  Converters/vtkIGTLToMRMLImageMetaList.cxx
+  Converters/vtkIGTLToMRMLLinearTransform.cxx
+  Converters/vtkIGTLToMRMLPosition.cxx
+  Converters/vtkIGTLToMRMLTrackingData.cxx
+)
 
 # Source files
 SET(module_logic_SRCS
   vtkSlicerOpenIGTLinkIFLogic.cxx
+  ${openigtlinkif_converters_src}
   )
 
 # Additional Target libraries

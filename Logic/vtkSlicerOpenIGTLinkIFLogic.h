@@ -1,149 +1,246 @@
-/*=auto=========================================================================
+/*==========================================================================
 
-  Portions (c) Copyright 2005 Brigham and Women's Hospital (BWH) All Rights Reserved.
+  Portions (c) Copyright 2008-2009 Brigham and Women's Hospital (BWH) All Rights Reserved.
 
   See Doc/copyright/copyright.txt
   or http://www.slicer.org/copyright/copyright.txt for details.
 
   Program:   3D Slicer
-  Module:    $RCSfile: vtkSlicerOpenIGTLinkIFLogic.h,v $
-  Date:      $Date: 2006/01/08 04:48:05 $
-  Version:   $Revision: 1.45 $
+  Module:    $HeadURL: http://svn.slicer.org/Slicer4/trunk/Modules/OpenIGTLinkIF/vtkSlicerOpenIGTLinkIFLogic.h $
+  Date:      $Date: 2010-06-10 11:05:22 -0400 (Thu, 10 Jun 2010) $
+  Version:   $Revision: 13728 $
 
-=========================================================================auto=*/
+==========================================================================*/
 
-// .NAME vtkSlicerOpenIGTLinkIFLogic - slicer logic class for volumes manipulation
+// .NAME vtkSlicerOpenIGTLinkIFLogic - slicer logic class for Locator module 
 // .SECTION Description
-// This class manages the logic associated with reading, saving,
-// and changing propertied of the volumes
+// This class manages the logic associated with tracking device for
+// IGT. 
 
 
 #ifndef __vtkSlicerOpenIGTLinkIFLogic_h
 #define __vtkSlicerOpenIGTLinkIFLogic_h
 
-// Slicer includes
-#include "vtkSlicerModuleLogic.h"
-
-// MRML includes
-#include <vtkMRML.h>
-#include <vtkMRMLVolumeNode.h>
-
-// STD includes
-#include <cstdlib>
-
 #include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
 
-class vtkMRMLScalarVolumeNode;
-class vtkMRMLScalarVolumeDisplayNode;
-class vtkMRMLVolumeHeaderlessStorageNode;
-class vtkStringArray;
+#include <vector>
 
-/// \ingroup Slicer_QtModules_OpenIGTLinkIF
-class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
-  public vtkSlicerModuleLogic
+
+#include "vtkSlicerBaseLogic.h"
+#include "vtkSlicerModuleLogic.h"
+//#include "vtkSlicerApplication.h"
+#include "vtkCallbackCommand.h"
+
+#include "vtkMRMLTransformNode.h"
+#include "vtkMRMLFiducialListNode.h"
+#include "vtkMRMLSliceNode.h"
+#include "vtkMultiThreader.h"
+
+#include "igtlImageMessage.h"
+#include "igtlTransformMessage.h"
+
+#include "vtkIGTLToMRMLBase.h"
+#include "vtkIGTLToMRMLLinearTransform.h"
+#include "vtkIGTLToMRMLImage.h"
+#include "vtkIGTLToMRMLPosition.h"
+
+#ifdef OpenIGTLinkIF_USE_VERSION_2
+  #include "vtkIGTLToMRMLImageMetaList.h"
+  #include "vtkIGTLToMRMLTrackingData.h"
+#endif //OpenIGTLinkIF_USE_VERSION_2
+
+class vtkMRMLIGTLConnectorNode;
+class vtkMRMLModelNode; 
+class vtkTransform; 
+
+
+class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic : public vtkSlicerModuleLogic 
 {
-public:
-  
-  static vtkSlicerOpenIGTLinkIFLogic *New();
-  vtkTypeRevisionMacro(vtkSlicerOpenIGTLinkIFLogic,vtkSlicerModuleLogic);
-  void PrintSelf(ostream& os, vtkIndent indent);
-
-  ///
-  /// The currently active mrml volume node 
-  vtkGetObjectMacro(ActiveVolumeNode, vtkMRMLVolumeNode);
-  void SetActiveVolumeNode(vtkMRMLVolumeNode *ActiveVolumeNode);
-
-  ///
-  /// Sub type of loading an archetype volume that is known to be a scalar
-  vtkMRMLScalarVolumeNode* AddArchetypeScalarVolume(const char *filename, const char* volname, int loadingOptions);
-  vtkMRMLScalarVolumeNode* AddArchetypeScalarVolume(const char *filename, const char* volname);
-
-  /// Overloaded function of AddArchetypeVolume to provide more 
-  /// loading options, where variable loadingOptions is bit-coded as following:
-  /// bit 0: label map
-  /// bit 1: centered
-  /// bit 2: loading single file
-  /// higher bits are reserved for future use
-  vtkMRMLVolumeNode* AddArchetypeVolume(const char* filename, 
-                                        const char* volname, int loadingOptions);
-  vtkMRMLVolumeNode* AddArchetypeVolume(const char* filename, 
-                                        const char* volname, int loadingOptions, 
-                                        vtkStringArray *fileList);
-  vtkMRMLVolumeNode* AddArchetypeVolume(const char *filename, const char* volname);
-
-  ///
-  /// Create new mrml node and associated storage node.
-  /// Read image data from a specified file
-  /// vtkMRMLVolumeNode* AddArchetypeVolume (const char* filename, int centerImage, int labelMap, const char* volname);
-
-  /// Overloaded function of AddHeaderVolume to provide more 
-  /// loading options, where variable loadingOptions is bit-coded as following:
-  /// bit 0: label map
-  /// bit 1: centered
-  /// bit 2: loading signal file
-  /// higher bits are reserved for future use
-  vtkMRMLVolumeNode* AddHeaderVolume(const char* filename, const char* volname, 
-                                     vtkMRMLVolumeHeaderlessStorageNode *headerStorage,
-                                     int loadingOptions);
-
-  ///
-  /// Write volume's image data to a specified file
-  int SaveArchetypeVolume(const char* filename, vtkMRMLVolumeNode *volumeNode);
-
-  ///
-  /// Create a label map volume to match the given volume node and add it to
-  /// the scene
-  vtkMRMLScalarVolumeNode *CreateLabelVolume(vtkMRMLScene *scene, 
-                                             vtkMRMLVolumeNode *volumeNode, 
-                                             const char *name);
-
-  ///
-  /// Create a deep copy of a volume and add it to the scene
-  vtkMRMLScalarVolumeNode *CloneVolume(vtkMRMLScene *scene, 
-                                       vtkMRMLVolumeNode *volumeNode, 
-                                       const char *name);
-
-  ///
-  /// Update MRML events
-  virtual void ProcessMRMLEvents(vtkObject * caller, unsigned long event, void * callData);
-  
-  ///
-  /// Update logic events
-  virtual void ProcessLogicEvents(vtkObject * caller, unsigned long event, void * callData);  
-  
+ public:
   //BTX
-  using vtkMRMLAbstractLogic::ProcessLogicEvents; 
+  enum {
+    SLICE_DRIVER_USER    = 0,
+    SLICE_DRIVER_LOCATOR = 1,
+    SLICE_DRIVER_RTIMAGE = 2
+  };
+
+  enum ImageOrient{
+    SLICE_RTIMAGE_NONE      = 0,
+    SLICE_RTIMAGE_PERP      = 1,
+    SLICE_RTIMAGE_INPLANE90 = 2,
+    SLICE_RTIMAGE_INPLANE   = 3
+  };
+
+  enum {  // Events
+    StatusUpdateEvent       = 50001,
+    //SliceUpdateEvent        = 50002,
+  };
+
+  typedef struct {
+    std::string name;
+    std::string type;
+    int io;
+    std::string nodeID;
+  } IGTLMrmlNodeInfoType;
+
+  typedef std::vector<IGTLMrmlNodeInfoType>         IGTLMrmlNodeListType;
+  typedef std::vector<vtkIGTLToMRMLBase*>           MessageConverterListType;
   //ETX
   
-  ///
-  /// Computes matrix we need to register
-  /// V1Node to V2Node given the
-  /// "register.dat" matrix from tkregister2 (FreeSurfer)
-  void TranslateFreeSurferRegistrationMatrixIntoSlicerRASToRASMatrix(vtkMRMLVolumeNode *V1Node,
-                             vtkMRMLVolumeNode *V2Node,
-                             vtkMatrix4x4 *FSRegistrationMatrix,
-                             vtkMatrix4x4 *ResultsMatrix);
-  ///
-  /// Convenience method to compute
-  /// a volume's Vox2RAS-tkreg Matrix
-  void ComputeTkRegVox2RASMatrix(vtkMRMLVolumeNode *VNode, vtkMatrix4x4 *M);
+  // Work phase keywords used in NaviTrack (defined in BRPTPRInterface.h)
 
-protected:
+ public:
+  
+  static vtkSlicerOpenIGTLinkIFLogic *New();
+  
+  vtkTypeRevisionMacro(vtkSlicerOpenIGTLinkIFLogic,vtkObject);
+
+  vtkSetMacro ( EnableOblique,           bool );
+  vtkGetMacro ( EnableOblique,           bool );
+  vtkSetMacro ( FreezePlane,             bool );
+  vtkGetMacro ( FreezePlane,              bool );
+
+  vtkGetObjectMacro ( LocatorTransform, vtkTransform );
+  vtkGetObjectMacro ( LocatorMatrix,    vtkMatrix4x4 );
+
+  /// The selected transform node is observed for TransformModified events and the transform 
+  /// data is copied to the slice nodes depending on the current mode
+  vtkGetObjectMacro ( LocatorTransformNode,    vtkMRMLTransformNode );
+
+  void PrintSelf(ostream&, vtkIndent);
+
+  //----------------------------------------------------------------
+  // Start up the class
+  //----------------------------------------------------------------
+
+  int Initialize();
+
+  //----------------------------------------------------------------
+  // Connector and converter Management
+  //----------------------------------------------------------------
+
+  // Access connectors
+  vtkMRMLIGTLConnectorNode* GetConnector(const char* conID);
+  void                      ImportFromCircularBuffers();
+  void                      ImportEvents(); // check if there are any events in the connectors that should be invoked in the main thread (such as connected, disconnected)
+  
+  // Device Name management
+  int  SetRestrictDeviceName(int f);
+
+  int  RegisterMessageConverter(vtkIGTLToMRMLBase* converter);
+  int  UnregisterMessageConverter(vtkIGTLToMRMLBase* converter);
+
+  unsigned int       GetNumberOfConverters();
+  vtkIGTLToMRMLBase* GetConverter(unsigned int i);
+  vtkIGTLToMRMLBase* GetConverterByDeviceType(const char* deviceType);
+
+  //----------------------------------------------------------------
+  // MRML Management
+  //----------------------------------------------------------------
+
+  virtual void ProcessMRMLEvents(vtkObject* caller, unsigned long event, void* callData);
+  virtual void ProcessLogicEvents(vtkObject * caller, unsigned long event, void * callData);  
+
+
+  int  SetLocatorDriver(const char* nodeID);
+  int  EnableLocatorDriver(int i);
+  int  SetRealTimeImageSource(const char* nodeID);
+  int  SetSliceDriver(int index, int v);
+  int  GetSliceDriver(int index);
+  void UpdateSliceNode(int sliceNodeNumber, vtkMatrix4x4* transform);
+  void UpdateSliceNodeByImage(int sliceNodeNuber);
+  void CheckSliceNode();
+
+  vtkMRMLModelNode* SetVisibilityOfLocatorModel(const char* nodeName, int v);
+  vtkMRMLModelNode* AddLocatorModel(const char* nodeName, double r, double g, double b);
+
+  void ProcCommand(const char* nodeName, int size, unsigned char* data);
+
+  //BTX
+  void GetDeviceNamesFromMrml(IGTLMrmlNodeListType &list);
+  void GetDeviceNamesFromMrml(IGTLMrmlNodeListType &list, const char* mrmlTagName);
+  //void GetDeviceTypes(std::vector<char*> &list);
+  //ETX
+
+ protected:
+  
+  //----------------------------------------------------------------
+  // Constructor, destructor etc.
+  //----------------------------------------------------------------
+
   vtkSlicerOpenIGTLinkIFLogic();
-  virtual ~vtkSlicerOpenIGTLinkIFLogic();
+  ~vtkSlicerOpenIGTLinkIFLogic();
+  vtkSlicerOpenIGTLinkIFLogic(const vtkSlicerOpenIGTLinkIFLogic&);
+  void operator=(const vtkSlicerOpenIGTLinkIFLogic&);
 
-  ///
-  /// Examine the file name to see if the extension is one of the supported
-  /// freesurfer volume formats. Used to assign the proper colour node to label maps.
-  int IsFreeSurferVolume(const char* filename);
   
-  vtkMRMLVolumeNode *ActiveVolumeNode;
-  
-private:
+  static void DataCallback(vtkObject*, unsigned long, void *, void *);
 
-  vtkSlicerOpenIGTLinkIFLogic(const vtkSlicerOpenIGTLinkIFLogic&); // Not implemented
-  void operator=(const vtkSlicerOpenIGTLinkIFLogic&);               // Not implemented
+  void UpdateAll();
+  void UpdateSliceDisplay();
+  void UpdateLocator();
+
+  vtkCallbackCommand *DataCallbackCommand;
+
+ private:
+
+  int Initialized;
+
+  //----------------------------------------------------------------
+  // Connector Management
+  //----------------------------------------------------------------
+
+  //BTX
+  //ConnectorMapType              ConnectorMap;
+  MessageConverterListType      MessageConverterList;
+  //ETX
+
+  //int LastConnectorID;
+  int RestrictDeviceName;
+
+  //----------------------------------------------------------------
+  // IGTL-MRML converters
+  //----------------------------------------------------------------
+  vtkIGTLToMRMLLinearTransform* LinearTransformConverter;
+  vtkIGTLToMRMLImage*           ImageConverter;
+  vtkIGTLToMRMLPosition*        PositionConverter;
+#ifdef OpenIGTLinkIF_USE_VERSION_2
+  vtkIGTLToMRMLImageMetaList*   ImageMetaListConverter;
+  vtkIGTLToMRMLTrackingData*    TrackingDataConverter;
+#endif //OpenIGTLinkIF_USE_VERSION_2
+
+  //----------------------------------------------------------------
+  // Real-time image
+  //----------------------------------------------------------------
+  
+  vtkMRMLSliceNode *SliceNode[3];
+
+  int   SliceDriver[3];
+  int   SliceDriverConnectorID[3]; // will be obsolete
+  int   SliceDriverDeviceID[3];    // will be obsolete
+
+  //BTX
+  std::string   LocatorDriverNodeID;
+  std::string   RealTimeImageSourceNodeID;
+  //ETX
+
+  int   LocatorDriverFlag;
+  bool  EnableOblique;
+  bool  FreezePlane;
+  int   SliceOrientation[3];
+  
+  //----------------------------------------------------------------
+  // Locator
+  //----------------------------------------------------------------
+
+  // What's a difference between LocatorMatrix and Locator Transform???
+  vtkMatrix4x4*         LocatorMatrix;
+  vtkTransform*         LocatorTransform;
+  vtkMRMLTransformNode* LocatorTransformNode;
+
 };
 
 #endif
 
+
+  
