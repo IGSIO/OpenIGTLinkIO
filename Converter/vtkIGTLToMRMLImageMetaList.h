@@ -16,7 +16,8 @@
 #define __vtkIGTLToMRMLImageMetaList_h
 
 //#include "qSlicerOpenIGTLinkIFModuleExport.h"
-#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
+//#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
+#include "OpenIGTLinkIFConverterExport.h"
 
 #include "vtkObject.h"
 #include "vtkMRMLNode.h"
@@ -28,7 +29,7 @@
 
 class vtkMRMLVolumeNode;
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT vtkIGTLToMRMLImageMetaList : public vtkIGTLToMRMLBase
+class Q_SLICER_QTMODULES_OPENIGTLINKIF_CONVERTER_EXPORT vtkIGTLToMRMLImageMetaList : public vtkIGTLToMRMLBase
 {
  public:
 

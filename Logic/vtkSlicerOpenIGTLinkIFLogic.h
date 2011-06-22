@@ -169,9 +169,10 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   //----------------------------------------------------------------
 
   vtkSlicerOpenIGTLinkIFLogic();
-  ~vtkSlicerOpenIGTLinkIFLogic();
-  vtkSlicerOpenIGTLinkIFLogic(const vtkSlicerOpenIGTLinkIFLogic&);
-  void operator=(const vtkSlicerOpenIGTLinkIFLogic&);
+  virtual ~vtkSlicerOpenIGTLinkIFLogic();
+
+  //vtkSlicerOpenIGTLinkIFLogic(const vtkSlicerOpenIGTLinkIFLogic&);
+  //void operator=(const vtkSlicerOpenIGTLinkIFLogic&);
 
   
   static void DataCallback(vtkObject*, unsigned long, void *, void *);
@@ -238,6 +239,10 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   vtkTransform*         LocatorTransform;
   vtkMRMLTransformNode* LocatorTransformNode;
 
+private:
+
+  vtkSlicerOpenIGTLinkIFLogic(const vtkSlicerOpenIGTLinkIFLogic&); // Not implemented
+  void operator=(const vtkSlicerOpenIGTLinkIFLogic&);               // Not implemented
 };
 
 #endif

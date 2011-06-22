@@ -17,7 +17,8 @@
 
 #include "vtkObject.h"
 //#include "qSlicerOpenIGTLinkIFModuleExport.h"
-#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
+//#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
+#include "OpenIGTLinkIFConverterExport.h"
 
 #include "vtkMRMLNode.h"
 #include "vtkIGTLToMRMLBase.h"
@@ -28,7 +29,7 @@
 
 class vtkMRMLVolumeNode;
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT vtkIGTLToMRMLTrackingData : public vtkIGTLToMRMLBase
+class Q_SLICER_QTMODULES_OPENIGTLINKIF_CONVERTER_EXPORT vtkIGTLToMRMLTrackingData : public vtkIGTLToMRMLBase
 {
  public:
 

@@ -31,7 +31,7 @@
 #include "vtkObject.h"
 
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT vtkMRMLImageMetaListNode : public vtkMRMLNode
+class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLImageMetaListNode : public vtkMRMLNode
 {
  public:
 

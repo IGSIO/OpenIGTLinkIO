@@ -31,7 +31,7 @@
 
 #include "vtkObject.h"
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT vtkMRMLIGTLTrackingDataBundleNode : public vtkMRMLNode
+class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataBundleNode : public vtkMRMLNode
 {
  public:
 

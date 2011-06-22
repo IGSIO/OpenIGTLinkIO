@@ -23,6 +23,8 @@
 #include "vtkMRMLScalarVolumeNode.h"
 #include "igtlImageMessage.h"
 
+#include "igtl_util.h"
+
 #ifdef OpenIGTLinkIF_USE_VERSION_2
   #include "vtkMRMLIGTLQueryNode.h"
 #endif //OpenIGTLinkIF_USE_VERSION_2

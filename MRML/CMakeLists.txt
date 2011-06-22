@@ -11,13 +11,13 @@ SET(module_mrml_export_directive "Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT")
 
 # Additional directories to include
 SET(module_mrml_include_directories
-  ${OpenIGTLinkIFMRML_SOURCE_DIR}
-  ${OpenIGTLinkIFMRML_BINARY_DIR}
   ${qt_module_include_directories}
   )
 
 # Source files
 SET(module_mrml_SRCS
+  vtkIGTLToMRMLBase.cxx
+  vtkIGTLToMRMLBase.h
   vtkIGTLCircularBuffer.cxx
   vtkIGTLCircularBuffer.h
   vtkMRMLIGTLConnectorNode.cxx
@@ -35,6 +35,7 @@ SET(module_mrml_SRCS
 # Additional Target libraries
 SET(module_mrml_target_libraries
   ${ITK_LIBRARIES}
+  ${OpenIGTLink_LIBRARIES}
   )
 
 

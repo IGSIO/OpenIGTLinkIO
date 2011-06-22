@@ -16,7 +16,8 @@
 #define __vtkIGTLToMRMLLinearTransform_h
 
 //#include "qSlicerOpenIGTLinkIFModuleExport.h"
-#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
+//#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
+#include "OpenIGTLinkIFConverterExport.h"
 
 #include "vtkObject.h"
 #include "vtkMRMLNode.h"
@@ -24,7 +25,7 @@
 
 #include "igtlTransformMessage.h"
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT vtkIGTLToMRMLLinearTransform : public vtkIGTLToMRMLBase
+class Q_SLICER_QTMODULES_OPENIGTLINKIF_CONVERTER_EXPORT vtkIGTLToMRMLLinearTransform : public vtkIGTLToMRMLBase
 {
  public:
 

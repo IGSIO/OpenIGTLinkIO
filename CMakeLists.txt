@@ -1,6 +1,7 @@
 
 # Add subdirectories
 ADD_SUBDIRECTORY(MRML)
+ADD_SUBDIRECTORY(Converter)
 ADD_SUBDIRECTORY(Logic)
 
 
@@ -42,6 +43,8 @@ SET(qt_module_UI_SRCS
 # Additional Target libraries
 SET(qt_module_target_libraries
   vtkSlicerOpenIGTLinkIFModuleLogic
+  OpenIGTLinkIFMRML
+  OpenIGTLinkIFConverters
   )
 
 # Resources

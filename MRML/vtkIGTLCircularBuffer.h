@@ -28,7 +28,7 @@
 
 class vtkMutexLock;
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT vtkIGTLCircularBuffer : public vtkObject
+class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkIGTLCircularBuffer : public vtkObject
 {
  public:
 

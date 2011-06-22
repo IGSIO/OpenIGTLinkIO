@@ -30,7 +30,7 @@
 
 #include "vtkObject.h"
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT vtkMRMLIGTLQueryNode : public vtkMRMLNode
+class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLQueryNode : public vtkMRMLNode
 {
  public:
 

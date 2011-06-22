@@ -22,6 +22,7 @@
 #include "vtkImageData.h"
 #include "vtkMRMLScalarVolumeNode.h"
 #include "igtlImageMessage.h"
+#include "igtlImageMetaMessage.h"
 
 #include "vtkMRMLImageMetaListNode.h"
 #include "vtkMRMLIGTLQueryNode.h"

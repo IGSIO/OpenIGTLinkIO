@@ -16,7 +16,8 @@
 #define __vtkIGTLToMRMLBase_h
 
 //#include "qSlicerOpenIGTLinkIFModuleExport.h"
-#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
+//#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
+#include "OpenIGTLinkIFMRMLExport.h"
 
 #include "vtkObject.h"
 #include "vtkMRMLScene.h"
@@ -29,7 +30,7 @@
 class vtkMRMLIGTLQueryNode;
 #endif //OpenIGTLinkIF_USE_VERSION_2
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT vtkIGTLToMRMLBase : public vtkObject
+class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkIGTLToMRMLBase : public vtkObject
 {
 
  public:
