@@ -70,6 +70,7 @@ vtkIGTLCircularBuffer::~vtkIGTLCircularBuffer()
 //---------------------------------------------------------------------------
 void vtkIGTLCircularBuffer::PrintSelf(ostream& os, vtkIndent indent)
 {
+  this->vtkObject::PrintSelf(os, indent);
 }
 
 

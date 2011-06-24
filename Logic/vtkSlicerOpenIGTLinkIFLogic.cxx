@@ -38,7 +38,7 @@
 #include "vtkMRMLModelNode.h"
 #include "vtkMRMLSliceLogic.h"
 
-//vtkCxxRevisionMacro(vtkSlicerOpenIGTLinkIFLogic, "$Revision: 15552 $");
+vtkCxxRevisionMacro(vtkSlicerOpenIGTLinkIFLogic, "$Revision: 1.9.12.1 $");
 vtkStandardNewMacro(vtkSlicerOpenIGTLinkIFLogic);
 
 //---------------------------------------------------------------------------
@@ -183,7 +183,7 @@ int vtkSlicerOpenIGTLinkIFLogic::Initialize()
 
 //---------------------------------------------------------------------------
 void vtkSlicerOpenIGTLinkIFLogic::DataCallback(vtkObject *caller, 
-                                       unsigned long eid, void *clientData, void *callData)
+                                               unsigned long eid, void *clientData, void *callData)
 {
   vtkSlicerOpenIGTLinkIFLogic *self = reinterpret_cast<vtkSlicerOpenIGTLinkIFLogic *>(clientData);
   vtkDebugWithObjectMacro(self, "In vtkSlicerOpenIGTLinkIFLogic DataCallback");

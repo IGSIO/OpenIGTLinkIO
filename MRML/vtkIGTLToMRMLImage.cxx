@@ -49,6 +49,7 @@ vtkIGTLToMRMLImage::~vtkIGTLToMRMLImage()
 //---------------------------------------------------------------------------
 void vtkIGTLToMRMLImage::PrintSelf(ostream& os, vtkIndent indent)
 {
+  this->vtkObject::PrintSelf(os, indent);
 }
 
 

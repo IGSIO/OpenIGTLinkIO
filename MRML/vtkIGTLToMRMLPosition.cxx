@@ -41,6 +41,7 @@ vtkIGTLToMRMLPosition::~vtkIGTLToMRMLPosition()
 //---------------------------------------------------------------------------
 void vtkIGTLToMRMLPosition::PrintSelf(ostream& os, vtkIndent indent)
 {
+  this->vtkObject::PrintSelf(os, indent);
 }
 
 

@@ -41,6 +41,7 @@ vtkIGTLToMRMLBase::~vtkIGTLToMRMLBase()
 //---------------------------------------------------------------------------
 void vtkIGTLToMRMLBase::PrintSelf(ostream& os, vtkIndent indent)
 {
+  this->vtkObject::PrintSelf(os, indent);
 }
 
 

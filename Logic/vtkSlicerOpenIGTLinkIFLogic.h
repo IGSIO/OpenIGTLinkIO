@@ -53,7 +53,7 @@ class vtkMRMLIGTLConnectorNode;
 class vtkMRMLModelNode; 
 class vtkTransform; 
 
-
+/// \ingroup Slicer_QtModules_OpenIGTLinkIF
 class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic : public vtkSlicerModuleLogic 
 {
  public:
@@ -92,8 +92,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
  public:
   
   static vtkSlicerOpenIGTLinkIFLogic *New();
-  
-  vtkTypeRevisionMacro(vtkSlicerOpenIGTLinkIFLogic,vtkObject);
+  vtkTypeRevisionMacro(vtkSlicerOpenIGTLinkIFLogic,vtkSlicerModuleLogic);
+  //vtkTypeRevisionMacro(vtkSlicerOpenIGTLinkIFLogic,vtkObject);
 
   vtkSetMacro ( EnableOblique,           bool );
   vtkGetMacro ( EnableOblique,           bool );

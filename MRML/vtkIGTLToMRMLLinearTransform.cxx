@@ -39,6 +39,7 @@ vtkIGTLToMRMLLinearTransform::~vtkIGTLToMRMLLinearTransform()
 //---------------------------------------------------------------------------
 void vtkIGTLToMRMLLinearTransform::PrintSelf(ostream& os, vtkIndent indent)
 {
+  this->vtkObject::PrintSelf(os, indent);
 }
 
 
