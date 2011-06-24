@@ -6,35 +6,35 @@
   or http://www.slicer.org/copyright/copyright.txt for details.
 
   Program:   3D Slicer
-  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLToMRMLPosition.h $
+  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLToMRMLLinearTransform.h $
   Date:      $Date: 2009-08-12 21:30:38 -0400 (Wed, 12 Aug 2009) $
   Version:   $Revision: 10236 $
 
 ==========================================================================*/
 
-#ifndef __vtkIGTLToMRMLPosition_h
-#define __vtkIGTLToMRMLPosition_h
+#ifndef __vtkIGTLToMRMLLinearTransform_h
+#define __vtkIGTLToMRMLLinearTransform_h
 
 //#include "qSlicerOpenIGTLinkIFModuleExport.h"
 //#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
-#include "OpenIGTLinkIFConverterExport.h"
+#include "OpenIGTLinkIFMRMLExport.h"
 
 #include "vtkObject.h"
 #include "vtkMRMLNode.h"
 #include "vtkIGTLToMRMLBase.h"
 
-#include "igtlPositionMessage.h"
+#include "igtlTransformMessage.h"
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_CONVERTER_EXPORT vtkIGTLToMRMLPosition : public vtkIGTLToMRMLBase
+class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkIGTLToMRMLLinearTransform : public vtkIGTLToMRMLBase
 {
  public:
 
-  static vtkIGTLToMRMLPosition *New();
-  vtkTypeRevisionMacro(vtkIGTLToMRMLPosition,vtkObject);
+  static vtkIGTLToMRMLLinearTransform *New();
+  vtkTypeRevisionMacro(vtkIGTLToMRMLLinearTransform,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual const char*  GetIGTLName() { return "POSITION"; };
+  virtual const char*  GetIGTLName() { return "TRANSFORM"; };
   virtual const char*  GetMRMLName() { return "LinearTransform"; };
   virtual vtkIntArray* GetNodeEvents();
   virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name);
@@ -46,15 +46,15 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_CONVERTER_EXPORT vtkIGTLToMRMLPosition : 
 
 
  protected:
-  vtkIGTLToMRMLPosition();
-  ~vtkIGTLToMRMLPosition();
+  vtkIGTLToMRMLLinearTransform();
+  ~vtkIGTLToMRMLLinearTransform();
 
  protected:
   //BTX
-  igtl::PositionMessage::Pointer OutPositionMsg;
+  igtl::TransformMessage::Pointer OutTransformMsg;
   //ETX
   
 };
 
 
-#endif //__vtkIGTLToMRMLPosition_h
+#endif //__vtkIGTLToMRMLLinearTransform_h

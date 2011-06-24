@@ -13,8 +13,6 @@ SET(module_logic_export_directive "VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT"
 SET(module_logic_include_directories
   ${OpenIGTLinkIFMRML_SOURCE_DIR}
   ${OpenIGTLinkIFMRML_BINARY_DIR}
-  ${OpenIGTLinkIFConverter_SOURCE_DIR}
-  ${OpenIGTLinkIFConverter_BINARY_DIR}
   )
 
 # Source files
@@ -25,7 +23,6 @@ SET(module_logic_SRCS
 # Additional Target libraries
 SET(module_logic_target_libraries
   ${ITK_LIBRARIES}
-  OpenIGTLinkIFConverter
   OpenIGTLinkIFMRML
   )
 
