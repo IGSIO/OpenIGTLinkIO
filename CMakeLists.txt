@@ -23,8 +23,8 @@ SET(qt_module_export_directive "Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT")
 
 # Additional includes - Current_{source,binary} and Slicer_{Libs,Base} already included
 SET(qt_module_include_directories
-  ${CMAKE_CURRENT_SOURCE_DIR}/Widgets
-  ${CMAKE_CURRENT_BINARY_DIR}/Widgets
+  ${CMAKE_CURRENT_SOURCE_DIR}/GUI
+  ${CMAKE_CURRENT_BINARY_DIR}/GUI
   ${CMAKE_CURRENT_SOURCE_DIR}/Logic
   ${CMAKE_CURRENT_BINARY_DIR}/Logic
   ${CMAKE_CURRENT_SOURCE_DIR}/MRML
@@ -37,12 +37,18 @@ SET(qt_module_SRCS
   qSlicerOpenIGTLinkIFModule.h
   qSlicerOpenIGTLinkIFModuleWidget.cxx
   qSlicerOpenIGTLinkIFModuleWidget.h
+  GUI/qMRMLSceneIGTLConnectorModel.cxx
+  GUI/qMRMLSceneIGTLConnectorModel.h
+  GUI/qMRMLIGTLConnectorTreeView.cxx
+  GUI/qMRMLIGTLConnectorTreeView.h
   )
 
 # Headers that should run through moc
 SET(qt_module_MOC_SRCS
   qSlicerOpenIGTLinkIFModule.h
   qSlicerOpenIGTLinkIFModuleWidget.h
+  GUI/qMRMLSceneIGTLConnectorModel.h
+  GUI/qMRMLIGTLConnectorTreeView.h
   )
 
 # UI files

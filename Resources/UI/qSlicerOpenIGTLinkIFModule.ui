@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>525</width>
+    <width>542</width>
     <height>747</height>
    </rect>
   </property>
@@ -68,7 +68,11 @@
      </property>
      <layout class="QVBoxLayout" name="ConnectorListLayout">
       <item>
-       <widget class="QListView" name="connectorList"/>
+       <widget class="qMRMLIGTLConnectorTreeView" name="connectorListView">
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QFrame" name="connectorButtonFrame">
@@ -241,16 +245,21 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>qSlicerWidget</class>
+   <extends>QWidget</extends>
+   <header>qSlicerWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>ctkCollapsibleButton</class>
    <extends>QWidget</extends>
    <header>ctkCollapsibleButton.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>qSlicerWidget</class>
-   <extends>QWidget</extends>
-   <header>qSlicerWidget.h</header>
-   <container>1</container>
+   <class>qMRMLIGTLConnectorTreeView</class>
+   <extends>QTreeView</extends>
+   <header>qMRMLIGTLConnectorTreeView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -5,6 +5,10 @@
 #include "qSlicerOpenIGTLinkIFModuleWidget.h"
 #include "ui_qSlicerOpenIGTLinkIFModule.h"
 
+#include <QTreeView>
+#include <QStandardItemModel>
+
+
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
 class qSlicerOpenIGTLinkIFModuleWidgetPrivate: public Ui_qSlicerOpenIGTLinkIFModule
@@ -48,11 +52,18 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   this->connect(d->removeConnectorButton, SIGNAL(clicked()), this,
                 SLOT(onRemoveConnectorButtonClicked()));
 
+  //d->connectorListView->setLogic(this->logic());
+  d->connectorListView->setMRMLScene(this->logic()->GetMRMLScene());
+
 }
 
 //-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::onAddConnectorButtonClicked()
 {
+  Q_D(qSlicerOpenIGTLinkIFModuleWidget);
+  
+  //new QListViewItem(d->connectorList, "aaa", "bbbb", "cccc", "ddd");
+  
   std::cerr << "Add Connector Button is clicked." << std::endl;
 }
 
