@@ -14,8 +14,7 @@
 #ifndef __vtkMRMLIGTLTrackingDataBundleNode_h
 #define __vtkMRMLIGTLTrackingDataBundleNode_h
 
-//#include "qSlicerOpenIGTLinkIFModuleExport.h"
-#include "OpenIGTLinkIFMRMLExport.h"
+#include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
 #include "vtkMRML.h"
 #include "vtkMRMLNode.h"

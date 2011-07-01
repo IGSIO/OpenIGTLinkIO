@@ -14,8 +14,7 @@
 #ifndef __vtkMRMLIGTLConnectorNode_h
 #define __vtkMRMLIGTLConnectorNode_h
 
-//#include "qSlicerOpenIGTLinkIFModuleExport.h"
-#include "OpenIGTLinkIFMRMLExport.h"
+#include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
 
 #include "vtkMRML.h"

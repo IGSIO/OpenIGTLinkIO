@@ -184,29 +184,22 @@ void qMRMLIGTLConnectorTreeView::onClicked(const QModelIndex& index)
       }
     }
 
-  // check if user clicked on icon, this can happen even after we marked a
-  // hierarchy as active
-  if (index.column() == qMRMLSceneIGTLConnectorModel::CheckedColumn)
+  if (index.column() == qMRMLSceneIGTLConnectorModel::NameColumn)
     {
-    // Let the superclass view to handle the event, it will update the item
-    // which will update the node.
     }
-  else if (index.column() == qMRMLSceneIGTLConnectorModel::VisibilityColumn)
+  else if (index.column() == qMRMLSceneIGTLConnectorModel::TypeColumn)
     {
-    // user wants to toggle the visibility of the annotation
-    this->onVisibilityColumnClicked(mrmlNode);
+    //this->onVisibilityColumnClicked(mrmlNode);
     }
-  else if (index.column() == qMRMLSceneIGTLConnectorModel::LockColumn)
+  else if (index.column() == qMRMLSceneIGTLConnectorModel::StatusColumn)
     {
-    // user wants to toggle the un-/lock of the annotation
-    this->onLockColumnClicked(mrmlNode);
+    //this->onLockColumnClicked(mrmlNode);
     }
-  else if (index.column() == qMRMLSceneIGTLConnectorModel::EditColumn)
+  else if (index.column() == qMRMLSceneIGTLConnectorModel::AddressColumn)
     {
-    // user wants to edit the properties of this annotation
-    // signal the widget
-    //this->onPropertyEditButtonClicked(QString(mrmlNode->GetID()));
-//    this->m_Widget->propertyEditButtonClicked(QString(mrmlNode->GetID()));
+    }
+  else if (index.column() == qMRMLSceneIGTLConnectorModel::PortColumn)
+    {
     }
 
 }
@@ -251,17 +244,17 @@ void qMRMLIGTLConnectorTreeView::toggleLockForSelected()
 
     // we need to prevent looping through all columns
     // there we only update once a row
-    if (selected.at(i).column() == qMRMLSceneIGTLConnectorModel::LockColumn)
-      {
-
-      //vtkMRMLAnnotationNode* annotationNode = vtkMRMLAnnotationNode::SafeDownCast(d->SortFilterModel->mrmlNodeFromIndex(selected.at(i)));
-
-      //if (annotationNode)
-      //  {
-      //  this->onLockColumnClicked(annotationNode);
-      //  }
-
-      }
+    //if (selected.at(i).column() == qMRMLSceneIGTLConnectorModel::LockColumn)
+    //  {
+    //
+    //  //vtkMRMLAnnotationNode* annotationNode = vtkMRMLAnnotationNode::SafeDownCast(d->SortFilterModel->mrmlNodeFromIndex(selected.at(i)));
+    //
+    //  //if (annotationNode)
+    //  //  {
+    //  //  this->onLockColumnClicked(annotationNode);
+    //  //  }
+    //
+    //  }
 
   }
 
@@ -284,17 +277,17 @@ void qMRMLIGTLConnectorTreeView::toggleVisibilityForSelected()
 
     // we need to prevent looping through all columns
     // there we only update once a row
-    if (selected.at(i).column() == qMRMLSceneIGTLConnectorModel::VisibilityColumn)
-      {
-
-      //vtkMRMLAnnotationNode* annotationNode = vtkMRMLAnnotationNode::SafeDownCast(d->SortFilterModel->mrmlNodeFromIndex(selected.at(i)));
-      //
-      //if (annotationNode)
-      //  {
-      //  this->onVisibilityColumnClicked(annotationNode);
-      //  }
-
-      }
+    //if (selected.at(i).column() == qMRMLSceneIGTLConnectorModel::VisibilityColumn)
+    //  {
+    //
+    //  //vtkMRMLAnnotationNode* annotationNode = vtkMRMLAnnotationNode::SafeDownCast(d->SortFilterModel->mrmlNodeFromIndex(selected.at(i)));
+    //  //
+    //  //if (annotationNode)
+    //  //  {
+    //  //  this->onVisibilityColumnClicked(annotationNode);
+    //  //  }
+    //
+    //  }
 
     } // for loop
 
@@ -371,20 +364,20 @@ void qMRMLIGTLConnectorTreeView::deleteSelected()
 
     // we need to prevent looping through all columns
     // there we only update once a row
-    if (selected.at(i).column() == qMRMLSceneIGTLConnectorModel::VisibilityColumn)
-      {
-
-      //vtkMRMLAnnotationNode* annotationNode = vtkMRMLAnnotationNode::SafeDownCast(d->SortFilterModel->mrmlNodeFromIndex(selected.at(i)));
-
-      //if (annotationNode)
-      //  {
-      //
-      //  // we mark this one for deletion
-      //  markedForDeletion.append(QString(annotationNode->GetID()));
-      //
-      //  }
-
-      }
+    //if (selected.at(i).column() == qMRMLSceneIGTLConnectorModel::VisibilityColumn)
+    //  {
+    //
+    //  //vtkMRMLAnnotationNode* annotationNode = vtkMRMLAnnotationNode::SafeDownCast(d->SortFilterModel->mrmlNodeFromIndex(selected.at(i)));
+    //
+    //  //if (annotationNode)
+    //  //  {
+    //  //
+    //  //  // we mark this one for deletion
+    //  //  markedForDeletion.append(QString(annotationNode->GetID()));
+    //  //
+    //  //  }
+    //
+    //  }
     } // for
 
   // we parsed the complete selection and saved all mrmlIds to delete
@@ -428,17 +421,17 @@ void qMRMLIGTLConnectorTreeView::selectedAsCollection(vtkCollection* collection)
 
       // we need to prevent looping through all columns
       // there we only update once a row
-      if (selected.at(i).column() == qMRMLSceneIGTLConnectorModel::VisibilityColumn)
-        {
-
-        vtkMRMLNode* node = vtkMRMLNode::SafeDownCast(d->SortFilterModel->mrmlNodeFromIndex(selected.at(i)));
-
-        //if (node->IsA("vtkMRMLAnnotationNode"))
-         // {
-        collection->AddItem(node);
-         // }
-
-        }
+      //if (selected.at(i).column() == qMRMLSceneIGTLConnectorModel::VisibilityColumn)
+      //  {
+      //
+      //  vtkMRMLNode* node = vtkMRMLNode::SafeDownCast(d->SortFilterModel->mrmlNodeFromIndex(selected.at(i)));
+      //
+      //  //if (node->IsA("vtkMRMLAnnotationNode"))
+      //   // {
+      //  collection->AddItem(node);
+      //   // }
+      //
+      //  }
 
     } // for
 
@@ -472,21 +465,21 @@ void qMRMLIGTLConnectorTreeView::mouseMoveEvent(QMouseEvent* e)
   // get the index of the current column
   QModelIndex index = indexAt(e->pos());
 
-  if (index.column() == qMRMLSceneIGTLConnectorModel::VisibilityColumn || index.column() == qMRMLSceneIGTLConnectorModel::LockColumn || index.column() == qMRMLSceneIGTLConnectorModel::EditColumn)
-    {
-    // we are over a column with a clickable icon
-    // let's change the cursor
-    QCursor handCursor(Qt::PointingHandCursor);
-    this->setCursor(handCursor);
-    // .. and bail out
-    return;
-    }
-  else if(this->cursor().shape() == Qt::PointingHandCursor)
-    {
-    // if we are NOT over such a column and we already have a changed cursor,
-    // reset it!
-    this->setCursor(QCursor());
-    }
+  //if (index.column() == qMRMLSceneIGTLConnectorModel::VisibilityColumn || index.column() == qMRMLSceneIGTLConnectorModel::LockColumn || index.column() == qMRMLSceneIGTLConnectorModel::EditColumn)
+  //  {
+  //  // we are over a column with a clickable icon
+  //  // let's change the cursor
+  //  QCursor handCursor(Qt::PointingHandCursor);
+  //  this->setCursor(handCursor);
+  //  // .. and bail out
+  //  return;
+  //  }
+  //else if(this->cursor().shape() == Qt::PointingHandCursor)
+  //  {
+  //  // if we are NOT over such a column and we already have a changed cursor,
+  //  // reset it!
+  //  this->setCursor(QCursor());
+  //  }
 
 }
 #endif

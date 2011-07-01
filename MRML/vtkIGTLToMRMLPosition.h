@@ -15,9 +15,7 @@
 #ifndef __vtkIGTLToMRMLPosition_h
 #define __vtkIGTLToMRMLPosition_h
 
-//#include "qSlicerOpenIGTLinkIFModuleExport.h"
-//#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
-#include "OpenIGTLinkIFMRMLExport.h"
+#include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
 #include "vtkObject.h"
 #include "vtkMRMLNode.h"

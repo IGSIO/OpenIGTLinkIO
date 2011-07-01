@@ -14,8 +14,7 @@
 #ifndef __vtkMRMLImageMetaListNode_h
 #define __vtkMRMLImageMetaListNode_h
 
-//#include "qSlicerOpenIGTLinkIFModuleExport.h"
-#include "OpenIGTLinkIFMRMLExport.h"
+#include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
 #include "vtkMRML.h"
 #include "vtkMRMLNode.h"

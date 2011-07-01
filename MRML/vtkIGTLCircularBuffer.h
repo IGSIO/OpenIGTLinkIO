@@ -15,8 +15,8 @@
 #ifndef __vtkIGTLCircularBuffer_h
 #define __vtkIGTLCircularBuffer_h
 
-//#include "qSlicerOpenIGTLinkIFModuleExport.h"
-#include "OpenIGTLinkIFMRMLExport.h"
+#include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
+//#include "OpenIGTLinkIFMRMLExport.h"
 
 #include "vtkObject.h"
 

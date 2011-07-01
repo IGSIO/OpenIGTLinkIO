@@ -16,9 +16,8 @@
 #define __vtkIGTLToMRMLTrackingData_h
 
 #include "vtkObject.h"
-//#include "qSlicerOpenIGTLinkIFModuleExport.h"
-//#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
-#include "OpenIGTLinkIFMRMLExport.h"
+
+#include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
 #include "vtkMRMLNode.h"
 #include "vtkIGTLToMRMLBase.h"

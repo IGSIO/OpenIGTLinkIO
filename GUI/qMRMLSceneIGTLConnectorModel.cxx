@@ -38,6 +38,8 @@
 #include <vtkMRMLAnnotationNode.h>
 #include <vtkMRMLDisplayableHierarchyNode.h>
 
+#include "vtkMRMLIGTLConnectorNode.h"
+
 // VTK includes
 #include <vtkVariantArray.h>
 #include <typeinfo>
@@ -49,7 +51,7 @@ qMRMLSceneIGTLConnectorModel::qMRMLSceneIGTLConnectorModel(QObject *vparent)
   this->setListenNodeModifiedEvent(true);
   this->setNameColumn(-1);
   this->setIDColumn(-1);
-  this->setCheckableColumn(qMRMLSceneIGTLConnectorModel::CheckedColumn);
+  //this->setCheckableColumn(qMRMLSceneIGTLConnectorModel::CheckedColumn);
 
   this->setColumnCount(6);
   this->setHorizontalHeaderLabels(
@@ -64,70 +66,112 @@ qMRMLSceneIGTLConnectorModel::~qMRMLSceneIGTLConnectorModel()
 //------------------------------------------------------------------------------
 void qMRMLSceneIGTLConnectorModel::updateNodeFromItemData(vtkMRMLNode* node, QStandardItem* item)
 {
-  //vtkMRMLAnnotationNode* annotationNode = vtkMRMLAnnotationNode::SafeDownCast(node);
-  //vtkMRMLAnnotationHierarchyNode* hierarchyNode = vtkMRMLAnnotationHierarchyNode::SafeDownCast(node);
-  //vtkMRMLAnnotationSnapshotNode* snapshotNode = vtkMRMLAnnotationSnapshotNode::SafeDownCast(node);
-  //
-  //int oldChecked = node->GetSelected();
-  //
-  //this->qMRMLSceneDisplayableModel::updateNodeFromItemData(node, item);
-  //
-  //// TODO move to logic ?
-  //if (hierarchyNode && oldChecked != hierarchyNode->GetSelected())
-  //  {
-  //  int newChecked = hierarchyNode->GetSelected();
-  //  vtkCollection* children = vtkCollection::New();
-  //  hierarchyNode->GetChildrenDisplayableNodes(children);
-  //
-  //  children->InitTraversal();
-  //  for (int i=0; i<children->GetNumberOfItems(); ++i)
-  //    {
-  //    vtkMRMLAnnotationNode* childNode = vtkMRMLAnnotationNode::SafeDownCast(children->GetItemAsObject(i));
-  //    if (childNode)
-  //      {
-  //      // this is a valid annotation child node
-  //      // set all children to have same selected as the hierarchy
-  //      childNode->SetSelected(newChecked);
-  //      }
-  //    } // for loop
-  //  }// if hierarchyNode
-  //
-  //switch (item->column())
-  //  {
-  //  case qMRMLSceneIGTLConnectorModel::TextColumn:
-  //    {
-  //    if (annotationNode)
-  //      {
-  //      // if we have an annotation node, the text can be changed by editing the textcolumn
-  //      annotationNode->SetText(0,item->text().toLatin1(),0,1);
-  //      }
-  //    else if (hierarchyNode)
-  //      {
-  //      // if we have a hierarchy node, the name can be changed by editing the textcolumn
-  //      hierarchyNode->SetName(item->text().toLatin1());
-  //      }
-  //    else if (snapshotNode)
-  //      {
-  //      // if we have a snapshot node, the name can be changed by editing the textcolumn
-  //      snapshotNode->SetName(item->text().toLatin1());
-  //      }
-  //    break;
-  //    }
-  //  default:
-  //    break;
-  //  }
+  int oldChecked = node->GetSelected();
+  vtkMRMLIGTLConnectorNode* cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+  if (!cnode)
+    {
+    return;
+    }
+
+  this->qMRMLSceneDisplayableModel::updateNodeFromItemData(node, item);
+
+  switch (item->column())
+    {
+    case qMRMLSceneIGTLConnectorModel::NameColumn:
+      {
+      cnode->SetName(item->text().toLatin1());
+      break;
+      }
+    case qMRMLSceneIGTLConnectorModel::TypeColumn:
+      {
+      }
+    case qMRMLSceneIGTLConnectorModel::StatusColumn:
+      {
+      }
+    case qMRMLSceneIGTLConnectorModel::AddressColumn:
+      {
+      }
+    case qMRMLSceneIGTLConnectorModel::PortColumn:
+      {
+      }
+    default:
+      break;
+    }
+
 }
 
 //------------------------------------------------------------------------------
 void qMRMLSceneIGTLConnectorModel::updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column)
 {
-  //if (!node)
-  //  {
-  //  return;
-  //  }
-  //this->qMRMLSceneDisplayableModel::updateItemDataFromNode(item, node, column);
-  //vtkMRMLAnnotationNode* annotationNode = vtkMRMLAnnotationNode::SafeDownCast(node);
-  //vtkMRMLAnnotationHierarchyNode *hnode = vtkMRMLAnnotationHierarchyNode::SafeDownCast(node);
+  vtkMRMLIGTLConnectorNode* cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+
+  if (!cnode)
+    {
+    return;
+    }
+
+  switch (column)
+    {
+    case qMRMLSceneIGTLConnectorModel::NameColumn:
+      {
+      item->setText(QString(cnode->GetName()));
+      break;
+      }
+    case qMRMLSceneIGTLConnectorModel::TypeColumn:
+      {
+      if (cnode->GetType() == vtkMRMLIGTLConnectorNode::TYPE_SERVER)
+        {
+        item->setText(QString("S"));
+        }
+      else if (cnode->GetType() == vtkMRMLIGTLConnectorNode::TYPE_CLIENT)
+        {
+        item->setText(QString("C"));
+        }
+      else
+        {
+        item->setText(QString("?"));
+        }
+      }
+    case qMRMLSceneIGTLConnectorModel::StatusColumn:
+      {
+      if (cnode->GetState() == vtkMRMLIGTLConnectorNode::STATE_OFF)
+        {
+        item->setText(QString("OFF"));
+        }
+      else if (cnode->GetState() == vtkMRMLIGTLConnectorNode::STATE_WAIT_CONNECTION)
+        {
+        item->setText(QString("WAIT"));
+        }
+      else if (cnode->GetState() == vtkMRMLIGTLConnectorNode::STATE_CONNECTED)
+        {
+        item->setText(QString("ON"));
+        }
+      else 
+        {
+        item->setText(QString("--"));
+        }
+      }
+    case qMRMLSceneIGTLConnectorModel::AddressColumn:
+      {
+      if (cnode->GetType() == vtkMRMLIGTLConnectorNode::TYPE_SERVER)
+        {
+        item->setText(QString(cnode->GetServerHostname()));
+        }
+      else
+        {
+        item->setText(QString("--"));
+        }
+      }
+    case qMRMLSceneIGTLConnectorModel::PortColumn:
+      {
+      std::stringstream ss;
+      ss << cnode->GetServerPort();
+      item->setText(QString(ss.str().c_str()));
+      }
+    default:
+      break;
+    }
+
   //switch (column)
   //  {
   //  case qMRMLSceneIGTLConnectorModel::VisibilityColumn:
@@ -205,9 +249,9 @@ QFlags<Qt::ItemFlag> qMRMLSceneIGTLConnectorModel::nodeFlags(vtkMRMLNode* node, 
   // and set it to the right column
   switch(column)
     {
-    case qMRMLSceneIGTLConnectorModel::TextColumn:
-      flags = flags | Qt::ItemIsEditable;
-      break;
+    //case qMRMLSceneIGTLConnectorModel::TextColumn:
+    //  flags = flags | Qt::ItemIsEditable;
+    //  break;
     default:
       break;
     }

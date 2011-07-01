@@ -45,13 +45,18 @@ public:
 
   // Enum for the different columns
   enum Columns{
-    CheckedColumn = 0,
-    VisibilityColumn = 1,
-    LockColumn = 2,
-    EditColumn = 3,
-    ValueColumn = 4,
-    TextColumn = 5
+    NameColumn = 0,
+    TypeColumn = 1,
+    StatusColumn = 2,
+    AddressColumn = 3,
+    PortColumn = 4
   };
+ //  VisibilityColumn = 1,
+ //  LockColumn = 2,
+ //  EditColumn = 3,
+ //  ValueColumn = 4,
+ //  TextColumn = 5
+ //};
 
   virtual void updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column);
 
