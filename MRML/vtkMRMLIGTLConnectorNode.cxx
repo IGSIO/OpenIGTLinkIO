@@ -18,6 +18,9 @@ Version:   $Revision: 1.2 $
 #include <map>
 
 #include "vtkObjectFactory.h"
+#include "vtkIntArray.h"
+#include "vtkEventBroker.h"
+#include "vtkCommand.h"
 
 #include "vtkMRMLIGTLConnectorNode.h"
 #include "vtkMRMLScene.h"

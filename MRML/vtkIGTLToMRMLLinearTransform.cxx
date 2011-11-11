@@ -14,8 +14,11 @@
 
 #include <vtksys/SystemTools.hxx>
 
+#include "vtkIntArray.h"
 #include "vtkObjectFactory.h"
 #include "vtkIGTLToMRMLLinearTransform.h"
+#include "vtkMatrix4x4.h"
+
 
 #include "vtkMRMLLinearTransformNode.h"
 #include "igtlTransformMessage.h"
@@ -55,7 +58,7 @@ vtkMRMLNode* vtkIGTLToMRMLLinearTransform::CreateNewNode(vtkMRMLScene* scene, co
   vtkMatrix4x4* transform = vtkMatrix4x4::New();
   transform->Identity();
   //transformNode->SetAndObserveImageData(transform);
-  transformNode->ApplyTransform(transform);
+  transformNode->ApplyTransformMatrix(transform);
   transform->Delete();
 
   vtkMRMLNode* n = scene->AddNode(transformNode);

@@ -15,6 +15,7 @@
 #include <vtksys/SystemTools.hxx>
 
 #include "vtkObjectFactory.h"
+#include "vtkIntArray.h"
 #include "vtkIGTLToMRMLTrackingData.h"
 
 #include "vtkImageData.h"

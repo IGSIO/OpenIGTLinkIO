@@ -16,6 +16,7 @@
 
 #include "vtkObjectFactory.h"
 #include "vtkIGTLToMRMLImageMetaList.h"
+#include "vtkIntArray.h"
 
 //#include "vtkSlicerColorLogic.h"
 

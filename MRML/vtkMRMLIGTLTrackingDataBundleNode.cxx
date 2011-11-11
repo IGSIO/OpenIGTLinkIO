@@ -18,6 +18,7 @@ Version:   $Revision: 1.2 $
 #include <map>
 
 #include "vtkObjectFactory.h"
+#include "vtkMatrix4x4.h"
 
 #include "vtkMRMLIGTLTrackingDataBundleNode.h"
 #include "vtkMRMLScene.h"
@@ -254,7 +255,7 @@ void vtkMRMLIGTLTrackingDataBundleNode::UpdateTransformNode(const char* name, vt
     node = iter->second.node;
     }
 
-  node->ApplyTransform(matrix);
+  node->ApplyTransformMatrix(matrix);
 
 }
 

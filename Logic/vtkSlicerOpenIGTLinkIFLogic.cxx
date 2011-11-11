@@ -16,6 +16,7 @@
 #include "vtkCallbackCommand.h"
 #include "vtkTransformPolyDataFilter.h"
 #include "vtkTransform.h"
+#include "vtkImageData.h"
 
 #include "vtkSlicerOpenIGTLinkIFLogic.h"
 

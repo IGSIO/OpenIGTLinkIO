@@ -21,6 +21,8 @@
 
 #include "vtkImageData.h"
 #include "vtkMRMLScalarVolumeNode.h"
+#include "vtkMRMLScalarVolumeDisplayNode.h"
+#include "vtkMatrix4x4.h"
 #include "igtlImageMessage.h"
 
 #include "igtl_util.h"
