@@ -51,12 +51,6 @@ public:
     AddressColumn = 3,
     PortColumn = 4
   };
- //  VisibilityColumn = 1,
- //  LockColumn = 2,
- //  EditColumn = 3,
- //  ValueColumn = 4,
- //  TextColumn = 5
- //};
 
   virtual void updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column);
 

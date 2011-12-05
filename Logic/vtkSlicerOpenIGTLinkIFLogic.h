@@ -109,11 +109,30 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
 
   void PrintSelf(ostream&, vtkIndent);
 
+  /// Initialize listening to MRML events
+  /// SetMRMLSceneInternal(vtkMRMLScene * newScene) must be implemented,
+  /// if OnMRMLScene*() or OnMRMLNode*() are used.
+  virtual void SetMRMLSceneInternal(vtkMRMLScene * newScene);
+
   //----------------------------------------------------------------
-  // Start up the class
+  // Events
   //----------------------------------------------------------------
 
-  int Initialize();
+  ///// Called after the corresponding MRML event is triggered.
+  ///// \sa ProcessMRMLSceneEvents
+  //virtual void OnMRMLSceneAboutToBeClosedEvent(){}
+  //virtual void OnMRMLSceneClosedEvent(){}
+  //virtual void OnMRMLSceneAboutToBeImportedEvent(){}
+  //virtual void OnMRMLSceneImportedEvent(){}
+  //virtual void OnMRMLSceneRestoredEvent(){}
+  //virtual void OnMRMLSceneNewEvent(){}
+  virtual void OnMRMLSceneNodeAddedEvent(vtkMRMLNode* /*node*/);
+  //virtual void OnMRMLSceneNodeRemovedEvent(vtkMRMLNode* /*node*/){}
+
+  /// Called after the corresponding MRML event is triggered.
+  /// \sa ProcessMRMLNodesEvents
+  virtual void OnMRMLNodeModified(vtkMRMLNode* /*node*/){}
+
 
   //----------------------------------------------------------------
   // Connector and converter Management
@@ -138,8 +157,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   // MRML Management
   //----------------------------------------------------------------
 
-  virtual void ProcessMRMLEvents(vtkObject* caller, unsigned long event, void* callData);
-  virtual void ProcessLogicEvents(vtkObject * caller, unsigned long event, void * callData);  
+  //virtual void ProcessMRMLEvents(vtkObject* caller, unsigned long event, void* callData);
+  //virtual void ProcessLogicEvents(vtkObject * caller, unsigned long event, void * callData);  
 
 
   int  SetLocatorDriver(const char* nodeID);

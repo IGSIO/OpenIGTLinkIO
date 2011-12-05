@@ -153,32 +153,19 @@ void vtkSlicerOpenIGTLinkIFLogic::PrintSelf(ostream& os, vtkIndent indent)
 
 
 //---------------------------------------------------------------------------
-int vtkSlicerOpenIGTLinkIFLogic::Initialize()
+void vtkSlicerOpenIGTLinkIFLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 {
-
-  // -----------------------------------------
-  // Register MRML event handler
+  vtkDebugMacro("SetMRMLSceneInternal - listening to scene events");
   
-  if (this->Initialized == 0)
-    {
-    // MRML Event Handling
-    vtkIntArray* events = vtkIntArray::New();
-    //events->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
-    //events->InsertNextValue(vtkMRMLScene::NodeRemovedEvent);
-    //events->InsertNextValue(vtkMRMLScene::SceneCloseEvent);
-    //events->InsertNextValue(vtkMRMLScene::Node
-    if (this->GetMRMLScene() != NULL)
-      {
-      //this->SetAndObserveMRMLSceneEvents(this->GetMRMLScene(), events);
-      }
-
-    events->Delete();
-    this->Initialized = 1;
-
-    }
-
-  return 1;
-
+//  vtkIntArray *events = vtkIntArray::New();
+//  events->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
+////  events->InsertNextValue(vtkMRMLScene::NodeRemovedEvent);
+//  events->InsertNextValue(vtkMRMLScene::SceneClosedEvent);
+//  events->InsertNextValue(vtkMRMLScene::SceneImportedEvent);
+//  events->InsertNextValue(vtkMRMLScene::SceneRestoredEvent);
+////  events->InsertNextValue(vtkMRMLScene::SceneAboutToBeRestoredEvent);
+//  this->SetAndObserveMRMLSceneEventsInternal(newScene, events);
+//  events->Delete();
 }
 
 
@@ -196,6 +183,28 @@ void vtkSlicerOpenIGTLinkIFLogic::DataCallback(vtkObject *caller,
 void vtkSlicerOpenIGTLinkIFLogic::UpdateAll()
 {
 
+}
+
+
+//---------------------------------------------------------------------------
+void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent(vtkMRMLNode* node)
+{
+  //vtkDebugMacro("vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent");
+  std::cerr << "vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent" << std::endl;
+
+  // don't do anything if the scene is still updating
+  if (this->GetMRMLScene() &&
+      this->GetMRMLScene()->GetIsUpdating())
+    {
+    vtkDebugMacro("OnMRMLSceneNodeAddedEvent: updating, returning");
+    return;
+    }
+  
+  vtkMRMLIGTLConnectorNode * connector = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+  if (connector)
+    {
+    std::cerr << "vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent(): Connector node added..." << std::endl;
+    }
 }
 
 
@@ -555,104 +564,104 @@ vtkIGTLToMRMLBase* vtkSlicerOpenIGTLinkIFLogic::GetConverterByDeviceType(const c
 
 
 
-//---------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLEvents(vtkObject * caller, unsigned long event, void * callData)
-{
-  if (caller != NULL)
-    {
-    vtkMRMLNode* node = vtkMRMLNode::SafeDownCast(caller);
-
-    ////---------------------------------------------------------------------------
-    //// Outgoing data
-    //// TODO: should check the type of the node here
-    //ConnectorListType* list = &MRMLEventConnectorMap[node];
-    //ConnectorListType::iterator cliter;
-    //for (cliter = list->begin(); cliter != list->end(); cliter ++)
-    //  {
-    //  vtkMRMLIGTLConnectorNode* connector = 
-    //    vtkMRMLIGTLConnectorNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(*cliter));
-    //  if (connector == NULL)
-    //    {
-    //    return;
-    //    }
-    //
-    //  MessageConverterListType::iterator iter;
-    //  for (iter = this->MessageConverterList.begin();
-    //       iter != this->MessageConverterList.end();
-    //       iter ++)
-    //    {
-    //    if ((*iter)->GetMRMLName() && strcmp(node->GetNodeTagName(), (*iter)->GetMRMLName()) == 0)
-    //      {
-    //      // check if the name-type combination is on the list
-    //      if (connector->GetDeviceID(node->GetName(), (*iter)->GetIGTLName()) >= 0)
-    //        {
-    //        int size;
-    //        void* igtlMsg;
-    //        (*iter)->MRMLToIGTL(event, node, &size, &igtlMsg);
-    //        int r = connector->SendData(size, (unsigned char*)igtlMsg);
-    //        if (r == 0)
-    //          {
-    //          // TODO: error handling
-    //          //std::cerr << "ERROR: send data." << std::endl;
-    //          }
-    //        }
-    //      }
-    //    } // for (iter)
-    //  } // for (cliter)
-
-    //---------------------------------------------------------------------------
-    // Slice Driven by Locator
-    if (node && strcmp(node->GetID(), this->LocatorDriverNodeID.c_str()) == 0)
-      {
-      vtkMatrix4x4* transform = NULL;
-      for (int i = 0; i < 3; i ++)
-        {
-        if (this->SliceDriver[i] == SLICE_DRIVER_LOCATOR)
-          {
-          if (!transform)
-            {
-            vtkMRMLLinearTransformNode* transNode =    
-              vtkMRMLLinearTransformNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(this->LocatorDriverNodeID));
-            if (transNode)
-              {
-              transform = transNode->GetMatrixTransformToParent();
-              }
-            }
-          if (transform)
-            {
-            UpdateSliceNode(i, transform);
-            }
-          }
-        }
-      }
-
-      
-    //---------------------------------------------------------------------------
-    // Slice Driven by Real-time image
-    if (strcmp(node->GetID(), this->RealTimeImageSourceNodeID.c_str()) == 0)
-      {
-      for (int i = 0; i < 3; i ++)
-        {
-        if (this->SliceDriver[i] == SLICE_DRIVER_RTIMAGE)
-          {
-          UpdateSliceNodeByImage(i);
-          }
-        }
-      }
-    }
-}
-
-
-//----------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::ProcessLogicEvents(vtkObject *vtkNotUsed(caller), 
-                                            unsigned long event, 
-                                            void *callData)
-{
-  if (event ==  vtkCommand::ProgressEvent) 
-    {
-    this->InvokeEvent(vtkCommand::ProgressEvent,callData);
-    }
-}
+////---------------------------------------------------------------------------
+//void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLEvents(vtkObject * caller, unsigned long event, void * callData)
+//{
+//  if (caller != NULL)
+//    {
+//    vtkMRMLNode* node = vtkMRMLNode::SafeDownCast(caller);
+//
+//    ////---------------------------------------------------------------------------
+//    //// Outgoing data
+//    //// TODO: should check the type of the node here
+//    //ConnectorListType* list = &MRMLEventConnectorMap[node];
+//    //ConnectorListType::iterator cliter;
+//    //for (cliter = list->begin(); cliter != list->end(); cliter ++)
+//    //  {
+//    //  vtkMRMLIGTLConnectorNode* connector = 
+//    //    vtkMRMLIGTLConnectorNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(*cliter));
+//    //  if (connector == NULL)
+//    //    {
+//    //    return;
+//    //    }
+//    //
+//    //  MessageConverterListType::iterator iter;
+//    //  for (iter = this->MessageConverterList.begin();
+//    //       iter != this->MessageConverterList.end();
+//    //       iter ++)
+//    //    {
+//    //    if ((*iter)->GetMRMLName() && strcmp(node->GetNodeTagName(), (*iter)->GetMRMLName()) == 0)
+//    //      {
+//    //      // check if the name-type combination is on the list
+//    //      if (connector->GetDeviceID(node->GetName(), (*iter)->GetIGTLName()) >= 0)
+//    //        {
+//    //        int size;
+//    //        void* igtlMsg;
+//    //        (*iter)->MRMLToIGTL(event, node, &size, &igtlMsg);
+//    //        int r = connector->SendData(size, (unsigned char*)igtlMsg);
+//    //        if (r == 0)
+//    //          {
+//    //          // TODO: error handling
+//    //          //std::cerr << "ERROR: send data." << std::endl;
+//    //          }
+//    //        }
+//    //      }
+//    //    } // for (iter)
+//    //  } // for (cliter)
+//
+//    //---------------------------------------------------------------------------
+//    // Slice Driven by Locator
+//    if (node && strcmp(node->GetID(), this->LocatorDriverNodeID.c_str()) == 0)
+//      {
+//      vtkMatrix4x4* transform = NULL;
+//      for (int i = 0; i < 3; i ++)
+//        {
+//        if (this->SliceDriver[i] == SLICE_DRIVER_LOCATOR)
+//          {
+//          if (!transform)
+//            {
+//            vtkMRMLLinearTransformNode* transNode =    
+//              vtkMRMLLinearTransformNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(this->LocatorDriverNodeID));
+//            if (transNode)
+//              {
+//              transform = transNode->GetMatrixTransformToParent();
+//              }
+//            }
+//          if (transform)
+//            {
+//            UpdateSliceNode(i, transform);
+//            }
+//          }
+//        }
+//      }
+//
+//      
+//    //---------------------------------------------------------------------------
+//    // Slice Driven by Real-time image
+//    if (strcmp(node->GetID(), this->RealTimeImageSourceNodeID.c_str()) == 0)
+//      {
+//      for (int i = 0; i < 3; i ++)
+//        {
+//        if (this->SliceDriver[i] == SLICE_DRIVER_RTIMAGE)
+//          {
+//          UpdateSliceNodeByImage(i);
+//          }
+//        }
+//      }
+//    }
+//}
+//
+//
+////----------------------------------------------------------------------------
+//void vtkSlicerOpenIGTLinkIFLogic::ProcessLogicEvents(vtkObject *vtkNotUsed(caller), 
+//                                            unsigned long event, 
+//                                            void *callData)
+//{
+//  if (event ==  vtkCommand::ProgressEvent) 
+//    {
+//    this->InvokeEvent(vtkCommand::ProgressEvent,callData);
+//    }
+//}
 
 //---------------------------------------------------------------------------
 void vtkSlicerOpenIGTLinkIFLogic::UpdateSliceNode(int sliceNodeNumber, vtkMatrix4x4* transform)
@@ -855,6 +864,7 @@ void vtkSlicerOpenIGTLinkIFLogic::UpdateSliceNodeByImage(int sliceNodeNumber)
 void vtkSlicerOpenIGTLinkIFLogic::CheckSliceNode()
 {
   
+  /*
   if (this->SliceNode[0] == NULL)
     {
     this->SliceNode[0] = this->GetApplicationLogic()
@@ -870,6 +880,7 @@ void vtkSlicerOpenIGTLinkIFLogic::CheckSliceNode()
     this->SliceNode[2] = this->GetApplicationLogic()
       ->GetSliceLogic("Green")->GetSliceNode();
     }
+  */
 }
 
 

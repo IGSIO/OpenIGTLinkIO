@@ -29,6 +29,7 @@ protected:
   QScopedPointer<qSlicerOpenIGTLinkIFModuleWidgetPrivate> d_ptr;
   
   virtual void setup();
+  virtual void setMRMLScene(vtkMRMLScene*);
 
 protected slots:
 

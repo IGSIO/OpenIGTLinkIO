@@ -131,6 +131,7 @@ void qMRMLSceneIGTLConnectorModel::updateItemDataFromNode(QStandardItem* item, v
         {
         item->setText(QString("?"));
         }
+      break;
       }
     case qMRMLSceneIGTLConnectorModel::StatusColumn:
       {
@@ -150,6 +151,7 @@ void qMRMLSceneIGTLConnectorModel::updateItemDataFromNode(QStandardItem* item, v
         {
         item->setText(QString("--"));
         }
+      break;
       }
     case qMRMLSceneIGTLConnectorModel::AddressColumn:
       {
@@ -161,83 +163,19 @@ void qMRMLSceneIGTLConnectorModel::updateItemDataFromNode(QStandardItem* item, v
         {
         item->setText(QString("--"));
         }
+      break;
       }
     case qMRMLSceneIGTLConnectorModel::PortColumn:
       {
       std::stringstream ss;
       ss << cnode->GetServerPort();
       item->setText(QString(ss.str().c_str()));
+      break;
       }
     default:
       break;
     }
 
-  //switch (column)
-  //  {
-  //  case qMRMLSceneIGTLConnectorModel::VisibilityColumn:
-  //    // the visibility icon
-  //    if (annotationNode)
-  //      {
-  //      if (annotationNode->GetVisible())
-  //        {
-  //        item->setData(QPixmap(":/Icons/VisibleOn.png"),Qt::DecorationRole);
-  //        }
-  //      else
-  //        {
-  //        item->setData(QPixmap(":/Icons/VisibleOff.png"),Qt::DecorationRole);
-  //        }
-  //      }
-  //    else if (hnode)
-  //      {
-  //      item->setData(QPixmap(":/Icons/VisibleOrInvisible.png"),Qt::DecorationRole);
-  //      }
-  //    break;
-  //  case qMRMLSceneIGTLConnectorModel::LockColumn:
-  //    // the lock/unlock icon
-  //
-  //    if (annotationNode)
-  //      {
-  //      if (annotationNode->GetLocked())
-  //        {
-  //        item->setData(QPixmap(":/Icons/SlicerLock.png"),Qt::DecorationRole);
-  //        }
-  //      else
-  //        {
-  //        item->setData(QPixmap(":/Icons/SlicerUnlock.png"),Qt::DecorationRole);
-  //        }
-  //      }
-  //    else if (hnode)
-  //      {
-  //      item->setData(QPixmap(":/Icons/SlicerLockUnlock.png"),Qt::DecorationRole);
-  //      }
-  //    break;
-  //  case qMRMLSceneIGTLConnectorModel::EditColumn:
-  //      // the annotation type icon
-  //      item->setData(QPixmap(this->m_Logic->GetAnnotationIcon(node->GetID())),Qt::DecorationRole);
-  //      break;
-  //  case qMRMLSceneIGTLConnectorModel::ValueColumn:
-  //    if (annotationNode)
-  //      {
-  //      // the annotation measurement
-  //      item->setText(QString(this->m_Logic->GetAnnotationMeasurement(annotationNode->GetID(),false)));
-  //      }
-  //    else if (hnode)
-  //      {
-  //      item->setText(QString(""));
-  //      }
-  //    break;
-  //  case qMRMLSceneIGTLConnectorModel::TextColumn:
-  //    if (annotationNode)
-  //      {
-  //      // the annotation text
-  //      item->setText(QString(this->m_Logic->GetAnnotationText(annotationNode->GetID())));
-  //      }
-  //    else if (hnode)
-  //      {
-  //      item->setText(QString(node->GetName()));
-  //      }
-  //    break;
-  //  }
 }
 
 //------------------------------------------------------------------------------
