@@ -43,7 +43,7 @@ class vtkMultiThreader;
 class vtkMutexLock;
 class vtkIGTLCircularBuffer;
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLConnectorNode : public vtkMRMLNode
+class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : public vtkMRMLNode
 {
 
  public:

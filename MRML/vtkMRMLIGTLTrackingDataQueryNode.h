@@ -32,7 +32,7 @@
 #include <vector>
 #include <set>
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataQueryNode : public vtkMRMLNode
+class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLTrackingDataQueryNode : public vtkMRMLNode
 {
  public:
 

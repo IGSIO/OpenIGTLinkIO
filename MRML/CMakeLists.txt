@@ -7,7 +7,7 @@ project(vtkSlicer${qt_module_name}ModuleMRML)
 SET(module_mrml_name "${PROJECT_NAME}")
 
 # The header '${PROJECT_NAME}Export.h' will be automatically configured.
-SET(module_mrml_export_directive "Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT")
+SET(module_mrml_export_directive "VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT")
 
 # Additional directories to include
 SET(module_mrml_include_directories
