@@ -7,9 +7,11 @@
 #include "qSlicerOpenIGTLinkIFModuleWidget.h"
 #include "ui_qSlicerOpenIGTLinkIFModule.h"
 
+// qMRMLWidgets includes
+#include <qMRMLNodeFactory.h>
+
 // OpenIGTLinkIF MRML includes
 #include "vtkMRMLIGTLConnectorNode.h"
-
 
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
@@ -73,18 +75,10 @@ void qSlicerOpenIGTLinkIFModuleWidget::onAddConnectorButtonClicked()
 {
   Q_D(qSlicerOpenIGTLinkIFModuleWidget);
 
-  //new QListViewItem(d->connectorList, "aaa", "bbbb", "cccc", "ddd");
-  std::cerr << "Add Connector Button is clicked." << std::endl;
-
-  vtkMRMLIGTLConnectorNode* connector = vtkMRMLIGTLConnectorNode::New();
+  qMRMLNodeFactory::createNode(this->mrmlScene(), "vtkMRMLIGTLConnectorNode");
   //int restrectDeviceName = (this->EnableAdvancedSettingButton->GetSelectedState())? 1:0;
 
-  this->mrmlScene()->AddNode(connector);
   //connector->SetRestrictDeviceName(restrectDeviceName);
-  //connector->Modified();
-
-  //connector->Delete();
-
 }
 
 //-----------------------------------------------------------------------------
