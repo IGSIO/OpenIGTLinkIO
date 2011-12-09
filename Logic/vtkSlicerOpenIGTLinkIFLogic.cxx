@@ -18,6 +18,11 @@
 // OpenIGTLinkIF MRML includes
 #include "vtkIGTLCircularBuffer.h"
 #include "vtkMRMLIGTLConnectorNode.h"
+#ifdef OpenIGTLinkIF_USE_VERSION_2
+# include "vtkMRMLImageMetaListNode.h"
+# include "vtkMRMLIGTLTrackingDataQueryNode.h"
+# include "vtkMRMLIGTLTrackingDataBundleNode.h"
+#endif
 
 // OpenIGTLinkIF Logic includes
 #include "vtkSlicerOpenIGTLinkIFLogic.h"
@@ -165,6 +170,22 @@ void vtkSlicerOpenIGTLinkIFLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 ////  events->InsertNextValue(vtkMRMLScene::SceneAboutToBeRestoredEvent);
 //  this->SetAndObserveMRMLSceneEventsInternal(newScene, events);
 //  events->Delete();
+}
+
+//---------------------------------------------------------------------------
+void vtkSlicerOpenIGTLinkIFLogic::RegisterNodes()
+{
+  vtkMRMLScene * scene = this->GetMRMLScene();
+  if(!scene)
+    {
+    return;
+    }
+  scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLConnectorNode>().GetPointer());
+#ifdef OpenIGTLinkIF_USE_VERSION_2
+  scene->RegisterNodeClass(vtkNew<vtkMRMLImageMetaListNode>().GetPointer());
+  scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataQueryNode>().GetPointer());
+  scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataBundleNode>().GetPointer());
+#endif
 }
 
 //---------------------------------------------------------------------------
