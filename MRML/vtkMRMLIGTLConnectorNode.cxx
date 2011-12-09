@@ -28,6 +28,7 @@ Version:   $Revision: 1.2 $
 
 // VTK includes
 #include <vtkCommand.h>
+#include <vtkCollection.h>
 #include <vtkEventBroker.h>
 #include <vtkImageData.h>
 #include <vtkIntArray.h>
