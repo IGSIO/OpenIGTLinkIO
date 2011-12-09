@@ -52,7 +52,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   // Constants Definitions
   //----------------------------------------------------------------
 
-  //BTX
   // Events
   enum {
     ConnectedEvent        = 118944,
@@ -108,7 +107,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   typedef std::vector<vtkMRMLNode*>       MRMLNodeListType;
   typedef std::vector<NodeInfoType>       NodeInfoListType;
   typedef std::map<std::string, vtkIGTLToMRMLBase*> MessageConverterMapType;
-  //ETX
 
  public:
 
@@ -198,11 +196,9 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   // Circular Buffer
   //----------------------------------------------------------------
 
-  //BTX
   typedef std::vector<std::string> NameListType;
   unsigned int GetUpdatedBuffersList(NameListType& nameList); // TODO: this will be moved to private
   vtkIGTLCircularBuffer* GetCircularBuffer(std::string& key);     // TODO: Is it OK to use device name as a key?
-  //ETX
 
   //----------------------------------------------------------------
   // Device Lists
@@ -274,9 +270,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
 #ifdef OpenIGTLinkIF_USE_VERSION_2
   // Description:
   // Push query int the query list.
-  //BTX
   void PushQuery(vtkMRMLIGTLQueryNode* query);
-  //ETX
 #endif //OpenIGTLinkIF_USE_VERSION_2
 
   //----------------------------------------------------------------
@@ -311,9 +305,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   //----------------------------------------------------------------
   // Connector configuration
   //----------------------------------------------------------------
-  //BTX
   std::string Name;
-  //ETX
   int Type;
   int State;
 
@@ -323,47 +315,37 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
 
   vtkMultiThreader* Thread;
   vtkMutexLock*     Mutex;
-  //BTX
   igtl::ServerSocket::Pointer  ServerSocket;
   igtl::ClientSocket::Pointer  Socket;
-  //ETX
   int               ThreadID;
   int               ServerPort;
   int               ServerStopFlag;
 
-  //BTX
   std::string       ServerHostname;
-  //ETX
 
   //----------------------------------------------------------------
   // Data
   //----------------------------------------------------------------
 
 
-  //BTX
   typedef std::map<std::string, vtkIGTLCircularBuffer*> CircularBufferMap;
   CircularBufferMap Buffer;
-  //ETX
 
   vtkMutexLock* CircularBufferMutex;
   int           RestrictDeviceName;  // Flag to restrict incoming and outgoing data by device names
 
-  //BTX
   // Event queueing mechanism is needed to send all event notifications from the main thread.
   // Events can be pushed to the end of the EventQueue by calling RequestInvoke from any thread,
   // and they will be Invoked in the main thread.
   std::list<unsigned long> EventQueue;
   vtkMutexLock* EventQueueMutex;
-  //ETX
 
 #ifdef OpenIGTLinkIF_USE_VERSION_2
   // Query queueing mechanism is needed to send all queries from the connector thread.
   // Queries can be pushed to the end of the QueryQueue by calling RequestInvoke from any thread,
   // and they will be Invoked in the main thread.
-  //BTX
   std::list<vtkMRMLIGTLQueryNode*> QueryWaitingQueue;
   vtkMutexLock* QueryQueueMutex;
-  //ETX
 #endif //OpenIGTLinkIF_USE_VERSION_2
 
 

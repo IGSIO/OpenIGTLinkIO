@@ -40,15 +40,12 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLImageMetaListNode : pub
   // Constants Definitions
   //----------------------------------------------------------------
 
-  //BTX
   // Events
   enum {
     NewDeviceEvent        = 118949,
   };
 
-  //ETX
 
-  //BTX
   typedef struct {
     std::string   Name;        /* name / description (< 64 bytes)*/
     std::string   DeviceName;  /* device name to query the IMAGE and COLORT */
@@ -59,7 +56,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLImageMetaListNode : pub
     int           Size[3];     /* entire image volume size */
     unsigned char ScalarType;  /* scalar type. see scalar_type in IMAGE message */
   } ImageMetaElement;
-  //ETX
 
  public:
 
@@ -132,9 +128,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLImageMetaListNode : pub
   // Data
   //----------------------------------------------------------------
 
-  //BTX
   std::vector<ImageMetaElement> ImageMetaList;
-  //ETX
 
 };
 

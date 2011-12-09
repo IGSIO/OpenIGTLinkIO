@@ -42,9 +42,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLLinearTransform :
   virtual vtkIntArray* GetNodeEvents();
   virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name);
 
-  //BTX
   virtual int          IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node);
-  //ETX
   virtual int          MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg);
 
 
@@ -53,9 +51,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLLinearTransform :
   ~vtkIGTLToMRMLLinearTransform();
 
  protected:
-  //BTX
   igtl::TransformMessage::Pointer OutTransformMsg;
-  //ETX
 
 };
 

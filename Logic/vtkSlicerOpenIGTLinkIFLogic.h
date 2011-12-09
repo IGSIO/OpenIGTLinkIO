@@ -55,7 +55,6 @@ class vtkTransform;
 class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic : public vtkSlicerModuleLogic
 {
  public:
-  //BTX
   enum {
     SLICE_DRIVER_USER    = 0,
     SLICE_DRIVER_LOCATOR = 1,
@@ -83,7 +82,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
 
   typedef std::vector<IGTLMrmlNodeInfoType>         IGTLMrmlNodeListType;
   typedef std::vector<vtkIGTLToMRMLBase*>           MessageConverterListType;
-  //ETX
 
   // Work phase keywords used in NaviTrack (defined in BRPTPRInterface.h)
 
@@ -174,11 +172,9 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
 
   void ProcCommand(const char* nodeName, int size, unsigned char* data);
 
-  //BTX
   void GetDeviceNamesFromMrml(IGTLMrmlNodeListType &list);
   void GetDeviceNamesFromMrml(IGTLMrmlNodeListType &list, const char* mrmlTagName);
   //void GetDeviceTypes(std::vector<char*> &list);
-  //ETX
 
  protected:
 
@@ -205,10 +201,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   // Connector Management
   //----------------------------------------------------------------
 
-  //BTX
   //ConnectorMapType              ConnectorMap;
   MessageConverterListType      MessageConverterList;
-  //ETX
 
   //int LastConnectorID;
   int RestrictDeviceName;
@@ -234,10 +228,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   int   SliceDriverConnectorID[3]; // will be obsolete
   int   SliceDriverDeviceID[3];    // will be obsolete
 
-  //BTX
   std::string   LocatorDriverNodeID;
   std::string   RealTimeImageSourceNodeID;
-  //ETX
 
   int   LocatorDriverFlag;
   bool  EnableOblique;

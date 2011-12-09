@@ -40,7 +40,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLQueryNode : public 
   // Constants Definitions
   //----------------------------------------------------------------
 
-  //BTX
   // Events
   enum {
     ResponseEvent        = 128940,
@@ -62,7 +61,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLQueryNode : public 
     STATUS_ERROR,        // Server failed to accept query
     NUM_STATUS,
   };
-  //ETX
 
  public:
 
@@ -142,9 +140,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLQueryNode : public 
   // Data
   //----------------------------------------------------------------
 
-  //BTX
   std::string IGTLName;
-  //ETX
 
   int QueryStatus;
   int QueryType;
@@ -156,10 +152,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLQueryNode : public 
   // NULL string in the MRML node name (it will be replaced with the node ID).
   int NoNameQuery;
 
-  //BTX
   std::string ConnectorNodeID;
   std::string DataNodeID;
-  //ETX
 
   // Time when the querry issued.
   double TimeStamp;

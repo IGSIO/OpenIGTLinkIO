@@ -47,9 +47,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLTrackingData : pu
   virtual vtkIntArray* GetNodeEvents();
   virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name);
 
-  //BTX
   virtual int          IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node);
-  //ETX
   virtual int          MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg);
 
 
@@ -62,12 +60,10 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLTrackingData : pu
  protected:
 
 #ifdef OpenIGTLinkIF_USE_VERSION_2
-  //BTX
   //igtl::TransformMessage::Pointer OutTransformMsg;
   igtl::TrackingDataMessage::Pointer      OutTrackingMetaMsg;
   igtl::StartTrackingDataMessage::Pointer StartTrackingDataMessage;
   igtl::StopTrackingDataMessage::Pointer  StopTrackingDataMessage;
-  //ETX
 #endif // OpenIGTLinkIF_USE_VERSION_2
 
 };

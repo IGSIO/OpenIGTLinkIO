@@ -41,7 +41,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLTrackingDataBundleN
   // Constants Definitions
   //----------------------------------------------------------------
 
-  //BTX
   // Events
   enum {
     ResponseEvent        = 128940,
@@ -63,7 +62,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLTrackingDataBundleN
     STATUS_ERROR,        // Server failed to accept query
     NUM_STATUS,
   };
-  //ETX
 
  public:
 
@@ -102,9 +100,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLTrackingDataBundleN
   // Update Transform nodes. If new data is specified, create a new Transform node.
   // default type is 1 (igtl::TrackingDataMessage::TYPE_TRACKER)
   virtual void UpdateTransformNode(const char* name, vtkMatrix4x4* matrix, int type = 1);
-  //BTX
   virtual void UpdateTransformNode(const char* name, igtl::Matrix4x4& matrix, int type = 1);
-  //ETX
 
   // Description:
   // Get the number of linear transform nodes in the bundle
@@ -136,17 +132,13 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLTrackingDataBundleN
   // Data
   //----------------------------------------------------------------
 
-  //BTX
   typedef struct {
     int                         type;
     vtkMRMLLinearTransformNode* node;
   } TrackingDataInfo;
   typedef std::map<std::string, TrackingDataInfo> TrackingDataInfoMap;
-  //ETX
 
-  //BTX
   TrackingDataInfoMap TrackingDataList;
-  //ETX
 };
 
 #endif
