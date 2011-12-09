@@ -34,29 +34,7 @@ Version:   $Revision: 1.2 $
 #include <map>
 
 //------------------------------------------------------------------------------
-vtkMRMLIGTLTrackingDataQueryNode* vtkMRMLIGTLTrackingDataQueryNode::New()
-{
-  // First try to create the object from the vtkObjectFactory
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLIGTLTrackingDataQueryNode"); if(ret)
-    {
-      return (vtkMRMLIGTLTrackingDataQueryNode*)ret;
-    }
-  // If the factory was unable to create the object, then create it here.
-  return new vtkMRMLIGTLTrackingDataQueryNode;
-}
-
-//----------------------------------------------------------------------------
-vtkMRMLNode* vtkMRMLIGTLTrackingDataQueryNode::CreateNodeInstance()
-{
-  // First try to create the object from the vtkObjectFactory
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLIGTLTrackingDataQueryNode");
-  if(ret)
-    {
-      return (vtkMRMLIGTLTrackingDataQueryNode*)ret;
-    }
-  // If the factory was unable to create the object, then create it here.
-  return new vtkMRMLIGTLTrackingDataQueryNode;
-}
+vtkMRMLNodeNewMacro(vtkMRMLIGTLTrackingDataQueryNode);
 
 //----------------------------------------------------------------------------
 vtkMRMLIGTLTrackingDataQueryNode::vtkMRMLIGTLTrackingDataQueryNode()
@@ -68,15 +46,12 @@ vtkMRMLIGTLTrackingDataQueryNode::vtkMRMLIGTLTrackingDataQueryNode()
 
   this->TimeStamp = 0.0;
   this->TimeOut   = 0.0;
-
-
 }
 
 //----------------------------------------------------------------------------
 vtkMRMLIGTLTrackingDataQueryNode::~vtkMRMLIGTLTrackingDataQueryNode()
 {
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLTrackingDataQueryNode::WriteXML(ostream& of, int nIndent)
@@ -86,9 +61,7 @@ void vtkMRMLIGTLTrackingDataQueryNode::WriteXML(ostream& of, int nIndent)
 
   //of << " serverPort=\"" << this->ServerPort << "\" ";
   //of << " restrictDeviceName=\"" << this->RestrictDeviceName << "\" ";
-
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLTrackingDataQueryNode::ReadXMLAttributes(const char** atts)
@@ -163,7 +136,6 @@ void vtkMRMLIGTLTrackingDataQueryNode::ReadXMLAttributes(const char** atts)
   */
 }
 
-
 //----------------------------------------------------------------------------
 // Copy the node's attributes to this object.
 // Does NOT copy: ID, FilePrefix, Name, VolumeID
@@ -197,7 +169,6 @@ void vtkMRMLIGTLTrackingDataQueryNode::Copy(vtkMRMLNode *anode)
 
 }
 
-
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLTrackingDataQueryNode::ProcessMRMLEvents( vtkObject *caller, unsigned long event, void *callData )
 {
@@ -228,13 +199,11 @@ void vtkMRMLIGTLTrackingDataQueryNode::ProcessMRMLEvents( vtkObject *caller, uns
   */
 }
 
-
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLTrackingDataQueryNode::PrintSelf(ostream& os, vtkIndent indent)
 {
   vtkMRMLNode::PrintSelf(os,indent);
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLTrackingDataQueryNode::SetIGTLName(const char* name)
@@ -243,13 +212,10 @@ void vtkMRMLIGTLTrackingDataQueryNode::SetIGTLName(const char* name)
   buf[IGTL_HEADER_DEVSIZE] = '\0';
   strncpy(buf, name, IGTL_HEADER_DEVSIZE);
   this->IGTLName = buf;
-
 }
-
 
 //----------------------------------------------------------------------------
 const char* vtkMRMLIGTLTrackingDataQueryNode::GetErrorString()
 {
   return "";
-
 }

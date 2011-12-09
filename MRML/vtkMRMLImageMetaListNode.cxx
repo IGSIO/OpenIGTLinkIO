@@ -31,29 +31,7 @@ Version:   $Revision: 1.2 $
 #include <map>
 
 //------------------------------------------------------------------------------
-vtkMRMLImageMetaListNode* vtkMRMLImageMetaListNode::New()
-{
-  // First try to create the object from the vtkObjectFactory
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLImageMetaListNode"); if(ret)
-    {
-      return (vtkMRMLImageMetaListNode*)ret;
-    }
-  // If the factory was unable to create the object, then create it here.
-  return new vtkMRMLImageMetaListNode;
-}
-
-//----------------------------------------------------------------------------
-vtkMRMLNode* vtkMRMLImageMetaListNode::CreateNodeInstance()
-{
-  // First try to create the object from the vtkObjectFactory
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLImageMetaListNode");
-  if(ret)
-    {
-      return (vtkMRMLImageMetaListNode*)ret;
-    }
-  // If the factory was unable to create the object, then create it here.
-  return new vtkMRMLImageMetaListNode;
-}
+vtkMRMLNodeNewMacro(vtkMRMLImageMetaListNode);
 
 //----------------------------------------------------------------------------
 vtkMRMLImageMetaListNode::vtkMRMLImageMetaListNode()
@@ -66,7 +44,6 @@ vtkMRMLImageMetaListNode::~vtkMRMLImageMetaListNode()
 {
 }
 
-
 //----------------------------------------------------------------------------
 void vtkMRMLImageMetaListNode::WriteXML(ostream& of, int nIndent)
 {
@@ -75,9 +52,7 @@ void vtkMRMLImageMetaListNode::WriteXML(ostream& of, int nIndent)
 
   //of << " serverPort=\"" << this->ServerPort << "\" ";
   //of << " restrictDeviceName=\"" << this->RestrictDeviceName << "\" ";
-
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMRMLImageMetaListNode::ReadXMLAttributes(const char** atts)
@@ -152,7 +127,6 @@ void vtkMRMLImageMetaListNode::ReadXMLAttributes(const char** atts)
   */
 }
 
-
 //----------------------------------------------------------------------------
 // Copy the node's attributes to this object.
 // Does NOT copy: ID, FilePrefix, Name, VolumeID
@@ -185,9 +159,7 @@ void vtkMRMLImageMetaListNode::Copy(vtkMRMLNode *anode)
       break;
     }
   */
-
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMRMLImageMetaListNode::ProcessMRMLEvents( vtkObject *caller, unsigned long event, void *callData )
@@ -219,7 +191,6 @@ void vtkMRMLImageMetaListNode::ProcessMRMLEvents( vtkObject *caller, unsigned lo
   */
 }
 
-
 //----------------------------------------------------------------------------
 void vtkMRMLImageMetaListNode::PrintSelf(ostream& os, vtkIndent indent)
 {
@@ -233,13 +204,11 @@ int  vtkMRMLImageMetaListNode::GetNumberOfImageMetaElement()
   return this->ImageMetaList.size();
 }
 
-
 //----------------------------------------------------------------------------
 void vtkMRMLImageMetaListNode::AddImageMetaElement(ImageMetaElement element)
 {
   this->ImageMetaList.push_back(element);
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMRMLImageMetaListNode::GetImageMetaElement(int index, ImageMetaElement* element)
@@ -252,15 +221,10 @@ void vtkMRMLImageMetaListNode::GetImageMetaElement(int index, ImageMetaElement* 
     {
     element->DeviceName = "";
     }
-
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMRMLImageMetaListNode::ClearImageMetaElement()
 {
   this->ImageMetaList.clear();
 }
-
-
-

@@ -35,42 +35,18 @@ Version:   $Revision: 1.2 $
 #include <map>
 
 //------------------------------------------------------------------------------
-vtkMRMLIGTLTrackingDataBundleNode* vtkMRMLIGTLTrackingDataBundleNode::New()
-{
-  // First try to create the object from the vtkObjectFactory
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLIGTLTrackingDataBundleNode"); if(ret)
-    {
-      return (vtkMRMLIGTLTrackingDataBundleNode*)ret;
-    }
-  // If the factory was unable to create the object, then create it here.
-  return new vtkMRMLIGTLTrackingDataBundleNode;
-}
-
-//----------------------------------------------------------------------------
-vtkMRMLNode* vtkMRMLIGTLTrackingDataBundleNode::CreateNodeInstance()
-{
-  // First try to create the object from the vtkObjectFactory
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLIGTLTrackingDataBundleNode");
-  if(ret)
-    {
-      return (vtkMRMLIGTLTrackingDataBundleNode*)ret;
-    }
-  // If the factory was unable to create the object, then create it here.
-  return new vtkMRMLIGTLTrackingDataBundleNode;
-}
+vtkMRMLNodeNewMacro(vtkMRMLIGTLTrackingDataBundleNode);
 
 //----------------------------------------------------------------------------
 vtkMRMLIGTLTrackingDataBundleNode::vtkMRMLIGTLTrackingDataBundleNode()
 {
   this->TrackingDataList.clear();
-
 }
 
 //----------------------------------------------------------------------------
 vtkMRMLIGTLTrackingDataBundleNode::~vtkMRMLIGTLTrackingDataBundleNode()
 {
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLTrackingDataBundleNode::WriteXML(ostream& of, int nIndent)
@@ -80,9 +56,7 @@ void vtkMRMLIGTLTrackingDataBundleNode::WriteXML(ostream& of, int nIndent)
 
   //of << " serverPort=\"" << this->ServerPort << "\" ";
   //of << " restrictDeviceName=\"" << this->RestrictDeviceName << "\" ";
-
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLTrackingDataBundleNode::ReadXMLAttributes(const char** atts)
@@ -264,7 +238,6 @@ void vtkMRMLIGTLTrackingDataBundleNode::UpdateTransformNode(const char* name, vt
 
 }
 
-
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLTrackingDataBundleNode::UpdateTransformNode(const char* name, igtl::Matrix4x4& matrix, int type)
 {
@@ -308,16 +281,15 @@ void vtkMRMLIGTLTrackingDataBundleNode::UpdateTransformNode(const char* name, ig
 
 }
 
-
+//----------------------------------------------------------------------------
 int vtkMRMLIGTLTrackingDataBundleNode::GetNumberOfTransformNodes()
 {
   return this->TrackingDataList.size();
 }
 
-
+//----------------------------------------------------------------------------
 vtkMRMLLinearTransformNode* vtkMRMLIGTLTrackingDataBundleNode::GetTransformNode(unsigned int id)
 {
-
   if (id > this->TrackingDataList.size())
     {
     return NULL;
@@ -338,6 +310,3 @@ vtkMRMLLinearTransformNode* vtkMRMLIGTLTrackingDataBundleNode::GetTransformNode(
     return NULL;
     }
 }
-
-
-

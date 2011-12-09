@@ -34,29 +34,7 @@ Version:   $Revision: 1.2 $
 #include <map>
 
 //------------------------------------------------------------------------------
-vtkMRMLIGTLQueryNode* vtkMRMLIGTLQueryNode::New()
-{
-  // First try to create the object from the vtkObjectFactory
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLIGTLQueryNode"); if(ret)
-    {
-      return (vtkMRMLIGTLQueryNode*)ret;
-    }
-  // If the factory was unable to create the object, then create it here.
-  return new vtkMRMLIGTLQueryNode;
-}
-
-//----------------------------------------------------------------------------
-vtkMRMLNode* vtkMRMLIGTLQueryNode::CreateNodeInstance()
-{
-  // First try to create the object from the vtkObjectFactory
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkMRMLIGTLQueryNode");
-  if(ret)
-    {
-      return (vtkMRMLIGTLQueryNode*)ret;
-    }
-  // If the factory was unable to create the object, then create it here.
-  return new vtkMRMLIGTLQueryNode;
-}
+vtkMRMLNodeNewMacro(vtkMRMLIGTLQueryNode);
 
 //----------------------------------------------------------------------------
 vtkMRMLIGTLQueryNode::vtkMRMLIGTLQueryNode()
