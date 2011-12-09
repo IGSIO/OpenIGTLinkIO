@@ -438,7 +438,6 @@ int vtkMRMLIGTLConnectorNode::Stop()
 //---------------------------------------------------------------------------
 void* vtkMRMLIGTLConnectorNode::ThreadFunction(void* ptr)
 {
-
   //vtkMRMLIGTLConnectorNode* igtlcon = static_cast<vtkMRMLIGTLConnectorNode*>(ptr);
   vtkMultiThreader::ThreadInfo* vinfo =
     static_cast<vtkMultiThreader::ThreadInfo*>(ptr);
@@ -449,7 +448,11 @@ void* vtkMRMLIGTLConnectorNode::ThreadFunction(void* ptr)
   if (igtlcon->Type == TYPE_SERVER)
     {
     igtlcon->ServerSocket = igtl::ServerSocket::New();
-    igtlcon->ServerSocket->CreateServer(igtlcon->ServerPort);
+    if (igtlcon->ServerSocket->CreateServer(igtlcon->ServerPort) == -1)
+      {
+      vtkErrorWithObjectMacro(igtlcon, "Failed to create server socket !");
+      igtlcon->ServerStopFlag = true;
+      }
     }
 
   // Communication -- common to both Server and Client
