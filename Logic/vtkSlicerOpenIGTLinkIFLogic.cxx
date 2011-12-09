@@ -213,10 +213,19 @@ void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent(vtkMRMLNode* node)
     return;
     }
 
-  vtkMRMLIGTLConnectorNode * connector = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
-  if (connector)
+  vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+  if (cnode)
     {
-    std::cerr << "vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent(): Connector node added..." << std::endl;
+    // Register converters
+    unsigned int n = this->GetNumberOfConverters();
+    for (unsigned short i = 0; i < n; i ++)
+      {
+      vtkIGTLToMRMLBase* c = this->GetConverter(i);
+      if (!c)
+        {
+        cnode->RegisterMessageConverter(c);
+        }
+      }
     }
 }
 
