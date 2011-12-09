@@ -168,18 +168,11 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   vtkSetMacro( RestrictDeviceName, int );
   vtkGetMacro( RestrictDeviceName, int );
 
-  // host name
-  void SetServerHostname(const char* str) { this->ServerHostname = str; }
-  const char* GetServerHostname() { return this->ServerHostname.c_str(); }
-  //BTX
-  void SetServerHostname(std::string str) { this->ServerHostname = str; }
-  //ETX
+  const char* GetServerHostname();
+  void SetServerHostname(std::string str);
 
   int SetTypeServer(int port);
-  int SetTypeClient(char* hostname, int port);
-  //BTX
   int SetTypeClient(std::string hostname, int port);
-  //ETX
 
   vtkGetMacro( CheckCRC, int );
   void SetCheckCRC(int c);

@@ -301,9 +301,7 @@ void vtkMRMLIGTLConnectorNode::ProcessMRMLEvents( vtkObject *caller, unsigned lo
         }
       }
     }
-
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::PrintSelf(ostream& os, vtkIndent indent)
@@ -311,43 +309,56 @@ void vtkMRMLIGTLConnectorNode::PrintSelf(ostream& os, vtkIndent indent)
   vtkMRMLNode::PrintSelf(os,indent);
 }
 
+//----------------------------------------------------------------------------
+const char* vtkMRMLIGTLConnectorNode::GetServerHostname()
+{
+  return this->ServerHostname.c_str();
+}
+
+//----------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::SetServerHostname(std::string str)
+{
+  if (this->ServerHostname.compare(str) == 0)
+    {
+    return;
+    }
+  this->ServerHostname = str;
+  this->Modified();
+}
 
 //----------------------------------------------------------------------------
 int vtkMRMLIGTLConnectorNode::SetTypeServer(int port)
 {
+  if (this->Type == TYPE_SERVER
+      && this->ServerPort == port)
+    {
+    return 1;
+    }
   this->Type = TYPE_SERVER;
   this->ServerPort = port;
   this->Modified();
   return 1;
 }
 
-
-//----------------------------------------------------------------------------
-int vtkMRMLIGTLConnectorNode::SetTypeClient(char* hostname, int port)
-{
-  this->Type = TYPE_CLIENT;
-  this->ServerPort = port;
-  this->ServerHostname = hostname;
-  this->Modified();
-  return 1;
-}
-
-
 //----------------------------------------------------------------------------
 int vtkMRMLIGTLConnectorNode::SetTypeClient(std::string hostname, int port)
 {
+  if (this->Type == TYPE_CLIENT
+      && this->ServerPort == port
+      && this->ServerHostname.compare(hostname) == 0)
+    {
+    return 1;
+    }
   this->Type = TYPE_CLIENT;
   this->ServerPort = port;
   this->ServerHostname = hostname;
   this->Modified();
   return 1;
 }
-
 
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::SetCheckCRC(int c)
 {
-
   if (c == 0)
     {
     this->CheckCRC = 0;
@@ -367,7 +378,6 @@ void vtkMRMLIGTLConnectorNode::SetCheckCRC(int c)
     }
 
 }
-
 
 //---------------------------------------------------------------------------
 int vtkMRMLIGTLConnectorNode::Start()
