@@ -1,6 +1,7 @@
 // Qt includes
 #include <QDebug>
 #include <QStandardItemModel>
+#include <QTimer>
 #include <QTreeView>
 
 // SlicerQt includes
@@ -10,6 +11,9 @@
 // qMRMLWidgets includes
 #include <qMRMLNodeFactory.h>
 
+// OpenIGTLinkIF Logic includes
+#include "vtkSlicerOpenIGTLinkIFLogic.h"
+
 // OpenIGTLinkIF MRML includes
 #include "vtkMRMLIGTLConnectorNode.h"
 
@@ -17,16 +21,31 @@
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
 class qSlicerOpenIGTLinkIFModuleWidgetPrivate: public Ui_qSlicerOpenIGTLinkIFModule
 {
+  Q_DECLARE_PUBLIC(qSlicerOpenIGTLinkIFModuleWidget);
+protected:
+  qSlicerOpenIGTLinkIFModuleWidget* const q_ptr;
 public:
-  qSlicerOpenIGTLinkIFModuleWidgetPrivate();
+  qSlicerOpenIGTLinkIFModuleWidgetPrivate(qSlicerOpenIGTLinkIFModuleWidget& object);
+
+  vtkSlicerOpenIGTLinkIFLogic * logic();
+
+  QTimer ImportDataAndEventsTimer;
 };
 
 //-----------------------------------------------------------------------------
 // qSlicerOpenIGTLinkIFModuleWidgetPrivate methods
 
 //-----------------------------------------------------------------------------
-qSlicerOpenIGTLinkIFModuleWidgetPrivate::qSlicerOpenIGTLinkIFModuleWidgetPrivate()
+qSlicerOpenIGTLinkIFModuleWidgetPrivate::qSlicerOpenIGTLinkIFModuleWidgetPrivate(qSlicerOpenIGTLinkIFModuleWidget& object)
+ : q_ptr(&object)
 {
+}
+
+//-----------------------------------------------------------------------------
+vtkSlicerOpenIGTLinkIFLogic * qSlicerOpenIGTLinkIFModuleWidgetPrivate::logic()
+{
+  Q_Q(qSlicerOpenIGTLinkIFModuleWidget);
+  return vtkSlicerOpenIGTLinkIFLogic::SafeDownCast(q->logic());
 }
 
 //-----------------------------------------------------------------------------
@@ -35,7 +54,7 @@ qSlicerOpenIGTLinkIFModuleWidgetPrivate::qSlicerOpenIGTLinkIFModuleWidgetPrivate
 //-----------------------------------------------------------------------------
 qSlicerOpenIGTLinkIFModuleWidget::qSlicerOpenIGTLinkIFModuleWidget(QWidget* _parent)
   : Superclass( _parent )
-  , d_ptr( new qSlicerOpenIGTLinkIFModuleWidgetPrivate )
+  , d_ptr( new qSlicerOpenIGTLinkIFModuleWidgetPrivate(*this) )
 {
 }
 
@@ -58,6 +77,10 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   connect(d->ConnectorListView, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
           d->ConnectorPropertyWidget, SLOT(setMRMLIGTLConnectorNode(vtkMRMLNode*)));
   d->ConnectorPropertyWidget->setMRMLIGTLConnectorNode(static_cast<vtkMRMLNode*>(0));
+
+  connect(&d->ImportDataAndEventsTimer, SIGNAL(timeout()),
+          this, SLOT(importDataAndEvents()));
+  d->ImportDataAndEventsTimer.start(5);
 }
 
 //-----------------------------------------------------------------------------
@@ -107,3 +130,10 @@ void qSlicerOpenIGTLinkIFModuleWidget::onClientSelected()
 {
 }
 
+//-----------------------------------------------------------------------------
+void qSlicerOpenIGTLinkIFModuleWidget::importDataAndEvents()
+{
+  Q_D(qSlicerOpenIGTLinkIFModuleWidget);
+  d->logic()->ImportEvents();
+  d->logic()->ImportFromCircularBuffers();
+}

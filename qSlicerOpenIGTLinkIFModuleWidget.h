@@ -36,6 +36,8 @@ protected slots:
   void onServerSelected();
   void onClientSelected();
 
+  void importDataAndEvents();
+
 private:
   Q_DECLARE_PRIVATE(qSlicerOpenIGTLinkIFModuleWidget);
   Q_DISABLE_COPY(qSlicerOpenIGTLinkIFModuleWidget);

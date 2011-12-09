@@ -490,7 +490,6 @@ void* vtkMRMLIGTLConnectorNode::ThreadFunction(void* ptr)
   igtlcon->RequestInvokeEvent(vtkMRMLIGTLConnectorNode::DeactivatedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
 
   return NULL;
-
 }
 
 //----------------------------------------------------------------------------
