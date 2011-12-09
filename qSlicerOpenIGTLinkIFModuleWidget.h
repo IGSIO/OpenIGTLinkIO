@@ -6,8 +6,6 @@
 
 #include "qSlicerOpenIGTLinkIFModuleExport.h"
 
-#include <QStandardItemModel>
-
 class qSlicerOpenIGTLinkIFModuleWidgetPrivate;
 class vtkMRMLNode;
 
@@ -27,7 +25,7 @@ public slots:
 
 protected:
   QScopedPointer<qSlicerOpenIGTLinkIFModuleWidgetPrivate> d_ptr;
-  
+
   virtual void setup();
   virtual void setMRMLScene(vtkMRMLScene*);
 
@@ -41,9 +39,6 @@ protected slots:
 private:
   Q_DECLARE_PRIVATE(qSlicerOpenIGTLinkIFModuleWidget);
   Q_DISABLE_COPY(qSlicerOpenIGTLinkIFModuleWidget);
-
-  QStandardItemModel model;
-  
 
 };
 

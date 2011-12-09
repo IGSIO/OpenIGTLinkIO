@@ -1,13 +1,13 @@
 // Qt includes
 #include <QDebug>
+#include <QStandardItemModel>
+#include <QTreeView>
 
 // SlicerQt includes
 #include "qSlicerOpenIGTLinkIFModuleWidget.h"
 #include "ui_qSlicerOpenIGTLinkIFModule.h"
 
-#include <QTreeView>
-#include <QStandardItemModel>
-
+// OpenIGTLinkIF MRML includes
 #include "vtkMRMLIGTLConnectorNode.h"
 
 
@@ -53,10 +53,7 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
                 SLOT(onAddConnectorButtonClicked()));
   this->connect(d->removeConnectorButton, SIGNAL(clicked()), this,
                 SLOT(onRemoveConnectorButtonClicked()));
-
-
 }
-
 
 //-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::setMRMLScene(vtkMRMLScene* scene)
@@ -73,33 +70,33 @@ void qSlicerOpenIGTLinkIFModuleWidget::setMRMLScene(vtkMRMLScene* scene)
 void qSlicerOpenIGTLinkIFModuleWidget::onAddConnectorButtonClicked()
 {
   Q_D(qSlicerOpenIGTLinkIFModuleWidget);
-  
+
   //new QListViewItem(d->connectorList, "aaa", "bbbb", "cccc", "ddd");
   std::cerr << "Add Connector Button is clicked." << std::endl;
-  
+
   vtkMRMLIGTLConnectorNode* connector = vtkMRMLIGTLConnectorNode::New();
   //int restrectDeviceName = (this->EnableAdvancedSettingButton->GetSelectedState())? 1:0;
 
-  this->mrmlScene()->AddNode(connector);  
+  this->mrmlScene()->AddNode(connector);
   //connector->SetRestrictDeviceName(restrectDeviceName);
   //connector->Modified();
 
   //connector->Delete();
-  
+
 }
 
-
+//-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::onRemoveConnectorButtonClicked()
 {
   std::cerr << "Remove Connector Button is clicked." << std::endl;
 }
 
-
+//-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::onServerSelected()
 {
 }
 
-
+//-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::onClientSelected()
 {
 }
