@@ -208,9 +208,8 @@ void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent(vtkMRMLNode* node)
 
   // don't do anything if the scene is still updating
   if (this->GetMRMLScene() &&
-      this->GetMRMLScene()->GetIsUpdating())
+      this->GetMRMLScene()->IsBatchProcessing())
     {
-    vtkDebugMacro("OnMRMLSceneNodeAddedEvent: updating, returning");
     return;
     }
 
