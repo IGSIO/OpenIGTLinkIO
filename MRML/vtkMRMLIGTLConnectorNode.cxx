@@ -567,7 +567,6 @@ int vtkMRMLIGTLConnectorNode::ReceiveController()
 
   while (!this->ServerStopFlag)
     {
-
     // check if connection is alive
     if (!this->Socket->GetConnected())
       {
@@ -779,7 +778,6 @@ vtkIGTLCircularBuffer* vtkMRMLIGTLConnectorNode::GetCircularBuffer(std::string& 
 //---------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
 {
-
   vtkMRMLIGTLConnectorNode::NameListType nameList;
   GetUpdatedBuffersList(nameList);
 

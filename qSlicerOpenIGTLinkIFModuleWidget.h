@@ -30,11 +30,11 @@ protected:
   virtual void setMRMLScene(vtkMRMLScene*);
 
 protected slots:
-
   void onAddConnectorButtonClicked();
   void onRemoveConnectorButtonClicked();
   void onServerSelected();
   void onClientSelected();
+  void setLocatorDriverVisible(bool visible);
 
   void importDataAndEvents();
 

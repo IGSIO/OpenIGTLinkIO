@@ -77,6 +77,12 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   connect(d->ConnectorListView, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
           d->ConnectorPropertyWidget, SLOT(setMRMLIGTLConnectorNode(vtkMRMLNode*)));
   d->ConnectorPropertyWidget->setMRMLIGTLConnectorNode(static_cast<vtkMRMLNode*>(0));
+  connect(d->EnableLocatorDriverCheckBox, SIGNAL(toggled(bool)), this,
+          SLOT(setLocatorDriverVisible(bool)));
+  this->setLocatorDriverVisible(d->EnableLocatorDriverCheckBox->isChecked());
+
+  // TODO We should probably listen for the logic and implement a onLogicModified() slot
+  //      Doing so we would be able to update the UI if the locator is externally enabled.
 
   connect(&d->ImportDataAndEventsTimer, SIGNAL(timeout()),
           this, SLOT(importDataAndEvents()));
@@ -100,9 +106,6 @@ void qSlicerOpenIGTLinkIFModuleWidget::setMRMLScene(vtkMRMLScene* scene)
 void qSlicerOpenIGTLinkIFModuleWidget::onAddConnectorButtonClicked()
 {
   qMRMLNodeFactory::createNode(this->mrmlScene(), "vtkMRMLIGTLConnectorNode");
-
-  //int restrectDeviceName = (this->EnableAdvancedSettingButton->GetSelectedState())? 1:0;
-  //connector->SetRestrictDeviceName(restrectDeviceName);
 }
 
 //-----------------------------------------------------------------------------
@@ -128,6 +131,13 @@ void qSlicerOpenIGTLinkIFModuleWidget::onServerSelected()
 //-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::onClientSelected()
 {
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerOpenIGTLinkIFModuleWidget::setLocatorDriverVisible(bool visible)
+{
+  Q_D(qSlicerOpenIGTLinkIFModuleWidget);
+  d->logic()->EnableLocatorDriver(visible);
 }
 
 //-----------------------------------------------------------------------------
