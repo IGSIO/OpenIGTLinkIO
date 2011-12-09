@@ -4,19 +4,18 @@ project(vtkSlicer${qt_module_name}ModuleMRML)
 # See CMake/SlicerMacroBuildModuleLogic.cmake for details
 #
 
-SET(module_mrml_name "${PROJECT_NAME}")
+set(module_mrml_name "${PROJECT_NAME}")
 
 # The header '${PROJECT_NAME}Export.h' will be automatically configured.
-SET(module_mrml_export_directive "VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT")
+set(module_mrml_export_directive "VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT")
 
 # Additional directories to include
-SET(module_mrml_include_directories
-  ${qt_module_include_directories}
+set(module_mrml_include_directories
   ${Slicer_Base_INCLUDE_DIRS}
   )
 
 # Source files
-SET(module_mrml_SRCS
+set(module_mrml_SRCS
   vtkIGTLCircularBuffer.cxx
   vtkIGTLToMRMLBase.cxx
   vtkIGTLToMRMLImage.cxx
@@ -25,25 +24,23 @@ SET(module_mrml_SRCS
   vtkMRMLIGTLConnectorNode.cxx
   )
 
-if (OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
-  set(module_mrml_SRCS 
-    ${module_mrml_SRCS}
+if(OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
+  list(APPEND module_mrml_SRCS
     vtkMRMLIGTLQueryNode.cxx
     vtkMRMLImageMetaListNode.cxx
     vtkIGTLToMRMLImageMetaList.cxx
     vtkIGTLToMRMLTrackingData.cxx
-    vtkMRMLIGTLTrackingDataQueryNode.cxx 
+    vtkMRMLIGTLTrackingDataQueryNode.cxx
     vtkMRMLIGTLTrackingDataBundleNode.cxx
     )
-endif (OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
+endif()
 
 # Additional Target libraries
-SET(module_mrml_target_libraries
+set(module_mrml_target_libraries
   ${OpenIGTLink_LIBRARIES}
   ${MRML_LIBRARIES}
   SlicerBaseLogic
   )
-
 
 SlicerMacroBuildModuleMRML(
   NAME ${module_mrml_name}
@@ -52,5 +49,3 @@ SlicerMacroBuildModuleMRML(
   SRCS ${module_mrml_SRCS}
   TARGET_LIBRARIES ${module_mrml_target_libraries}
   )
-
-

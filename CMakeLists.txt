@@ -4,25 +4,25 @@ set(qt_module_title "OpenIGTLink I/F")
 
 # --------------------------------------------------------------------------
 # Check if version 2 protocol is available
-# Features that depnd on OpenIGTLink Protocol 2 are only available 
+# Features that depnd on OpenIGTLink Protocol 2 are only available
 # if the OpenIGTLink library is compiled with OpenIGTLink_PROTOCOL_VERSION_2
 # option.
 
-if (OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
-  ADD_DEFINITIONS(-DOpenIGTLinkIF_USE_VERSION_2)
-  ADD_DEFINITIONS(-DOpenIGTLinkIF_LIBRARY_VERSION="${OpenIGTLink_VERSION_MAJOR}-${OpenIGTLink_VERSION_MINOR}-${OpenIGTLink_VERSION_PATCH} for protocol ver. 2")
-else (OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
-  ADD_DEFINITIONS(-DOpenIGTLinkIF_LIBRARY_VERSION="${OpenIGTLink_VERSION_MAJOR}-${OpenIGTLink_VERSION_MINOR}-${OpenIGTLink_VERSION_PATCH} for protocol ver. 1")
-endif (OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
+if(OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
+  add_definitions(-DOpenIGTLinkIF_USE_VERSION_2)
+  add_definitions(-DOpenIGTLinkIF_LIBRARY_VERSION="${OpenIGTLink_VERSION_MAJOR}-${OpenIGTLink_VERSION_MINOR}-${OpenIGTLink_VERSION_PATCH} for protocol ver. 2")
+else()
+  add_definitions(-DOpenIGTLinkIF_LIBRARY_VERSION="${OpenIGTLink_VERSION_MAJOR}-${OpenIGTLink_VERSION_MINOR}-${OpenIGTLink_VERSION_PATCH} for protocol ver. 1")
+endif()
 
 # Add subdirectories
-ADD_SUBDIRECTORY(MRML)
-ADD_SUBDIRECTORY(Logic)
+add_subdirectory(MRML)
+add_subdirectory(Logic)
 
-SET(qt_module_export_directive "Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT")
+set(qt_module_export_directive "Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT")
 
 # Additional includes - Current_{source,binary} and Slicer_{Libs,Base} already included
-SET(qt_module_include_directories
+set(qt_module_include_directories
   ${CMAKE_CURRENT_SOURCE_DIR}/GUI
   ${CMAKE_CURRENT_BINARY_DIR}/GUI
   ${CMAKE_CURRENT_SOURCE_DIR}/Logic
@@ -32,7 +32,7 @@ SET(qt_module_include_directories
   )
 
 # Source files
-SET(qt_module_SRCS
+set(qt_module_SRCS
   qSlicerOpenIGTLinkIFModule.cxx
   qSlicerOpenIGTLinkIFModule.h
   qSlicerOpenIGTLinkIFModuleWidget.cxx
@@ -44,7 +44,7 @@ SET(qt_module_SRCS
   )
 
 # Headers that should run through moc
-SET(qt_module_MOC_SRCS
+set(qt_module_MOC_SRCS
   qSlicerOpenIGTLinkIFModule.h
   qSlicerOpenIGTLinkIFModuleWidget.h
   GUI/qMRMLSceneIGTLConnectorModel.h
@@ -52,20 +52,20 @@ SET(qt_module_MOC_SRCS
   )
 
 # UI files
-SET(qt_module_UI_SRCS
+set(qt_module_UI_SRCS
   Resources/UI/qSlicerOpenIGTLinkIFModule.ui
 )
 
 # Additional Target libraries
-SET(qt_module_target_libraries
+set(qt_module_target_libraries
   vtkSlicerOpenIGTLinkIFModuleLogic
   vtkSlicerOpenIGTLinkIFModuleMRML
   )
 
 # Resources
-SET(qt_module_resources
+set(qt_module_resources
   Resources/qSlicerOpenIGTLinkIFModule.qrc
-)
+  )
 
 slicerMacroBuildQtModule(
   NAME ${qt_module_name}
@@ -81,4 +81,4 @@ slicerMacroBuildQtModule(
 
 if(BUILD_TESTING)
   #add_subdirectory(Testing)
-endif(BUILD_TESTING)
+endif()
