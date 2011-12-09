@@ -205,7 +205,6 @@ void vtkSlicerOpenIGTLinkIFLogic::UpdateAll()
 void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent(vtkMRMLNode* node)
 {
   //vtkDebugMacro("vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent");
-  std::cerr << "vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent" << std::endl;
 
   // don't do anything if the scene is still updating
   if (this->GetMRMLScene() &&

@@ -21,61 +21,48 @@
 #ifndef __qMRMLIGTLConnectorTreeView_h
 #define __qMRMLIGTLConnectorTreeView_h
 
-// Qt includes
-#include <QTreeView>
-
-// CTK includes
-#include <ctkPimpl.h>
-
 // qMRML includes
 #include "qMRMLTreeView.h"
 
+// OpenIGTLinkIF GUI includes
 #include "qSlicerOpenIGTLinkIFModuleExport.h"
 
-// Logic includes
-#include "Logic/vtkSlicerOpenIGTLinkIFLogic.h"
-
-class qMRMLSortFilterProxyModel;
 class qMRMLIGTLConnectorTreeViewPrivate;
 class vtkMRMLNode;
 class vtkMRMLScene;
+class vtkSlicerOpenIGTLinkIFLogic;
 
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
 class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLConnectorTreeView : public qMRMLTreeView
 {
   Q_OBJECT
-  Q_PROPERTY(QString sceneModelType READ sceneModelType WRITE setSceneModelType)
-  Q_PROPERTY(bool listenNodeModifiedEvent READ listenNodeModifiedEvent WRITE setListenNodeModifiedEvent)
-  Q_PROPERTY(QStringList nodeTypes READ nodeTypes WRITE setNodeTypes)
 
 public:
+  typedef qMRMLTreeView Superclass;
   qMRMLIGTLConnectorTreeView(QWidget *parent=0);
   virtual ~qMRMLIGTLConnectorTreeView();
 
-  const char* firstSelectedNode();
+//  const char* firstSelectedNode();
 
   // Register the logic
   void setLogic(vtkSlicerOpenIGTLinkIFLogic* logic);
 
-  void toggleLockForSelected();
+//  void toggleLockForSelected();
 
-  void toggleVisibilityForSelected();
+//  void toggleVisibilityForSelected();
 
-  void deleteSelected();
+//  void deleteSelected();
 
-  void selectedAsCollection(vtkCollection* collection);
+//  void selectedAsCollection(vtkCollection* collection);
 
   void setSelectedNode(const char* id);
 
 public slots:
   void setMRMLScene(vtkMRMLScene* scene);
-  void onSelectionChanged(const QItemSelection& index,const QItemSelection& beforeIndex);
+//  void onSelectionChanged(const QItemSelection& index,const QItemSelection& beforeIndex);
 
-signals:
-  void currentNodeChanged(vtkMRMLNode* node);
-
-protected slots:
-  void onClicked(const QModelIndex& index);
+//protected slots:
+//  void onClicked(const QModelIndex& index);
 
 protected:
   QScopedPointer<qMRMLIGTLConnectorTreeViewPrivate> d_ptr;
@@ -89,13 +76,11 @@ private:
   Q_DECLARE_PRIVATE(qMRMLIGTLConnectorTreeView);
   Q_DISABLE_COPY(qMRMLIGTLConnectorTreeView);
 
-  vtkSlicerOpenIGTLinkIFLogic* m_Logic;
-  
   // toggle the visibility of an OpenIGTLinkIF
-  void onVisibilityColumnClicked(vtkMRMLNode* node);
+//  void onVisibilityColumnClicked(vtkMRMLNode* node);
 
   // toggle un-/lock of an annotation
-  void onLockColumnClicked(vtkMRMLNode* node);
+//  void onLockColumnClicked(vtkMRMLNode* node);
 
 };
 

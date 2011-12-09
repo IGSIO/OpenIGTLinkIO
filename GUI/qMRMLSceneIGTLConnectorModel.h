@@ -21,8 +21,10 @@
 #ifndef __qMRMLSceneIGTLConnectorModel_h
 #define __qMRMLSceneIGTLConnectorModel_h
 
+// qMRMLWidgets includes
 #include "qMRMLSceneDisplayableModel.h"
 
+// OpenIGTLinkIF GUI includes
 #include "qSlicerOpenIGTLinkIFModuleExport.h"
 
 // Logic includes
@@ -46,26 +48,32 @@ public:
   // Enum for the different columns
   enum Columns{
     NameColumn = 0,
-    TypeColumn = 1,
-    StatusColumn = 2,
-    AddressColumn = 3,
-    PortColumn = 4
+    TypeColumn,
+    StatusColumn,
+    HostnameColumn,
+    PortColumn
   };
 
   virtual void updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column);
+
+  /// As we reimplement insertNode, we need don't want to hide the other functions.
+  using qMRMLSceneModel::insertNode;
+  /// Reimplemented to listen to the vtkMRMLIGTLConnectorNode events for
+  /// connector state changes.
+  virtual QStandardItem* insertNode(vtkMRMLNode* node, QStandardItem* parent, int row);
 
 protected:
 
   virtual vtkMRMLNode* parentNode(vtkMRMLNode* node)const;
 
   virtual void updateNodeFromItemData(vtkMRMLNode* node, QStandardItem* item);
-  
+
   virtual QFlags<Qt::ItemFlag> nodeFlags(vtkMRMLNode* node, int column)const;
 
 private:
   Q_DISABLE_COPY(qMRMLSceneIGTLConnectorModel);
 
-  vtkSlicerOpenIGTLinkIFLogic* m_Logic;
+  vtkSlicerOpenIGTLinkIFLogic* Logic;
 
 };
 
