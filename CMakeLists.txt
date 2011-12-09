@@ -41,6 +41,8 @@ set(qt_module_SRCS
   GUI/qMRMLSceneIGTLConnectorModel.h
   GUI/qMRMLIGTLConnectorTreeView.cxx
   GUI/qMRMLIGTLConnectorTreeView.h
+  GUI/qSlicerIGTLConnectorPropertyWidget.cxx
+  GUI/qSlicerIGTLConnectorPropertyWidget.h
   )
 
 # Headers that should run through moc
@@ -49,10 +51,12 @@ set(qt_module_MOC_SRCS
   qSlicerOpenIGTLinkIFModuleWidget.h
   GUI/qMRMLSceneIGTLConnectorModel.h
   GUI/qMRMLIGTLConnectorTreeView.h
+  GUI/qSlicerIGTLConnectorPropertyWidget.h
   )
 
 # UI files
 set(qt_module_UI_SRCS
+  Resources/UI/qSlicerIGTLConnectorPropertyWidget.ui
   Resources/UI/qSlicerOpenIGTLinkIFModule.ui
 )
 
