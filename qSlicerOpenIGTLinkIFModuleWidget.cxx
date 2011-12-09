@@ -51,10 +51,13 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   d->setupUi(this);
   this->Superclass::setup();
 
-  this->connect(d->AddConnectorButton, SIGNAL(clicked()), this,
-                SLOT(onAddConnectorButtonClicked()));
-  this->connect(d->RemoveConnectorButton, SIGNAL(clicked()), this,
-                SLOT(onRemoveConnectorButtonClicked()));
+  connect(d->AddConnectorButton, SIGNAL(clicked()), this,
+          SLOT(onAddConnectorButtonClicked()));
+  connect(d->RemoveConnectorButton, SIGNAL(clicked()), this,
+          SLOT(onRemoveConnectorButtonClicked()));
+  connect(d->ConnectorListView, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
+          d->ConnectorPropertyWidget, SLOT(setMRMLIGTLConnectorNode(vtkMRMLNode*)));
+  d->ConnectorPropertyWidget->setMRMLIGTLConnectorNode(static_cast<vtkMRMLNode*>(0));
 }
 
 //-----------------------------------------------------------------------------

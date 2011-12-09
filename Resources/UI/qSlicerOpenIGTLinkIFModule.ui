@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0" colspan="2">
+   <item row="2" column="0" colspan="2">
     <widget class="ctkCollapsibleButton" name="IOConfigurationFrame">
      <property name="text">
       <string>I/O Configuration</string>
@@ -35,7 +35,7 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="0" colspan="2">
+   <item row="4" column="0" colspan="2">
     <spacer name="VerticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -48,7 +48,7 @@
      </property>
     </spacer>
    </item>
-   <item row="2" column="0" colspan="2">
+   <item row="3" column="0" colspan="2">
     <widget class="ctkCollapsibleButton" name="VisualizationFrame">
      <property name="text">
       <string>Visualization / Slice Control</string>
@@ -116,130 +116,11 @@
         </layout>
        </widget>
       </item>
-      <item>
-       <widget class="QGroupBox" name="ConnectorPropertyFrame">
-        <property name="title">
-         <string>Properties</string>
-        </property>
-        <layout class="QFormLayout" name="ConnectorPropertyLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="ConnectorNameLabel">
-           <property name="text">
-            <string>Name:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="ConnectorNameEdit"/>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="ConnectorTypeLabel">
-           <property name="text">
-            <string>Type:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QFrame" name="ConnectorTypeFrame">
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
-           </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <property name="margin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QRadioButton" name="ConnectorClientRadioButton">
-              <property name="text">
-               <string>Server</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="ConnectorServerRadioButton">
-              <property name="text">
-               <string>Client</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="ConnectorAddressLabel">
-           <property name="text">
-            <string>Address:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QFrame" name="ConnectorAddressFrame">
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
-           </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <property name="margin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QLineEdit" name="ConnectorAddressEdit">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>200</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="inputMethodHints">
-               <set>Qt::ImhUrlCharactersOnly</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="ConnectorPortLabel">
-              <property name="text">
-               <string>  Port:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="ConnectorPortEdit">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>50</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="inputMethodHints">
-               <set>Qt::ImhDigitsOnly</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
      </layout>
     </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="qSlicerIGTLConnectorPropertyWidget" name="ConnectorPropertyWidget" native="true"/>
    </item>
   </layout>
  </widget>
@@ -260,6 +141,12 @@
    <class>qMRMLIGTLConnectorTreeView</class>
    <extends>QTreeView</extends>
    <header>qMRMLIGTLConnectorTreeView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>qSlicerIGTLConnectorPropertyWidget</class>
+   <extends>QWidget</extends>
+   <header>qSlicerIGTLConnectorPropertyWidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
