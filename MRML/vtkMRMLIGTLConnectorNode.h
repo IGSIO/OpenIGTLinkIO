@@ -70,12 +70,16 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
     NUM_TYPE
   };
 
+  static const char* ConnectorTypeStr[vtkMRMLIGTLConnectorNode::NUM_TYPE];
+
   enum {
     STATE_OFF,
     STATE_WAIT_CONNECTION,
     STATE_CONNECTED,
     NUM_STATE
   };
+
+  static const char* ConnectorStateStr[vtkMRMLIGTLConnectorNode::NUM_STATE];
 
   enum {
     IO_UNSPECIFIED = 0x00,

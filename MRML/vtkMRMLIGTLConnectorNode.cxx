@@ -46,6 +46,22 @@ Version:   $Revision: 1.2 $
 vtkMRMLNodeNewMacro(vtkMRMLIGTLConnectorNode);
 
 //----------------------------------------------------------------------------
+const char *vtkMRMLIGTLConnectorNode::ConnectorTypeStr[vtkMRMLIGTLConnectorNode::NUM_TYPE] =
+{
+  "?", // TYPE_NOT_DEFINED
+  "S", // TYPE_SERVER
+  "C", // TYPE_CLIENT
+};
+
+//----------------------------------------------------------------------------
+const char *vtkMRMLIGTLConnectorNode::ConnectorStateStr[vtkMRMLIGTLConnectorNode::NUM_STATE] =
+{
+  "OFF",       // OFF
+  "WAIT",      // WAIT_CONNECTION
+  "ON",        // CONNECTED
+};
+
+//----------------------------------------------------------------------------
 vtkMRMLIGTLConnectorNode::vtkMRMLIGTLConnectorNode()
 {
   this->HideFromEditors = false;
