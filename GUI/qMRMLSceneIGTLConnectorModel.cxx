@@ -27,10 +27,14 @@
 #include <QStringList>
 #include <QVector>
 
-// qMRML includes
+// OpenIGTLinkIF GUI includes
 #include "qMRMLSceneIGTLConnectorModel.h"
-#include "qMRMLSceneDisplayableModel.h"
-//#include "qMRMLUtils.h"
+
+// qMRMLWidgets includes
+#include <qMRMLSceneDisplayableModel.h>
+
+// OpenIGTLinkIF MRML includes
+#include "vtkMRMLIGTLConnectorNode.h"
 
 // MRML includes
 #include <vtkMRMLScene.h>
@@ -38,10 +42,10 @@
 #include <vtkMRMLAnnotationNode.h>
 #include <vtkMRMLDisplayableHierarchyNode.h>
 
-#include "vtkMRMLIGTLConnectorNode.h"
-
 // VTK includes
 #include <vtkVariantArray.h>
+
+// STD includes
 #include <typeinfo>
 
 //------------------------------------------------------------------------------
@@ -147,7 +151,7 @@ void qMRMLSceneIGTLConnectorModel::updateItemDataFromNode(QStandardItem* item, v
         {
         item->setText(QString("ON"));
         }
-      else 
+      else
         {
         item->setText(QString("--"));
         }

@@ -37,7 +37,7 @@
 #include "qMRMLIGTLConnectorTreeView.h"
 
 // MRML includes
-#include "vtkMRMLNode.h"
+#include <vtkMRMLNode.h>
 
 //------------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_Annotation

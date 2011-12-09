@@ -12,49 +12,47 @@
 
 ==========================================================================*/
 
-// .NAME vtkSlicerOpenIGTLinkIFLogic - slicer logic class for Locator module 
-// .SECTION Description
-// This class manages the logic associated with tracking device for
-// IGT. 
-
+/// This class manages the logic associated with tracking device for IGT.
 
 #ifndef __vtkSlicerOpenIGTLinkIFLogic_h
 #define __vtkSlicerOpenIGTLinkIFLogic_h
 
-#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
-
-#include <vector>
-
-
-#include "vtkSlicerBaseLogic.h"
-#include "vtkSlicerModuleLogic.h"
-//#include "vtkSlicerApplication.h"
-#include "vtkCallbackCommand.h"
-
-#include "vtkMRMLTransformNode.h"
-#include "vtkMRMLFiducialListNode.h"
-#include "vtkMRMLSliceNode.h"
-#include "vtkMultiThreader.h"
-
-#include "igtlImageMessage.h"
-#include "igtlTransformMessage.h"
-
+// OpenIGTLinkIF MRML includes
 #include "vtkIGTLToMRMLBase.h"
 #include "vtkIGTLToMRMLLinearTransform.h"
 #include "vtkIGTLToMRMLImage.h"
 #include "vtkIGTLToMRMLPosition.h"
-
 #ifdef OpenIGTLinkIF_USE_VERSION_2
-  #include "vtkIGTLToMRMLImageMetaList.h"
-  #include "vtkIGTLToMRMLTrackingData.h"
-#endif //OpenIGTLinkIF_USE_VERSION_2
+# include "vtkIGTLToMRMLImageMetaList.h"
+# include "vtkIGTLToMRMLTrackingData.h"
+#endif
+#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
+
+// OpenIGTLink includes
+#include <igtlImageMessage.h>
+#include <igtlTransformMessage.h>
+
+#include "vtkSlicerBaseLogic.h"
+#include "vtkSlicerModuleLogic.h"
+#include "vtkCallbackCommand.h"
+
+// MRML includes
+#include <vtkMRMLTransformNode.h>
+#include <vtkMRMLFiducialListNode.h>
+#include <vtkMRMLSliceNode.h>
+
+// VTK includes
+#include <vtkMultiThreader.h>
+
+// STD includes
+#include <vector>
 
 class vtkMRMLIGTLConnectorNode;
-class vtkMRMLModelNode; 
-class vtkTransform; 
+class vtkMRMLModelNode;
+class vtkTransform;
 
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
-class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic : public vtkSlicerModuleLogic 
+class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic : public vtkSlicerModuleLogic
 {
  public:
   //BTX
@@ -86,11 +84,11 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   typedef std::vector<IGTLMrmlNodeInfoType>         IGTLMrmlNodeListType;
   typedef std::vector<vtkIGTLToMRMLBase*>           MessageConverterListType;
   //ETX
-  
+
   // Work phase keywords used in NaviTrack (defined in BRPTPRInterface.h)
 
  public:
-  
+
   static vtkSlicerOpenIGTLinkIFLogic *New();
   vtkTypeRevisionMacro(vtkSlicerOpenIGTLinkIFLogic,vtkSlicerModuleLogic);
   //vtkTypeRevisionMacro(vtkSlicerOpenIGTLinkIFLogic,vtkObject);
@@ -103,7 +101,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   vtkGetObjectMacro ( LocatorTransform, vtkTransform );
   vtkGetObjectMacro ( LocatorMatrix,    vtkMatrix4x4 );
 
-  /// The selected transform node is observed for TransformModified events and the transform 
+  /// The selected transform node is observed for TransformModified events and the transform
   /// data is copied to the slice nodes depending on the current mode
   vtkGetObjectMacro ( LocatorTransformNode,    vtkMRMLTransformNode );
 
@@ -142,7 +140,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   vtkMRMLIGTLConnectorNode* GetConnector(const char* conID);
   void                      ImportFromCircularBuffers();
   void                      ImportEvents(); // check if there are any events in the connectors that should be invoked in the main thread (such as connected, disconnected)
-  
+
   // Device Name management
   int  SetRestrictDeviceName(int f);
 
@@ -158,7 +156,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   //----------------------------------------------------------------
 
   //virtual void ProcessMRMLEvents(vtkObject* caller, unsigned long event, void* callData);
-  //virtual void ProcessLogicEvents(vtkObject * caller, unsigned long event, void * callData);  
+  //virtual void ProcessLogicEvents(vtkObject * caller, unsigned long event, void * callData);
 
 
   int  SetLocatorDriver(const char* nodeID);
@@ -182,7 +180,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   //ETX
 
  protected:
-  
+
   //----------------------------------------------------------------
   // Constructor, destructor etc.
   //----------------------------------------------------------------
@@ -193,7 +191,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   //vtkSlicerOpenIGTLinkIFLogic(const vtkSlicerOpenIGTLinkIFLogic&);
   //void operator=(const vtkSlicerOpenIGTLinkIFLogic&);
 
-  
+
   static void DataCallback(vtkObject*, unsigned long, void *, void *);
 
   void UpdateAll();
@@ -232,7 +230,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   //----------------------------------------------------------------
   // Real-time image
   //----------------------------------------------------------------
-  
+
   vtkMRMLSliceNode *SliceNode[3];
 
   int   SliceDriver[3];
@@ -248,7 +246,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   bool  EnableOblique;
   bool  FreezePlane;
   int   SliceOrientation[3];
-  
+
   //----------------------------------------------------------------
   // Locator
   //----------------------------------------------------------------
@@ -265,6 +263,3 @@ private:
 };
 
 #endif
-
-
-  
