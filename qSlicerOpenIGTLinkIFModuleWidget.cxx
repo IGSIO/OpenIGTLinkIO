@@ -49,9 +49,9 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   d->setupUi(this);
   this->Superclass::setup();
 
-  this->connect(d->addConnectorButton, SIGNAL(clicked()), this,
+  this->connect(d->AddConnectorButton, SIGNAL(clicked()), this,
                 SLOT(onAddConnectorButtonClicked()));
-  this->connect(d->removeConnectorButton, SIGNAL(clicked()), this,
+  this->connect(d->RemoveConnectorButton, SIGNAL(clicked()), this,
                 SLOT(onRemoveConnectorButtonClicked()));
 }
 
@@ -62,8 +62,10 @@ void qSlicerOpenIGTLinkIFModuleWidget::setMRMLScene(vtkMRMLScene* scene)
 
   this->Superclass::setMRMLScene(scene);
   if (scene == NULL)
+    {
     return;
-  d->connectorListView->setMRMLScene(scene);
+    }
+  d->ConnectorListView->setMRMLScene(scene);
 }
 
 //-----------------------------------------------------------------------------

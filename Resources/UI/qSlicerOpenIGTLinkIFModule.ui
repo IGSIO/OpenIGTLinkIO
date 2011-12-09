@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>542</width>
+    <width>559</width>
     <height>747</height>
    </rect>
   </property>
@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0" colspan="2">
-    <widget class="ctkCollapsibleButton" name="ioConfigurationFrame">
+    <widget class="ctkCollapsibleButton" name="IOConfigurationFrame">
      <property name="text">
       <string>I/O Configuration</string>
      </property>
@@ -24,7 +24,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
-       <widget class="QTreeWidget" name="ioTreeWidget">
+       <widget class="QTreeWidget" name="IOTreeWidget">
         <column>
          <property name="text">
           <string notr="true">1</string>
@@ -36,7 +36,7 @@
     </widget>
    </item>
    <item row="3" column="0" colspan="2">
-    <spacer name="verticalSpacer">
+    <spacer name="VerticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
@@ -49,7 +49,7 @@
     </spacer>
    </item>
    <item row="2" column="0" colspan="2">
-    <widget class="ctkCollapsibleButton" name="visualizationFrame">
+    <widget class="ctkCollapsibleButton" name="VisualizationFrame">
      <property name="text">
       <string>Visualization / Slice Control</string>
      </property>
@@ -59,7 +59,7 @@
     </widget>
    </item>
    <item row="0" column="0" colspan="2">
-    <widget class="ctkCollapsibleButton" name="connectorListFrame">
+    <widget class="ctkCollapsibleButton" name="ConnectorListFrame">
      <property name="text">
       <string>Connectors</string>
      </property>
@@ -68,14 +68,14 @@
      </property>
      <layout class="QVBoxLayout" name="ConnectorListLayout">
       <item>
-       <widget class="qMRMLIGTLConnectorTreeView" name="connectorListView">
+       <widget class="qMRMLIGTLConnectorTreeView" name="ConnectorListView">
         <property name="horizontalScrollBarPolicy">
          <enum>Qt::ScrollBarAlwaysOff</enum>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QFrame" name="connectorButtonFrame">
+       <widget class="QFrame" name="ConnectorButtonFrame">
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
         </property>
@@ -87,21 +87,21 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="addConnectorButton">
+          <widget class="QPushButton" name="AddConnectorButton">
            <property name="text">
             <string>Add</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="removeConnectorButton">
+          <widget class="QPushButton" name="RemoveConnectorButton">
            <property name="text">
             <string>Remove</string>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer">
+          <spacer name="HorizontalSpacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -117,30 +117,30 @@
        </widget>
       </item>
       <item>
-       <widget class="QGroupBox" name="connectorPropertyFrame">
+       <widget class="QGroupBox" name="ConnectorPropertyFrame">
         <property name="title">
          <string>Properties</string>
         </property>
         <layout class="QFormLayout" name="ConnectorPropertyLayout">
          <item row="0" column="0">
-          <widget class="QLabel" name="connectorNameLabel">
+          <widget class="QLabel" name="ConnectorNameLabel">
            <property name="text">
             <string>Name:</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="connectorNameEdit"/>
+          <widget class="QLineEdit" name="ConnectorNameEdit"/>
          </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="connectorTypeLabel">
+          <widget class="QLabel" name="ConnectorTypeLabel">
            <property name="text">
             <string>Type:</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QFrame" name="connectorTypeFrame">
+          <widget class="QFrame" name="ConnectorTypeFrame">
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
            </property>
@@ -152,14 +152,14 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QRadioButton" name="connectorClientRadioButton">
+             <widget class="QRadioButton" name="ConnectorClientRadioButton">
               <property name="text">
                <string>Server</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="connectorServerRadioButton">
+             <widget class="QRadioButton" name="ConnectorServerRadioButton">
               <property name="text">
                <string>Client</string>
               </property>
@@ -169,14 +169,14 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QLabel" name="connectorAddressLabel">
+          <widget class="QLabel" name="ConnectorAddressLabel">
            <property name="text">
             <string>Address:</string>
            </property>
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QFrame" name="connectorAddressFrame">
+          <widget class="QFrame" name="ConnectorAddressFrame">
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
            </property>
@@ -188,7 +188,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QLineEdit" name="connectorAddressEdit">
+             <widget class="QLineEdit" name="ConnectorAddressEdit">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -207,14 +207,14 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="connectorPortLabel">
+             <widget class="QLabel" name="ConnectorPortLabel">
               <property name="text">
                <string>  Port:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="connectorPortEdit">
+             <widget class="QLineEdit" name="ConnectorPortEdit">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
