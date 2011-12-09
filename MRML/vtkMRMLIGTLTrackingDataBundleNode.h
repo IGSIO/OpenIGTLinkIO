@@ -14,21 +14,24 @@
 #ifndef __vtkMRMLIGTLTrackingDataBundleNode_h
 #define __vtkMRMLIGTLTrackingDataBundleNode_h
 
+// OpenIGTLinkIF MRML includes
+#include "vtkIGTLToMRMLBase.h"
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
-#include "vtkMRML.h"
-#include "vtkMRMLNode.h"
-#include "vtkMRMLStorageNode.h"
-#include "vtkMRMLLinearTransformNode.h"
+// MRML includes
+#include <vtkMRML.h>
+#include <vtkMRMLNode.h>
+#include <vtkMRMLStorageNode.h>
+#include <vtkMRMLLinearTransformNode.h>
 
-#include "vtkIGTLToMRMLBase.h"
+// VTK includes
+#include <vtkObject.h>
 
+// STD includes
 #include <string>
 #include <map>
 #include <vector>
 #include <set>
-
-#include "vtkObject.h"
 
 class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataBundleNode : public vtkMRMLNode
 {
@@ -56,7 +59,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataBundle
     STATUS_NOT_DEFINED,
     STATUS_PREPARED,     // Ready to query
     STATUS_WAITING,      // Waiting for response from server
-    STATUS_SUCCESS,      // Server accepted query successfuly 
+    STATUS_SUCCESS,      // Server accepted query successfuly
     STATUS_ERROR,        // Server failed to accept query
     NUM_STATUS,
   };
@@ -70,7 +73,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataBundle
 
   static vtkMRMLIGTLTrackingDataBundleNode *New();
   vtkTypeMacro(vtkMRMLIGTLTrackingDataBundleNode,vtkMRMLNode);
-  
+
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual vtkMRMLNode* CreateNodeInstance();
@@ -116,7 +119,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataBundle
   //----------------------------------------------------------------
   // Constructor and destroctor
   //----------------------------------------------------------------
-  
+
   vtkMRMLIGTLTrackingDataBundleNode();
   ~vtkMRMLIGTLTrackingDataBundleNode();
   vtkMRMLIGTLTrackingDataBundleNode(const vtkMRMLIGTLTrackingDataBundleNode&);

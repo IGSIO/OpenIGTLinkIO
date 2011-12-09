@@ -15,12 +15,18 @@
 #ifndef __vtkIGTLToMRMLImage_h
 #define __vtkIGTLToMRMLImage_h
 
-#include "vtkObject.h"
-#include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
-#include "vtkMRMLNode.h"
+// OpenIGTLinkIF MRML includes
 #include "vtkIGTLToMRMLBase.h"
+#include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
-#include "igtlImageMessage.h"
+// OpenIGTLink includes
+#include <igtlImageMessage.h>
+
+// MRML includes
+#include <vtkMRMLNode.h>
+
+// VTK includes
+#include <vtkObject.h>
 
 class vtkMRMLVolumeNode;
 
@@ -58,7 +64,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkIGTLToMRMLImage : public v
   igtl::GetImageMessage::Pointer GetImageMessage;
 #endif // OpenIGTLinkIF_USE_VERSION_2
   //ETX
-  
+
 };
 
 

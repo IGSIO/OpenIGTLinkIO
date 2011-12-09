@@ -15,12 +15,20 @@
 #ifndef __vtkIGTLToMRMLBase_h
 #define __vtkIGTLToMRMLBase_h
 
+// OpenIGTLinkIF MRML includes
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
-#include "vtkObject.h"
-#include "vtkMRMLScene.h"
-#include "vtkMRMLNode.h"
-#include "igtlMessageBase.h"
+// OpenIGTLink includes
+#include <igtlMessageBase.h>
+
+// MRML includes
+#include <vtkMRMLNode.h>
+#include <vtkMRMLScene.h>
+
+// VTK includes
+#include <vtkObject.h>
+
+// STD includes
 #include <vector>
 #include <string>
 
@@ -107,7 +115,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkIGTLToMRMLBase : public vt
   //ETX
 
   int CheckCRC;
-  
+
 };
 
 

@@ -12,37 +12,39 @@
 
 ==========================================================================*/
 
+// OpenIGTLinkIF MRML includes
+#include "vtkIGTLToMRMLImageMetaList.h"
+#include "vtkMRMLIGTLQueryNode.h"
+#include "vtkMRMLImageMetaListNode.h"
+
+// OpenIGTLink includes
+#include <igtlImageMessage.h>
+#include <igtlImageMetaMessage.h>
+
+// MRML includes
+#include "vtkMRMLScalarVolumeNode.h"
+
+// VTK includes
+#include <vtkIntArray.h>
+#include <vtkImageData.h>
+#include <vtkObjectFactory.h>
+
+// VTKSYS includes
 #include <vtksys/SystemTools.hxx>
 
-#include "vtkObjectFactory.h"
-#include "vtkIGTLToMRMLImageMetaList.h"
-#include "vtkIntArray.h"
-
-//#include "vtkSlicerColorLogic.h"
-
-#include "vtkImageData.h"
-#include "vtkMRMLScalarVolumeNode.h"
-#include "igtlImageMessage.h"
-#include "igtlImageMetaMessage.h"
-
-#include "vtkMRMLImageMetaListNode.h"
-#include "vtkMRMLIGTLQueryNode.h"
-
+//---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLImageMetaList);
 vtkCxxRevisionMacro(vtkIGTLToMRMLImageMetaList, "$Revision: 10577 $");
-
 
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLImageMetaList::vtkIGTLToMRMLImageMetaList()
 {
 }
 
-
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLImageMetaList::~vtkIGTLToMRMLImageMetaList()
 {
 }
-
 
 //---------------------------------------------------------------------------
 void vtkIGTLToMRMLImageMetaList::PrintSelf(ostream& os, vtkIndent indent)
@@ -50,11 +52,9 @@ void vtkIGTLToMRMLImageMetaList::PrintSelf(ostream& os, vtkIndent indent)
   this->vtkObject::PrintSelf(os, indent);
 }
 
-
 //---------------------------------------------------------------------------
 vtkMRMLNode* vtkIGTLToMRMLImageMetaList::CreateNewNode(vtkMRMLScene* scene, const char* name)
 {
-
   vtkMRMLImageMetaListNode *imetaNode = vtkMRMLImageMetaListNode::New();
   imetaNode->SetName(name);
   imetaNode->SetDescription("Received by OpenIGTLink");
@@ -64,18 +64,16 @@ vtkMRMLNode* vtkIGTLToMRMLImageMetaList::CreateNewNode(vtkMRMLScene* scene, cons
   return imetaNode;
 }
 
-
 //---------------------------------------------------------------------------
 vtkIntArray* vtkIGTLToMRMLImageMetaList::GetNodeEvents()
 {
   vtkIntArray* events;
 
   events = vtkIntArray::New();
-  //events->InsertNextValue(vtkMRMLImageMetaListNode::ModifiedEvent); 
+  //events->InsertNextValue(vtkMRMLImageMetaListNode::ModifiedEvent);
 
   return events;
 }
-
 
 //---------------------------------------------------------------------------
 int vtkIGTLToMRMLImageMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node)
@@ -157,9 +155,7 @@ int vtkIGTLToMRMLImageMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vt
   imetaNode->Modified();
 
   return 1;
-
 }
-
 
 //---------------------------------------------------------------------------
 int vtkIGTLToMRMLImageMetaList::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg)
@@ -225,8 +221,4 @@ int vtkIGTLToMRMLImageMetaList::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrm
     {
     return 0;
     }
-
 }
-
-
-

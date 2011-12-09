@@ -12,19 +12,23 @@
 
 ==========================================================================*/
 
+// VTK includes
+#include <vtkObjectFactory.h>
+#include <vtkMutexLock.h>
+#include <vtkIGTLCircularBuffer.h>
+
+// VTKSYS includes
 #include <vtksys/SystemTools.hxx>
 
-#include "vtkObjectFactory.h"
-#include "vtkMutexLock.h"
-#include "vtkIGTLCircularBuffer.h"
+// OpenIGTLink includes
+#include <igtlMessageBase.h>
 
-#include <string.h>
+// STD includes
+#include <string>
 
-#include "igtlMessageBase.h"
-
+//---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLCircularBuffer);
 vtkCxxRevisionMacro(vtkIGTLCircularBuffer, "$Revision: 10236 $");
-
 
 //---------------------------------------------------------------------------
 vtkIGTLCircularBuffer::vtkIGTLCircularBuffer()
@@ -76,7 +80,7 @@ void vtkIGTLCircularBuffer::PrintSelf(ostream& os, vtkIndent indent)
 
 //---------------------------------------------------------------------------
 // Functions to push data into the circular buffer (for receiving thread)
-// 
+//
 //   StartPush() :     Prepare to push data
 //   GetPushBuffer():  Get MessageBase buffer from the circular buffer
 //   EndPush() :       Finish pushing data. The data becomes ready to
@@ -116,7 +120,7 @@ void vtkIGTLCircularBuffer::EndPush()
 
 //---------------------------------------------------------------------------
 // Functions to pull data into the circular buffer (for monitor thread)
-// 
+//
 //   StartPull() :     Prepare to pull data
 //   GetPullBuffer():  Get MessageBase buffer from the circular buffer
 //   EndPull() :       Finish pulling data

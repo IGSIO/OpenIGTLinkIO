@@ -14,20 +14,23 @@
 #ifndef __vtkMRMLIGTLTrackingDataQueryNode_h
 #define __vtkMRMLIGTLTrackingDataQueryNode_h
 
+// OpenIGTLinkIF MRML includes
+#include "vtkIGTLToMRMLBase.h"
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
-#include "vtkMRML.h"
-#include "vtkMRMLNode.h"
-#include "vtkMRMLStorageNode.h"
+// MRML includes
+#include <vtkMRML.h>
+#include <vtkMRMLNode.h>
+#include <vtkMRMLStorageNode.h>
 
-#include "vtkIGTLToMRMLBase.h"
+// VTK includes
+#include <vtkObject.h>
 
+// STD includes
 #include <string>
 #include <map>
 #include <vector>
 #include <set>
-
-#include "vtkObject.h"
 
 class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataQueryNode : public vtkMRMLNode
 {
@@ -55,7 +58,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataQueryN
     STATUS_NOT_DEFINED,
     STATUS_PREPARED,     // Ready to query
     STATUS_WAITING,      // Waiting for response from server
-    STATUS_SUCCESS,      // Server accepted query successfuly 
+    STATUS_SUCCESS,      // Server accepted query successfuly
     STATUS_ERROR,        // Server failed to accept query
     NUM_STATUS,
   };
@@ -77,7 +80,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataQueryN
 
   static vtkMRMLIGTLTrackingDataQueryNode *New();
   vtkTypeMacro(vtkMRMLIGTLTrackingDataQueryNode,vtkMRMLNode);
-  
+
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual vtkMRMLNode* CreateNodeInstance();
@@ -120,7 +123,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataQueryN
   //----------------------------------------------------------------
   // Constructor and destroctor
   //----------------------------------------------------------------
-  
+
   vtkMRMLIGTLTrackingDataQueryNode();
   ~vtkMRMLIGTLTrackingDataQueryNode();
   vtkMRMLIGTLTrackingDataQueryNode(const vtkMRMLIGTLTrackingDataQueryNode&);
@@ -140,7 +143,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataQueryN
   //BTX
   std::string IGTLName;
   //ETX
-  
+
   int QueryStatus;
   int QueryType;
 
@@ -149,10 +152,10 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLTrackingDataQueryN
   std::string DataNodeID;
   //ETX
 
-  // Time when the querry issued. 
+  // Time when the querry issued.
   double TimeStamp;
   double TimeOut;
-  
+
 };
 
 #endif

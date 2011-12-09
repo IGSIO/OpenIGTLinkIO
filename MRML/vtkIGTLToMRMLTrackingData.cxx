@@ -12,19 +12,26 @@
 
 ==========================================================================*/
 
-#include <vtksys/SystemTools.hxx>
-
-#include "vtkObjectFactory.h"
-#include "vtkIntArray.h"
+// OpenIGTLinkIF MRML includes
+#include "vtkMRMLIGTLQueryNode.h"
+#include "vtkMRMLIGTLTrackingDataBundleNode.h"
 #include "vtkIGTLToMRMLTrackingData.h"
 
-#include "vtkImageData.h"
-#include "vtkMRMLScalarVolumeNode.h"
-#include "igtlTrackingDataMessage.h"
+// OpenIGTLink includes
+#include <igtlTrackingDataMessage.h>
 
-#include "vtkMRMLIGTLTrackingDataBundleNode.h"
-#include "vtkMRMLIGTLQueryNode.h"
+// MRML includes
+#include <vtkMRMLScalarVolumeNode.h>
 
+// VTK includes
+#include <vtkImageData.h>
+#include <vtkIntArray.h>
+#include <vtkObjectFactory.h>
+
+// VTKSYS includes
+#include <vtksys/SystemTools.hxx>
+
+//---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLTrackingData);
 vtkCxxRevisionMacro(vtkIGTLToMRMLTrackingData, "$Revision: 10577 $");
 
@@ -68,7 +75,7 @@ vtkIntArray* vtkIGTLToMRMLTrackingData::GetNodeEvents()
   vtkIntArray* events;
 
   events = vtkIntArray::New();
-  //events->InsertNextValue(vtkMRMLTrackingDataNode::ModifiedEvent); 
+  //events->InsertNextValue(vtkMRMLTrackingDataNode::ModifiedEvent);
 
   return events;
 }
@@ -104,12 +111,12 @@ int vtkIGTLToMRMLTrackingData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtk
         {
         igtl::TrackingDataElement::Pointer trackingElement;
         trackingData->GetTrackingDataElement(i, trackingElement);
-        
+
         igtl::Matrix4x4 matrix;
         trackingElement->GetMatrix(matrix);
-        
+
         tBundleNode->UpdateTransformNode(trackingElement->GetName(), matrix, trackingElement->GetType());
-        
+
         std::cerr << "========== Element #" << i << " ==========" << std::endl;
         std::cerr << " Name       : " << trackingElement->GetName() << std::endl;
         std::cerr << " Type       : " << (int) trackingElement->GetType() << std::endl;

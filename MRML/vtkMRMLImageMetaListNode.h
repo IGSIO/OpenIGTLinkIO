@@ -14,21 +14,23 @@
 #ifndef __vtkMRMLImageMetaListNode_h
 #define __vtkMRMLImageMetaListNode_h
 
+// OpenIGTLinkIF MRML includes
+#include "vtkIGTLToMRMLBase.h"
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
-#include "vtkMRML.h"
-#include "vtkMRMLNode.h"
-#include "vtkMRMLStorageNode.h"
+// MRML includes
+#include <vtkMRML.h>
+#include <vtkMRMLNode.h>
+#include <vtkMRMLStorageNode.h>
 
-#include "vtkIGTLToMRMLBase.h"
+// VTK includes
+#include <vtkObject.h>
 
+// STD includes
 #include <string>
 #include <map>
 #include <vector>
 #include <set>
-
-#include "vtkObject.h"
-
 
 class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLImageMetaListNode : public vtkMRMLNode
 {
@@ -51,10 +53,10 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLImageMetaListNode : pu
     std::string   Name;        /* name / description (< 64 bytes)*/
     std::string   DeviceName;  /* device name to query the IMAGE and COLORT */
     std::string   Modality;    /* modality name (< 32 bytes) */
-    std::string   PatientName; /* patient name (< 64 bytes) */ 
-    std::string   PatientID;   /* patient ID (MRN etc.) (< 64 bytes) */  
+    std::string   PatientName; /* patient name (< 64 bytes) */
+    std::string   PatientID;   /* patient ID (MRN etc.) (< 64 bytes) */
     double        TimeStamp;   /* scan time */
-    int           Size[3];     /* entire image volume size */ 
+    int           Size[3];     /* entire image volume size */
     unsigned char ScalarType;  /* scalar type. see scalar_type in IMAGE message */
   } ImageMetaElement;
   //ETX
@@ -67,7 +69,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLImageMetaListNode : pu
 
   static vtkMRMLImageMetaListNode *New();
   vtkTypeMacro(vtkMRMLImageMetaListNode,vtkMRMLNode);
-  
+
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual vtkMRMLNode* CreateNodeInstance();
@@ -113,7 +115,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLImageMetaListNode : pu
   //----------------------------------------------------------------
   // Constructor and destroctor
   //----------------------------------------------------------------
-  
+
   vtkMRMLImageMetaListNode();
   ~vtkMRMLImageMetaListNode();
   vtkMRMLImageMetaListNode(const vtkMRMLImageMetaListNode&);

@@ -12,18 +12,24 @@
 
 ==========================================================================*/
 
-#include <vtksys/SystemTools.hxx>
+// OpenIGTLink includes
+#include <igtlMessageBase.h>
 
-#include "vtkObjectFactory.h"
+// OpenIGTLinkIF MRML includes
 #include "vtkIGTLToMRMLBase.h"
 
-#include <string.h>
+// VTK includes
+#include <vtkObjectFactory.h>
 
-#include "igtlMessageBase.h"
+// VTKSYS includes
+#include <vtksys/SystemTools.hxx>
 
+// STD includes
+#include <string>
+
+//---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLBase);
 vtkCxxRevisionMacro(vtkIGTLToMRMLBase, "$Revision: 10576 $");
-
 
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLBase::vtkIGTLToMRMLBase()
@@ -31,17 +37,13 @@ vtkIGTLToMRMLBase::vtkIGTLToMRMLBase()
   this->CheckCRC = 1;
 }
 
-
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLBase::~vtkIGTLToMRMLBase()
 {
 }
-
 
 //---------------------------------------------------------------------------
 void vtkIGTLToMRMLBase::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkObject::PrintSelf(os, indent);
 }
-
-

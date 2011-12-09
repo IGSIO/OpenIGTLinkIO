@@ -12,17 +12,24 @@
 
 ==========================================================================*/
 
+// OpenIGTLinkIF MRML includes
+#include "vtkIGTLToMRMLLinearTransform.h"
+
+// OpenIGTLink includes
+#include <igtlTransformMessage.h>
+
+// MRML includes
+#include <vtkMRMLLinearTransformNode.h>
+
+// VTK includes
+#include <vtkIntArray.h>
+#include <vtkObjectFactory.h>
+#include <vtkMatrix4x4.h>
+
+// VTKSYS includes
 #include <vtksys/SystemTools.hxx>
 
-#include "vtkIntArray.h"
-#include "vtkObjectFactory.h"
-#include "vtkIGTLToMRMLLinearTransform.h"
-#include "vtkMatrix4x4.h"
-
-
-#include "vtkMRMLLinearTransformNode.h"
-#include "igtlTransformMessage.h"
-
+//---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLLinearTransform);
 vtkCxxRevisionMacro(vtkIGTLToMRMLLinearTransform, "$Revision: 15552 $");
 
@@ -32,19 +39,16 @@ vtkIGTLToMRMLLinearTransform::vtkIGTLToMRMLLinearTransform()
 {
 }
 
-
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLLinearTransform::~vtkIGTLToMRMLLinearTransform()
 {
 }
-
 
 //---------------------------------------------------------------------------
 void vtkIGTLToMRMLLinearTransform::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkObject::PrintSelf(os, indent);
 }
-
 
 //---------------------------------------------------------------------------
 vtkMRMLNode* vtkIGTLToMRMLLinearTransform::CreateNewNode(vtkMRMLScene* scene, const char* name)
@@ -67,7 +71,6 @@ vtkMRMLNode* vtkIGTLToMRMLLinearTransform::CreateNewNode(vtkMRMLScene* scene, co
   return n;
 }
 
-
 //---------------------------------------------------------------------------
 vtkIntArray* vtkIGTLToMRMLLinearTransform::GetNodeEvents()
 {
@@ -78,7 +81,6 @@ vtkIntArray* vtkIGTLToMRMLLinearTransform::GetNodeEvents()
 
   return events;
 }
-
 
 //---------------------------------------------------------------------------
 int vtkIGTLToMRMLLinearTransform::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node)
@@ -103,7 +105,7 @@ int vtkIGTLToMRMLLinearTransform::IGTLToMRML(igtl::MessageBase::Pointer buffer, 
     return 0;
     }
 
-  vtkMRMLLinearTransformNode* transformNode = 
+  vtkMRMLLinearTransformNode* transformNode =
     vtkMRMLLinearTransformNode::SafeDownCast(node);
 
   igtl::Matrix4x4 matrix;
@@ -127,7 +129,7 @@ int vtkIGTLToMRMLLinearTransform::IGTLToMRML(igtl::MessageBase::Pointer buffer, 
   //std::cerr << sx << ", " << sy << ", " << sz << std::endl;
   //std::cerr << nx << ", " << ny << ", " << nz << std::endl;
   //std::cerr << px << ", " << py << ", " << pz << std::endl;
-  
+
   // set volume orientation
   vtkMatrix4x4* transform = vtkMatrix4x4::New();
   vtkMatrix4x4* transformToParent = transformNode->GetMatrixTransformToParent();
@@ -160,27 +162,25 @@ int vtkIGTLToMRMLLinearTransform::IGTLToMRML(igtl::MessageBase::Pointer buffer, 
 
 }
 
-
 //---------------------------------------------------------------------------
 int vtkIGTLToMRMLLinearTransform::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg)
 {
-
   if (mrmlNode && event == vtkMRMLTransformableNode::TransformModifiedEvent)
     {
     vtkMRMLLinearTransformNode* transformNode =
       vtkMRMLLinearTransformNode::SafeDownCast(mrmlNode);
     vtkMatrix4x4* matrix = transformNode->GetMatrixTransformToParent();
-    
+
     //igtl::TransformMessage::Pointer OutTransformMsg;
     if (this->OutTransformMsg.IsNull())
       {
       this->OutTransformMsg = igtl::TransformMessage::New();
       }
-    
+
     this->OutTransformMsg->SetDeviceName(mrmlNode->GetName());
 
     igtl::Matrix4x4 igtlmatrix;
-    
+
     igtlmatrix[0][0]  = matrix->Element[0][0];
     igtlmatrix[1][0]  = matrix->Element[1][0];
     igtlmatrix[2][0]  = matrix->Element[2][0];
@@ -197,7 +197,7 @@ int vtkIGTLToMRMLLinearTransform::MRMLToIGTL(unsigned long event, vtkMRMLNode* m
     igtlmatrix[1][3]  = matrix->Element[1][3];
     igtlmatrix[2][3]  = matrix->Element[2][3];
     igtlmatrix[3][3]  = matrix->Element[3][3];
-    
+
     this->OutTransformMsg->SetMatrix(igtlmatrix);
     this->OutTransformMsg->Pack();
 
@@ -208,6 +208,4 @@ int vtkIGTLToMRMLLinearTransform::MRMLToIGTL(unsigned long event, vtkMRMLNode* m
     }
 
   return 0;
-
 }
-

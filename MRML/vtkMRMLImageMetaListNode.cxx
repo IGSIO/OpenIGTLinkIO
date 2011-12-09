@@ -12,19 +12,23 @@ Version:   $Revision: 1.2 $
 
 =========================================================================auto=*/
 
+// OpenIGTLink includes
+#include <igtlOSUtil.h>
+#include <igtlMessageBase.h>
+#include <igtlMessageHeader.h>
+
+// VTK includes
+#include <vtkObjectFactory.h>
+
+// MRML includes
+#include <vtkMRMLImageMetaListNode.h>
+#include <vtkMRMLScene.h>
+
+// STD includes
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <map>
-
-#include "vtkObjectFactory.h"
-
-#include "vtkMRMLImageMetaListNode.h"
-#include "vtkMRMLScene.h"
-
-#include "igtlOSUtil.h"
-#include "igtlMessageBase.h"
-#include "igtlMessageHeader.h"
 
 //------------------------------------------------------------------------------
 vtkMRMLImageMetaListNode* vtkMRMLImageMetaListNode::New()
@@ -162,7 +166,7 @@ void vtkMRMLImageMetaListNode::Copy(vtkMRMLNode *anode)
 
   /*
   int type = node->GetType();
-  
+
   switch(type)
     {
     case TYPE_SERVER:

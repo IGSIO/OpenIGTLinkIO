@@ -15,14 +15,17 @@
 #ifndef __vtkIGTLCircularBuffer_h
 #define __vtkIGTLCircularBuffer_h
 
+// VTK includes
+#include <vtkObject.h>
+
+// OpenIGTLink includes
+#include <igtlMessageBase.h>
+
+// OpenIGTLinkIF MRML includes
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
-//#include "OpenIGTLinkIFMRMLExport.h"
 
-#include "vtkObject.h"
-
+// STD includes
 #include <string>
-
-#include "igtlMessageBase.h"
 
 #define IGTLCB_CIRC_BUFFER_SIZE    3
 
@@ -75,8 +78,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkIGTLCircularBuffer : publi
   //BTX
   igtl::MessageBase::Pointer Messages[IGTLCB_CIRC_BUFFER_SIZE];
   //ETX
-  
-};
 
+};
 
 #endif //__vtkIGTLCircularBuffer_h

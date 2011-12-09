@@ -15,13 +15,18 @@
 #ifndef __vtkIGTLToMRMLPosition_h
 #define __vtkIGTLToMRMLPosition_h
 
+// OpenIGTLinkIF MRML includes
+#include "vtkIGTLToMRMLBase.h"
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
-#include "vtkObject.h"
-#include "vtkMRMLNode.h"
-#include "vtkIGTLToMRMLBase.h"
+// OpenIGTLink includes
+#include <igtlPositionMessage.h>
 
-#include "igtlPositionMessage.h"
+// MRML includes
+#include <vtkMRMLNode.h>
+
+// VTK includes
+#include <vtkObject.h>
 
 class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkIGTLToMRMLPosition : public vtkIGTLToMRMLBase
 {
@@ -51,7 +56,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkIGTLToMRMLPosition : publi
   //BTX
   igtl::PositionMessage::Pointer OutPositionMsg;
   //ETX
-  
+
 };
 
 

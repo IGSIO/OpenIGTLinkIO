@@ -15,13 +15,18 @@
 #ifndef __vtkIGTLToMRMLLinearTransform_h
 #define __vtkIGTLToMRMLLinearTransform_h
 
+// OpenIGTLinkIF MRML includes
+#include "vtkIGTLToMRMLBase.h"
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
-#include "vtkObject.h"
-#include "vtkMRMLNode.h"
-#include "vtkIGTLToMRMLBase.h"
+// OpenIGTLink includes
+#include <igtlTransformMessage.h>
 
-#include "igtlTransformMessage.h"
+// MRML includes
+#include <vtkMRMLNode.h>
+
+// VTK includes
+#include <vtkObject.h>
 
 class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkIGTLToMRMLLinearTransform : public vtkIGTLToMRMLBase
 {
@@ -51,7 +56,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkIGTLToMRMLLinearTransform 
   //BTX
   igtl::TransformMessage::Pointer OutTransformMsg;
   //ETX
-  
+
 };
 
 

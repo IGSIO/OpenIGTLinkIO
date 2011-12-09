@@ -12,21 +12,26 @@ Version:   $Revision: 1.2 $
 
 =========================================================================auto=*/
 
+// OpenIGTLinkIF MRML includes
+#include <vtkMRMLIGTLTrackingDataQueryNode.h>
+
+// OpenIGTLink includes
+#include <igtlOSUtil.h>
+#include <igtlMessageBase.h>
+#include <igtlMessageHeader.h>
+#include <igtl_header.h>  // to define maximum length of message name
+
+// MRML includes
+#include <vtkMRMLScene.h>
+
+// VTK includes
+#include <vtkObjectFactory.h>
+
+// STD includes
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <map>
-
-#include "vtkObjectFactory.h"
-
-#include "vtkMRMLIGTLTrackingDataQueryNode.h"
-#include "vtkMRMLScene.h"
-
-#include "igtlOSUtil.h"
-#include "igtlMessageBase.h"
-#include "igtlMessageHeader.h"
-
-#include "igtl_header.h"  // to define maximum length of message name
 
 //------------------------------------------------------------------------------
 vtkMRMLIGTLTrackingDataQueryNode* vtkMRMLIGTLTrackingDataQueryNode::New()
@@ -64,7 +69,7 @@ vtkMRMLIGTLTrackingDataQueryNode::vtkMRMLIGTLTrackingDataQueryNode()
   this->TimeStamp = 0.0;
   this->TimeOut   = 0.0;
 
-  
+
 }
 
 //----------------------------------------------------------------------------
@@ -170,7 +175,7 @@ void vtkMRMLIGTLTrackingDataQueryNode::Copy(vtkMRMLNode *anode)
 
   /*
   int type = node->GetType();
-  
+
   switch(type)
     {
     case TYPE_SERVER:

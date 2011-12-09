@@ -14,27 +14,30 @@
 #ifndef __vtkMRMLIGTLConnectorNode_h
 #define __vtkMRMLIGTLConnectorNode_h
 
+// OpenIGTLinkIF MRML includes
+#include "vtkIGTLToMRMLBase.h"
+#ifdef OpenIGTLinkIF_USE_VERSION_2
+# include "vtkMRMLIGTLQueryNode.h"
+#endif
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
+// OpenIGTLink includes
+#include <igtlServerSocket.h>
+#include <igtlClientSocket.h>
 
-#include "vtkMRML.h"
-#include "vtkMRMLNode.h"
-#include "vtkMRMLStorageNode.h"
+// MRML includes
+#include <vtkMRML.h>
+#include <vtkMRMLNode.h>
+#include <vtkMRMLStorageNode.h>
 
-#include "vtkIGTLToMRMLBase.h"
+// VTK includes
+#include <vtkObject.h>
 
+// STD includes
 #include <string>
 #include <map>
 #include <vector>
 #include <set>
-
-#include "vtkObject.h"
-#include "igtlServerSocket.h"
-#include "igtlClientSocket.h"
-
-#ifdef OpenIGTLinkIF_USE_VERSION_2
-  #include "vtkMRMLIGTLQueryNode.h"
-#endif //OpenIGTLinkIF_USE_VERSION_2
 
 class vtkMultiThreader;
 class vtkMutexLock;
@@ -66,7 +69,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLConnectorNode : pu
     TYPE_CLIENT,
     NUM_TYPE
   };
-  
+
   enum {
     STATE_OFF,
     STATE_WAIT_CONNECTION,
@@ -111,7 +114,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLConnectorNode : pu
 
   static vtkMRMLIGTLConnectorNode *New();
   vtkTypeMacro(vtkMRMLIGTLConnectorNode,vtkMRMLNode);
-  
+
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual vtkMRMLNode* CreateNodeInstance();
@@ -140,7 +143,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLConnectorNode : pu
   //----------------------------------------------------------------
   // Constructor and destroctor
   //----------------------------------------------------------------
-  
+
   vtkMRMLIGTLConnectorNode();
   ~vtkMRMLIGTLConnectorNode();
   vtkMRMLIGTLConnectorNode(const vtkMRMLIGTLConnectorNode&);
@@ -177,7 +180,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLConnectorNode : pu
   vtkGetMacro( CheckCRC, int );
   void SetCheckCRC(int c);
 
-  
+
   //----------------------------------------------------------------
   // Thread Control
   //----------------------------------------------------------------
@@ -227,7 +230,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLConnectorNode : pu
   // Unregister IGTL to MRML message converter.
   // This is used by vtkOpenIGTLinkIFLogic class.
   void UnregisterMessageConverter(vtkIGTLToMRMLBase* converter);
-  
+
   // Description:
   // Set and start observing MRML node for outgoing data.
   // If devType == NULL, a converter is chosen based only on MRML Tag.
@@ -265,7 +268,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLConnectorNode : pu
   // Description:
   // Get Nth outgoing MRML nodes:
   vtkMRMLNode* GetIncomingMRMLNode(unsigned int i);
-  
+
   // Description:
   // A function to explicitly push node to OpenIGTLink
   // (Usually, data stored in MRML scene are exported, when the registered events are invoked.)
@@ -309,7 +312,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLConnectorNode : pu
 
  private:
   //----------------------------------------------------------------
-  // Connector configuration 
+  // Connector configuration
   //----------------------------------------------------------------
   //BTX
   std::string Name;
@@ -371,7 +374,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLConnectorNode : pu
   DeviceIDSetType   IncomingDeviceIDSet;
   DeviceIDSetType   OutgoingDeviceIDSet;
   DeviceIDSetType   UnspecifiedDeviceIDSet;
-  
+
   // Message converter (IGTLToMRML)
   MessageConverterListType MessageConverterList;
   MessageConverterMapType  IGTLNameToConverterMap;
@@ -380,9 +383,9 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkMRMLIGTLConnectorNode : pu
   // List of nodes that this connector node is observing.
   MRMLNodeListType         OutgoingMRMLNodeList;
   NodeInfoListType         IncomingMRMLNodeInfoList;
-  
+
   int CheckCRC;
-  
+
 };
 
 #endif

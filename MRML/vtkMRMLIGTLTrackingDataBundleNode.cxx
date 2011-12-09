@@ -12,22 +12,27 @@ Version:   $Revision: 1.2 $
 
 =========================================================================auto=*/
 
+// OpenIGTLinkIF MRML includes
+#include "vtkMRMLIGTLTrackingDataBundleNode.h"
+
+// OpenIGTLink includes
+#include <igtlOSUtil.h>
+#include <igtlMessageBase.h>
+#include <igtlMessageHeader.h>
+#include <igtl_header.h>  // to define maximum length of message name
+
+// MRML includes
+#include <vtkMRMLScene.h>
+
+// VTK includes
+#include <vtkMatrix4x4.h>
+#include <vtkObjectFactory.h>
+
+// STD includes
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <map>
-
-#include "vtkObjectFactory.h"
-#include "vtkMatrix4x4.h"
-
-#include "vtkMRMLIGTLTrackingDataBundleNode.h"
-#include "vtkMRMLScene.h"
-
-#include "igtlOSUtil.h"
-#include "igtlMessageBase.h"
-#include "igtlMessageHeader.h"
-
-#include "igtl_header.h"  // to define maximum length of message name
 
 //------------------------------------------------------------------------------
 vtkMRMLIGTLTrackingDataBundleNode* vtkMRMLIGTLTrackingDataBundleNode::New()
@@ -58,7 +63,7 @@ vtkMRMLNode* vtkMRMLIGTLTrackingDataBundleNode::CreateNodeInstance()
 vtkMRMLIGTLTrackingDataBundleNode::vtkMRMLIGTLTrackingDataBundleNode()
 {
   this->TrackingDataList.clear();
-  
+
 }
 
 //----------------------------------------------------------------------------
@@ -164,7 +169,7 @@ void vtkMRMLIGTLTrackingDataBundleNode::Copy(vtkMRMLNode *anode)
 
   /*
   int type = node->GetType();
-  
+
   switch(type)
     {
     case TYPE_SERVER:
@@ -286,11 +291,11 @@ void vtkMRMLIGTLTrackingDataBundleNode::UpdateTransformNode(const char* name, ig
     // TODO: register to MRML observer
 
     }
-  else 
+  else
     {
     node = iter->second.node;
     }
-  
+
   vtkMatrix4x4* mat = node->GetMatrixTransformToParent();
   double *vtkmat = &mat->Element[0][0];
   float *igtlmat = &matrix[0][0];

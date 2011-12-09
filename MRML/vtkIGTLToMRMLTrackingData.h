@@ -15,16 +15,20 @@
 #ifndef __vtkIGTLToMRMLTrackingData_h
 #define __vtkIGTLToMRMLTrackingData_h
 
-#include "vtkObject.h"
-
+// OpenIGTLinkIF MRML includes
+#include "vtkIGTLToMRMLBase.h"
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
-#include "vtkMRMLNode.h"
-#include "vtkIGTLToMRMLBase.h"
-
+// OpenIGTLink includes
 #ifdef OpenIGTLinkIF_USE_VERSION_2
-  #include "igtlTrackingDataMessage.h"
-#endif // OpenIGTLinkIF_USE_VERSION_2
+# include <igtlTrackingDataMessage.h>
+#endif
+
+// MRML includes
+#include <vtkMRMLNode.h>
+
+// VTK includes
+#include <vtkObject.h>
 
 class vtkMRMLVolumeNode;
 
@@ -65,7 +69,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_MRML_EXPORT vtkIGTLToMRMLTrackingData : p
   igtl::StopTrackingDataMessage::Pointer  StopTrackingDataMessage;
   //ETX
 #endif // OpenIGTLinkIF_USE_VERSION_2
-  
+
 };
 
 

@@ -12,40 +12,44 @@
 
 ==========================================================================*/
 
+// OpenIGTLinkIF MRML includes
+#include "vtkIGTLToMRMLPosition.h"
+
+// OpenIGTLink includes
+#include <igtlPositionMessage.h>
+#include <igtlWin32Header.h>
+#include <igtlMath.h>
+
+// MRML includes
+#include <vtkMRMLLinearTransformNode.h>
+
+// VTK includes
+#include <vtkIntArray.h>
+#include <vtkMatrix4x4.h>
+#include <vtkObjectFactory.h>
+
+// VTKSYS includes
 #include <vtksys/SystemTools.hxx>
 
-#include "vtkObjectFactory.h"
-#include "vtkMatrix4x4.h"
-#include "vtkIntArray.h"
-
-#include "vtkIGTLToMRMLPosition.h"
-#include "vtkMRMLLinearTransformNode.h"
-#include "igtlPositionMessage.h"
-#include "igtlWin32Header.h"
-#include "igtlMath.h"
-
+//---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLPosition);
 vtkCxxRevisionMacro(vtkIGTLToMRMLPosition, "$Revision: 15552 $");
-
 
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLPosition::vtkIGTLToMRMLPosition()
 {
 }
 
-
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLPosition::~vtkIGTLToMRMLPosition()
 {
 }
-
 
 //---------------------------------------------------------------------------
 void vtkIGTLToMRMLPosition::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkObject::PrintSelf(os, indent);
 }
-
 
 //---------------------------------------------------------------------------
 vtkMRMLNode* vtkIGTLToMRMLPosition::CreateNewNode(vtkMRMLScene* scene, const char* name)
@@ -68,7 +72,6 @@ vtkMRMLNode* vtkIGTLToMRMLPosition::CreateNewNode(vtkMRMLScene* scene, const cha
   return n;
 }
 
-
 //---------------------------------------------------------------------------
 vtkIntArray* vtkIGTLToMRMLPosition::GetNodeEvents()
 {
@@ -79,7 +82,6 @@ vtkIntArray* vtkIGTLToMRMLPosition::GetNodeEvents()
 
   return events;
 }
-
 
 //---------------------------------------------------------------------------
 int vtkIGTLToMRMLPosition::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node)
@@ -104,7 +106,7 @@ int vtkIGTLToMRMLPosition::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
     return 0;
     }
 
-  vtkMRMLLinearTransformNode* transformNode = 
+  vtkMRMLLinearTransformNode* transformNode =
     vtkMRMLLinearTransformNode::SafeDownCast(node);
 
   float position[3];
@@ -114,7 +116,7 @@ int vtkIGTLToMRMLPosition::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
   positionMsg->GetQuaternion(quaternion);
 
   igtl::QuaternionToMatrix(quaternion, matrix);
-  
+
   vtkMatrix4x4* transformToParent = transformNode->GetMatrixTransformToParent();
   int row, column;
   for (row = 0; row < 3; row++)
@@ -135,27 +137,25 @@ int vtkIGTLToMRMLPosition::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
   return 1;
 }
 
-
 //---------------------------------------------------------------------------
 int vtkIGTLToMRMLPosition::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg)
 {
-
   if (mrmlNode && event == vtkMRMLTransformableNode::TransformModifiedEvent)
     {
     vtkMRMLLinearTransformNode* transformNode =
       vtkMRMLLinearTransformNode::SafeDownCast(mrmlNode);
     vtkMatrix4x4* matrix = transformNode->GetMatrixTransformToParent();
-    
+
     //igtl::PositionMessage::Pointer OutPositionMsg;
     if (this->OutPositionMsg.IsNull())
       {
       this->OutPositionMsg = igtl::PositionMessage::New();
       }
-    
+
     this->OutPositionMsg->SetDeviceName(mrmlNode->GetName());
 
     igtl::Matrix4x4 igtlmatrix;
-    
+
     igtlmatrix[0][0]  = matrix->Element[0][0];
     igtlmatrix[1][0]  = matrix->Element[1][0];
     igtlmatrix[2][0]  = matrix->Element[2][0];
@@ -175,12 +175,12 @@ int vtkIGTLToMRMLPosition::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
 
     float position[3];
     float quaternion[4];
-    
+
     position[0] = igtlmatrix[0][3];
     position[1] = igtlmatrix[1][3];
     position[2] = igtlmatrix[2][3];
     igtl::MatrixToQuaternion(igtlmatrix, quaternion);
-    
+
     //this->OutPositionMsg->SetMatrix(igtlmatrix);
     this->OutPositionMsg->SetPosition(position);
     this->OutPositionMsg->SetQuaternion(quaternion);
@@ -193,6 +193,4 @@ int vtkIGTLToMRMLPosition::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
     }
 
   return 0;
-
 }
-
