@@ -42,6 +42,7 @@
 #include <vtkCylinderSource.h>
 #include <vtkImageData.h>
 #include <vtkMultiThreader.h>
+#include <vtkNew.h>
 #include <vtkObjectFactory.h>
 #include <vtkSphereSource.h>
 #include <vtkTransform.h>
@@ -159,17 +160,15 @@ void vtkSlicerOpenIGTLinkIFLogic::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 void vtkSlicerOpenIGTLinkIFLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 {
-  vtkDebugMacro("SetMRMLSceneInternal - listening to scene events");
-
-//  vtkIntArray *events = vtkIntArray::New();
-//  events->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
-////  events->InsertNextValue(vtkMRMLScene::NodeRemovedEvent);
+  vtkNew<vtkIntArray> events;
+//  events->InsertNextValue(vtkMRMLScene::NewSceneEvent);
 //  events->InsertNextValue(vtkMRMLScene::SceneClosedEvent);
-//  events->InsertNextValue(vtkMRMLScene::SceneImportedEvent);
+//  events->InsertNextValue(vtkMRMLScene::SceneAboutToBeClosedEvent);
 //  events->InsertNextValue(vtkMRMLScene::SceneRestoredEvent);
-////  events->InsertNextValue(vtkMRMLScene::SceneAboutToBeRestoredEvent);
-//  this->SetAndObserveMRMLSceneEventsInternal(newScene, events);
-//  events->Delete();
+  events->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
+//  events->InsertNextValue(vtkMRMLScene::NodeRemovedEvent);
+
+  this->SetAndObserveMRMLSceneEventsInternal(newScene, events.GetPointer());
 }
 
 //---------------------------------------------------------------------------
