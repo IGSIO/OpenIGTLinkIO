@@ -124,16 +124,6 @@ void qSlicerOpenIGTLinkIFModuleWidget::onRemoveConnectorButtonClicked()
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerOpenIGTLinkIFModuleWidget::onServerSelected()
-{
-}
-
-//-----------------------------------------------------------------------------
-void qSlicerOpenIGTLinkIFModuleWidget::onClientSelected()
-{
-}
-
-//-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::setLocatorDriverVisible(bool visible)
 {
   Q_D(qSlicerOpenIGTLinkIFModuleWidget);
