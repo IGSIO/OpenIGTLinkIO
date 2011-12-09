@@ -73,18 +73,25 @@ void qSlicerOpenIGTLinkIFModuleWidget::setMRMLScene(vtkMRMLScene* scene)
 //-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::onAddConnectorButtonClicked()
 {
-  Q_D(qSlicerOpenIGTLinkIFModuleWidget);
-
   qMRMLNodeFactory::createNode(this->mrmlScene(), "vtkMRMLIGTLConnectorNode");
-  //int restrectDeviceName = (this->EnableAdvancedSettingButton->GetSelectedState())? 1:0;
 
+  //int restrectDeviceName = (this->EnableAdvancedSettingButton->GetSelectedState())? 1:0;
   //connector->SetRestrictDeviceName(restrectDeviceName);
 }
 
 //-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::onRemoveConnectorButtonClicked()
 {
-  std::cerr << "Remove Connector Button is clicked." << std::endl;
+  Q_D(qSlicerOpenIGTLinkIFModuleWidget);
+  vtkMRMLNode * node = d->ConnectorListView->currentNode();
+  if (!node)
+    {
+    return;
+    }
+  vtkMRMLIGTLConnectorNode * connectorNode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+  Q_ASSERT(connectorNode);
+  connectorNode->Stop();
+  this->mrmlScene()->RemoveNode(connectorNode);
 }
 
 //-----------------------------------------------------------------------------
