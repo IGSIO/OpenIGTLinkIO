@@ -103,32 +103,16 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   /// data is copied to the slice nodes depending on the current mode
   vtkGetObjectMacro ( LocatorTransformNode,    vtkMRMLTransformNode );
 
-  /// Initialize listening to MRML events
-  /// SetMRMLSceneInternal(vtkMRMLScene * newScene) must be implemented,
-  /// if OnMRMLScene*() or OnMRMLNode*() are used.
   virtual void SetMRMLSceneInternal(vtkMRMLScene * newScene);
 
-  /// Register node classes into the MRML scene. Called each time a new scene
-  /// is set.
   virtual void RegisterNodes();
 
   //----------------------------------------------------------------
   // Events
   //----------------------------------------------------------------
 
-  ///// Called after the corresponding MRML event is triggered.
-  ///// \sa ProcessMRMLSceneEvents
-  //virtual void OnMRMLSceneAboutToBeClosedEvent(){}
-  //virtual void OnMRMLSceneClosedEvent(){}
-  //virtual void OnMRMLSceneAboutToBeImportedEvent(){}
-  //virtual void OnMRMLSceneImportedEvent(){}
-  //virtual void OnMRMLSceneRestoredEvent(){}
-  //virtual void OnMRMLSceneNewEvent(){}
-  virtual void OnMRMLSceneNodeAddedEvent(vtkMRMLNode* /*node*/);
-  //virtual void OnMRMLSceneNodeRemovedEvent(vtkMRMLNode* /*node*/){}
+  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* /*node*/);
 
-  /// Called after the corresponding MRML event is triggered.
-  /// \sa ProcessMRMLNodesEvents
   virtual void OnMRMLNodeModified(vtkMRMLNode* /*node*/){}
 
   //----------------------------------------------------------------

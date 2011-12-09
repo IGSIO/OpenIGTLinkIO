@@ -160,15 +160,10 @@ void vtkSlicerOpenIGTLinkIFLogic::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 void vtkSlicerOpenIGTLinkIFLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 {
-  vtkNew<vtkIntArray> events;
-//  events->InsertNextValue(vtkMRMLScene::NewSceneEvent);
-//  events->InsertNextValue(vtkMRMLScene::SceneClosedEvent);
-//  events->InsertNextValue(vtkMRMLScene::SceneAboutToBeClosedEvent);
-//  events->InsertNextValue(vtkMRMLScene::SceneRestoredEvent);
-  events->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
-//  events->InsertNextValue(vtkMRMLScene::NodeRemovedEvent);
+  vtkNew<vtkIntArray> sceneEvents;
+  sceneEvents->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
 
-  this->SetAndObserveMRMLSceneEventsInternal(newScene, events.GetPointer());
+  this->SetAndObserveMRMLSceneEventsInternal(newScene, sceneEvents.GetPointer());
 }
 
 //---------------------------------------------------------------------------
@@ -202,13 +197,12 @@ void vtkSlicerOpenIGTLinkIFLogic::UpdateAll()
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent(vtkMRMLNode* node)
+void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded(vtkMRMLNode* node)
 {
-  //vtkDebugMacro("vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent");
+  //vtkDebugMacro("vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded");
 
-  // don't do anything if the scene is still updating
-  if (this->GetMRMLScene() &&
-      this->GetMRMLScene()->IsBatchProcessing())
+  vtkMRMLScene * scene = this->GetMRMLScene();
+  if (scene && scene->IsBatchProcessing())
     {
     return;
     }
@@ -216,15 +210,14 @@ void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent(vtkMRMLNode* node)
   vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
   if (cnode)
     {
+    // TODO Remove this line when the corresponding UI option will be added
+    cnode->SetRestrictDeviceName(0);
+
     // Register converters
     unsigned int n = this->GetNumberOfConverters();
     for (unsigned short i = 0; i < n; i ++)
       {
-      vtkIGTLToMRMLBase* c = this->GetConverter(i);
-      if (!c)
-        {
-        cnode->RegisterMessageConverter(c);
-        }
+      bool ok = cnode->RegisterMessageConverter(this->GetConverter(i));
       }
     }
 }
