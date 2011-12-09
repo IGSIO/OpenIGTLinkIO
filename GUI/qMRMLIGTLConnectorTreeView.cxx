@@ -71,11 +71,7 @@ qMRMLIGTLConnectorTreeViewPrivate::qMRMLIGTLConnectorTreeViewPrivate(qMRMLIGTLCo
 void qMRMLIGTLConnectorTreeViewPrivate::init()
 {
   Q_Q(qMRMLIGTLConnectorTreeView);
-  //p->qMRMLTreeView::setModel(new qMRMLItemModel(p));
-  //this->SceneModel = new qMRMLSceneIGTLConnectorModel(q);
-  //this->SceneModel->setColumnCount(6);
 
-  //this->SceneModel->setListenNodeModifiedEvent(true);
   this->SceneModel = new qMRMLSceneIGTLConnectorModel(q);
   q->setSceneModel(this->SceneModel, "IGTLConnector");
   //this->SortFilterModel = new qMRMLSortFilterProxyModel(q);

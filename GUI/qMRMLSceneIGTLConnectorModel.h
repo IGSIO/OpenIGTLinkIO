@@ -42,10 +42,8 @@ public:
   qMRMLSceneIGTLConnectorModel(QObject *parent=0);
   virtual ~qMRMLSceneIGTLConnectorModel();
 
-  // Register the logic
   void setLogic(vtkSlicerOpenIGTLinkIFLogic* logic);
 
-  // Enum for the different columns
   enum Columns{
     NameColumn = 0,
     TypeColumn,
