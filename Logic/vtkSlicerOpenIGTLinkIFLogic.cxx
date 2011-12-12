@@ -160,8 +160,11 @@ void vtkSlicerOpenIGTLinkIFLogic::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 void vtkSlicerOpenIGTLinkIFLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 {
+  this->Superclass::SetMRMLSceneInternal(newScene);
   vtkNew<vtkIntArray> sceneEvents;
   sceneEvents->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
+  sceneEvents->InsertNextValue(vtkMRMLScene::NodeRemovedEvent);
+  sceneEvents->InsertNextValue(vtkCommand::ModifiedEvent);
 
   this->SetAndObserveMRMLSceneEventsInternal(newScene, sceneEvents.GetPointer());
 }
@@ -197,15 +200,17 @@ void vtkSlicerOpenIGTLinkIFLogic::UpdateAll()
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded(vtkMRMLNode* node)
+void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAddedEvent(vtkMRMLNode* node)
 {
   //vtkDebugMacro("vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded");
 
   vtkMRMLScene * scene = this->GetMRMLScene();
-  if (scene && scene->IsBatchProcessing())
-    {
-    return;
-    }
+
+  // TODO: the following lines are temporally disabled for older version
+  //if (scene && scene->IsBatchProcessing())
+  //  {
+  //  return;
+  //  }
 
   vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
   if (cnode)
