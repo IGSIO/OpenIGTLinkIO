@@ -111,7 +111,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   // Events
   //----------------------------------------------------------------
 
-  virtual void OnMRMLSceneNodeAddedEvent(vtkMRMLNode* /*node*/);
+  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* /*node*/);
 
   virtual void OnMRMLNodeModified(vtkMRMLNode* /*node*/){}
 
