@@ -70,11 +70,6 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   d->setupUi(this);
   this->Superclass::setup();
 
-  // Starting up timer to handle network communication
-  // TODO: 
-
-  std::cerr << "qSlicerOpenIGTLinkIFModuleWidget::setup()" << std::endl;
-
   connect(d->AddConnectorButton, SIGNAL(clicked()), this,
           SLOT(onAddConnectorButtonClicked()));
   connect(d->RemoveConnectorButton, SIGNAL(clicked()), this,
@@ -105,6 +100,7 @@ void qSlicerOpenIGTLinkIFModuleWidget::setMRMLScene(vtkMRMLScene* scene)
     return;
     }
   d->ConnectorListView->setMRMLScene(scene);
+  d->IOTreeView->setMRMLScene(scene);
 }
 
 //-----------------------------------------------------------------------------

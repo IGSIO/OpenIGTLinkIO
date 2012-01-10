@@ -70,7 +70,6 @@ QString qSlicerOpenIGTLinkIFModule::acknowledgementText()const
          "NIH (R01CA111288, P41RR019703, P01CA067165 and U54EB005149) and NEDO, Japan.";
 }
 
-
 //-----------------------------------------------------------------------------
 QIcon qSlicerOpenIGTLinkIFModule::icon()const
 {

@@ -30,7 +30,7 @@
 // Logic includes
 #include "Logic/vtkSlicerOpenIGTLinkIFLogic.h"
 
-class qMRMLSceneIGTLConnectorModelPrivate;
+//class qMRMLSceneIGTLConnectorModelPrivate;
 class vtkMRMLNode;
 
 /// \ingroup Slicer_QtModules_OpenIGTLink

@@ -31,7 +31,7 @@
 #include "qMRMLSceneModel.h"
 #include "qMRMLSortFilterProxyModel.h"
 #include "qMRMLSceneTransformModel.h"
-#include "qMRMLSceneIGTLConnectorModel.h"
+#include "qMRMLIGTLIOModel.h"
 #include "qMRMLTreeView.h"
 
 // OpenIGTLinkIF GUI includes
@@ -54,7 +54,7 @@ public:
   qMRMLIGTLIOTreeViewPrivate(qMRMLIGTLIOTreeView& object);
   void init();
 
-  qMRMLSceneIGTLConnectorModel*     SceneModel;
+  qMRMLIGTLIOModel*                 SceneModel;
   qMRMLSortFilterProxyModel*        SortFilterModel;
   vtkSlicerOpenIGTLinkIFLogic*      Logic;
 };
@@ -72,33 +72,18 @@ void qMRMLIGTLIOTreeViewPrivate::init()
 {
   Q_Q(qMRMLIGTLIOTreeView);
 
-  this->SceneModel = new qMRMLSceneIGTLConnectorModel(q);
+  this->SceneModel = new qMRMLIGTLIOModel(q);
   q->setSceneModel(this->SceneModel, "IGTLConnector");
-  //this->SortFilterModel = new qMRMLSortFilterProxyModel(q);
-  // we only want to show vtkMRMLAnnotationNodes and vtkMRMLAnnotationHierarchyNodes
+
   QStringList nodeTypes = QStringList();
   nodeTypes.append("vtkMRMLIGTLConnectorNode");
 
-  //this->SortFilterModel->setNodeTypes(nodeTypes);
   q->setNodeTypes(nodeTypes);
   this->SortFilterModel = q->sortFilterProxyModel();
 
-  //this->SortFilterModel->setSourceModel(this->SceneModel);
-  //q->qMRMLTreeView::setModel(this->SortFilterModel);
-
-  //ctkModelTester * tester = new ctkModelTester(p);
-  //tester->setModel(this->SortFilterModel);
-
-//  QObject::connect(q, SIGNAL(clicked(const QModelIndex& )),
-//                   q, SLOT(onClicked(const QModelIndex&)));
-
-//  QObject::connect( q->selectionModel(),
-//        SIGNAL( selectionChanged( const QItemSelection &, const QItemSelection & ) ),
-//        q,
-//        SLOT( onSelectionChanged( const QItemSelection &, const QItemSelection & ) ),
-//        Qt::DirectConnection );
-
   q->setUniformRowHeights(true);
+
+  q->expandAll();
 }
 
 //------------------------------------------------------------------------------
@@ -130,9 +115,7 @@ void qMRMLIGTLIOTreeView::setMRMLScene(vtkMRMLScene* scene)
 }
 
 //------------------------------------------------------------------------------
-//
 // Click and selected event handling
-//
 //------------------------------------------------------------------------------
 
 
