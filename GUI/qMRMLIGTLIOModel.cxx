@@ -182,6 +182,13 @@ void qMRMLIGTLIOModel::updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* 
     }
 }
 
+//------------------------------------------------------------------------------
+void qMRMLIGTLIOModel::addNodeToCurrentBranch(vtkMRMLNode* node)
+{
+  Q_D(qMRMLIGTLIOModel);
+  
+}
+
 
 //------------------------------------------------------------------------------
 void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStandardItem* item, qMRMLIGTLIOModel::Direction dir)
@@ -273,10 +280,10 @@ QStandardItem* qMRMLIGTLIOModel::insertIOTree(vtkMRMLNode* node)
 
   d->removeAllExtraItems(nodeItem, "IOTree");
   QStandardItem* inItem = d->insertExtraItem2(nodeItem->rowCount(), nodeItem,
-                                              QString("IN"), "IOTree", Qt::ItemIsEnabled);
+                                              QString("IN"), "IOTree", Qt::ItemIsEnabled|Qt::ItemIsSelectable);
   updateIOTreeBranch(cnode, inItem, qMRMLIGTLIOModel::INCOMING);
   QStandardItem* outItem = d->insertExtraItem2(nodeItem->rowCount(), nodeItem,
-                                               QString("OUT"), "IOTree", Qt::ItemIsEnabled);
+                                               QString("OUT"), "IOTree", Qt::ItemIsEnabled|Qt::ItemIsSelectable);
   updateIOTreeBranch(cnode, outItem, qMRMLIGTLIOModel::OUTGOING);  
   
   return nodeItem;

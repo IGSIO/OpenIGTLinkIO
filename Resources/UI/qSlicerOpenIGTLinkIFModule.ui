@@ -14,21 +14,6 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0" colspan="2">
-    <widget class="ctkCollapsibleButton" name="IOConfigurationFrame">
-     <property name="text">
-      <string>I/O Configuration</string>
-     </property>
-     <property name="contentsFrameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_5">
-      <item>
-       <widget class="qMRMLIGTLIOTreeView" name="IOTreeView"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item row="4" column="0" colspan="2">
     <spacer name="VerticalSpacer">
      <property name="orientation">
@@ -92,14 +77,14 @@
          <item>
           <widget class="QPushButton" name="AddConnectorButton">
            <property name="text">
-            <string>Add</string>
+            <string>+</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="RemoveConnectorButton">
            <property name="text">
-            <string>Remove</string>
+            <string>-</string>
            </property>
           </widget>
          </item>
@@ -121,6 +106,24 @@
       </item>
       <item>
        <widget class="qSlicerIGTLConnectorPropertyWidget" name="ConnectorPropertyWidget" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="ctkCollapsibleButton" name="IOConfigurationFrame">
+     <property name="text">
+      <string>I/O Configuration</string>
+     </property>
+     <property name="contentsFrameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="qMRMLIGTLIOTreeView" name="IOTreeView"/>
+      </item>
+      <item>
+       <widget class="qSlicerIGTLIONodeSelectorWidget" name="IGTIONodeSelectorWidget" native="true"/>
       </item>
      </layout>
     </widget>
@@ -155,6 +158,12 @@
    <class>qMRMLIGTLIOTreeView</class>
    <extends>QTreeView</extends>
    <header>qMRMLIGTLIOTreeView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>qSlicerIGTLIONodeSelectorWidget</class>
+   <extends>QWidget</extends>
+   <header>qSlicerIGTLIONodeSelectorWidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -59,10 +59,15 @@ public:
 
 public slots:
   void setMRMLScene(vtkMRMLScene* scene);
-//  void onSelectionChanged(const QItemSelection& index,const QItemSelection& beforeIndex);
 
-//protected slots:
-//  void onClicked(const QModelIndex& index);
+signals:  
+  void selectable(bool);
+  void addable(bool);
+  void removable(bool);
+
+protected slots:
+  //  void onClicked(const QModelIndex& index);
+  virtual void onCurrentRowChanged(const QModelIndex& index);
 
 protected:
   QScopedPointer<qMRMLIGTLIOTreeViewPrivate> d_ptr;

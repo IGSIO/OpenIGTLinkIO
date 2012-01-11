@@ -51,7 +51,7 @@ vtkSlicerOpenIGTLinkIFLogic * qSlicerOpenIGTLinkIFModuleWidgetPrivate::logic()
 //-----------------------------------------------------------------------------
 // qSlicerOpenIGTLinkIFModuleWidget methods
 
-//-----------------------------------------------------------------------------
+f//-----------------------------------------------------------------------------
 qSlicerOpenIGTLinkIFModuleWidget::qSlicerOpenIGTLinkIFModuleWidget(QWidget* _parent)
   : Superclass( _parent )
   , d_ptr( new qSlicerOpenIGTLinkIFModuleWidgetPrivate(*this) )
@@ -69,14 +69,31 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   Q_D(qSlicerOpenIGTLinkIFModuleWidget);
   d->setupUi(this);
   this->Superclass::setup();
+  
+  // --------------------------------------------------
+  // Connectors section
+  //  Connector List View
+  connect(d->ConnectorListView, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
+          d->ConnectorPropertyWidget, SLOT(setMRMLIGTLConnectorNode(vtkMRMLNode*)));
+  d->ConnectorPropertyWidget->setMRMLIGTLConnectorNode(static_cast<vtkMRMLNode*>(0));
 
+  //  Add(+) / Remove(-) Connector Buttons
   connect(d->AddConnectorButton, SIGNAL(clicked()), this,
           SLOT(onAddConnectorButtonClicked()));
   connect(d->RemoveConnectorButton, SIGNAL(clicked()), this,
           SLOT(onRemoveConnectorButtonClicked()));
-  connect(d->ConnectorListView, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
-          d->ConnectorPropertyWidget, SLOT(setMRMLIGTLConnectorNode(vtkMRMLNode*)));
-  d->ConnectorPropertyWidget->setMRMLIGTLConnectorNode(static_cast<vtkMRMLNode*>(0));
+
+  // --------------------------------------------------
+  //  I/O COnfiguration Section
+  connect(this, SIGNAL(mrmlSceneChanged(vtkMRMLScene*)),
+          d->IGTIONodeSelectorWidget, SLOT(setMRMLScene(vtkMRMLScene*)));
+
+  connect(d->IOTreeView, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
+          d->IGTIONodeSelectorWidget, SLOT(setCurrentNode(vtkMRMLNode*)));
+
+
+  // --------------------------------------------------
+  //  Visualization Section
   connect(d->EnableLocatorDriverCheckBox, SIGNAL(toggled(bool)), this,
           SLOT(setLocatorDriverVisible(bool)));
   this->setLocatorDriverVisible(d->EnableLocatorDriverCheckBox->isChecked());
@@ -87,6 +104,8 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   connect(&d->ImportDataAndEventsTimer, SIGNAL(timeout()),
           this, SLOT(importDataAndEvents()));
   d->ImportDataAndEventsTimer.start(5);
+
+
 }
 
 //-----------------------------------------------------------------------------
@@ -123,6 +142,7 @@ void qSlicerOpenIGTLinkIFModuleWidget::onRemoveConnectorButtonClicked()
   connectorNode->Stop();
   this->mrmlScene()->RemoveNode(connectorNode);
 }
+
 
 //-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::setLocatorDriverVisible(bool visible)
