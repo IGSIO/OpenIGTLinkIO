@@ -28,6 +28,7 @@ public:
 qSlicerIGTLIONodeSelectorWidgetPrivate::qSlicerIGTLIONodeSelectorWidgetPrivate(qSlicerIGTLIONodeSelectorWidget& object)
   : q_ptr(&object)
 {
+  //this->CurrentNode = NULL;
   this->ConnectorNode = 0;
   this->Direction = qSlicerIGTLIONodeSelectorWidget::UNDEFINED;
 }
@@ -37,6 +38,12 @@ void qSlicerIGTLIONodeSelectorWidgetPrivate::init()
 {
   Q_Q(qSlicerIGTLIONodeSelectorWidget);
   this->setupUi(q);
+
+
+  //QObject::connect(this->NodeSelector, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
+  //this, SLOT(setAddingNode(vtkMRMLNode*)));
+  //QObject::connect(this, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
+  //this->NodeSelector, SLOT(setMRML(vtkMRMLNode*)));
 
   QObject::connect(this->AddNodeButton, SIGNAL(clicked()),
                    q, SLOT(onAddNodeButtonClicked()));
@@ -80,8 +87,8 @@ void qSlicerIGTLIONodeSelectorWidget::setCurrentNode(vtkMRMLNode* node)
     // No node specified
     d->AddNodeButton->setEnabled(true);
     d->RemoveNodeButton->setEnabled(false);
-    d->NodeSelector->setEnabled(true);
-    d->NodeSelector->setCurrentNode(node);
+    //d->NodeSelector->setEnabled(true);
+    //d->NodeSelector->setCurrentNode(node);
     return;
     }
 
@@ -91,8 +98,8 @@ void qSlicerIGTLIONodeSelectorWidget::setCurrentNode(vtkMRMLNode* node)
     // Connector node specified
     d->AddNodeButton->setEnabled(false);
     d->RemoveNodeButton->setEnabled(false);
-    d->NodeSelector->setEnabled(false);
-    d->NodeSelector->setCurrentNode(node);
+    //d->NodeSelector->setEnabled(false);
+    //d->NodeSelector->setCurrentNode(node);
     return;
     }
   else
@@ -100,8 +107,8 @@ void qSlicerIGTLIONodeSelectorWidget::setCurrentNode(vtkMRMLNode* node)
     // Standard data node specified
     d->AddNodeButton->setEnabled(true);
     d->RemoveNodeButton->setEnabled(true);
-    d->NodeSelector->setEnabled(true);
-    d->NodeSelector->setCurrentNode(node);
+    //d->NodeSelector->setEnabled(true);
+    //d->NodeSelector->setCurrentNode(node);
     }
 }
 
@@ -128,7 +135,19 @@ void qSlicerIGTLIONodeSelectorWidget::onAddNodeButtonClicked()
     return;
     }
 
-  emit addNode(node);
+  if (d->ConnectorNode)
+    {
+    if (d->Direction == 0)
+      {
+      d->ConnectorNode->RegisterIncomingMRMLNode(node);
+      }
+    else if (d->Direction == 1)
+      {
+      d->ConnectorNode->RegisterOutgoingMRMLNode(node);
+      }
+    }
+  
+  //emit addNode(node);
 
 }
 
@@ -143,8 +162,8 @@ void qSlicerIGTLIONodeSelectorWidget::onRemoveNodeButtonClicked()
     {
     return;
     }
-
-  emit removeNode(node);
+  
+  //emit removeNode(node);
 
 }
 

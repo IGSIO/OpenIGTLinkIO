@@ -73,8 +73,8 @@ protected slots:
   void onRemoveNodeButtonClicked();
 
 signals:
-  void addNode(vtkMRMLNode*);
-  void removeNode(vtkMRMLNode*);
+  //void addNode(vtkMRMLNode*);
+  //void removeNode(vtkMRMLNode*);
 
 protected:
   QScopedPointer<qSlicerIGTLIONodeSelectorWidgetPrivate> d_ptr;
