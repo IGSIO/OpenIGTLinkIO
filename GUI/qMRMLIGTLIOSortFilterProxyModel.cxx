@@ -49,7 +49,7 @@ qMRMLIGTLIOSortFilterProxyModelPrivate::qMRMLIGTLIOSortFilterProxyModelPrivate()
 
 //------------------------------------------------------------------------------
 qMRMLIGTLIOSortFilterProxyModel::qMRMLIGTLIOSortFilterProxyModel(QObject *vparent)
-  : qMRMLSortFilterProxyModel(vparent)
+  : qMRMLSortFilterHierarchyProxyModel(vparent)
   , d_ptr(new qMRMLIGTLIOSortFilterProxyModelPrivate)
 {
 }

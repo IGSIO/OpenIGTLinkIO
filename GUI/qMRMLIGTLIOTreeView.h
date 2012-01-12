@@ -76,6 +76,9 @@ protected:
   #endif
   virtual void mousePressEvent(QMouseEvent* event);
 
+  vtkMRMLIGTLConnectorNode* parentConnector(const QModelIndex& index);
+  int parentConnectorDirection(const QModelIndex& index);
+
 private:
   Q_DECLARE_PRIVATE(qMRMLIGTLIOTreeView);
   Q_DISABLE_COPY(qMRMLIGTLIOTreeView);

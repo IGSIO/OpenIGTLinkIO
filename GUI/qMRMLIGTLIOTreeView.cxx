@@ -23,17 +23,19 @@
 #include <QMouseEvent>
 #include <QMessageBox>
 #include <QHeaderView>
+#include <QScrollBar>
 
 // CTK includes
 #include "ctkModelTester.h"
 
 // qMRML includes
 #include "qMRMLSceneModel.h"
-//#include "qMRMLSortFilterProxyModel.h"
-#include "qMRMLIGTLIOSortFilterProxyModel.h"
+//#include "qMRMLIGTLIOSortFilterProxyModel.h"
+#include "qMRMLSortFilterProxyModel.h"
 #include "qMRMLSceneTransformModel.h"
 #include "qMRMLIGTLIOModel.h"
 #include "qMRMLTreeView.h"
+#include "qMRMLItemDelegate.h"
 
 // OpenIGTLinkIF GUI includes
 #include "qMRMLIGTLIOTreeView.h"
@@ -43,6 +45,7 @@
 
 // MRML includes
 #include <vtkMRMLNode.h>
+#include "vtkMRMLIGTLConnectorNode.h"
 
 //------------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
@@ -55,11 +58,12 @@ public:
   qMRMLIGTLIOTreeViewPrivate(qMRMLIGTLIOTreeView& object);
   void init();
 
-  void setSortFilterProxyModel(qMRMLIGTLIOSortFilterProxyModel* newSortModel);
+  //void setSortFilterProxyModel(qMRMLIGTLIOSortFilterProxyModel* newSortModel);
+  void setSortFilterProxyModel(qMRMLSortFilterProxyModel* newSortModel);
 
   qMRMLIGTLIOModel*                 SceneModel;
-  //qMRMLSortFilterProxyModel*        SortFilterModel;
-  qMRMLIGTLIOSortFilterProxyModel*        SortFilterModel;
+  //qMRMLIGTLIOSortFilterProxyModel*        SortFilterModel;
+  qMRMLSortFilterProxyModel*        SortFilterModel;
   vtkSlicerOpenIGTLinkIFLogic*      Logic;
 };
 
@@ -76,23 +80,71 @@ void qMRMLIGTLIOTreeViewPrivate::init()
 {
   Q_Q(qMRMLIGTLIOTreeView);
 
+  q->setItemDelegate(new qMRMLItemDelegate(q));
+
+  ////qMRMLIGTLIOSortFilterProxyModel* pmodel = new qMRMLIGTLIOSortFilterProxyModel(q);
+  //qMRMLSortFilterProxyModel* pmodel = new qMRMLSortFilterProxyModel(q);
+  //this->setSortFilterProxyModel(pmodel);
+  //
+  //q->setSceneModelType("IGTLConnector");
+  //
+  //q->setUniformRowHeights(true);
+  
+  //QObject::connect(q, SIGNAL(collapsed(QModelIndex)),
+  //                 q, SLOT(onNumberOfVisibleIndexChanged()));
+  //QObject::connect(q, SIGNAL(expanded(QModelIndex)),
+  //                 q, SLOT(onNumberOfVisibleIndexChanged()));
+  //q->horizontalScrollBar()->installEventFilter(q);
+  //
+  //this->NodeMenu = new QMenu(q);
+  //
+  //// rename node
+  //QAction* renameAction =
+  //  new QAction(qMRMLTreeView::tr("Rename"),this->NodeMenu);
+  //this->NodeMenu->addAction(renameAction);
+  //QObject::connect(renameAction, SIGNAL(triggered()),
+  //                 q, SLOT(renameCurrentNode()));
+  //
+  //// delete node
+  //QAction* deleteAction =
+  //  new QAction(qMRMLTreeView::tr("Delete"),this->NodeMenu);
+  //this->NodeMenu->addAction(deleteAction);
+  //QObject::connect(deleteAction, SIGNAL(triggered()),
+  //                 q, SLOT(deleteCurrentNode()));
+  //// EditAction is hidden by default
+  //this->EditAction =
+  //  new QAction(qMRMLTreeView::tr("Edit properties..."), this->NodeMenu);
+  //QObject::connect(this->EditAction, SIGNAL(triggered()),
+  //                 q, SLOT(editCurrentNode()));
+  //this->SceneMenu = new QMenu(q);
+
+  //qMRMLSortFilterProxyModel* pmodel = new qMRMLSortFilterProxyModel(q);
+  //this->setSortFilterProxyModel(pmodel);
+  //q->setSceneModelType("IGTLConnector");
+
+  // Working version
   this->SceneModel = new qMRMLIGTLIOModel(q);
   q->setSceneModel(this->SceneModel, "IGTLConnector");
+  //this->SortFilterModel = new qMRMLSortFilterProxyModel(q);
+  // we only want to show vtkMRMLAnnotationNodes and vtkMRMLAnnotationHierarchyNodes
   QStringList nodeTypes = QStringList();
   nodeTypes.append("vtkMRMLIGTLConnectorNode");
+  
   q->setNodeTypes(nodeTypes);
+  //this->SortFilterModel = q->sortFilterProxyModel();
 
-  this->setSortFilterProxyModel(new qMRMLIGTLIOSortFilterProxyModel(q));
   q->setUniformRowHeights(true);
+  this->SortFilterModel = q->sortFilterProxyModel();
 
-  //q->expandAll();
 }
 
 
 //------------------------------------------------------------------------------
-void qMRMLIGTLIOTreeViewPrivate::setSortFilterProxyModel(qMRMLIGTLIOSortFilterProxyModel* newSortModel)
+//void qMRMLIGTLIOTreeViewPrivate::setSortFilterProxyModel(qMRMLIGTLIOSortFilterProxyModel* newSortModel)
+void qMRMLIGTLIOTreeViewPrivate::setSortFilterProxyModel(qMRMLSortFilterProxyModel* newSortModel)
 {
   Q_Q(qMRMLIGTLIOTreeView);
+
   if (newSortModel == this->SortFilterModel)
     {
     return;
@@ -124,7 +176,7 @@ void qMRMLIGTLIOTreeViewPrivate::setSortFilterProxyModel(qMRMLIGTLIOSortFilterPr
                    q, SLOT(onNumberOfVisibleIndexChanged()));
 
   q->expandToDepth(2);
-  q->onNumberOfVisibleIndexChanged();
+  //q->onNumberOfVisibleIndexChanged();
 }
 
 
@@ -133,6 +185,7 @@ void qMRMLIGTLIOTreeViewPrivate::setSortFilterProxyModel(qMRMLIGTLIOSortFilterPr
 qMRMLIGTLIOTreeView::qMRMLIGTLIOTreeView(QWidget *_parent)
   : Superclass(_parent)
   , d_ptr(new qMRMLIGTLIOTreeViewPrivate(*this))
+    //  : d_ptr(new qMRMLIGTLIOTreeViewPrivate(*this))
 {
   Q_D(qMRMLIGTLIOTreeView);
   d->init();
@@ -161,6 +214,84 @@ void qMRMLIGTLIOTreeView::setMRMLScene(vtkMRMLScene* scene)
 // Click and selected event handling
 //------------------------------------------------------------------------------
 
+vtkMRMLIGTLConnectorNode* qMRMLIGTLIOTreeView::parentConnector(const QModelIndex& index)
+{
+  Q_D(qMRMLIGTLIOTreeView);
+  Q_ASSERT(d->SortFilterModel);
+
+  qMRMLSceneModel* sceneModel = qobject_cast<qMRMLSceneModel*>(d->SortFilterModel->sourceModel());
+  QStandardItem* item = sceneModel->itemFromIndex(d->SortFilterModel->mapToSource(index));
+  if (!item)
+    {
+    return NULL;
+    }
+
+  QStandardItem* parentIO = item->parent();
+  if (!parentIO)
+    {
+    return NULL;
+    }
+
+  QStandardItem* parentConnector = parentIO->parent();
+  if (!parentConnector)
+    {
+    return NULL;
+    }
+
+  vtkMRMLNode* node = sceneModel->mrmlNodeFromIndex(parentConnector->index());
+  vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+
+  return cnode;
+
+}
+
+
+int qMRMLIGTLIOTreeView::parentConnectorDirection(const QModelIndex& index)
+{
+  Q_D(qMRMLIGTLIOTreeView);
+  Q_ASSERT(d->SortFilterModel);
+
+  //Q_D(qMRMLIGTLIOSortFilterProxyModel);
+  qMRMLSceneModel* sceneModel = qobject_cast<qMRMLSceneModel*>(d->SortFilterModel->sourceModel());
+  QStandardItem* item = sceneModel->itemFromIndex(d->SortFilterModel->mapToSource(index));
+  if (!item)
+    {
+    return 0;
+    }
+
+  QStandardItem* parentIO = item->parent();
+  if (!parentIO)
+    {
+    return 0;
+    }
+
+  // Check if the parent node is actually a connector node
+  QStandardItem* parentConnector = parentIO->parent();
+  if (!parentConnector)
+    {
+    return 0;
+    }
+
+  vtkMRMLNode* node = sceneModel->mrmlNodeFromIndex(parentConnector->index());
+  //vtkMRMLNode* node = d->SortFilterModel->mrmlNodeFromIndex(parentConnector->index());
+  vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+
+  if (!cnode)
+    {
+    return 0;
+    }
+
+  QString text = parentConnector->child(parentIO->row(), 0)->text();
+  if (text.compare(QString("IN")) == 0)
+    {
+    return 1;
+    }
+  else
+    {
+    return 2;
+    }
+}
+
 
 void qMRMLIGTLIOTreeView::onCurrentRowChanged(const QModelIndex& index)
 {
@@ -169,9 +300,8 @@ void qMRMLIGTLIOTreeView::onCurrentRowChanged(const QModelIndex& index)
   //Q_ASSERT(this->currentNode() == d->SortFilterModel->mrmlNodeFromIndex(index));
 
   vtkMRMLNode* node = d->SortFilterModel->mrmlNodeFromIndex(index);
-  vtkMRMLIGTLConnectorNode* cnode = d->SortFilterModel->parentConnector(index);
-  int dir = d->SortFilterModel->parentConnectorDirection(index);
-
+  vtkMRMLIGTLConnectorNode* cnode = parentConnector(index);
+  int dir = parentConnectorDirection(index);
   if (node)
     {
     emit currentNodeChanged(node);

@@ -25,16 +25,16 @@
 #include "qSlicerOpenIGTLinkIFModuleExport.h"
 
 // qMRML includes
-#include "qMRMLSortFilterProxyModel.h"
+#include "qMRMLSortFilterHierarchyProxyModel.h"
 
 class vtkMRMLIGTLConnectorNode;
 class qMRMLIGTLIOSortFilterProxyModelPrivate;
 
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLIOSortFilterProxyModel : public qMRMLSortFilterProxyModel
+class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLIOSortFilterProxyModel : public qMRMLSortFilterHierarchyProxyModel
 {
   Q_OBJECT
 public:
-  typedef qMRMLSortFilterProxyModel Superclass;
+  typedef qMRMLSortFilterHierarchyProxyModel Superclass;
   qMRMLIGTLIOSortFilterProxyModel(QObject *parent=0);
   virtual ~qMRMLIGTLIOSortFilterProxyModel();
 
