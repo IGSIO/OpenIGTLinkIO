@@ -47,6 +47,12 @@ public:
   qSlicerIGTLIONodeSelectorWidget(QWidget *parent = 0);
   virtual ~qSlicerIGTLIONodeSelectorWidget();
 
+  enum {
+    UNDEFINED,
+    INCOMING,
+    OUTGOING
+  };
+
 public slots:
 
   /// Set the MRML scene
@@ -54,23 +60,21 @@ public slots:
 
   /// Set the MRML node of interest
   void setCurrentNode(vtkMRMLNode* node);
-  
 
-  void setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode * connectorNode);
+  /// Set the MRML node of interest
+  void updateIGTLConnectorNode(vtkMRMLIGTLConnectorNode* node, int dir);
 
-  /// Utility function that calls setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode*)
-  /// It's useful to connect to vtkMRMLNode* signals when you are sure of
-  /// the type
-  void setMRMLIGTLConnectorNode(vtkMRMLNode* node);
 
 protected slots:
-  /// Internal function to update the widgets based on the IGTLConnector node
-  void onMRMLNodeModified();
+  /// Add node to the I/O tree
+  void onAddNodeButtonClicked();
+  
+  /// Remove node from the I/O tree
+  void onRemoveNodeButtonClicked();
 
-  void startCurrentIGTLConnector(bool enabled);
-
-  /// Internal function to update the IGTLConnector node based on the property widget
-  void updateIGTLConnectorNode();
+signals:
+  void addNode(vtkMRMLNode*);
+  void removeNode(vtkMRMLNode*);
 
 protected:
   QScopedPointer<qSlicerIGTLIONodeSelectorWidgetPrivate> d_ptr;

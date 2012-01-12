@@ -20,16 +20,16 @@ public:
   qSlicerIGTLIONodeSelectorWidgetPrivate(qSlicerIGTLIONodeSelectorWidget& object);
   void init();
 
-  //vtkMRMLIGTLConnectorNode * IGTLConnectorNode;
-
-  QButtonGroup ConnectorTypeButtonGroup;
+  vtkMRMLIGTLConnectorNode * ConnectorNode;
+  int Direction;
 };
 
 //------------------------------------------------------------------------------
 qSlicerIGTLIONodeSelectorWidgetPrivate::qSlicerIGTLIONodeSelectorWidgetPrivate(qSlicerIGTLIONodeSelectorWidget& object)
   : q_ptr(&object)
 {
-  //this->IGTLConnectorNode = 0;
+  this->ConnectorNode = 0;
+  this->Direction = qSlicerIGTLIONodeSelectorWidget::UNDEFINED;
 }
 
 //------------------------------------------------------------------------------
@@ -37,20 +37,11 @@ void qSlicerIGTLIONodeSelectorWidgetPrivate::init()
 {
   Q_Q(qSlicerIGTLIONodeSelectorWidget);
   this->setupUi(q);
-  //QObject::connect(this->ConnectorNameEdit, SIGNAL(editingFinished()),
-  //                 q, SLOT(updateIGTLConnectorNode()));
-  //QObject::connect(this->ConnectorStateCheckBox, SIGNAL(toggled(bool)),
-  //                 q, SLOT(startCurrentIGTLConnector(bool)));
-  //QObject::connect(this->ConnectorHostNameEdit, SIGNAL(editingFinished()),
-  //                 q, SLOT(updateIGTLConnectorNode()));
-  //QObject::connect(this->ConnectorPortEdit, SIGNAL(editingFinished()),
-  //                 q, SLOT(updateIGTLConnectorNode()));
-  //QObject::connect(&this->ConnectorTypeButtonGroup, SIGNAL(buttonClicked(int)),
-  //                 q, SLOT(updateIGTLConnectorNode()));
-  //this->ConnectorNotDefinedRadioButton->setVisible(false);
-  //this->ConnectorTypeButtonGroup.addButton(this->ConnectorNotDefinedRadioButton, vtkMRMLIGTLConnectorNode::TYPE_NOT_DEFINED);
-  //this->ConnectorTypeButtonGroup.addButton(this->ConnectorServerRadioButton, vtkMRMLIGTLConnectorNode::TYPE_SERVER);
-  //this->ConnectorTypeButtonGroup.addButton(this->ConnectorClientRadioButton, vtkMRMLIGTLConnectorNode::TYPE_CLIENT);
+
+  QObject::connect(this->AddNodeButton, SIGNAL(clicked()),
+                   q, SLOT(onAddNodeButtonClicked()));
+  QObject::connect(this->RemoveNodeButton, SIGNAL(clicked()),
+                   q, SLOT(onRemoveNodeButtonClicked()));
 
 }
 
@@ -116,89 +107,45 @@ void qSlicerIGTLIONodeSelectorWidget::setCurrentNode(vtkMRMLNode* node)
 
 
 //------------------------------------------------------------------------------
-void qSlicerIGTLIONodeSelectorWidget::setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode * connectorNode)
+void qSlicerIGTLIONodeSelectorWidget::updateIGTLConnectorNode(vtkMRMLIGTLConnectorNode* node, int dir)
 {
   Q_D(qSlicerIGTLIONodeSelectorWidget);
 
-  //qvtkReconnect(d->IGTLConnectorNode, connectorNode, vtkCommand::ModifiedEvent,
-  //              this, SLOT(onMRMLNodeModified()));
+  d->ConnectorNode = node;
+  d->Direction = dir;
+  
+}
 
-  foreach(int evendId, QList<int>()
-          << vtkMRMLIGTLConnectorNode::ActivatedEvent
-          << vtkMRMLIGTLConnectorNode::ConnectedEvent
-          << vtkMRMLIGTLConnectorNode::DisconnectedEvent
-          << vtkMRMLIGTLConnectorNode::DeactivatedEvent)
+
+//------------------------------------------------------------------------------
+void qSlicerIGTLIONodeSelectorWidget::onAddNodeButtonClicked()
+{
+  Q_D(qSlicerIGTLIONodeSelectorWidget);
+
+  vtkMRMLNode* node = d->NodeSelector->currentNode();
+  if (node == 0)
     {
-    //qvtkReconnect(d->IGTLConnectorNode, connectorNode, evendId,
-    //              this, SLOT(onMRMLNodeModified()));
+    return;
     }
 
-  //d->IGTLConnectorNode = connectorNode;
+  emit addNode(node);
 
-  this->onMRMLNodeModified();
-  this->setEnabled(connectorNode != 0);
 }
 
-//------------------------------------------------------------------------------
-void qSlicerIGTLIONodeSelectorWidget::setMRMLIGTLConnectorNode(vtkMRMLNode* node)
-{
-  this->setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode::SafeDownCast(node));
-}
 
 //------------------------------------------------------------------------------
-void qSlicerIGTLIONodeSelectorWidget::onMRMLNodeModified()
-{
-  Q_D(qSlicerIGTLIONodeSelectorWidget);
-  //if (!d->IGTLConnectorNode)
-  //  {
-  //  return;
-  //  }
-  //d->ConnectorNameEdit->setText(d->IGTLConnectorNode->GetName());
-  //d->ConnectorHostNameEdit->setText(d->IGTLConnectorNode->GetServerHostname());
-  //d->ConnectorPortEdit->setText(QString("%1").arg(d->IGTLConnectorNode->GetServerPort()));
-  //int type = d->IGTLConnectorNode->GetType();
-  //d->ConnectorNotDefinedRadioButton->setChecked(type == vtkMRMLIGTLConnectorNode::TYPE_NOT_DEFINED);
-  //d->ConnectorServerRadioButton->setChecked(type == vtkMRMLIGTLConnectorNode::TYPE_SERVER);
-  //d->ConnectorClientRadioButton->setChecked(type == vtkMRMLIGTLConnectorNode::TYPE_CLIENT);
-
-  //setStateEnabled(d, type != vtkMRMLIGTLConnectorNode::TYPE_NOT_DEFINED);
-
-  //bool deactivated = d->IGTLConnectorNode->GetState() == vtkMRMLIGTLConnectorNode::STATE_OFF;
-  //if (deactivated)
-  //  {
-  //  }
-  //else
-  //  {
-  //  }
-}
-
-//------------------------------------------------------------------------------
-void qSlicerIGTLIONodeSelectorWidget::startCurrentIGTLConnector(bool value)
-{
-  Q_D(qSlicerIGTLIONodeSelectorWidget);
-  //Q_ASSERT(d->IGTLConnectorNode);
-  //if (value)
-  //  {
-  //  d->IGTLConnectorNode->Start();
-  //  }
-  //else
-  //  {
-  //  d->IGTLConnectorNode->Stop();
-  //  }
-}
-
-//------------------------------------------------------------------------------
-void qSlicerIGTLIONodeSelectorWidget::updateIGTLConnectorNode()
+void qSlicerIGTLIONodeSelectorWidget::onRemoveNodeButtonClicked()
 {
   Q_D(qSlicerIGTLIONodeSelectorWidget);
 
-  //d->IGTLConnectorNode->DisableModifiedEventOn();
-  //
-  //d->IGTLConnectorNode->SetName(d->ConnectorNameEdit->text().toLatin1());
-  //d->IGTLConnectorNode->SetType(d->ConnectorTypeButtonGroup.checkedId());
-  //d->IGTLConnectorNode->SetServerHostname(d->ConnectorHostNameEdit->text().toStdString());
-  //d->IGTLConnectorNode->SetServerPort(d->ConnectorPortEdit->text().toInt());
-  //
-  //d->IGTLConnectorNode->DisableModifiedEventOff();
-  //d->IGTLConnectorNode->InvokePendingModifiedEvent();
+  vtkMRMLNode* node = d->NodeSelector->currentNode();
+  if (node == 0)
+    {
+    return;
+    }
+
+  emit removeNode(node);
+
 }
+
+

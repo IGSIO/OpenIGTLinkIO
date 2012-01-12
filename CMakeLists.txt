@@ -44,6 +44,8 @@ set(qt_module_SRCS
   GUI/qMRMLIGTLIOModel.cxx
   GUI/qMRMLIGTLIOModel.h
   GUI/qMRMLIGTLIOModel_p.h
+  GUI/qMRMLIGTLIOSortFilterProxyModel.cxx
+  GUI/qMRMLIGTLIOSortFilterProxyModel.h
   GUI/qMRMLIGTLIOTreeView.cxx
   GUI/qMRMLIGTLIOTreeView.h
   GUI/qSlicerIGTLConnectorPropertyWidget.cxx
@@ -60,6 +62,7 @@ set(qt_module_MOC_SRCS
   GUI/qMRMLIGTLConnectorTreeView.h
   GUI/qMRMLIGTLIOModel.h
   GUI/qMRMLIGTLIOModel_p.h
+  GUI/qMRMLIGTLIOSortFilterProxyModel.h
   GUI/qMRMLIGTLIOTreeView.h
   GUI/qSlicerIGTLConnectorPropertyWidget.h
   GUI/qSlicerIGTLIONodeSelectorWidget.h

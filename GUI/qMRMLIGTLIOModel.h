@@ -45,7 +45,8 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLIOModel : public qMRMLSce
     StatusColumn,
   };
   enum Direction{
-    INCOMING = 0,
+    UNDEFINED = 0,
+    INCOMING,
     OUTGOING,
   };
 
@@ -57,10 +58,10 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLIOModel : public qMRMLSce
   void setLogic(vtkSlicerOpenIGTLinkIFLogic* logic);
 
   virtual QStandardItem* insertNode(vtkMRMLNode* node, QStandardItem* parent, int row);
-  //virtual void updateItemFromNode(QStandardItem* item, vtkMRMLNode* node, int column);
   virtual void updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column);
-
   virtual void addNodeToCurrentBranch(vtkMRMLNode* node);
+  //virtual vtkMRMLIGTLConnectorNode* parentConnector(const QModelIndex & index);
+  //virtual int parentConnectorDirection(const QModelIndex & index);
 
  protected:
   qMRMLIGTLIOModel(qMRMLIGTLIOModelPrivate* pimpl, QObject *parent=0);

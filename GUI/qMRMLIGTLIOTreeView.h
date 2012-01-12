@@ -31,6 +31,7 @@ class qMRMLIGTLIOTreeViewPrivate;
 class vtkMRMLNode;
 class vtkMRMLScene;
 class vtkSlicerOpenIGTLinkIFLogic;
+class vtkMRMLIGTLConnectorNode;
 
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
 class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLIOTreeView : public qMRMLTreeView
@@ -61,9 +62,7 @@ public slots:
   void setMRMLScene(vtkMRMLScene* scene);
 
 signals:  
-  void selectable(bool);
-  void addable(bool);
-  void removable(bool);
+  void connectorNodeUpdated(vtkMRMLIGTLConnectorNode*, int);
 
 protected slots:
   //  void onClicked(const QModelIndex& index);

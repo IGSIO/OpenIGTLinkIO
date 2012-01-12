@@ -51,7 +51,7 @@ vtkSlicerOpenIGTLinkIFLogic * qSlicerOpenIGTLinkIFModuleWidgetPrivate::logic()
 //-----------------------------------------------------------------------------
 // qSlicerOpenIGTLinkIFModuleWidget methods
 
-f//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 qSlicerOpenIGTLinkIFModuleWidget::qSlicerOpenIGTLinkIFModuleWidget(QWidget* _parent)
   : Superclass( _parent )
   , d_ptr( new qSlicerOpenIGTLinkIFModuleWidgetPrivate(*this) )
@@ -87,9 +87,13 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   //  I/O COnfiguration Section
   connect(this, SIGNAL(mrmlSceneChanged(vtkMRMLScene*)),
           d->IGTIONodeSelectorWidget, SLOT(setMRMLScene(vtkMRMLScene*)));
-
   connect(d->IOTreeView, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
           d->IGTIONodeSelectorWidget, SLOT(setCurrentNode(vtkMRMLNode*)));
+
+  //connect(d->IGTIONodeSelectorWidget, SIGNAL(removeNode(vtkMRMLNode*)),
+  //        d->IOTreeView, SLOT(removeNode(vtkMRMLNode*)));
+  //connect(d->IGTIONodeSelectorWidget, SIGNAL(addNode(vtkMRMLNode*)),
+  //        d->IOTreeView, SLOT(removeNode(vtkMRMLNode*)));
 
 
   // --------------------------------------------------

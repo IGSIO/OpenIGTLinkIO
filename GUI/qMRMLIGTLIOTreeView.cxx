@@ -29,7 +29,8 @@
 
 // qMRML includes
 #include "qMRMLSceneModel.h"
-#include "qMRMLSortFilterProxyModel.h"
+//#include "qMRMLSortFilterProxyModel.h"
+#include "qMRMLIGTLIOSortFilterProxyModel.h"
 #include "qMRMLSceneTransformModel.h"
 #include "qMRMLIGTLIOModel.h"
 #include "qMRMLTreeView.h"
@@ -54,8 +55,11 @@ public:
   qMRMLIGTLIOTreeViewPrivate(qMRMLIGTLIOTreeView& object);
   void init();
 
+  void setSortFilterProxyModel(qMRMLIGTLIOSortFilterProxyModel* newSortModel);
+
   qMRMLIGTLIOModel*                 SceneModel;
-  qMRMLSortFilterProxyModel*        SortFilterModel;
+  //qMRMLSortFilterProxyModel*        SortFilterModel;
+  qMRMLIGTLIOSortFilterProxyModel*        SortFilterModel;
   vtkSlicerOpenIGTLinkIFLogic*      Logic;
 };
 
@@ -74,17 +78,56 @@ void qMRMLIGTLIOTreeViewPrivate::init()
 
   this->SceneModel = new qMRMLIGTLIOModel(q);
   q->setSceneModel(this->SceneModel, "IGTLConnector");
-
   QStringList nodeTypes = QStringList();
   nodeTypes.append("vtkMRMLIGTLConnectorNode");
-
   q->setNodeTypes(nodeTypes);
-  this->SortFilterModel = q->sortFilterProxyModel();
 
+  this->setSortFilterProxyModel(new qMRMLIGTLIOSortFilterProxyModel(q));
   q->setUniformRowHeights(true);
 
-  q->expandAll();
+  //q->expandAll();
 }
+
+
+//------------------------------------------------------------------------------
+void qMRMLIGTLIOTreeViewPrivate::setSortFilterProxyModel(qMRMLIGTLIOSortFilterProxyModel* newSortModel)
+{
+  Q_Q(qMRMLIGTLIOTreeView);
+  if (newSortModel == this->SortFilterModel)
+    {
+    return;
+    }
+  
+  // delete the previous filter
+  delete this->SortFilterModel;
+  this->SortFilterModel = newSortModel;
+  // Set the input of the view
+  // if no filter is given then let's show the scene model directly
+  q->QTreeView::setModel(this->SortFilterModel
+    ? static_cast<QAbstractItemModel*>(this->SortFilterModel)
+    : static_cast<QAbstractItemModel*>(this->SceneModel));
+  // Setting a new model to the view resets the selection model
+  QObject::connect(q->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
+                   q, SLOT(onCurrentRowChanged(QModelIndex)));
+  if (!this->SortFilterModel)
+    {
+    return;
+    }
+  this->SortFilterModel->setParent(q);
+  // Set the input of the filter
+  this->SortFilterModel->setSourceModel(this->SceneModel);
+
+  // resize the view if new rows are added/removed
+  QObject::connect(this->SortFilterModel, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),
+                   q, SLOT(onNumberOfVisibleIndexChanged()));
+  QObject::connect(this->SortFilterModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
+                   q, SLOT(onNumberOfVisibleIndexChanged()));
+
+  q->expandToDepth(2);
+  q->onNumberOfVisibleIndexChanged();
+}
+
+
 
 //------------------------------------------------------------------------------
 qMRMLIGTLIOTreeView::qMRMLIGTLIOTreeView(QWidget *_parent)
@@ -123,23 +166,23 @@ void qMRMLIGTLIOTreeView::onCurrentRowChanged(const QModelIndex& index)
 {
   Q_D(qMRMLIGTLIOTreeView);
   Q_ASSERT(d->SortFilterModel);
-  Q_ASSERT(this->currentNode() == d->SortFilterModel->mrmlNodeFromIndex(index));
+  //Q_ASSERT(this->currentNode() == d->SortFilterModel->mrmlNodeFromIndex(index));
 
   vtkMRMLNode* node = d->SortFilterModel->mrmlNodeFromIndex(index);
+  vtkMRMLIGTLConnectorNode* cnode = d->SortFilterModel->parentConnector(index);
+  int dir = d->SortFilterModel->parentConnectorDirection(index);
+
   if (node)
     {
-    emit selectable(false);
-    emit addable(false);
-    emit removable(false);
     emit currentNodeChanged(node);
+    emit connectorNodeUpdated(cnode, dir);
     }
   else
     {
-    emit selectable(true);
-    emit addable(true);
-    emit removable(true);
     emit currentNodeChanged(NULL);
+    emit connectorNodeUpdated(cnode, dir);
     }
+  
 }
 
 
@@ -207,6 +250,7 @@ void qMRMLIGTLIOTreeView::setSelectedNode(const char* id)
   if (node)
     {
     this->setCurrentIndex(d->SortFilterModel->indexFromMRMLNode(node));
+    //this->setCurrentIndex(d->SceneModel->indexFromNode(node));
     }
 }
 
