@@ -38,20 +38,22 @@
    </item>
    <item>
     <widget class="qMRMLNodeComboBox" name="NodeSelector">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="nodeTypes">
       <stringlist>
        <string>vtkMRMLLinearTransformNode</string>
-       <string>vtkMRMLScalarVolumeNode</string>
       </stringlist>
      </property>
      <property name="selectNodeUponCreation">
       <bool>true</bool>
      </property>
      <property name="addEnabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="removeEnabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
     </widget>
    </item>

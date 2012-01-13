@@ -57,6 +57,9 @@
      <layout class="QVBoxLayout" name="ConnectorListLayout">
       <item>
        <widget class="qMRMLIGTLConnectorTreeView" name="ConnectorListView">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="horizontalScrollBarPolicy">
          <enum>Qt::ScrollBarAlwaysOff</enum>
         </property>

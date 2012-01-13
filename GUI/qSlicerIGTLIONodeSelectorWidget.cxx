@@ -87,7 +87,7 @@ void qSlicerIGTLIONodeSelectorWidget::setCurrentNode(vtkMRMLNode* node)
     // No node specified
     d->AddNodeButton->setEnabled(true);
     d->RemoveNodeButton->setEnabled(false);
-    //d->NodeSelector->setEnabled(true);
+    d->NodeSelector->setEnabled(true);
     //d->NodeSelector->setCurrentNode(node);
     return;
     }
@@ -98,7 +98,7 @@ void qSlicerIGTLIONodeSelectorWidget::setCurrentNode(vtkMRMLNode* node)
     // Connector node specified
     d->AddNodeButton->setEnabled(false);
     d->RemoveNodeButton->setEnabled(false);
-    //d->NodeSelector->setEnabled(false);
+    d->NodeSelector->setEnabled(false);
     //d->NodeSelector->setCurrentNode(node);
     return;
     }
@@ -107,7 +107,7 @@ void qSlicerIGTLIONodeSelectorWidget::setCurrentNode(vtkMRMLNode* node)
     // Standard data node specified
     d->AddNodeButton->setEnabled(true);
     d->RemoveNodeButton->setEnabled(true);
-    //d->NodeSelector->setEnabled(true);
+    d->NodeSelector->setEnabled(true);
     //d->NodeSelector->setCurrentNode(node);
     }
 }
@@ -137,11 +137,11 @@ void qSlicerIGTLIONodeSelectorWidget::onAddNodeButtonClicked()
 
   if (d->ConnectorNode)
     {
-    if (d->Direction == 0)
+    if (d->Direction == 1)
       {
       d->ConnectorNode->RegisterIncomingMRMLNode(node);
       }
-    else if (d->Direction == 1)
+    else if (d->Direction == 2)
       {
       d->ConnectorNode->RegisterOutgoingMRMLNode(node);
       }

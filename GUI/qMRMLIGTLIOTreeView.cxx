@@ -219,27 +219,41 @@ vtkMRMLIGTLConnectorNode* qMRMLIGTLIOTreeView::parentConnector(const QModelIndex
   Q_D(qMRMLIGTLIOTreeView);
   Q_ASSERT(d->SortFilterModel);
 
+  vtkMRMLIGTLConnectorNode * cnode;
+  QStandardItem* parent1;
+  QStandardItem* grandParent;
+
   qMRMLSceneModel* sceneModel = qobject_cast<qMRMLSceneModel*>(d->SortFilterModel->sourceModel());
   QStandardItem* item = sceneModel->itemFromIndex(d->SortFilterModel->mapToSource(index));
   if (!item)
     {
     return NULL;
     }
-
-  QStandardItem* parentIO = item->parent();
-  if (!parentIO)
+  
+  parent1 = item->parent();
+  if (!parent1)
     {
     return NULL;
     }
 
-  QStandardItem* parentConnector = parentIO->parent();
-  if (!parentConnector)
+  // Check if the item is "IN" or "OUT", parent must be connector node
+  QString text = parent1->child(item->row(), 0)->text();
+  if (text.compare(QString("IN")) == 0 || text.compare(QString("OUT")) == 0)
     {
-    return NULL;
+    vtkMRMLNode* node = sceneModel->mrmlNodeFromIndex(parent1->index());
+    cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
     }
-
-  vtkMRMLNode* node = sceneModel->mrmlNodeFromIndex(parentConnector->index());
-  vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+  else
+    {
+    // If not, the selected item must be a data node
+    grandParent = parent1->parent();
+    if (!grandParent)
+      {
+      return NULL;
+      }
+    vtkMRMLNode* node = sceneModel->mrmlNodeFromIndex(grandParent->index());
+    cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+    }
 
   return cnode;
 
@@ -251,45 +265,61 @@ int qMRMLIGTLIOTreeView::parentConnectorDirection(const QModelIndex& index)
   Q_D(qMRMLIGTLIOTreeView);
   Q_ASSERT(d->SortFilterModel);
 
-  //Q_D(qMRMLIGTLIOSortFilterProxyModel);
+  vtkMRMLIGTLConnectorNode * cnode;
+  QStandardItem* parent1;
+  QStandardItem* grandParent;
+
   qMRMLSceneModel* sceneModel = qobject_cast<qMRMLSceneModel*>(d->SortFilterModel->sourceModel());
   QStandardItem* item = sceneModel->itemFromIndex(d->SortFilterModel->mapToSource(index));
   if (!item)
     {
     return 0;
     }
-
-  QStandardItem* parentIO = item->parent();
-  if (!parentIO)
+  
+  parent1 = item->parent();
+  if (!parent1)
     {
     return 0;
     }
 
-  // Check if the parent node is actually a connector node
-  QStandardItem* parentConnector = parentIO->parent();
-  if (!parentConnector)
-    {
-    return 0;
-    }
-
-  vtkMRMLNode* node = sceneModel->mrmlNodeFromIndex(parentConnector->index());
-  //vtkMRMLNode* node = d->SortFilterModel->mrmlNodeFromIndex(parentConnector->index());
-  vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
-
-  if (!cnode)
-    {
-    return 0;
-    }
-
-  QString text = parentConnector->child(parentIO->row(), 0)->text();
+  // Check if the item is "IN" or "OUT", parent must be connector node
+  QString text = parent1->child(item->row(), 0)->text();
   if (text.compare(QString("IN")) == 0)
     {
+    vtkMRMLNode* node = sceneModel->mrmlNodeFromIndex(parent1->index());
+    cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
     return 1;
     }
-  else
+  else if (text.compare(QString("OUT")) == 0)
     {
+    vtkMRMLNode* node = sceneModel->mrmlNodeFromIndex(parent1->index());
+    cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
     return 2;
     }
+
+  // If not, the selected item must be a data node
+  grandParent = parent1->parent();
+  if (!grandParent)
+    {
+    return 0;
+    }
+  vtkMRMLNode* node = sceneModel->mrmlNodeFromIndex(grandParent->index());
+  cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+
+  if (cnode && parent1 && grandParent)
+    {
+    QString text = grandParent->child(parent1->row(), 0)->text();
+    if (text.compare(QString("IN")) == 0)
+      {
+      return 1;
+      }
+    else
+      {
+      return 2;
+      }
+    }
+  return 0;
+
 }
 
 
