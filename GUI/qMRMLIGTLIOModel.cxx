@@ -89,8 +89,9 @@ qMRMLIGTLIOModel::qMRMLIGTLIOModel(QObject *vparent)
 
   this->setListenNodeModifiedEvent(true);
   this->setIDColumn(-1);
-  this->setHorizontalHeaderLabels(
-        QStringList() << "Name" << "MRML Type" << "IGTL Type");
+  this->setCheckableColumn(qMRMLIGTLIOModel::VisualizationColumn);
+  this->setColumnCount(4);
+  this->setHorizontalHeaderLabels(QStringList() << "Name" << "MRML Type" << "IGTL Type" << "Vis");
 }
 
 //------------------------------------------------------------------------------

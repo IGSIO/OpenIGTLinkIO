@@ -59,10 +59,11 @@ public slots:
   void setMRMLScene(vtkMRMLScene* scene);
 
   /// Set the MRML node of interest
-  void setCurrentNode(vtkMRMLNode* node);
+  //void setCurrentNode(vtkMRMLNode* node);
 
   /// Set the MRML node of interest
-  void updateIGTLConnectorNode(vtkMRMLIGTLConnectorNode* node, int dir);
+  void updateEnabledStatus(int type, vtkMRMLIGTLConnectorNode* node, int dir);
+  
 
 
 protected slots:

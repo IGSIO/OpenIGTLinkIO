@@ -57,9 +57,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLImage : public vt
  protected:
   igtl::ImageMessage::Pointer OutImageMessage;
 
-#ifdef OpenIGTLinkIF_USE_VERSION_2
   igtl::GetImageMessage::Pointer GetImageMessage;
-#endif // OpenIGTLinkIF_USE_VERSION_2
 
 };
 

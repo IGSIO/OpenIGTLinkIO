@@ -166,7 +166,6 @@ int vtkIGTLToMRMLImageMetaList::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrm
     }
 
   // If mrmlNode is query node
-#ifdef OpenIGTLinkIF_USE_VERSION_2
   if (strcmp(mrmlNode->GetNodeTagName(), "IGTLQuery") == 0 ) // Query Node
     {
     vtkMRMLIGTLQueryNode* qnode = vtkMRMLIGTLQueryNode::SafeDownCast(mrmlNode);
@@ -210,7 +209,6 @@ int vtkIGTLToMRMLImageMetaList::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrm
       return 0;
       }
     }
-#endif // OpenIGTLinkIF_USE_VERSION_2
 
   // If mrmlNode is data node
   if (event == vtkMRMLVolumeNode::ImageDataModifiedEvent)

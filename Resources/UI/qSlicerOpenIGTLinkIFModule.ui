@@ -123,7 +123,17 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
-       <widget class="qMRMLIGTLIOTreeView" name="IOTreeView"/>
+       <widget class="qMRMLIGTLIOTreeView" name="IOTreeView">
+        <property name="indentation">
+         <number>10</number>
+        </property>
+        <property name="itemsExpandable">
+         <bool>true</bool>
+        </property>
+        <property name="expandsOnDoubleClick">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="qSlicerIGTLIONodeSelectorWidget" name="IGTIONodeSelectorWidget" native="true"/>
@@ -135,15 +145,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>qSlicerWidget</class>
-   <extends>QWidget</extends>
-   <header>qSlicerWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ctkCollapsibleButton</class>
    <extends>QWidget</extends>
    <header>ctkCollapsibleButton.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>qSlicerWidget</class>
+   <extends>QWidget</extends>
+   <header>qSlicerWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

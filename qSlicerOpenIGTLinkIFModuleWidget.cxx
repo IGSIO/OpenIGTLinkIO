@@ -87,10 +87,8 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   //  I/O COnfiguration Section
   connect(this, SIGNAL(mrmlSceneChanged(vtkMRMLScene*)),
           d->IGTIONodeSelectorWidget, SLOT(setMRMLScene(vtkMRMLScene*)));
-  connect(d->IOTreeView, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
-          d->IGTIONodeSelectorWidget, SLOT(setCurrentNode(vtkMRMLNode*)));
-  connect(d->IOTreeView, SIGNAL(connectorNodeUpdated(vtkMRMLIGTLConnectorNode*,int)),
-          d->IGTIONodeSelectorWidget, SLOT(updateIGTLConnectorNode(vtkMRMLIGTLConnectorNode*,int)));
+  connect(d->IOTreeView, SIGNAL(ioTreeViewUpdated(int,vtkMRMLIGTLConnectorNode*,int)),
+          d->IGTIONodeSelectorWidget, SLOT(updateEnabledStatus(int,vtkMRMLIGTLConnectorNode*,int)));
 
   // --------------------------------------------------
   //  Visualization Section

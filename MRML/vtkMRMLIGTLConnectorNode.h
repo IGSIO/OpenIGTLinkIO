@@ -16,9 +16,7 @@
 
 // OpenIGTLinkIF MRML includes
 #include "vtkIGTLToMRMLBase.h"
-#ifdef OpenIGTLinkIF_USE_VERSION_2
-# include "vtkMRMLIGTLQueryNode.h"
-#endif
+#include "vtkMRMLIGTLQueryNode.h"
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
 // OpenIGTLink includes
@@ -267,11 +265,9 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   // (Usually, data stored in MRML scene are exported, when the registered events are invoked.)
   void PushNode(vtkMRMLNode* node);
 
-#ifdef OpenIGTLinkIF_USE_VERSION_2
   // Description:
   // Push query int the query list.
   void PushQuery(vtkMRMLIGTLQueryNode* query);
-#endif //OpenIGTLinkIF_USE_VERSION_2
 
   //----------------------------------------------------------------
   // For OpenIGTLink time stamp access
@@ -340,13 +336,11 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   std::list<unsigned long> EventQueue;
   vtkMutexLock* EventQueueMutex;
 
-#ifdef OpenIGTLinkIF_USE_VERSION_2
   // Query queueing mechanism is needed to send all queries from the connector thread.
   // Queries can be pushed to the end of the QueryQueue by calling RequestInvoke from any thread,
   // and they will be Invoked in the main thread.
   std::list<vtkMRMLIGTLQueryNode*> QueryWaitingQueue;
   vtkMutexLock* QueryQueueMutex;
-#endif //OpenIGTLinkIF_USE_VERSION_2
 
 
   // -- Device Name (same as MRML node) and data type (data type string defined in OpenIGTLink)

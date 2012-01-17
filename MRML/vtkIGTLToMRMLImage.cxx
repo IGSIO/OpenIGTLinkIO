@@ -14,9 +14,7 @@
 
 // OpenIGTLinkIF MRML includes
 #include "vtkIGTLToMRMLImage.h"
-#ifdef OpenIGTLinkIF_USE_VERSION_2
-# include "vtkMRMLIGTLQueryNode.h"
-#endif
+#include "vtkMRMLIGTLQueryNode.h"
 
 // OpenIGTLink includes
 #include <igtl_util.h>

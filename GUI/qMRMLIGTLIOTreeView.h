@@ -39,33 +39,37 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLIOTreeView : public qMRML
   Q_OBJECT
 
 public:
+  enum {
+    TYPE_UNKNOWN = 0,
+    TYPE_ROOT,
+    TYPE_CONNECTOR,
+    TYPE_STREAM,
+    TYPE_DATANODE
+  };
+
+public:
   typedef qMRMLTreeView Superclass;
   qMRMLIGTLIOTreeView(QWidget *parent=0);
   virtual ~qMRMLIGTLIOTreeView();
-
-//  const char* firstSelectedNode();
 
   // Register the logic
   void setLogic(vtkSlicerOpenIGTLinkIFLogic* logic);
 
 //  void toggleLockForSelected();
-
 //  void toggleVisibilityForSelected();
-
 //  void deleteSelected();
-
 //  void selectedAsCollection(vtkCollection* collection);
-
   void setSelectedNode(const char* id);
 
 public slots:
   void setMRMLScene(vtkMRMLScene* scene);
 
 signals:  
-  void connectorNodeUpdated(vtkMRMLIGTLConnectorNode*, int);
+  //void connectorNodeUpdated(vtkMRMLIGTLConnectorNode*, int);
+  void ioTreeViewUpdated(int, vtkMRMLIGTLConnectorNode*, int);
 
 protected slots:
-  //  void onClicked(const QModelIndex& index);
+  void onClicked(const QModelIndex& index);
   virtual void onCurrentRowChanged(const QModelIndex& index);
 
 protected:
@@ -76,8 +80,16 @@ protected:
   #endif
   virtual void mousePressEvent(QMouseEvent* event);
 
-  vtkMRMLIGTLConnectorNode* parentConnector(const QModelIndex& index);
-  int parentConnectorDirection(const QModelIndex& index);
+  // Description:
+  // rowProperty() returns row type and properties (connector node and direction).
+  // The type can be either TYPE_UNKNOWN (error - cannot determined),
+  // TYPE_ROOT (root), TYPE_CONNECTOR (connector node), TYPE_STREAM (stream -- IN or OUT)
+  // or TYPE_DATANODE (data node).
+  // If the type is TYPE_CONNECTOR, the pointer to the highlighted connector node is set
+  // to 'cnode'. If the type is TYPE_STREAM or TYPE_DATANODE, the pointer to the parent
+  // connector node and the direction of stream (either vtkMRMLIGTLConnectorNode::IO_INCOMING
+  // or vtkMRMLIGTLConnectorNode::IO_OUTGOING) are set to 'cnode' and 'dir' respectively.
+  int rowProperty(const QModelIndex& index, vtkMRMLIGTLConnectorNode* &cnode, int & dir);
 
 private:
   Q_DECLARE_PRIVATE(qMRMLIGTLIOTreeView);

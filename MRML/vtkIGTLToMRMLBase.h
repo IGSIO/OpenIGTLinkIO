@@ -32,9 +32,7 @@
 #include <vector>
 #include <string>
 
-#ifdef OpenIGTLinkIF_USE_VERSION_2
 class vtkMRMLIGTLQueryNode;
-#endif //OpenIGTLinkIF_USE_VERSION_2
 
 class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLBase : public vtkObject
 {

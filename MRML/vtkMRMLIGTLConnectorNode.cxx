@@ -95,10 +95,8 @@ vtkMRMLIGTLConnectorNode::vtkMRMLIGTLConnectorNode()
 
   this->CheckCRC = 1;
 
-#ifdef OpenIGTLinkIF_USE_VERSION_2
   this->QueryWaitingQueue.clear();
   this->QueryQueueMutex = vtkMutexLock::New();
-#endif //OpenIGTLinkIF_USE_VERSION_2
 
 }
 
@@ -136,12 +134,10 @@ vtkMRMLIGTLConnectorNode::~vtkMRMLIGTLConnectorNode()
     this->EventQueueMutex->Delete();
     }
 
-#ifdef OpenIGTLinkIF_USE_VERSION_2
   if (this->QueryQueueMutex)
     {
     this->QueryQueueMutex->Delete();
     }
-#endif //OpenIGTLinkIF_USE_VERSION_2
 
 }
 
@@ -895,7 +891,6 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
         }
       }
 
-#ifdef OpenIGTLinkIF_USE_VERSION_2
     // If the message is a responce to one of the querys in the list
     // TODO: Should QueryWaitingQueue be a std::map ?
     if (this->QueryWaitingQueue.size() > 0 && updatedNode != NULL)
@@ -921,7 +916,6 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
           }
         }
       }
-#endif //OpenIGTLinkIF_USE_VERSION_2
 
     this->InvokeEvent(vtkMRMLIGTLConnectorNode::ReceiveEvent);
     circBuffer->EndPull();
@@ -1351,7 +1345,6 @@ void vtkMRMLIGTLConnectorNode::PushNode(vtkMRMLNode* node)
 }
 
 
-#ifdef OpenIGTLinkIF_USE_VERSION_2
 //---------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::PushQuery(vtkMRMLIGTLQueryNode* node)
 {
@@ -1374,7 +1367,6 @@ void vtkMRMLIGTLConnectorNode::PushQuery(vtkMRMLIGTLQueryNode* node)
       }
     }
 }
-#endif //OpenIGTLinkIF_USE_VERSION_2
 
 
 //---------------------------------------------------------------------------

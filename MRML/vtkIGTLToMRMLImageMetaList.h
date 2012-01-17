@@ -20,9 +20,8 @@
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
 // OpenIGTLink includes
-#ifdef OpenIGTLinkIF_USE_VERSION_2
-# include "igtlImageMetaMessage.h"
-#endif
+#include "igtlImageMetaMessage.h"
+
 
 // MRML includes
 #include <vtkMRMLNode.h>
@@ -59,11 +58,9 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLImageMetaList : p
 
  protected:
 
-#ifdef OpenIGTLinkIF_USE_VERSION_2
   //igtl::TransformMessage::Pointer OutTransformMsg;
   igtl::ImageMetaMessage::Pointer OutImageMetaMsg;
   igtl::GetImageMetaMessage::Pointer GetImageMetaMessage;
-#endif // OpenIGTLinkIF_USE_VERSION_2
 
 };
 

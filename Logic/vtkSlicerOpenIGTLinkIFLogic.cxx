@@ -18,11 +18,9 @@
 // OpenIGTLinkIF MRML includes
 #include "vtkIGTLCircularBuffer.h"
 #include "vtkMRMLIGTLConnectorNode.h"
-#ifdef OpenIGTLinkIF_USE_VERSION_2
-# include "vtkMRMLImageMetaListNode.h"
-# include "vtkMRMLIGTLTrackingDataQueryNode.h"
-# include "vtkMRMLIGTLTrackingDataBundleNode.h"
-#endif
+#include "vtkMRMLImageMetaListNode.h"
+#include "vtkMRMLIGTLTrackingDataQueryNode.h"
+#include "vtkMRMLIGTLTrackingDataBundleNode.h"
 
 // OpenIGTLinkIF Logic includes
 #include "vtkSlicerOpenIGTLinkIFLogic.h"
@@ -93,18 +91,14 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
   this->ImageConverter           = vtkIGTLToMRMLImage::New();
   this->PositionConverter        = vtkIGTLToMRMLPosition::New();
 
-#ifdef OpenIGTLinkIF_USE_VERSION_2
   this->ImageMetaListConverter   = vtkIGTLToMRMLImageMetaList::New();
   this->TrackingDataConverter    = vtkIGTLToMRMLTrackingData::New();
-#endif //OpenIGTLinkIF_USE_VERSION_2
 
   RegisterMessageConverter(this->LinearTransformConverter);
   RegisterMessageConverter(this->ImageConverter);
   RegisterMessageConverter(this->PositionConverter);
-#ifdef OpenIGTLinkIF_USE_VERSION_2
   RegisterMessageConverter(this->ImageMetaListConverter);
   RegisterMessageConverter(this->TrackingDataConverter);
-#endif //OpenIGTLinkIF_USE_VERSION_2
 
   this->LocatorTransformNode = NULL;
 }
@@ -130,7 +124,6 @@ vtkSlicerOpenIGTLinkIFLogic::~vtkSlicerOpenIGTLinkIFLogic()
     this->PositionConverter->Delete();
     }
 
-#ifdef OpenIGTLinkIF_USE_VERSION_2
   if (this->ImageMetaListConverter)
     {
     UnregisterMessageConverter(this->ImageMetaListConverter);
@@ -141,7 +134,6 @@ vtkSlicerOpenIGTLinkIFLogic::~vtkSlicerOpenIGTLinkIFLogic()
     UnregisterMessageConverter(this->TrackingDataConverter);
     this->TrackingDataConverter->Delete();
     }
-#endif //OpenIGTLinkIF_USE_VERSION_2
 
   if (this->DataCallbackCommand)
     {
@@ -175,11 +167,9 @@ void vtkSlicerOpenIGTLinkIFLogic::RegisterNodes()
     return;
     }
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLConnectorNode>().GetPointer());
-#ifdef OpenIGTLinkIF_USE_VERSION_2
   scene->RegisterNodeClass(vtkNew<vtkMRMLImageMetaListNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataQueryNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataBundleNode>().GetPointer());
-#endif
 }
 
 //---------------------------------------------------------------------------

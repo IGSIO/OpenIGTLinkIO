@@ -6,6 +6,8 @@
 #include "qSlicerIGTLIONodeSelectorWidget.h"
 #include "ui_qSlicerIGTLIONodeSelectorWidget.h"
 
+#include "qMRMLIGTLIOTreeView.h"
+
 // OpenIGTLinkIF MRML includes
 #include "vtkMRMLIGTLConnectorNode.h"
 
@@ -38,12 +40,6 @@ void qSlicerIGTLIONodeSelectorWidgetPrivate::init()
 {
   Q_Q(qSlicerIGTLIONodeSelectorWidget);
   this->setupUi(q);
-
-
-  //QObject::connect(this->NodeSelector, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
-  //this, SLOT(setAddingNode(vtkMRMLNode*)));
-  //QObject::connect(this, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
-  //this->NodeSelector, SLOT(setMRML(vtkMRMLNode*)));
 
   QObject::connect(this->AddNodeButton, SIGNAL(clicked()),
                    q, SLOT(onAddNodeButtonClicked()));
@@ -78,45 +74,30 @@ void qSlicerIGTLIONodeSelectorWidget::setMRMLScene(vtkMRMLScene* scene)
 
 
 //------------------------------------------------------------------------------
-void qSlicerIGTLIONodeSelectorWidget::setCurrentNode(vtkMRMLNode* node)
+void qSlicerIGTLIONodeSelectorWidget::updateEnabledStatus(int type, vtkMRMLIGTLConnectorNode* node, int dir)
 {
   Q_D(qSlicerIGTLIONodeSelectorWidget);
-  
-  if (node == NULL)
-    {
-    // No node specified
-    d->AddNodeButton->setEnabled(true);
-    d->RemoveNodeButton->setEnabled(false);
-    d->NodeSelector->setEnabled(true);
-    //d->NodeSelector->setCurrentNode(node);
-    return;
-    }
 
-  vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
-  if (cnode)
+  if (type == qMRMLIGTLIOTreeView::TYPE_ROOT ||
+      type == qMRMLIGTLIOTreeView::TYPE_UNKNOWN ||
+      type == qMRMLIGTLIOTreeView::TYPE_CONNECTOR)
     {
-    // Connector node specified
     d->AddNodeButton->setEnabled(false);
     d->RemoveNodeButton->setEnabled(false);
     d->NodeSelector->setEnabled(false);
-    //d->NodeSelector->setCurrentNode(node);
-    return;
+    }
+  else if (type == qMRMLIGTLIOTreeView::TYPE_STREAM)
+    {
+    d->AddNodeButton->setEnabled(true);
+    d->RemoveNodeButton->setEnabled(false);
+    d->NodeSelector->setEnabled(true);
     }
   else
     {
-    // Standard data node specified
     d->AddNodeButton->setEnabled(true);
     d->RemoveNodeButton->setEnabled(true);
     d->NodeSelector->setEnabled(true);
-    //d->NodeSelector->setCurrentNode(node);
     }
-}
-
-
-//------------------------------------------------------------------------------
-void qSlicerIGTLIONodeSelectorWidget::updateIGTLConnectorNode(vtkMRMLIGTLConnectorNode* node, int dir)
-{
-  Q_D(qSlicerIGTLIONodeSelectorWidget);
 
   d->ConnectorNode = node;
   d->Direction = dir;

@@ -4,6 +4,7 @@ project(vtkSlicer${qt_module_name}ModuleMRML)
 # See CMake/SlicerMacroBuildModuleLogic.cmake for details
 #
 
+
 set(module_mrml_name "${PROJECT_NAME}")
 
 # The header '${PROJECT_NAME}Export.h' will be automatically configured.

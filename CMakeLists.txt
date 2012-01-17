@@ -8,12 +8,8 @@ set(qt_module_title "OpenIGTLink I/F")
 # if the OpenIGTLink library is compiled with OpenIGTLink_PROTOCOL_VERSION_2
 # option.
 
-if(OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
-  add_definitions(-DOpenIGTLinkIF_USE_VERSION_2)
-  add_definitions(-DOpenIGTLinkIF_LIBRARY_VERSION="${OpenIGTLink_VERSION_MAJOR}-${OpenIGTLink_VERSION_MINOR}-${OpenIGTLink_VERSION_PATCH} for protocol ver. 2")
-else()
-  add_definitions(-DOpenIGTLinkIF_LIBRARY_VERSION="${OpenIGTLink_VERSION_MAJOR}-${OpenIGTLink_VERSION_MINOR}-${OpenIGTLink_VERSION_PATCH} for protocol ver. 1")
-endif()
+#add_definitions(-DOpenIGTLinkIF_USE_VERSION_2)
+#add_definitions(-DOpenIGTLinkIF_LIBRARY_VERSION="${OpenIGTLink_VERSION_MAJOR}-${OpenIGTLink_VERSION_MINOR}-${OpenIGTLink_VERSION_PATCH} for protocol ver. 2")
 
 # Add subdirectories
 add_subdirectory(MRML)
