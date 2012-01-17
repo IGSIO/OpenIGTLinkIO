@@ -85,60 +85,16 @@ void qMRMLIGTLIOTreeViewPrivate::init()
   QObject::connect(q, SIGNAL(clicked(QModelIndex)),
                    q, SLOT(onClicked(QModelIndex)));
 
-  ////qMRMLIGTLIOSortFilterProxyModel* pmodel = new qMRMLIGTLIOSortFilterProxyModel(q);
-  //qMRMLSortFilterProxyModel* pmodel = new qMRMLSortFilterProxyModel(q);
-  //this->setSortFilterProxyModel(pmodel);
-  //
-  //q->setSceneModelType("IGTLConnector");
-  //
-  //q->setUniformRowHeights(true);
-  
-  //QObject::connect(q, SIGNAL(collapsed(QModelIndex)),
-  //                 q, SLOT(onNumberOfVisibleIndexChanged()));
-  //QObject::connect(q, SIGNAL(expanded(QModelIndex)),
-  //                 q, SLOT(onNumberOfVisibleIndexChanged()));
-  //q->horizontalScrollBar()->installEventFilter(q);
-  //
-  //this->NodeMenu = new QMenu(q);
-  //
-  //// rename node
-  //QAction* renameAction =
-  //  new QAction(qMRMLTreeView::tr("Rename"),this->NodeMenu);
-  //this->NodeMenu->addAction(renameAction);
-  //QObject::connect(renameAction, SIGNAL(triggered()),
-  //                 q, SLOT(renameCurrentNode()));
-  //
-  //// delete node
-  //QAction* deleteAction =
-  //  new QAction(qMRMLTreeView::tr("Delete"),this->NodeMenu);
-  //this->NodeMenu->addAction(deleteAction);
-  //QObject::connect(deleteAction, SIGNAL(triggered()),
-  //                 q, SLOT(deleteCurrentNode()));
-  //// EditAction is hidden by default
-  //this->EditAction =
-  //  new QAction(qMRMLTreeView::tr("Edit properties..."), this->NodeMenu);
-  //QObject::connect(this->EditAction, SIGNAL(triggered()),
-  //                 q, SLOT(editCurrentNode()));
-  //this->SceneMenu = new QMenu(q);
-
-  //qMRMLSortFilterProxyModel* pmodel = new qMRMLSortFilterProxyModel(q);
-  //this->setSortFilterProxyModel(pmodel);
-  //q->setSceneModelType("IGTLConnector");
-
-  // Working version
   this->SceneModel = new qMRMLIGTLIOModel(q);
   q->setSceneModel(this->SceneModel, "IGTLConnector");
-  //this->SortFilterModel = new qMRMLSortFilterProxyModel(q);
-  // we only want to show vtkMRMLAnnotationNodes and vtkMRMLAnnotationHierarchyNodes
   QStringList nodeTypes = QStringList();
   nodeTypes.append("vtkMRMLIGTLConnectorNode");
   
   q->setNodeTypes(nodeTypes);
-  //this->SortFilterModel = q->sortFilterProxyModel();
-
   q->setUniformRowHeights(true);
   this->SortFilterModel = q->sortFilterProxyModel();
 
+  q->expandToDepth(4);
   q->expandAll();
 
 }
@@ -180,9 +136,8 @@ void qMRMLIGTLIOTreeViewPrivate::setSortFilterProxyModel(qMRMLSortFilterProxyMod
   QObject::connect(this->SortFilterModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
                    q, SLOT(onNumberOfVisibleIndexChanged()));
 
+  q->expandToDepth(4);
   q->expandAll();
-  //q->expandToDepth(2);
-  //q->onNumberOfVisibleIndexChanged();
 }
 
 
@@ -213,6 +168,7 @@ void qMRMLIGTLIOTreeView::setMRMLScene(vtkMRMLScene* scene)
   // only qMRMLSceneModel needs the scene, the other proxies don't care.
   d->SceneModel->setMRMLScene(scene);
 
+  this->expandToDepth(4);
   this->expandAll();
 }
 
@@ -389,96 +345,6 @@ void qMRMLIGTLIOTreeView::setSelectedNode(const char* id)
     }
 }
 
-//------------------------------------------------------------------------------
-//
-// In-Place Editing of Annotations
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-//void qMRMLIGTLIOTreeView::onVisibilityColumnClicked(vtkMRMLNode* node)
-//{
-//  if (!node)
-//    {
-//    // no node found!
-//    return;
-//    }
-
-//  //vtkMRMLAnnotationNode* annotationNode = vtkMRMLAnnotationNode::SafeDownCast(node);
-
-//  //if (annotationNode)
-//  //  {
-//  //  // this is a valid annotationNode
-//  //  annotationNode->SetVisible(!annotationNode->GetVisible());
-//  //
-//  //  }
-
-
-//  // TODO move to logic
-//  //vtkMRMLAnnotationHierarchyNode* hierarchyNode = vtkMRMLAnnotationHierarchyNode::SafeDownCast(node);
-//  //
-//  //if (hierarchyNode)
-//  //  {
-//  //  vtkCollection* children = vtkCollection::New();
-//  //  hierarchyNode->GetChildrenDisplayableNodes(children);
-//  //
-//  //  children->InitTraversal();
-//  //  for (int i=0; i<children->GetNumberOfItems(); ++i)
-//  //    {
-//  //    vtkMRMLAnnotationNode* childNode = vtkMRMLAnnotationNode::SafeDownCast(children->GetItemAsObject(i));
-//  //    if (childNode)
-//  //      {
-//  //      // this is a valid annotation child node
-//  //      //
-//  //      childNode->SetVisible(!childNode->GetVisible());
-//  //      }
-//  //    } // for loop
-//  //
-//  //  } // if hierarchyNode
-//}
-
-//------------------------------------------------------------------------------
-//void qMRMLIGTLIOTreeView::onLockColumnClicked(vtkMRMLNode* node)
-//{
-
-//  if (!node)
-//    {
-//    // no node found!
-//    return;
-//    }
-
-//  //vtkMRMLAnnotationNode* annotationNode = vtkMRMLAnnotationNode::SafeDownCast(node);
-//  //
-//  //if (annotationNode)
-//  //  {
-//  //  // this is a valid annotationNode
-//  //  annotationNode->SetLocked(!annotationNode->GetLocked());
-//  //
-//  //  }
-
-
-//  // TODO move to logic
-//  //vtkMRMLAnnotationHierarchyNode* hierarchyNode = vtkMRMLAnnotationHierarchyNode::SafeDownCast(node);
-//  //
-//  //if (hierarchyNode)
-//  //  {
-//  //  vtkCollection* children = vtkCollection::New();
-//  //  hierarchyNode->GetChildrenDisplayableNodes(children);
-//  //
-//  //  children->InitTraversal();
-//  //  for (int i=0; i<children->GetNumberOfItems(); ++i)
-//  //    {
-//  //    vtkMRMLAnnotationNode* childNode = vtkMRMLAnnotationNode::SafeDownCast(children->GetItemAsObject(i));
-//  //    if (childNode)
-//  //      {
-//  //      // this is a valid annotation child node
-//  //      //
-//  //      childNode->SetLocked(!childNode->GetLocked());
-//  //      }
-//  //    } // for loop
-//  //
-//  //  } // if hierarchyNode
-//}
 
 //------------------------------------------------------------------------------
 void qMRMLIGTLIOTreeView::mousePressEvent(QMouseEvent* event)
@@ -506,6 +372,6 @@ void qMRMLIGTLIOTreeView::setLogic(vtkSlicerOpenIGTLinkIFLogic* logic)
 
   d->Logic = logic;
 
-  // propagate down to model
+   // propagate down to model
   d->SceneModel->setLogic(d->Logic);
 }

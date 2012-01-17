@@ -42,18 +42,7 @@ public:
   qMRMLIGTLConnectorTreeView(QWidget *parent=0);
   virtual ~qMRMLIGTLConnectorTreeView();
 
-//  const char* firstSelectedNode();
-
-  // Register the logic
   void setLogic(vtkSlicerOpenIGTLinkIFLogic* logic);
-
-//  void toggleLockForSelected();
-
-//  void toggleVisibilityForSelected();
-
-//  void deleteSelected();
-
-//  void selectedAsCollection(vtkCollection* collection);
 
   void setSelectedNode(const char* id);
 
@@ -75,12 +64,6 @@ protected:
 private:
   Q_DECLARE_PRIVATE(qMRMLIGTLConnectorTreeView);
   Q_DISABLE_COPY(qMRMLIGTLConnectorTreeView);
-
-  // toggle the visibility of an OpenIGTLinkIF
-//  void onVisibilityColumnClicked(vtkMRMLNode* node);
-
-  // toggle un-/lock of an annotation
-//  void onLockColumnClicked(vtkMRMLNode* node);
 
 };
 

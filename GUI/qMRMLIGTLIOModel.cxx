@@ -67,8 +67,10 @@ QStandardItem* qMRMLIGTLIOModelPrivate::insertExtraItem2(int row, QStandardItem*
   item->setFlags(flags);
   QList<QStandardItem*> items;
   items << item;
-  items << new QStandardItem;
-  items[1]->setFlags(0);
+
+  QStandardItem* item0 = new QStandardItem;
+  item0->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
+  items << item0 << item0 << item0;
   parent->insertRow(row, items);
 
   // update extra item cache info (for faster retrieval)
