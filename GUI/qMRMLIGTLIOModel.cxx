@@ -227,18 +227,21 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
       {
       QList<QStandardItem*> items;
 
+      // Node name
       QStandardItem* item0 = new QStandardItem;
       item0->setText(inode->GetName());
       item0->setData("IOTree", qMRMLSceneModel::UIDRole);
       item0->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
       items << item0;
 
+      // Node tag name
       QStandardItem* item1 = new QStandardItem;
       item1->setText(inode->GetNodeTagName());
       item1->setData("IOTree", qMRMLSceneModel::UIDRole);
       item1->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
       items << item1;
 
+      // IGTL name
       QStandardItem* item2 = new QStandardItem;
       item2->setData("IOTree", qMRMLSceneModel::UIDRole);
       item2->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
@@ -253,8 +256,23 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
         }
       items << item2;
 
+      // Visible icon
+      QStandardItem* item3 = new QStandardItem;
+      const char * attr = inode->GetAttribute("IGTLVisible");
+      if (attr && strcmp(attr, "true") == 0)
+        {
+        item3->setData(QPixmap(":/Icons/Small/SlicerVisible.png"),Qt::DecorationRole);        
+        }
+      else
+        {
+        item3->setData(QPixmap(":/Icons/Small/SlicerInvisible.png"),Qt::DecorationRole);
+        }
+      item3->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
+      items << item3;
+
       item->insertRow(i, items);
       }
+
     //// update extra item cache info (for faster retrieval)
     //QMap<QString, QVariant> extraItems = nodeItem->data(qMRMLSceneModel::ExtraItemsRole).toMap();
     //extraItems[extraType] = extraItems[extraType].toStringList() << text;
