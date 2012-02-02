@@ -140,6 +140,9 @@ QStandardItem* qMRMLIGTLIOModel::insertNode(vtkMRMLNode* node, QStandardItem* pa
                 this, SLOT(onMRMLNodeModified(vtkObject*)));
     qvtkConnect(node, vtkMRMLIGTLConnectorNode::NewDeviceEvent,
                 this, SLOT(onMRMLNodeModified(vtkObject*)));
+    qvtkConnect(node, vtkMRMLIGTLConnectorNode::DeviceModifiedEvent,
+                this, SLOT(onDeviceVisibilityModified(vtkObject*)));
+
     }
   return insertedItem;
 }
@@ -223,6 +226,7 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
       {
       inode = node->GetOutgoingMRMLNode(i);
       }
+
     if (inode != NULL)
       {
       QList<QStandardItem*> items;
@@ -230,20 +234,20 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
       // Node name
       QStandardItem* item0 = new QStandardItem;
       item0->setText(inode->GetName());
-      item0->setData("IOTree", qMRMLSceneModel::UIDRole);
+      item0->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
       item0->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
       items << item0;
 
       // Node tag name
       QStandardItem* item1 = new QStandardItem;
       item1->setText(inode->GetNodeTagName());
-      item1->setData("IOTree", qMRMLSceneModel::UIDRole);
+      item1->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
       item1->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
       items << item1;
 
       // IGTL name
       QStandardItem* item2 = new QStandardItem;
-      item2->setData("IOTree", qMRMLSceneModel::UIDRole);
+      item2->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
       item2->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
       vtkIGTLToMRMLBase* converter = node->GetConverterByNodeID(inode->GetID());
       if (converter)
@@ -356,4 +360,13 @@ QStandardItem* qMRMLIGTLIOModel::insertNode(vtkMRMLNode* node)
 }
 
 
+//------------------------------------------------------------------------------
+void qMRMLIGTLIOModel::onDeviceVisibilityModified(vtkObject* obj)
+{
+  vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(obj);
 
+  if (cnode)
+    {
+    insertIOTree(cnode);
+    }
+}

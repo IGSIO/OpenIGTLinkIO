@@ -70,7 +70,7 @@ signals:
 
 protected slots:
   void onClicked(const QModelIndex& index);
-  virtual void onCurrentRowChanged(const QModelIndex& index);
+  //virtual void onCurrentRowChanged(const QModelIndex& index);
 
 protected:
   QScopedPointer<qMRMLIGTLIOTreeViewPrivate> d_ptr;
@@ -87,13 +87,16 @@ protected:
   // or TYPE_DATANODE (data node).
   // If the type is TYPE_CONNECTOR, the pointer to the highlighted connector node is set
   // to 'cnode'. If the type is TYPE_STREAM or TYPE_DATANODE, the pointer to the parent
-  // connector node and the direction of stream (either vtkMRMLIGTLConnectorNode::IO_INCOMING
-  // or vtkMRMLIGTLConnectorNode::IO_OUTGOING) are set to 'cnode' and 'dir' respectively.
-  int rowProperty(const QModelIndex& index, vtkMRMLIGTLConnectorNode* &cnode, int & dir);
+  // connector node, the direction of stream (either vtkMRMLIGTLConnectorNode::IO_INCOMING
+  // or vtkMRMLIGTLConnectorNode::IO_OUTGOING), and the pointer to the data node
+  // are set to 'cnode', 'dir', and 'dnode' respectively.
+  int rowProperty(const QModelIndex& index, vtkMRMLIGTLConnectorNode* &cnode, int & dir, vtkMRMLNode* &dnode);
 
 private:
   Q_DECLARE_PRIVATE(qMRMLIGTLIOTreeView);
   Q_DISABLE_COPY(qMRMLIGTLIOTreeView);
+
+  QModelIndex CurrentIndex;
 
   // toggle the visibility of an OpenIGTLinkIF
 //  void onVisibilityColumnClicked(vtkMRMLNode* node);

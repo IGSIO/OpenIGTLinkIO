@@ -120,8 +120,10 @@ void qMRMLIGTLIOTreeViewPrivate::setSortFilterProxyModel(qMRMLSortFilterProxyMod
     ? static_cast<QAbstractItemModel*>(this->SortFilterModel)
     : static_cast<QAbstractItemModel*>(this->SceneModel));
   // Setting a new model to the view resets the selection model
-  QObject::connect(q->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
-                   q, SLOT(onCurrentRowChanged(QModelIndex)));
+
+  // The following call has been replaced by onClick();
+  //QObject::connect(q->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
+  //q, SLOT(onCurrentRowChanged(QModelIndex)));
   if (!this->SortFilterModel)
     {
     return;
@@ -176,7 +178,7 @@ void qMRMLIGTLIOTreeView::setMRMLScene(vtkMRMLScene* scene)
 // Click and selected event handling
 //------------------------------------------------------------------------------
 
-int qMRMLIGTLIOTreeView::rowProperty(const QModelIndex& index, vtkMRMLIGTLConnectorNode* &cnode, int & dir)
+int qMRMLIGTLIOTreeView::rowProperty(const QModelIndex& index, vtkMRMLIGTLConnectorNode* &cnode, int & dir, vtkMRMLNode* &dnode)
 {
   Q_D(qMRMLIGTLIOTreeView);
   Q_ASSERT(d->SortFilterModel);
@@ -186,6 +188,7 @@ int qMRMLIGTLIOTreeView::rowProperty(const QModelIndex& index, vtkMRMLIGTLConnec
   QStandardItem* grandParent;
 
   cnode = NULL;
+  dnode = NULL;
   dir = vtkMRMLIGTLConnectorNode::IO_UNSPECIFIED;
   
   qMRMLSceneModel* sceneModel = qobject_cast<qMRMLSceneModel*>(d->SortFilterModel->sourceModel());
@@ -227,6 +230,11 @@ int qMRMLIGTLIOTreeView::rowProperty(const QModelIndex& index, vtkMRMLIGTLConnec
 
   vtkMRMLNode* node = sceneModel->mrmlNodeFromIndex(grandParent->index());
   cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+
+  QString id = parent1->child(item->row(), 0)->data().toString();
+  dnode = this->mrmlScene()->GetNodeByID(id.toAscii());
+  //vtkMRMLNode* dnode = sceneModel->mrmlNodeFromIndex(index); // Does this work?
+  
   if (cnode && parent1 && grandParent)
     {
     QString text = grandParent->child(parent1->row(), 0)->text();
@@ -254,28 +262,60 @@ void qMRMLIGTLIOTreeView::onClicked(const QModelIndex& index)
 {
   Q_D(qMRMLIGTLIOTreeView);
 
+  vtkMRMLIGTLConnectorNode* cnode;
+  vtkMRMLNode* dnode;
+  int dir;
+  int type = rowProperty(index, cnode, dir, dnode);
+  if (!cnode)
+    {
+    return;
+    }
+
   if (index.column() == qMRMLIGTLIOModel::VisualizationColumn)
     {
-    //this->onVisualizationColumnClicked(mrmlNode);
+    qMRMLSceneModel* sceneModel = qobject_cast<qMRMLSceneModel*>(d->SortFilterModel->sourceModel());
+    QStandardItem* item = sceneModel->itemFromIndex(d->SortFilterModel->mapToSource(index));
+
+    if (dnode && type == TYPE_DATANODE)
+      {
+      // Toggle the visibility
+      const char * attr = dnode->GetAttribute("IGTLVisible");
+      if (attr && strcmp(attr, "true") == 0)
+        {
+        dnode->SetAttribute("IGTLVisible", "false");
+        }
+      else
+        {
+        dnode->SetAttribute("IGTLVisible", "true");
+        }
+      cnode->InvokeEvent(vtkMRMLIGTLConnectorNode::DeviceModifiedEvent);
+      }
+    emit ioTreeViewUpdated(type, cnode, dir);
     }
-}
-
-
-void qMRMLIGTLIOTreeView::onCurrentRowChanged(const QModelIndex& index)
-{
-  Q_D(qMRMLIGTLIOTreeView);
-  Q_ASSERT(d->SortFilterModel);
-  //Q_ASSERT(this->currentNode() == d->SortFilterModel->mrmlNodeFromIndex(index));
-
-  vtkMRMLIGTLConnectorNode* cnode;
-  int dir;
-  int type = rowProperty(index, cnode, dir);
-
-  //emit connectorNodeUpdated(cnode, dir);
-  emit ioTreeViewUpdated(type, cnode, dir);
+  else if (index != this->CurrentIndex)
+    {
+    this->CurrentIndex = index;
+    //emit connectorNodeUpdated(cnode, dir);
+    emit ioTreeViewUpdated(type, cnode, dir);
+    }
 
 }
 
+
+//void qMRMLIGTLIOTreeView::onCurrentRowChanged(const QModelIndex& index)
+//{
+//  Q_D(qMRMLIGTLIOTreeView);
+//  Q_ASSERT(d->SortFilterModel);
+//  //Q_ASSERT(this->currentNode() == d->SortFilterModel->mrmlNodeFromIndex(index));
+//
+//  vtkMRMLIGTLConnectorNode* cnode;
+//  int dir;
+//  int type = rowProperty(index, cnode, dir);
+//
+//  //emit connectorNodeUpdated(cnode, dir);
+//  //emit ioTreeViewUpdated(type, cnode, dir);
+//
+//}
 
 
 //------------------------------------------------------------------------------

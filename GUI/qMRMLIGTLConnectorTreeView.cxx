@@ -83,6 +83,9 @@ void qMRMLIGTLConnectorTreeViewPrivate::init()
   this->SortFilterModel = q->sortFilterProxyModel();
 
   q->setUniformRowHeights(true);
+
+  QObject::connect(q, SIGNAL(clicked(QModelIndex)),
+                   q, SLOT(onClicked(QModelIndex)));
 }
 
 //------------------------------------------------------------------------------

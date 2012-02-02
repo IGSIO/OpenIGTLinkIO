@@ -50,9 +50,6 @@ public slots:
   void setMRMLScene(vtkMRMLScene* scene);
 //  void onSelectionChanged(const QItemSelection& index,const QItemSelection& beforeIndex);
 
-//protected slots:
-//  void onClicked(const QModelIndex& index);
-
 protected:
   QScopedPointer<qMRMLIGTLConnectorTreeViewPrivate> d_ptr;
   #ifndef QT_NO_CURSOR

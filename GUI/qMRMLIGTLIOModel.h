@@ -69,6 +69,10 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLIOModel : public qMRMLSce
   virtual QStandardItem* insertIOTree(vtkMRMLNode* node);
   virtual QStandardItem* insertNode(vtkMRMLNode* node);
 
+ protected slots:
+  virtual void onDeviceVisibilityModified(vtkObject*);
+
+
  private:
   Q_DECLARE_PRIVATE(qMRMLIGTLIOModel);
   Q_DISABLE_COPY(qMRMLIGTLIOModel);
