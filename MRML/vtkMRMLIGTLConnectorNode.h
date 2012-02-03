@@ -58,6 +58,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
     DeactivatedEvent      = 118947,
     ReceiveEvent          = 118948,
     NewDeviceEvent        = 118949,
+    DeviceModifiedEvent   = 118950
   };
 
   enum {
