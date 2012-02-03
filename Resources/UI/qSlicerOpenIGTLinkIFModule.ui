@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>559</width>
-    <height>747</height>
+    <height>811</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,25 +26,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="ctkCollapsibleButton" name="VisualizationFrame">
-     <property name="text">
-      <string>Visualization / Slice Control</string>
-     </property>
-     <property name="contentsFrameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QCheckBox" name="EnableLocatorDriverCheckBox">
-        <property name="text">
-         <string>Enable locator driver</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
    </item>
    <item row="0" column="0" colspan="2">
     <widget class="ctkCollapsibleButton" name="ConnectorListFrame">
@@ -124,14 +105,32 @@
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
        <widget class="qMRMLIGTLIOTreeView" name="IOTreeView">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="indentation">
          <number>10</number>
+        </property>
+        <property name="uniformRowHeights">
+         <bool>true</bool>
         </property>
         <property name="itemsExpandable">
          <bool>true</bool>
         </property>
         <property name="expandsOnDoubleClick">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -141,19 +140,38 @@
      </layout>
     </widget>
    </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="ctkCollapsibleButton" name="VisualizationFrame">
+     <property name="text">
+      <string>Visualization / Slice Control</string>
+     </property>
+     <property name="contentsFrameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QCheckBox" name="EnableLocatorDriverCheckBox">
+        <property name="text">
+         <string>Enable locator driver</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ctkCollapsibleButton</class>
-   <extends>QWidget</extends>
-   <header>ctkCollapsibleButton.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>qSlicerWidget</class>
    <extends>QWidget</extends>
    <header>qSlicerWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ctkCollapsibleButton</class>
+   <extends>QWidget</extends>
+   <header>ctkCollapsibleButton.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

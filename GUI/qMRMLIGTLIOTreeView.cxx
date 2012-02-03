@@ -94,7 +94,7 @@ void qMRMLIGTLIOTreeViewPrivate::init()
   q->setUniformRowHeights(true);
   this->SortFilterModel = q->sortFilterProxyModel();
 
-  q->expandToDepth(4);
+  //q->expandToDepth(4);
   q->expandAll();
 
 }
@@ -138,7 +138,7 @@ void qMRMLIGTLIOTreeViewPrivate::setSortFilterProxyModel(qMRMLSortFilterProxyMod
   QObject::connect(this->SortFilterModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
                    q, SLOT(onNumberOfVisibleIndexChanged()));
 
-  q->expandToDepth(4);
+  //q->expandToDepth(4);
   q->expandAll();
 }
 
@@ -170,7 +170,7 @@ void qMRMLIGTLIOTreeView::setMRMLScene(vtkMRMLScene* scene)
   // only qMRMLSceneModel needs the scene, the other proxies don't care.
   d->SceneModel->setMRMLScene(scene);
 
-  this->expandToDepth(4);
+  //this->expandToDepth(4);
   this->expandAll();
 }
 
