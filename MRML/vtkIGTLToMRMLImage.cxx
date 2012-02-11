@@ -29,6 +29,7 @@
 
 // VTK includes
 #include <vtkImageData.h>
+#include <vtkIntArray.h>
 #include <vtkMatrix4x4.h>
 #include <vtkObjectFactory.h>
 
