@@ -18,6 +18,8 @@
 // OpenIGTLinkIF MRML includes
 #include "vtkIGTLToMRMLBase.h"
 
+#include "vtkSlicerOpenIGTLinkIFLogic.h"
+
 // VTK includes
 #include <vtkObjectFactory.h>
 
@@ -32,14 +34,54 @@ vtkStandardNewMacro(vtkIGTLToMRMLBase);
 vtkCxxRevisionMacro(vtkIGTLToMRMLBase, "$Revision: 10576 $");
 
 //---------------------------------------------------------------------------
+class vtkIGTLToMRMLBasePrivate
+{
+public:
+  vtkIGTLToMRMLBasePrivate();
+  ~vtkIGTLToMRMLBasePrivate();
+
+  void SetOpenIGTLinkIFLogic(vtkSlicerOpenIGTLinkIFLogic* logic);
+  vtkSlicerOpenIGTLinkIFLogic* GetOpenIGTLinkIFLogic();
+
+protected:
+  vtkSlicerOpenIGTLinkIFLogic* OpenIGTLinkIFLogic;
+};
+
+vtkIGTLToMRMLBasePrivate::vtkIGTLToMRMLBasePrivate()
+{
+  this->OpenIGTLinkIFLogic = NULL;
+}
+
+vtkIGTLToMRMLBasePrivate::~vtkIGTLToMRMLBasePrivate()
+{
+}
+
+void vtkIGTLToMRMLBasePrivate::SetOpenIGTLinkIFLogic(vtkSlicerOpenIGTLinkIFLogic* logic)
+{
+  this->OpenIGTLinkIFLogic = logic;
+}
+
+
+vtkSlicerOpenIGTLinkIFLogic* vtkIGTLToMRMLBasePrivate::GetOpenIGTLinkIFLogic()
+{
+  return this->OpenIGTLinkIFLogic;
+}
+
+
+//---------------------------------------------------------------------------
 vtkIGTLToMRMLBase::vtkIGTLToMRMLBase()
 {
   this->CheckCRC = 1;
+  this->Private = new vtkIGTLToMRMLBasePrivate;
 }
 
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLBase::~vtkIGTLToMRMLBase()
 {
+  if (this->Private)
+    {
+    delete this->Private;
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -47,3 +89,29 @@ void vtkIGTLToMRMLBase::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkObject::PrintSelf(os, indent);
 }
+
+
+//---------------------------------------------------------------------------
+void vtkIGTLToMRMLBase::SetOpenIGTLinkIFLogic(vtkSlicerOpenIGTLinkIFLogic* logic)
+{
+  if (this->Private)
+    {
+    this->Private->SetOpenIGTLinkIFLogic(logic);
+    }
+}
+
+
+//---------------------------------------------------------------------------
+vtkSlicerOpenIGTLinkIFLogic* vtkIGTLToMRMLBase::GetOpenIGTLinkIFLogic()
+{
+  if (this->Private)
+    {
+    return this->Private->GetOpenIGTLinkIFLogic();
+    }
+  else
+    {
+    return NULL;
+    }
+}
+
+

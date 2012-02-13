@@ -33,6 +33,8 @@
 #include <string>
 
 class vtkMRMLIGTLQueryNode;
+class vtkSlicerOpenIGTLinkIFLogic;
+class vtkIGTLToMRMLBasePrivate;
 
 class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLBase : public vtkObject
 {
@@ -97,6 +99,10 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLBase : public vtk
   vtkGetMacro( CheckCRC, int );
   vtkSetMacro( CheckCRC, int );
 
+  // Set/Get pointer to OpenIGTlinkIFLogic 
+  void SetOpenIGTLinkIFLogic(vtkSlicerOpenIGTLinkIFLogic* logic);
+  vtkSlicerOpenIGTLinkIFLogic* GetOpenIGTLinkIFLogic();
+
  protected:
   vtkIGTLToMRMLBase();
   ~vtkIGTLToMRMLBase();
@@ -108,6 +114,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLBase : public vtk
 
   int CheckCRC;
 
+  vtkIGTLToMRMLBasePrivate* Private;
 };
 
 

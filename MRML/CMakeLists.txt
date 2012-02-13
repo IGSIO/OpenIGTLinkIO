@@ -13,6 +13,8 @@ set(module_mrml_export_directive "VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT")
 # Additional directories to include
 set(module_mrml_include_directories
   ${Slicer_Base_INCLUDE_DIRS}
+  ${vtkSlicerOpenIGTLinkIFModuleLogic_SOURCE_DIR}
+  ${vtkSlicerOpenIGTLinkIFModuleLogic_BINARY_DIR}
   )
 
 # Source files

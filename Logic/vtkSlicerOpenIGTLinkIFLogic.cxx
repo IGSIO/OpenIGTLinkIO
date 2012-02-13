@@ -425,6 +425,7 @@ int vtkSlicerOpenIGTLinkIFLogic::RegisterMessageConverter(vtkIGTLToMRMLBase* con
     // TODO: is this correct? Shouldn't it be "&&"
     {
     this->MessageConverterList.push_back(converter);
+    converter->SetOpenIGTLinkIFLogic(this);
     }
   else
     {

@@ -21,7 +21,8 @@
 #include <igtlImageMessage.h>
 
 // Slicer includes
-#include <vtkSlicerColorLogic.h>
+//#include <vtkSlicerColorLogic.h>
+#include <vtkMRMLColorLogic.h>
 
 // MRML includes
 #include <vtkMRMLScalarVolumeNode.h>
@@ -35,6 +36,8 @@
 
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
+
+#include "vtkSlicerOpenIGTLinkIFLogic.h"
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLImage);
@@ -116,11 +119,13 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, const char* 
     scene->AddNode(displayNode);
 
     //displayNode->SetDefaultColorMap();
-    vtkSlicerColorLogic *colorLogic = vtkSlicerColorLogic::New();
-    displayNode->SetAndObserveColorNodeID(colorLogic->GetDefaultVolumeColorNodeID());
-    //colorLogic->Delete();
-
-    scalarNode->SetAndObserveDisplayNodeID(displayNode->GetID());
+    //vtkSlicerColorLogic *colorLogic = vtkSlicerColorLogic::New();
+    if (this->GetOpenIGTLinkIFLogic() && this->GetOpenIGTLinkIFLogic()->GetApplicationLogic())
+      {
+      vtkMRMLColorLogic *colorLogic = this->GetOpenIGTLinkIFLogic()->GetApplicationLogic()->GetColorLogic();
+      displayNode->SetAndObserveColorNodeID(colorLogic->GetDefaultVolumeColorNodeID());
+      scalarNode->SetAndObserveDisplayNodeID(displayNode->GetID());
+      }
 
     vtkDebugMacro("Name vol node "<<scalarNode->GetClassName());
     vtkDebugMacro("Display node "<<displayNode->GetClassName());
