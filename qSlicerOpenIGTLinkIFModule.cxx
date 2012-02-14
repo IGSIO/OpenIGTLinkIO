@@ -76,6 +76,14 @@ QIcon qSlicerOpenIGTLinkIFModule::icon()const
   return QIcon(":/Icons/OpenIGTLinkIF.png");
 }
 
+
+//-----------------------------------------------------------------------------
+QStringList qSlicerOpenIGTLinkIFModule::categories() const
+{
+  return QStringList() << "" << "IGT";
+}
+
+
 //-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModule::setup()
 {
