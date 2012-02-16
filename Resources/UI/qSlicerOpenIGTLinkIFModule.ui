@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="0" colspan="2">
+   <item row="3" column="0" colspan="2">
     <spacer name="VerticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -136,25 +136,6 @@
       </item>
       <item>
        <widget class="qSlicerIGTLIONodeSelectorWidget" name="IGTIONodeSelectorWidget" native="true"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="ctkCollapsibleButton" name="VisualizationFrame">
-     <property name="text">
-      <string>Visualization / Slice Control</string>
-     </property>
-     <property name="contentsFrameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QCheckBox" name="EnableLocatorDriverCheckBox">
-        <property name="text">
-         <string>Enable locator driver</string>
-        </property>
-       </widget>
       </item>
      </layout>
     </widget>

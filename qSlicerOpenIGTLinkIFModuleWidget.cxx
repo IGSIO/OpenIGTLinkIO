@@ -90,12 +90,6 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   connect(d->IOTreeView, SIGNAL(ioTreeViewUpdated(int,vtkMRMLIGTLConnectorNode*,int)),
           d->IGTIONodeSelectorWidget, SLOT(updateEnabledStatus(int,vtkMRMLIGTLConnectorNode*,int)));
 
-  // --------------------------------------------------
-  //  Visualization Section
-  connect(d->EnableLocatorDriverCheckBox, SIGNAL(toggled(bool)), this,
-          SLOT(setLocatorDriverVisible(bool)));
-  this->setLocatorDriverVisible(d->EnableLocatorDriverCheckBox->isChecked());
-
   // TODO We should probably listen for the logic and implement a onLogicModified() slot
   //      Doing so we would be able to update the UI if the locator is externally enabled.
 
@@ -141,13 +135,6 @@ void qSlicerOpenIGTLinkIFModuleWidget::onRemoveConnectorButtonClicked()
   this->mrmlScene()->RemoveNode(connectorNode);
 }
 
-
-//-----------------------------------------------------------------------------
-void qSlicerOpenIGTLinkIFModuleWidget::setLocatorDriverVisible(bool visible)
-{
-  Q_D(qSlicerOpenIGTLinkIFModuleWidget);
-  d->logic()->EnableLocatorDriver(visible);
-}
 
 //-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::importDataAndEvents()

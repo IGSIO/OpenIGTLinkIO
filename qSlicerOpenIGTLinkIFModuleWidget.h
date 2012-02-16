@@ -32,9 +32,6 @@ protected:
 protected slots:
   void onAddConnectorButtonClicked();
   void onRemoveConnectorButtonClicked();
-
-  void setLocatorDriverVisible(bool visible);
-
   void importDataAndEvents();
 
 private:

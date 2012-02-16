@@ -321,50 +321,6 @@ void vtkSlicerOpenIGTLinkIFLogic::SetVisibility(vtkMRMLNode * node, bool sw)
 
 
 //---------------------------------------------------------------------------
-int vtkSlicerOpenIGTLinkIFLogic::SetLocatorDriver(const char* nodeID)
-{
-  vtkMRMLLinearTransformNode* node =
-    vtkMRMLLinearTransformNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(nodeID));
-
-  if (node && strcmp(node->GetNodeTagName(), "LinearTransform") == 0)
-    {
-    this->LocatorDriverNodeID = nodeID;
-    if (this->LocatorDriverFlag)
-      {
-      EnableLocatorDriver(1);
-      }
-    return 1;
-    }
-
-  return 0;
-}
-
-//---------------------------------------------------------------------------
-int vtkSlicerOpenIGTLinkIFLogic::EnableLocatorDriver(int sw)
-{
-  if (sw == 1)  // turn on
-    {
-    this->LocatorDriverFlag = 1;
-    vtkMRMLModelNode* mnode =
-      SetVisibilityOfLocatorModel("IGTLLocator", 1);
-    vtkMRMLLinearTransformNode *tnode =
-      vtkMRMLLinearTransformNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(this->LocatorDriverNodeID));
-    if (!tnode)
-      {
-      return 0;
-      }
-    mnode->SetAndObserveTransformNodeID(tnode->GetID());
-    mnode->InvokeEvent(vtkMRMLTransformableNode::TransformModifiedEvent);
-    }
-  else  // turn off
-    {
-    this->LocatorDriverFlag = 0;
-    SetVisibilityOfLocatorModel("IGTLLocator", 0);
-    }
-  return 1;
-}
-
-//---------------------------------------------------------------------------
 int vtkSlicerOpenIGTLinkIFLogic::SetRealTimeImageSource(const char* nodeID)
 {
   vtkMRMLVolumeNode* volNode =
@@ -959,38 +915,6 @@ void vtkSlicerOpenIGTLinkIFLogic::CheckSliceNode()
       ->GetSliceLogic("Green")->GetSliceNode();
     }
   */
-}
-
-//---------------------------------------------------------------------------
-vtkMRMLModelNode* vtkSlicerOpenIGTLinkIFLogic::SetVisibilityOfLocatorModel(const char* nodeName, int v)
-{
-  vtkMRMLModelNode*   locatorModel;
-  vtkMRMLDisplayNode* locatorDisp;
-
-  // Check if any node with the specified name exists
-  vtkMRMLScene*  scene = this->GetApplicationLogic()->GetMRMLScene();
-  vtkCollection* collection = scene->GetNodesByName(nodeName);
-
-  if (collection != NULL && collection->GetNumberOfItems() == 0)
-    {
-    // if a node doesn't exist
-    locatorModel = AddLocatorModel(nodeName, 0.0, 1.0, 1.0);
-    }
-  else
-    {
-    locatorModel = vtkMRMLModelNode::SafeDownCast(collection->GetItemAsObject(0));
-    }
-
-  if (locatorModel)
-    {
-    locatorDisp = locatorModel->GetDisplayNode();
-    locatorDisp->SetVisibility(v);
-    locatorModel->Modified();
-    this->GetApplicationLogic()->GetMRMLScene()->Modified();
-    }
-
-  //collection->Delete();
-  return locatorModel;
 }
 
 //---------------------------------------------------------------------------

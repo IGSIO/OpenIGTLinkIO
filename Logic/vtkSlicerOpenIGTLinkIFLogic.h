@@ -141,8 +141,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
 
   void SetVisibility(vtkMRMLNode * node, bool sw);
 
-  int  SetLocatorDriver(const char* nodeID);
-  int  EnableLocatorDriver(int i);
   int  SetRealTimeImageSource(const char* nodeID);
   int  SetSliceDriver(int index, int v);
   int  GetSliceDriver(int index);
@@ -150,7 +148,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   void UpdateSliceNodeByImage(int sliceNodeNuber);
   void CheckSliceNode();
 
-  vtkMRMLModelNode* SetVisibilityOfLocatorModel(const char* nodeName, int v);
   vtkMRMLModelNode* AddLocatorModel(const char* nodeName, double r, double g, double b);
 
   void ProcCommand(const char* nodeName, int size, unsigned char* data);
