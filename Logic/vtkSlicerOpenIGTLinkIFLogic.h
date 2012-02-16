@@ -135,10 +135,12 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   //----------------------------------------------------------------
   // MRML Management
   //----------------------------------------------------------------
-
-  //virtual void ProcessMRMLEvents(vtkObject* caller, unsigned long event, void* callData);
+  
+  virtual void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void * callData);
   //virtual void ProcessLogicEvents(vtkObject * caller, unsigned long event, void * callData);
 
+  void SetVisibilityOn(vtkMRMLNode * node);
+  void SetVisibilityOff(vtkMRMLNode * node);
 
   int  SetLocatorDriver(const char* nodeID);
   int  EnableLocatorDriver(int i);

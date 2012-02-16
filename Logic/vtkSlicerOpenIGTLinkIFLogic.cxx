@@ -203,6 +203,13 @@ void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded(vtkMRMLNode* node)
     // TODO Remove this line when the corresponding UI option will be added
     cnode->SetRestrictDeviceName(0);
 
+    // Start observing the connector node
+    vtkMRMLNode *node = NULL; // TODO: is this OK?
+    vtkIntArray* nodeEvents = vtkIntArray::New();
+    nodeEvents->InsertNextValue(vtkMRMLIGTLConnectorNode::DeviceModifiedEvent);
+    vtkSetAndObserveMRMLNodeEventsMacro(node,cnode,nodeEvents);
+    nodeEvents->Delete();
+    
     // Register converters
     unsigned int n = this->GetNumberOfConverters();
     for (unsigned short i = 0; i < n; i ++)
@@ -270,6 +277,28 @@ void vtkSlicerOpenIGTLinkIFLogic::ImportEvents()
     connector->ImportEventsFromEventBuffer();
     }
 }
+
+
+//---------------------------------------------------------------------------
+void vtkSlicerOpenIGTLinkIFLogic::SetVisibilityOn(vtkMRMLNode * node)
+{
+  vtkMRMLLinearTransformNode * tnode = vtkMRMLLinearTransformNode::SafeDownCast(node);
+  if (tnode)
+    {
+    // to be implemented.
+    }
+}
+
+//---------------------------------------------------------------------------
+void vtkSlicerOpenIGTLinkIFLogic::SetVisibilityOff(vtkMRMLNode * node)
+{
+  vtkMRMLLinearTransformNode * tnode = vtkMRMLLinearTransformNode::SafeDownCast(node);
+  if (tnode)
+    {
+    // to be implemented.
+    }
+}
+
 
 //---------------------------------------------------------------------------
 int vtkSlicerOpenIGTLinkIFLogic::SetLocatorDriver(const char* nodeID)
@@ -548,92 +577,141 @@ vtkIGTLToMRMLBase* vtkSlicerOpenIGTLinkIFLogic::GetConverterByDeviceType(const c
   return converter;
 }
 
-////---------------------------------------------------------------------------
-//void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLEvents(vtkObject * caller, unsigned long event, void * callData)
-//{
-//  if (caller != NULL)
-//    {
-//    vtkMRMLNode* node = vtkMRMLNode::SafeDownCast(caller);
-//
-//    ////---------------------------------------------------------------------------
-//    //// Outgoing data
-//    //// TODO: should check the type of the node here
-//    //ConnectorListType* list = &MRMLEventConnectorMap[node];
-//    //ConnectorListType::iterator cliter;
-//    //for (cliter = list->begin(); cliter != list->end(); cliter ++)
-//    //  {
-//    //  vtkMRMLIGTLConnectorNode* connector =
-//    //    vtkMRMLIGTLConnectorNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(*cliter));
-//    //  if (connector == NULL)
-//    //    {
-//    //    return;
-//    //    }
-//    //
-//    //  MessageConverterListType::iterator iter;
-//    //  for (iter = this->MessageConverterList.begin();
-//    //       iter != this->MessageConverterList.end();
-//    //       iter ++)
-//    //    {
-//    //    if ((*iter)->GetMRMLName() && strcmp(node->GetNodeTagName(), (*iter)->GetMRMLName()) == 0)
-//    //      {
-//    //      // check if the name-type combination is on the list
-//    //      if (connector->GetDeviceID(node->GetName(), (*iter)->GetIGTLName()) >= 0)
-//    //        {
-//    //        int size;
-//    //        void* igtlMsg;
-//    //        (*iter)->MRMLToIGTL(event, node, &size, &igtlMsg);
-//    //        int r = connector->SendData(size, (unsigned char*)igtlMsg);
-//    //        if (r == 0)
-//    //          {
-//    //          // TODO: error handling
-//    //          //std::cerr << "ERROR: send data." << std::endl;
-//    //          }
-//    //        }
-//    //      }
-//    //    } // for (iter)
-//    //  } // for (cliter)
-//
-//    //---------------------------------------------------------------------------
-//    // Slice Driven by Locator
-//    if (node && strcmp(node->GetID(), this->LocatorDriverNodeID.c_str()) == 0)
-//      {
-//      vtkMatrix4x4* transform = NULL;
-//      for (int i = 0; i < 3; i ++)
-//        {
-//        if (this->SliceDriver[i] == SLICE_DRIVER_LOCATOR)
-//          {
-//          if (!transform)
-//            {
-//            vtkMRMLLinearTransformNode* transNode =
-//              vtkMRMLLinearTransformNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(this->LocatorDriverNodeID));
-//            if (transNode)
-//              {
-//              transform = transNode->GetMatrixTransformToParent();
-//              }
-//            }
-//          if (transform)
-//            {
-//            UpdateSliceNode(i, transform);
-//            }
-//          }
-//        }
-//      }
-//
-//
-//    //---------------------------------------------------------------------------
-//    // Slice Driven by Real-time image
-//    if (strcmp(node->GetID(), this->RealTimeImageSourceNodeID.c_str()) == 0)
-//      {
-//      for (int i = 0; i < 3; i ++)
-//        {
-//        if (this->SliceDriver[i] == SLICE_DRIVER_RTIMAGE)
-//          {
-//          UpdateSliceNodeByImage(i);
-//          }
-//        }
-//      }
-//    }
-//}
+//---------------------------------------------------------------------------
+void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLNodesEvents(vtkObject * caller, unsigned long event, void * callData)
+{
+
+  if (caller != NULL)
+    {
+    vtkSlicerModuleLogic::ProcessMRMLNodesEvents(caller, event, callData);
+
+    vtkMRMLIGTLConnectorNode* cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(caller);
+    if (cnode && event == vtkMRMLIGTLConnectorNode::DeviceModifiedEvent)
+      {
+      // Check visibility
+      int nnodes;
+
+      // Incoming nodes
+      nnodes = cnode->GetNumberOfIncomingMRMLNodes();
+      for (int i = 0; i < nnodes; i ++)
+        {
+        vtkMRMLNode* inode = cnode->GetIncomingMRMLNode(i);
+        if (inode)
+          {
+          const char * attr = inode->GetAttribute("IGTLVisible");
+          if (attr && strcmp(attr, "true") == 0)
+            {
+            SetVisibilityOn(inode);
+            }
+          else
+            {
+            SetVisibilityOff(inode);
+            }
+          }
+        }
+
+      // Outgoing nodes
+      nnodes = cnode->GetNumberOfOutgoingMRMLNodes();
+      for (int i = 0; i < nnodes; i ++)
+        {
+        vtkMRMLNode* inode = cnode->GetOutgoingMRMLNode(i);
+        if (inode)
+          {
+          const char * attr = inode->GetAttribute("IGTLVisible");
+          if (attr && strcmp(attr, "true") == 0)
+            {
+            SetVisibilityOn(inode);
+            }
+          else
+            {
+            SetVisibilityOff(inode);
+            }
+          }
+        }
+      }
+    }
+
+    ////---------------------------------------------------------------------------
+    //// Outgoing data
+    //// TODO: should check the type of the node here
+    //ConnectorListType* list = &MRMLEventConnectorMap[node];
+    //ConnectorListType::iterator cliter;
+    //for (cliter = list->begin(); cliter != list->end(); cliter ++)
+    //  {
+    //  vtkMRMLIGTLConnectorNode* connector =
+    //    vtkMRMLIGTLConnectorNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(*cliter));
+    //  if (connector == NULL)
+    //    {
+    //    return;
+    //    }
+    //
+    //  MessageConverterListType::iterator iter;
+    //  for (iter = this->MessageConverterList.begin();
+    //       iter != this->MessageConverterList.end();
+    //       iter ++)
+    //    {
+    //    if ((*iter)->GetMRMLName() && strcmp(node->GetNodeTagName(), (*iter)->GetMRMLName()) == 0)
+    //      {
+    //      // check if the name-type combination is on the list
+    //      if (connector->GetDeviceID(node->GetName(), (*iter)->GetIGTLName()) >= 0)
+    //        {
+    //        int size;
+    //        void* igtlMsg;
+    //        (*iter)->MRMLToIGTL(event, node, &size, &igtlMsg);
+    //        int r = connector->SendData(size, (unsigned char*)igtlMsg);
+    //        if (r == 0)
+    //          {
+    //          // TODO: error handling
+    //          //std::cerr << "ERROR: send data." << std::endl;
+    //          }
+    //        }
+    //      }
+    //    } // for (iter)
+    //  } // for (cliter)
+
+    ////---------------------------------------------------------------------------
+    //// Slice Driven by Locator
+    //if (node && strcmp(node->GetID(), this->LocatorDriverNodeID.c_str()) == 0)
+    //  {
+    //  vtkMatrix4x4* transform = NULL;
+    //  for (int i = 0; i < 3; i ++)
+    //    {
+    //    if (this->SliceDriver[i] == SLICE_DRIVER_LOCATOR)
+    //      {
+    //      if (!transform)
+    //        {
+    //        vtkMRMLLinearTransformNode* transNode =
+    //          vtkMRMLLinearTransformNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(this->LocatorDriverNodeID));
+    //        if (transNode)
+    //          {
+    //          transform = transNode->GetMatrixTransformToParent();
+    //          }
+    //        }
+    //      if (transform)
+    //        {
+    //        UpdateSliceNode(i, transform);
+    //        }
+    //      }
+    //    }
+    //  }
+    //
+    //
+    ////---------------------------------------------------------------------------
+    //// Slice Driven by Real-time image
+    //if (strcmp(node->GetID(), this->RealTimeImageSourceNodeID.c_str()) == 0)
+    //  {
+    //  for (int i = 0; i < 3; i ++)
+    //    {
+    //    if (this->SliceDriver[i] == SLICE_DRIVER_RTIMAGE)
+    //      {
+    //      UpdateSliceNodeByImage(i);
+    //      }
+    //    }
+    //  }
+    //}
+}
+
+
 //
 //
 ////----------------------------------------------------------------------------
