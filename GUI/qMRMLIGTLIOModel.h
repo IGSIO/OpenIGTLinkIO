@@ -60,6 +60,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLIOModel : public qMRMLSce
 
   virtual QStandardItem* insertNode(vtkMRMLNode* node, QStandardItem* parent, int row);
   virtual void updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column);
+  virtual void updateNodeFromItem(vtkMRMLNode* node, QStandardItem* item);
   virtual void addNodeToCurrentBranch(vtkMRMLNode* node);
 
  protected:
@@ -71,7 +72,7 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLIOModel : public qMRMLSce
 
  protected slots:
   virtual void onDeviceVisibilityModified(vtkObject*);
-
+  virtual void onMRMLSceneNodeAdded(vtkMRMLScene* scene, vtkMRMLNode* node);
 
  private:
   Q_DECLARE_PRIVATE(qMRMLIGTLIOModel);

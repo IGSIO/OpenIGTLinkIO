@@ -39,6 +39,11 @@
 
 #include "qMRMLIGTLIOModel_p.h"
 
+// TODO: reimplement functions that use mrmlNodeFromItem() in qMRMLSceneModel.
+//  1. updateNodeFromItem()     -- virtual 
+//  2. onMRMLSceneNodeRemoved()   -- virtual
+//  3. anything else?
+
 //------------------------------------------------------------------------------
 qMRMLIGTLIOModelPrivate::qMRMLIGTLIOModelPrivate(qMRMLIGTLIOModel& object)
   : qMRMLSceneModelPrivate(object)
@@ -94,6 +99,12 @@ qMRMLIGTLIOModel::qMRMLIGTLIOModel(QObject *vparent)
   this->setCheckableColumn(qMRMLIGTLIOModel::VisualizationColumn);
   this->setColumnCount(4);
   this->setHorizontalHeaderLabels(QStringList() << "Name" << "MRML Type" << "IGTL Type" << "Vis");
+
+  // Hack: disconnect signal and slot to prevent this->mrmlNodeFromItem(item) call
+  // that returns NULL. (in onItemChanged())
+  QObject::disconnect(this, SIGNAL(itemChanged(QStandardItem*)),
+                      this, SLOT(onItemChanged(QStandardItem*)));
+
 }
 
 //------------------------------------------------------------------------------
@@ -152,7 +163,7 @@ QStandardItem* qMRMLIGTLIOModel::insertNode(vtkMRMLNode* node, QStandardItem* pa
 //void qMRMLIGTLIOModel::updateItemFromNode(QStandardItem* item, vtkMRMLNode* node, int column)
 void qMRMLIGTLIOModel::updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column)
 {
-  Q_D(qMRMLIGTLIOModel);
+  //Q_D(qMRMLIGTLIOModel);
 
   //this->Superclass::updateItemFromNode(item, node, column);
   vtkMRMLIGTLConnectorNode* cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
@@ -187,6 +198,64 @@ void qMRMLIGTLIOModel::updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* 
       break;
     }
 }
+
+
+//------------------------------------------------------------------------------
+void qMRMLIGTLIOModel::updateNodeFromItem(vtkMRMLNode* node, QStandardItem* item)
+{
+  // updateNodeFromItem is reimplemented, since the base class cannot handle
+  // a function call with node=NULL
+
+  if (node == NULL)
+    {
+    return;
+    }
+
+  int wasModifying = node->StartModify();
+  this->updateNodeFromItemData(node, item);
+  node->EndModify(wasModifying);
+
+  // the following only applies to tree hierarchies
+  if (!this->canBeAChild(node))
+    {
+    return;
+    }
+
+ Q_ASSERT(node != this->mrmlNodeFromItem(item->parent()));
+
+  QStandardItem* parentItem = item->parent();
+
+  // Don't do the following if the row is not complete (reparenting an
+  // incomplete row might lead to errors). (if there is no child yet for a given
+  // column, it will get there next time updateNodeFromItem is called).
+  // updateNodeFromItem() is called for every item drag&dropped (we insure that
+  // all the indexes of the row are reparented when entering the d&d function
+  for (int i = 0; i < parentItem->columnCount(); ++i)
+    {
+    if (parentItem->child(item->row(), i) == 0)
+      {
+      return;
+      }
+    }
+
+  vtkMRMLNode* parent = this->mrmlNodeFromItem(parentItem);
+  int desiredNodeIndex = -1;
+  if (this->parentNode(node) != parent)
+    {
+    this->reparent(node, parent);
+    }
+  else if ((desiredNodeIndex = this->nodeIndex(node)) != item->row())
+    {
+    QStandardItem* parentItem = item->parent();
+    if (parentItem && desiredNodeIndex <
+          (parentItem->rowCount() - this->postItems(parentItem).count()))
+      {
+      this->updateItemFromNode(item, node, item->column());
+      }
+    }
+}
+
+
 
 //------------------------------------------------------------------------------
 void qMRMLIGTLIOModel::addNodeToCurrentBranch(vtkMRMLNode* node)
@@ -229,52 +298,89 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
 
     if (inode != NULL)
       {
-      QList<QStandardItem*> items;
+      int row = -1;
 
-      // Node name
-      QStandardItem* item0 = new QStandardItem;
-      item0->setText(inode->GetName());
-      item0->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
-      item0->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
-      items << item0;
-
-      // Node tag name
-      QStandardItem* item1 = new QStandardItem;
-      item1->setText(inode->GetNodeTagName());
-      item1->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
-      item1->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
-      items << item1;
-
-      // IGTL name
-      QStandardItem* item2 = new QStandardItem;
-      item2->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
-      item2->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
-      vtkIGTLToMRMLBase* converter = node->GetConverterByNodeID(inode->GetID());
-      if (converter)
+      // Check if the node is already added
+      int nRows = item->rowCount();
+      for (int r = 0; r < nRows; r ++)
         {
-        item2->setText(converter->GetIGTLName());
+        QStandardItem* c = item->child(r, 0);
+        if (c)
+          {
+          QString text = c->data().toString();
+          if (text.compare(QString(inode->GetID())) == 0)
+            {
+            // Found the node... skip
+            row = r;
+            break;
+            }
+          }
         }
-      else
+      
+      if (row < 0) // If the node is not in the tree, add it.
         {
-        item2->setText("--");
-        }
-      items << item2;
+        QList<QStandardItem*> items;
+        // Node name
+        QStandardItem* item0 = new QStandardItem;
+        item0->setText(inode->GetName());
+        item0->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
+        item0->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
+        items << item0;
+        
+        // Node tag name
+        QStandardItem* item1 = new QStandardItem;
+        item1->setText(inode->GetNodeTagName());
+        item1->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
+        item1->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
+        items << item1;
+        
+        // IGTL name
+        QStandardItem* item2 = new QStandardItem;
+        item2->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
+        item2->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
+        vtkIGTLToMRMLBase* converter = node->GetConverterByNodeID(inode->GetID());
+        if (converter)
+          {
+          item2->setText(converter->GetIGTLName());
+          }
+        else
+          {
+          item2->setText("--");
+          }
+        items << item2;
 
-      // Visible icon
-      QStandardItem* item3 = new QStandardItem;
-      const char * attr = inode->GetAttribute("IGTLVisible");
-      if (attr && strcmp(attr, "true") == 0)
-        {
-        item3->setData(QPixmap(":/Icons/Small/SlicerVisible.png"),Qt::DecorationRole);        
+        // Visibility icon
+        QStandardItem* item3 = new QStandardItem;
+        const char * attr = inode->GetAttribute("IGTLVisible");
+        if (attr && strcmp(attr, "true") == 0)
+          {
+          item3->setData(QPixmap(":/Icons/Small/SlicerVisible.png"),Qt::DecorationRole);        
+          }
+        else
+          {
+          item3->setData(QPixmap(":/Icons/Small/SlicerInvisible.png"),Qt::DecorationRole);
+          }
+        item3->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
+        items << item3;
+        
+        item->insertRow(i, items);
         }
-      else
+      else // If the node is in the tree, only update visibility icon
         {
-        item3->setData(QPixmap(":/Icons/Small/SlicerInvisible.png"),Qt::DecorationRole);
+        QStandardItem* item3 = item->child(row, 3);
+        if (item3)
+          {
+          const char * attr = inode->GetAttribute("IGTLVisible");
+          if (attr && strcmp(attr, "true") == 0)
+            {
+            item3->setData(QPixmap(":/Icons/Small/SlicerVisible.png"),Qt::DecorationRole);        
+            }
+          else
+            {
+            item3->setData(QPixmap(":/Icons/Small/SlicerInvisible.png"),Qt::DecorationRole);
+            }
+          }
         }
-      item3->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
-      items << item3;
-
-      item->insertRow(i, items);
       }
 
     //// update extra item cache info (for faster retrieval)
@@ -303,12 +409,22 @@ QStandardItem* qMRMLIGTLIOModel::insertIOTree(vtkMRMLNode* node)
     return NULL;
     }
 
-  d->removeAllExtraItems(nodeItem, "IOTree");
-  QStandardItem* inItem = d->insertExtraItem2(nodeItem->rowCount(), nodeItem,
-                                              QString("IN"), "IOTree", Qt::ItemIsEnabled|Qt::ItemIsSelectable);
+  //d->removeAllExtraItems(nodeItem, "IOTree");
+  QStandardItem* inItem;
+  QStandardItem* outItem;
+  if (nodeItem->rowCount() == 0)
+    {
+    inItem = d->insertExtraItem2(nodeItem->rowCount(), nodeItem,
+                                 QString("IN"), "IOTree", Qt::ItemIsEnabled|Qt::ItemIsSelectable);
+    outItem = d->insertExtraItem2(nodeItem->rowCount(), nodeItem,
+                                  QString("OUT"), "IOTree", Qt::ItemIsEnabled|Qt::ItemIsSelectable);
+    }
+  else
+    {
+    inItem = nodeItem->child(0,0);
+    outItem = nodeItem->child(1,0);
+    }
   updateIOTreeBranch(cnode, inItem, qMRMLIGTLIOModel::INCOMING);
-  QStandardItem* outItem = d->insertExtraItem2(nodeItem->rowCount(), nodeItem,
-                                               QString("OUT"), "IOTree", Qt::ItemIsEnabled|Qt::ItemIsSelectable);
   updateIOTreeBranch(cnode, outItem, qMRMLIGTLIOModel::OUTGOING);  
   
   return nodeItem;
@@ -351,10 +467,6 @@ QStandardItem* qMRMLIGTLIOModel::insertNode(vtkMRMLNode* node)
 
   insertIOTree(node);
 
-  //QStringList sl;
-  //sl << "IN" << "OUT";
-  //setPostItems(sl, nodeItem);
-
   return nodeItem;
 
 }
@@ -368,5 +480,17 @@ void qMRMLIGTLIOModel::onDeviceVisibilityModified(vtkObject* obj)
   if (cnode)
     {
     insertIOTree(cnode);
+    }
+}
+
+
+//------------------------------------------------------------------------------
+void qMRMLIGTLIOModel::onMRMLSceneNodeAdded(vtkMRMLScene* scene, vtkMRMLNode* node)
+{
+  // process only if node is vtkMRMLIGTLConnectorNode.
+  vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+  if (cnode)
+    {
+    qMRMLSceneModel::onMRMLSceneNodeAdded(scene, node);
     }
 }
