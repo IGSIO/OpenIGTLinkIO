@@ -280,22 +280,42 @@ void vtkSlicerOpenIGTLinkIFLogic::ImportEvents()
 
 
 //---------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::SetVisibilityOn(vtkMRMLNode * node)
+void vtkSlicerOpenIGTLinkIFLogic::SetVisibility(vtkMRMLNode * node, bool sw)
 {
   vtkMRMLLinearTransformNode * tnode = vtkMRMLLinearTransformNode::SafeDownCast(node);
   if (tnode)
     {
-    // to be implemented.
-    }
-}
-
-//---------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::SetVisibilityOff(vtkMRMLNode * node)
-{
-  vtkMRMLLinearTransformNode * tnode = vtkMRMLLinearTransformNode::SafeDownCast(node);
-  if (tnode)
-    {
-    // to be implemented.
+    vtkMRMLModelNode*   locatorModel = NULL;
+    vtkMRMLDisplayNode* locatorDisp  = NULL;
+    
+    const char * attr = tnode->GetAttribute("IGTLModelID");
+    if (!attr || !this->GetMRMLScene()->GetNodeByID(attr)) // no locator has been created
+      {
+      if (sw)
+        {
+        std::stringstream ss;
+        ss << "Locator_" << tnode->GetName();
+        locatorModel = AddLocatorModel(ss.str().c_str(), 0.0, 1.0, 1.0);
+        tnode->SetAttribute("IGTLModelID", locatorModel->GetID());
+        }
+      else
+        {
+        locatorModel = NULL;
+        }
+      }
+    else
+      {
+      locatorModel = vtkMRMLModelNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(attr));
+      }
+    if (locatorModel)
+      {
+      locatorDisp = locatorModel->GetDisplayNode();
+      locatorDisp->SetVisibility(sw);
+      locatorModel->Modified();
+      this->GetApplicationLogic()->GetMRMLScene()->Modified();
+      locatorModel->SetAndObserveTransformNodeID(tnode->GetID());
+      locatorModel->InvokeEvent(vtkMRMLTransformableNode::TransformModifiedEvent);
+      }
     }
 }
 
@@ -601,11 +621,11 @@ void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLNodesEvents(vtkObject * caller, uns
           const char * attr = inode->GetAttribute("IGTLVisible");
           if (attr && strcmp(attr, "true") == 0)
             {
-            SetVisibilityOn(inode);
+            SetVisibility(inode, true);
             }
           else
             {
-            SetVisibilityOff(inode);
+            SetVisibility(inode, false);
             }
           }
         }
@@ -620,11 +640,11 @@ void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLNodesEvents(vtkObject * caller, uns
           const char * attr = inode->GetAttribute("IGTLVisible");
           if (attr && strcmp(attr, "true") == 0)
             {
-            SetVisibilityOn(inode);
+            SetVisibility(inode, true);
             }
           else
             {
-            SetVisibilityOff(inode);
+            SetVisibility(inode, false);
             }
           }
         }
