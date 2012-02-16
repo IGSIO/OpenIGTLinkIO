@@ -209,3 +209,10 @@ int vtkIGTLToMRMLLinearTransform::MRMLToIGTL(unsigned long event, vtkMRMLNode* m
 
   return 0;
 }
+
+
+//---------------------------------------------------------------------------
+void vtkIGTLToMRMLLinearTransform::SetVisibility(int sw, vtkMRMLScene * scene, vtkMRMLNode * node)
+{
+  
+}

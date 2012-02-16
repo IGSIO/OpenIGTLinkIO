@@ -47,8 +47,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLBase : public vtk
   // TYPE_MULTI_IGTL_NAME.
   enum {
     TYPE_NORMAL,            // supports only single IGTL message type (default)
-    TYPE_MULTI_IGTL_NAMES,  // supports multiple IGTL message names (device types)
-  };
+    TYPE_MULTI_IGTL_NAMES,  // supports multiple IGTL message names (device types) 
+ };
 
  public:
 
@@ -94,7 +94,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLBase : public vtk
 
   // Check query que (called periodically by timer)
   // (implemeted only if ncessary)
-  virtual int CheckQueryQue(double ctime) { return true; }
+  virtual int CheckQueryQue(double vtkNotUsed(ctime)) { return true; }
 
   vtkGetMacro( CheckCRC, int );
   vtkSetMacro( CheckCRC, int );
@@ -102,6 +102,14 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLBase : public vtk
   // Set/Get pointer to OpenIGTlinkIFLogic 
   void SetOpenIGTLinkIFLogic(vtkSlicerOpenIGTLinkIFLogic* logic);
   vtkSlicerOpenIGTLinkIFLogic* GetOpenIGTLinkIFLogic();
+
+  // Visualization
+  // If an MRML node for this converter type can be visualized,
+  // the following functions must be implemented.
+  virtual int IsVisible() { return 0; };
+  virtual void SetVisibility(int vtkNotUsed(sw),
+                             vtkMRMLScene * vtkNotUsed(scene),
+                             vtkMRMLNode * vtkNotUsed(node)) {};
 
  protected:
   vtkIGTLToMRMLBase();

@@ -45,6 +45,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLLinearTransform :
   virtual int          IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node);
   virtual int          MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg);
 
+  virtual int IsVisible() { return 1; };
+  virtual void SetVisibility(int sw, vtkMRMLScene * scene, vtkMRMLNode * node);
 
  protected:
   vtkIGTLToMRMLLinearTransform();

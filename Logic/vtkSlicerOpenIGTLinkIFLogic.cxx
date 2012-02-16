@@ -522,6 +522,31 @@ vtkIGTLToMRMLBase* vtkSlicerOpenIGTLinkIFLogic::GetConverter(unsigned int i)
 }
 
 //---------------------------------------------------------------------------
+vtkIGTLToMRMLBase* vtkSlicerOpenIGTLinkIFLogic::GetConverterByMRMLTag(const char* mrmlTag)
+{
+  //Currently, this function cannot find multiple converters
+  // that use the same mrmlType (e.g. vtkIGTLToMRMLLinearTransform
+  // and vtkIGTLToMRMLPosition). A converter that is found first
+  // will be returned.
+
+  vtkIGTLToMRMLBase* converter = NULL;
+
+  MessageConverterListType::iterator iter;
+  for (iter = this->MessageConverterList.begin();
+       iter != this->MessageConverterList.end();
+       iter ++)
+    {
+    if (strcmp((*iter)->GetMRMLName(), mrmlTag) == 0)
+      {
+      converter = *iter;
+      break;
+      }
+    }
+
+  return converter;
+}
+
+//---------------------------------------------------------------------------
 vtkIGTLToMRMLBase* vtkSlicerOpenIGTLinkIFLogic::GetConverterByDeviceType(const char* deviceType)
 {
   vtkIGTLToMRMLBase* converter = NULL;
@@ -577,14 +602,20 @@ void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLNodesEvents(vtkObject * caller, uns
         vtkMRMLNode* inode = cnode->GetIncomingMRMLNode(i);
         if (inode)
           {
-          const char * attr = inode->GetAttribute("IGTLVisible");
-          if (attr && strcmp(attr, "true") == 0)
+          vtkIGTLToMRMLBase* converter = GetConverterByMRMLTag(inode->GetNodeTagName());
+          if (converter)
             {
-            SetVisibility(inode, true);
-            }
-          else
-            {
-            SetVisibility(inode, false);
+            const char * attr = inode->GetAttribute("IGTLVisible");
+            if (attr && strcmp(attr, "true") == 0)
+              {
+              //converter->SetVisibility(1, this->GetMRMLScene(), inode);
+              SetVisibility(inode, true);
+              }
+            else
+              {
+              //converter->SetVisibility(0, this->GetMRMLScene(), inode);
+              SetVisibility(inode, false);
+              }
             }
           }
         }
@@ -596,14 +627,20 @@ void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLNodesEvents(vtkObject * caller, uns
         vtkMRMLNode* inode = cnode->GetOutgoingMRMLNode(i);
         if (inode)
           {
-          const char * attr = inode->GetAttribute("IGTLVisible");
-          if (attr && strcmp(attr, "true") == 0)
+          vtkIGTLToMRMLBase* converter = GetConverterByMRMLTag(inode->GetNodeTagName());
+          if (converter)
             {
-            SetVisibility(inode, true);
-            }
-          else
-            {
-            SetVisibility(inode, false);
+            const char * attr = inode->GetAttribute("IGTLVisible");
+            if (attr && strcmp(attr, "true") == 0)
+              {
+              converter->SetVisibility(1, this->GetMRMLScene(), inode);
+              SetVisibility(inode, true);
+              }
+            else
+              {
+              converter->SetVisibility(0, this->GetMRMLScene(), inode);
+              SetVisibility(inode, false);
+              }
             }
           }
         }

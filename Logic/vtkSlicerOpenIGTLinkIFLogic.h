@@ -130,6 +130,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
 
   unsigned int       GetNumberOfConverters();
   vtkIGTLToMRMLBase* GetConverter(unsigned int i);
+  vtkIGTLToMRMLBase* GetConverterByMRMLTag(const char* mrmlTag);
   vtkIGTLToMRMLBase* GetConverterByDeviceType(const char* deviceType);
 
   //----------------------------------------------------------------
