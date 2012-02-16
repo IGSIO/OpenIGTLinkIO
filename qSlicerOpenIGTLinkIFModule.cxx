@@ -66,8 +66,10 @@ QString qSlicerOpenIGTLinkIFModule::helpText()const
 //-----------------------------------------------------------------------------
 QString qSlicerOpenIGTLinkIFModule::acknowledgementText()const
 {
-  return "This module was developed by Junichi Tokuda. The research was funded by"
-         "NIH (R01CA111288, P41RR019703, P01CA067165 and U54EB005149) and NEDO, Japan.";
+  return "This module was developed by Junichi Tokuda (Brigham and Women's Hospital), "
+         "Jean-Christophe Fillion-Robin (Kitware, Inc.) and OpenIGTLink community."
+         "The research was funded by NIH (R01CA111288, P41RR019703, P41EB015898, "
+         "P01CA067165, U54EB005149) and NEDO, Japan.";
 }
 
 //-----------------------------------------------------------------------------

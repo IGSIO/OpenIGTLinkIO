@@ -494,3 +494,23 @@ void qMRMLIGTLIOModel::onMRMLSceneNodeAdded(vtkMRMLScene* scene, vtkMRMLNode* no
     qMRMLSceneModel::onMRMLSceneNodeAdded(scene, node);
     }
 }
+
+//------------------------------------------------------------------------------
+void qMRMLIGTLIOModel::onMRMLSceneNodeAboutToBeRemoved(vtkMRMLScene* scene, vtkMRMLNode* node)
+{
+  vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+  if (cnode)
+    {
+    qMRMLSceneModel::onMRMLSceneNodeAboutToBeRemoved(scene, node);
+    }
+}
+
+//------------------------------------------------------------------------------
+void qMRMLIGTLIOModel::onMRMLSceneNodeRemoved(vtkMRMLScene* scene, vtkMRMLNode* node)
+{
+  vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+  if (cnode)
+    {
+    qMRMLSceneModel::onMRMLSceneNodeRemoved(scene, node);
+    }
+}

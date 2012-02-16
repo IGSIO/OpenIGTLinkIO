@@ -296,7 +296,13 @@ void vtkSlicerOpenIGTLinkIFLogic::SetVisibility(vtkMRMLNode * node, bool sw)
         std::stringstream ss;
         ss << "Locator_" << tnode->GetName();
         locatorModel = AddLocatorModel(ss.str().c_str(), 0.0, 1.0, 1.0);
-        tnode->SetAttribute("IGTLModelID", locatorModel->GetID());
+        if (locatorModel)
+          {
+          tnode->SetAttribute("IGTLModelID", locatorModel->GetID());
+          this->GetApplicationLogic()->GetMRMLScene()->Modified();
+          locatorModel->SetAndObserveTransformNodeID(tnode->GetID());
+          locatorModel->InvokeEvent(vtkMRMLTransformableNode::TransformModifiedEvent);
+          }
         }
       else
         {
@@ -312,9 +318,6 @@ void vtkSlicerOpenIGTLinkIFLogic::SetVisibility(vtkMRMLNode * node, bool sw)
       locatorDisp = locatorModel->GetDisplayNode();
       locatorDisp->SetVisibility(sw);
       locatorModel->Modified();
-      this->GetApplicationLogic()->GetMRMLScene()->Modified();
-      locatorModel->SetAndObserveTransformNodeID(tnode->GetID());
-      locatorModel->InvokeEvent(vtkMRMLTransformableNode::TransformModifiedEvent);
       }
     }
 }
