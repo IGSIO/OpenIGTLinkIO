@@ -93,13 +93,9 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   vtkGetMacro ( EnableOblique,           bool );
   vtkSetMacro ( FreezePlane,             bool );
   vtkGetMacro ( FreezePlane,              bool );
-
-  vtkGetObjectMacro ( LocatorTransform, vtkTransform );
-  vtkGetObjectMacro ( LocatorMatrix,    vtkMatrix4x4 );
-
+  
   /// The selected transform node is observed for TransformModified events and the transform
   /// data is copied to the slice nodes depending on the current mode
-  vtkGetObjectMacro ( LocatorTransformNode,    vtkMRMLTransformNode );
 
   virtual void SetMRMLSceneInternal(vtkMRMLScene * newScene);
 
@@ -140,16 +136,12 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   virtual void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void * callData);
   //virtual void ProcessLogicEvents(vtkObject * caller, unsigned long event, void * callData);
 
-  void SetVisibility(vtkMRMLNode * node, bool sw);
-
   int  SetRealTimeImageSource(const char* nodeID);
   int  SetSliceDriver(int index, int v);
   int  GetSliceDriver(int index);
   void UpdateSliceNode(int sliceNodeNumber, vtkMatrix4x4* transform);
   void UpdateSliceNodeByImage(int sliceNodeNuber);
   void CheckSliceNode();
-
-  vtkMRMLModelNode* AddLocatorModel(const char* nodeName, double r, double g, double b);
 
   void ProcCommand(const char* nodeName, int size, unsigned char* data);
 
@@ -170,8 +162,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
 
   void UpdateAll();
   void UpdateSliceDisplay();
-  void UpdateLocator();
-
   vtkCallbackCommand *DataCallbackCommand;
 
  private:
@@ -207,22 +197,11 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   int   SliceDriverConnectorID[3]; // will be obsolete
   int   SliceDriverDeviceID[3];    // will be obsolete
 
-  std::string   LocatorDriverNodeID;
   std::string   RealTimeImageSourceNodeID;
 
-  int   LocatorDriverFlag;
   bool  EnableOblique;
   bool  FreezePlane;
   int   SliceOrientation[3];
-
-  //----------------------------------------------------------------
-  // Locator
-  //----------------------------------------------------------------
-
-  // What's a difference between LocatorMatrix and Locator Transform???
-  vtkMatrix4x4*         LocatorMatrix;
-  vtkTransform*         LocatorTransform;
-  vtkMRMLTransformNode* LocatorTransformNode;
 
 private:
 

@@ -31,20 +31,11 @@
 #include <vtkMRMLScalarVolumeNode.h>
 #include <vtkMRMLSliceLogic.h>
 
-// MRML includes
-#include <vtkMRMLModelNode.h>
-
 // VTK includes
-#include <vtkAppendPolyData.h>
-#include <vtkCallbackCommand.h>
-#include <vtkCylinderSource.h>
-#include <vtkImageData.h>
-#include <vtkMultiThreader.h>
 #include <vtkNew.h>
-#include <vtkObjectFactory.h>
-#include <vtkSphereSource.h>
+#include <vtkCallbackCommand.h>
+#include <vtkImageData.h>
 #include <vtkTransform.h>
-#include <vtkTransformPolyDataFilter.h>
 
 //---------------------------------------------------------------------------
 vtkCxxRevisionMacro(vtkSlicerOpenIGTLinkIFLogic, "$Revision: 1.9.12.1 $");
@@ -59,9 +50,9 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
     this->SliceDriver[i] = vtkSlicerOpenIGTLinkIFLogic::SLICE_DRIVER_USER;
     }
 
-  this->LocatorDriverFlag = 0;
-  //this->LocatorDriver = NULL;
-  this->LocatorDriverNodeID = "";
+  //this->LocatorDriverFlag = 0;
+  ////this->LocatorDriver = NULL;
+  //this->LocatorDriverNodeID = "";
   this->RealTimeImageSourceNodeID = "";
 
   // If the following code doesn't work, slice nodes should be obtained from application GUI
@@ -100,7 +91,7 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
   RegisterMessageConverter(this->ImageMetaListConverter);
   RegisterMessageConverter(this->TrackingDataConverter);
 
-  this->LocatorTransformNode = NULL;
+  //this->LocatorTransformNode = NULL;
 }
 
 //---------------------------------------------------------------------------
@@ -173,8 +164,8 @@ void vtkSlicerOpenIGTLinkIFLogic::RegisterNodes()
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::DataCallback(vtkObject *caller,
-                                               unsigned long eid, void *clientData, void *callData)
+void vtkSlicerOpenIGTLinkIFLogic::DataCallback(vtkObject *vtkNotUsed(caller),
+                                               unsigned long vtkNotUsed(eid), void *clientData, void *vtkNotUsed(callData))
 {
   vtkSlicerOpenIGTLinkIFLogic *self = reinterpret_cast<vtkSlicerOpenIGTLinkIFLogic *>(clientData);
   vtkDebugWithObjectMacro(self, "In vtkSlicerOpenIGTLinkIFLogic DataCallback");
@@ -214,7 +205,8 @@ void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded(vtkMRMLNode* node)
     unsigned int n = this->GetNumberOfConverters();
     for (unsigned short i = 0; i < n; i ++)
       {
-      bool ok = cnode->RegisterMessageConverter(this->GetConverter(i));
+      //bool ok = cnode->RegisterMessageConverter(this->GetConverter(i));
+      cnode->RegisterMessageConverter(this->GetConverter(i));
       }
     }
 }
@@ -280,50 +272,6 @@ void vtkSlicerOpenIGTLinkIFLogic::ImportEvents()
 
 
 //---------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::SetVisibility(vtkMRMLNode * node, bool sw)
-{
-  vtkMRMLLinearTransformNode * tnode = vtkMRMLLinearTransformNode::SafeDownCast(node);
-  if (tnode)
-    {
-    vtkMRMLModelNode*   locatorModel = NULL;
-    vtkMRMLDisplayNode* locatorDisp  = NULL;
-    
-    const char * attr = tnode->GetAttribute("IGTLModelID");
-    if (!attr || !this->GetMRMLScene()->GetNodeByID(attr)) // no locator has been created
-      {
-      if (sw)
-        {
-        std::stringstream ss;
-        ss << "Locator_" << tnode->GetName();
-        locatorModel = AddLocatorModel(ss.str().c_str(), 0.0, 1.0, 1.0);
-        if (locatorModel)
-          {
-          tnode->SetAttribute("IGTLModelID", locatorModel->GetID());
-          this->GetApplicationLogic()->GetMRMLScene()->Modified();
-          locatorModel->SetAndObserveTransformNodeID(tnode->GetID());
-          locatorModel->InvokeEvent(vtkMRMLTransformableNode::TransformModifiedEvent);
-          }
-        }
-      else
-        {
-        locatorModel = NULL;
-        }
-      }
-    else
-      {
-      locatorModel = vtkMRMLModelNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(attr));
-      }
-    if (locatorModel)
-      {
-      locatorDisp = locatorModel->GetDisplayNode();
-      locatorDisp->SetVisibility(sw);
-      locatorModel->Modified();
-      }
-    }
-}
-
-
-//---------------------------------------------------------------------------
 int vtkSlicerOpenIGTLinkIFLogic::SetRealTimeImageSource(const char* nodeID)
 {
   vtkMRMLVolumeNode* volNode =
@@ -355,16 +303,16 @@ int vtkSlicerOpenIGTLinkIFLogic::SetSliceDriver(int index, int v)
   this->SliceDriver[index] = v;
   if (v == SLICE_DRIVER_LOCATOR)
     {
-    vtkMRMLLinearTransformNode* transNode =
-      vtkMRMLLinearTransformNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(this->LocatorDriverNodeID));
-    if (transNode)
-      {
-      vtkIntArray* nodeEvents = vtkIntArray::New();
-      nodeEvents->InsertNextValue(vtkMRMLTransformableNode::TransformModifiedEvent);
-      vtkSetAndObserveMRMLNodeEventsMacro( this->LocatorTransformNode, transNode, nodeEvents);
-      nodeEvents->Delete();
-      transNode->InvokeEvent(vtkMRMLTransformableNode::TransformModifiedEvent);
-      }
+    //vtkMRMLLinearTransformNode* transNode =
+    //  vtkMRMLLinearTransformNode::SafeDownCast(this->GetMRMLScene()->GetNodeByID(this->LocatorDriverNodeID));
+    //if (transNode)
+    //  {
+    //  vtkIntArray* nodeEvents = vtkIntArray::New();
+    //  nodeEvents->InsertNextValue(vtkMRMLTransformableNode::TransformModifiedEvent);
+    //  //vtkSetAndObserveMRMLNodeEventsMacro( this->LocatorTransformNode, transNode, nodeEvents);
+    //  nodeEvents->Delete();
+    //  transNode->InvokeEvent(vtkMRMLTransformableNode::TransformModifiedEvent);
+    //  }
     }
 
   return 1;
@@ -609,12 +557,10 @@ void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLNodesEvents(vtkObject * caller, uns
             if (attr && strcmp(attr, "true") == 0)
               {
               converter->SetVisibility(1, this->GetMRMLScene(), inode);
-              //SetVisibility(inode, true);
               }
             else
               {
               converter->SetVisibility(0, this->GetMRMLScene(), inode);
-              //SetVisibility(inode, false);
               }
             }
           }
@@ -634,12 +580,10 @@ void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLNodesEvents(vtkObject * caller, uns
             if (attr && strcmp(attr, "true") == 0)
               {
               converter->SetVisibility(1, this->GetMRMLScene(), inode);
-              //SetVisibility(inode, true);
               }
             else
               {
               converter->SetVisibility(0, this->GetMRMLScene(), inode);
-              //SetVisibility(inode, false);
               }
             }
           }
@@ -957,78 +901,9 @@ void vtkSlicerOpenIGTLinkIFLogic::CheckSliceNode()
   */
 }
 
-//---------------------------------------------------------------------------
-vtkMRMLModelNode* vtkSlicerOpenIGTLinkIFLogic::AddLocatorModel(const char* nodeName, double r, double g, double b)
-{
-
-  vtkMRMLModelNode           *locatorModel;
-  vtkMRMLModelDisplayNode    *locatorDisp;
-
-  locatorModel = vtkMRMLModelNode::New();
-  locatorDisp = vtkMRMLModelDisplayNode::New();
-
-  // Cylinder represents the locator stick
-  vtkCylinderSource *cylinder = vtkCylinderSource::New();
-  cylinder->SetRadius(1.5);
-  cylinder->SetHeight(100);
-  cylinder->SetCenter(0, 0, 0);
-  cylinder->Update();
-
-  // Rotate cylinder
-  vtkTransformPolyDataFilter *tfilter = vtkTransformPolyDataFilter::New();
-  vtkTransform* trans =   vtkTransform::New();
-  trans->RotateX(90.0);
-  trans->Translate(0.0, -50.0, 0.0);
-  trans->Update();
-  tfilter->SetInput(cylinder->GetOutput());
-  tfilter->SetTransform(trans);
-  tfilter->Update();
-
-  // Sphere represents the locator tip
-  vtkSphereSource *sphere = vtkSphereSource::New();
-  sphere->SetRadius(3.0);
-  sphere->SetCenter(0, 0, 0);
-  sphere->Update();
-
-  vtkAppendPolyData *apd = vtkAppendPolyData::New();
-  apd->AddInput(sphere->GetOutput());
-  //apd->AddInput(cylinder->GetOutput());
-  apd->AddInput(tfilter->GetOutput());
-  apd->Update();
-
-  locatorModel->SetAndObservePolyData(apd->GetOutput());
-
-  double color[3];
-  color[0] = r;
-  color[1] = g;
-  color[2] = b;
-  locatorDisp->SetPolyData(locatorModel->GetPolyData());
-  locatorDisp->SetColor(color);
-
-  trans->Delete();
-  tfilter->Delete();
-  cylinder->Delete();
-  sphere->Delete();
-  apd->Delete();
-
-  GetMRMLScene()->SaveStateForUndo();
-  GetMRMLScene()->AddNode(locatorDisp);
-  vtkMRMLNode* lm = GetMRMLScene()->AddNode(locatorModel);
-  locatorDisp->SetScene(this->GetMRMLScene());
-  locatorModel->SetName(nodeName);
-  locatorModel->SetScene(this->GetMRMLScene());
-  locatorModel->SetAndObserveDisplayNodeID(locatorDisp->GetID());
-  locatorModel->SetHideFromEditors(0);
-
-  locatorModel->Delete();
-  locatorDisp->Delete();
-
-  return vtkMRMLModelNode::SafeDownCast(lm);
-
-}
 
 //---------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::ProcCommand(const char* nodeName, int size, unsigned char* data)
+void vtkSlicerOpenIGTLinkIFLogic::ProcCommand(const char* vtkNotUsed(nodeName), int vtkNotUsed(size), unsigned char* vtkNotUsed(data))
 {
 }
 

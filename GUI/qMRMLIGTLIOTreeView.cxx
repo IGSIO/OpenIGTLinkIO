@@ -255,12 +255,15 @@ int qMRMLIGTLIOTreeView::rowProperty(const QModelIndex& index, vtkMRMLIGTLConnec
     dir = vtkMRMLIGTLConnectorNode::IO_UNSPECIFIED;
     return TYPE_UNKNOWN;
     }
+
+  return TYPE_UNKNOWN;
+
 }
 
 
 void qMRMLIGTLIOTreeView::onClicked(const QModelIndex& index)
 {
-  Q_D(qMRMLIGTLIOTreeView);
+  //Q_D(qMRMLIGTLIOTreeView);
 
   vtkMRMLIGTLConnectorNode* cnode;
   vtkMRMLNode* dnode;
@@ -273,8 +276,8 @@ void qMRMLIGTLIOTreeView::onClicked(const QModelIndex& index)
 
   if (index.column() == qMRMLIGTLIOModel::VisualizationColumn)
     {
-    qMRMLSceneModel* sceneModel = qobject_cast<qMRMLSceneModel*>(d->SortFilterModel->sourceModel());
-    QStandardItem* item = sceneModel->itemFromIndex(d->SortFilterModel->mapToSource(index));
+    //qMRMLSceneModel* sceneModel = qobject_cast<qMRMLSceneModel*>(d->SortFilterModel->sourceModel());
+    //QStandardItem* item = sceneModel->itemFromIndex(d->SortFilterModel->mapToSource(index));
 
     if (dnode && type == TYPE_DATANODE)
       {

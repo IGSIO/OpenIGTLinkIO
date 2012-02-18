@@ -263,8 +263,7 @@ void qMRMLIGTLIOModel::updateNodeFromItem(vtkMRMLNode* node, QStandardItem* item
 //------------------------------------------------------------------------------
 void qMRMLIGTLIOModel::addNodeToCurrentBranch(vtkMRMLNode* node)
 {
-  Q_D(qMRMLIGTLIOModel);
-  
+  //Q_D(qMRMLIGTLIOModel);
 }
 
 

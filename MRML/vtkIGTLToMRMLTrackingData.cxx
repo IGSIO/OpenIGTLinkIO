@@ -133,7 +133,7 @@ int vtkIGTLToMRMLTrackingData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtk
 
 
 //---------------------------------------------------------------------------
-int vtkIGTLToMRMLTrackingData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg)
+int vtkIGTLToMRMLTrackingData::MRMLToIGTL(unsigned long vtkNotUsed(event), vtkMRMLNode* mrmlNode, int* size, void** igtlMsg)
 {
   if (!mrmlNode)
     {
