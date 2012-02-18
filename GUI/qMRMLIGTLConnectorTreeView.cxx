@@ -84,8 +84,8 @@ void qMRMLIGTLConnectorTreeViewPrivate::init()
 
   q->setUniformRowHeights(true);
 
-  QObject::connect(q, SIGNAL(clicked(QModelIndex)),
-                   q, SLOT(onClicked(QModelIndex)));
+  //QObject::connect(q, SIGNAL(clicked(QModelIndex)),
+  //q, SLOT(onClicked(QModelIndex)));
 }
 
 //------------------------------------------------------------------------------
