@@ -608,13 +608,13 @@ void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLNodesEvents(vtkObject * caller, uns
             const char * attr = inode->GetAttribute("IGTLVisible");
             if (attr && strcmp(attr, "true") == 0)
               {
-              //converter->SetVisibility(1, this->GetMRMLScene(), inode);
-              SetVisibility(inode, true);
+              converter->SetVisibility(1, this->GetMRMLScene(), inode);
+              //SetVisibility(inode, true);
               }
             else
               {
-              //converter->SetVisibility(0, this->GetMRMLScene(), inode);
-              SetVisibility(inode, false);
+              converter->SetVisibility(0, this->GetMRMLScene(), inode);
+              //SetVisibility(inode, false);
               }
             }
           }
@@ -634,12 +634,12 @@ void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLNodesEvents(vtkObject * caller, uns
             if (attr && strcmp(attr, "true") == 0)
               {
               converter->SetVisibility(1, this->GetMRMLScene(), inode);
-              SetVisibility(inode, true);
+              //SetVisibility(inode, true);
               }
             else
               {
               converter->SetVisibility(0, this->GetMRMLScene(), inode);
-              SetVisibility(inode, false);
+              //SetVisibility(inode, false);
               }
             }
           }

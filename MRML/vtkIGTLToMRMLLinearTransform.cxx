@@ -21,10 +21,21 @@
 // MRML includes
 #include <vtkMRMLLinearTransformNode.h>
 
+#include <vtkMRMLModelNode.h>
+#include <vtkMRMLDisplayNode.h>
+#include <vtkMRMLModelDisplayNode.h>
+
 // VTK includes
 #include <vtkIntArray.h>
 #include <vtkObjectFactory.h>
 #include <vtkMatrix4x4.h>
+
+#include <vtkAppendPolyData.h>
+#include <vtkCylinderSource.h>
+#include <vtkSphereSource.h>
+#include <vtkTransform.h>
+#include <vtkTransformPolyDataFilter.h>
+
 
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
@@ -214,5 +225,117 @@ int vtkIGTLToMRMLLinearTransform::MRMLToIGTL(unsigned long event, vtkMRMLNode* m
 //---------------------------------------------------------------------------
 void vtkIGTLToMRMLLinearTransform::SetVisibility(int sw, vtkMRMLScene * scene, vtkMRMLNode * node)
 {
+  vtkMRMLLinearTransformNode * tnode = vtkMRMLLinearTransformNode::SafeDownCast(node);
+
+  if (!tnode || !scene)
+    {
+    // If the node is not a linear transform node, do nothing.
+    return;
+    }
+
+  vtkMRMLModelNode*   locatorModel = NULL;
+  vtkMRMLDisplayNode* locatorDisp  = NULL;
   
+  const char * attr = tnode->GetAttribute("IGTLModelID");
+  if (!attr || !scene->GetNodeByID(attr)) // no locator has been created
+    {
+    if (sw)
+      {
+      std::stringstream ss;
+      ss << "Locator_" << tnode->GetName();
+      locatorModel = AddLocatorModel(scene, ss.str().c_str(), 0.0, 1.0, 1.0);
+      if (locatorModel)
+        {
+        tnode->SetAttribute("IGTLModelID", locatorModel->GetID());
+        scene->Modified();
+        locatorModel->SetAndObserveTransformNodeID(tnode->GetID());
+        locatorModel->InvokeEvent(vtkMRMLTransformableNode::TransformModifiedEvent);
+        }
+      }
+    else
+      {
+      locatorModel = NULL;
+      }
+    }
+  else
+    {
+    locatorModel = vtkMRMLModelNode::SafeDownCast(scene->GetNodeByID(attr));
+    }
+  if (locatorModel)
+    {
+    locatorDisp = locatorModel->GetDisplayNode();
+    locatorDisp->SetVisibility(sw);
+    locatorModel->Modified();
+    }
+}
+
+
+//---------------------------------------------------------------------------
+vtkMRMLModelNode* vtkIGTLToMRMLLinearTransform::AddLocatorModel(vtkMRMLScene * scene, const char* nodeName, double r, double g, double b)
+{
+
+  vtkMRMLModelNode           *locatorModel;
+  vtkMRMLModelDisplayNode    *locatorDisp;
+
+  locatorModel = vtkMRMLModelNode::New();
+  locatorDisp = vtkMRMLModelDisplayNode::New();
+
+  // Cylinder represents the locator stick
+  vtkCylinderSource *cylinder = vtkCylinderSource::New();
+  cylinder->SetRadius(1.5);
+  cylinder->SetHeight(100);
+  cylinder->SetCenter(0, 0, 0);
+  cylinder->Update();
+
+  // Rotate cylinder
+  vtkTransformPolyDataFilter *tfilter = vtkTransformPolyDataFilter::New();
+  vtkTransform* trans =   vtkTransform::New();
+  trans->RotateX(90.0);
+  trans->Translate(0.0, -50.0, 0.0);
+  trans->Update();
+  tfilter->SetInput(cylinder->GetOutput());
+  tfilter->SetTransform(trans);
+  tfilter->Update();
+
+  // Sphere represents the locator tip
+  vtkSphereSource *sphere = vtkSphereSource::New();
+  sphere->SetRadius(3.0);
+  sphere->SetCenter(0, 0, 0);
+  sphere->Update();
+
+  vtkAppendPolyData *apd = vtkAppendPolyData::New();
+  apd->AddInput(sphere->GetOutput());
+  //apd->AddInput(cylinder->GetOutput());
+  apd->AddInput(tfilter->GetOutput());
+  apd->Update();
+
+  locatorModel->SetAndObservePolyData(apd->GetOutput());
+
+  double color[3];
+  color[0] = r;
+  color[1] = g;
+  color[2] = b;
+  locatorDisp->SetPolyData(locatorModel->GetPolyData());
+  locatorDisp->SetColor(color);
+
+  trans->Delete();
+  tfilter->Delete();
+  cylinder->Delete();
+  sphere->Delete();
+  apd->Delete();
+
+  scene->SaveStateForUndo();
+  scene->AddNode(locatorDisp);
+  vtkMRMLNode* lm = scene->AddNode(locatorModel);
+  locatorDisp->SetScene(scene);
+  locatorModel->SetName(nodeName);
+  locatorModel->SetScene(scene);
+  locatorModel->SetAndObserveDisplayNodeID(locatorDisp->GetID());
+  locatorModel->SetHideFromEditors(0);
+
+  locatorModel->Delete();
+  locatorDisp->Delete();
+
+  return vtkMRMLModelNode::SafeDownCast(lm);
+
 }

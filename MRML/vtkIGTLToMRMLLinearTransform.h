@@ -28,6 +28,9 @@
 // VTK includes
 #include <vtkObject.h>
 
+class vtkMRMLModelNode;
+
+
 class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLLinearTransform : public vtkIGTLToMRMLBase
 {
  public:
@@ -51,6 +54,9 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLLinearTransform :
  protected:
   vtkIGTLToMRMLLinearTransform();
   ~vtkIGTLToMRMLLinearTransform();
+
+ protected:
+  vtkMRMLModelNode* AddLocatorModel(vtkMRMLScene * scene, const char* nodeName, double r, double g, double b);
 
  protected:
   igtl::TransformMessage::Pointer OutTransformMsg;
