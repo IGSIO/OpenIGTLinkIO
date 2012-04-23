@@ -61,7 +61,6 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLIOModel : public qMRMLSce
   virtual QStandardItem* insertNode(vtkMRMLNode* node, QStandardItem* parent, int row);
   virtual void updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column);
   virtual void updateNodeFromItem(vtkMRMLNode* node, QStandardItem* item);
-  virtual void addNodeToCurrentBranch(vtkMRMLNode* node);
 
  protected:
   qMRMLIGTLIOModel(qMRMLIGTLIOModelPrivate* pimpl, QObject *parent=0);

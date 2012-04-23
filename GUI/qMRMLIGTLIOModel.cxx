@@ -258,15 +258,6 @@ void qMRMLIGTLIOModel::updateNodeFromItem(vtkMRMLNode* node, QStandardItem* item
     }
 }
 
-
-
-//------------------------------------------------------------------------------
-void qMRMLIGTLIOModel::addNodeToCurrentBranch(vtkMRMLNode* node)
-{
-  //Q_D(qMRMLIGTLIOModel);
-}
-
-
 //------------------------------------------------------------------------------
 void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStandardItem* item, qMRMLIGTLIOModel::Direction dir)
 {
