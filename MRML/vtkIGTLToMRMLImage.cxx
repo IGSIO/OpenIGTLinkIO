@@ -543,6 +543,7 @@ int vtkIGTLToMRMLImage::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, i
     double *spacing;       // spacing (mm/pixel)
     int   ncomp;
     int   svoffset[] = {0, 0, 0};           // sub-volume offset
+    int   endian;
 
     scalarType = imageData->GetScalarType();
     ncomp = imageData->GetNumberOfScalarComponents();
@@ -551,6 +552,13 @@ int vtkIGTLToMRMLImage::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, i
     origin = imageData->GetOrigin();
     spacing = imageData->GetSpacing();
 
+    // Check endianness of the machine
+    endian = igtl::ImageMessage::ENDIAN_BIG;
+    if (igtl_is_little_endian())
+      {
+      endian = igtl::ImageMessage::ENDIAN_LITTLE;
+      }
+
     if (this->OutImageMessage.IsNull())
       {
       this->OutImageMessage = igtl::ImageMessage::New();
@@ -558,6 +566,7 @@ int vtkIGTLToMRMLImage::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, i
     this->OutImageMessage->SetDimensions(isize);
     this->OutImageMessage->SetSpacing((float)spacing[0], (float)spacing[1], (float)spacing[2]);
     this->OutImageMessage->SetScalarType(scalarType);
+    this->OutImageMessage->SetEndian(endian);
     this->OutImageMessage->SetDeviceName(volumeNode->GetName());
     this->OutImageMessage->SetSubVolume(isize, svoffset);
     this->OutImageMessage->AllocateScalars();
