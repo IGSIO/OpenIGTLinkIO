@@ -107,13 +107,13 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, const char* 
 
     double range[2];
     vtkDebugMacro("Set basic display info");
-    scalarNode->GetImageData()->GetScalarRange(range);
-    range[0] = 0.0;
-    range[1] = 256.0;
-    displayNode->SetLowerThreshold(range[0]);
-    displayNode->SetUpperThreshold(range[1]);
-    displayNode->SetWindow(range[1] - range[0]);
-    displayNode->SetLevel(0.5 * (range[1] + range[0]) );
+    //scalarNode->GetImageData()->GetScalarRange(range);
+    //range[0] = 0.0;
+    //range[1] = 256.0;
+    //displayNode->SetLowerThreshold(range[0]);
+    //displayNode->SetUpperThreshold(range[1]);
+    //displayNode->SetWindow(range[1] - range[0]);
+    //displayNode->SetLevel(0.5 * (range[1] + range[0]) );
 
     vtkDebugMacro("Adding node..");
     scene->AddNode(displayNode);
@@ -241,6 +241,8 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
   // check if the IGTL data fits to the current MRML node
   vtkMRMLScalarVolumeNode* volumeNode = vtkMRMLScalarVolumeNode::SafeDownCast(node);
   vtkImageData* imageData;
+  vtkImageData* newImageData = NULL;
+  
   // Get vtk image from MRML node
   imageData = volumeNode->GetImageData();
   int dsize[3];
@@ -249,12 +251,11 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
   imageData->GetDimensions(dsize);
 
   dscalarType = imageData->GetScalarType();
+
   if (dsize[0] != size[0] || dsize[1] != size[1] || dsize[2] != size[2] ||
       scalarType != dscalarType)
     {
-
-    //imageData->Delete();
-    vtkImageData* newImageData = vtkImageData::New();
+    newImageData = vtkImageData::New();
     newImageData->SetDimensions(size[0], size[1], size[2]);
     newImageData->SetExtent(0, size[0]-1, 0, size[1]-1, 0, size[2]-1);
     newImageData->SetOrigin(0.0, 0.0, 0.0);
@@ -292,9 +293,7 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
         break;
       }
     newImageData->AllocateScalars();
-    volumeNode->SetAndObserveImageData(newImageData);
-    //imageData->Delete();
-    newImageData->Delete();
+    imageData = newImageData;
     }
 
   float tx = matrix[0][0];
@@ -310,9 +309,6 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
   float py = matrix[1][3];
   float pz = matrix[2][3];
 
-  imageData = volumeNode->GetImageData();
-
-
   // Check scalar size
   int scalarSize = imgMsg->GetScalarSize();
   
@@ -326,11 +322,6 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
     fByteSwap = 1;
     }
 
-  // TODO:
-  // It should be checked here if the dimension of vtkImageData
-  // and arrived data is same.
-
-  //vtkErrorMacro("IGTL image size = " << bytes);
   if (imgMsg->GetImageSize() == imgMsg->GetSubVolumeImageSize())
     {
     // In case that volume size == sub-volume size,
@@ -494,23 +485,15 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
   //volumeNode->SetRASToIJKMatrix(rtimgTransform);
   volumeNode->SetIJKToRASMatrix(rtimgTransform);
   rtimgTransform->Delete();
+
+  if (newImageData)
+    {
+    volumeNode->SetAndObserveImageData(newImageData);
+    newImageData->Delete();
+    }
+
+  imageData->Modified();
   volumeNode->Modified();
-
-  // The following line is Necessary to update volume rendering
-  // in VolumeRenderingCuda (Suggested by Nicholas Herlambang)
-  volumeNode->GetImageData()->Modified();
-   
-  //this->CenterImage(volumeNode);
-
-//  if (lps) { // LPS coordinate
-//    vtkMatrix4x4* lpsToRas = vtkMatrix4x4::New();
-//    lpsToRas->Identity();
-//    lpsToRas->SetElement(-1, 0,  0);
-//    lpsToRas->SetElement(0, -1,  0);
-//    lpsToRas->SetElement(0,  0,  1);
-//    lpsToRas->Multiply4x4(lpsToRas, rtimgTransform, rtimgTransform);
-//    lpsToRas->Delete();
-//  }
 
   return 1;
 
