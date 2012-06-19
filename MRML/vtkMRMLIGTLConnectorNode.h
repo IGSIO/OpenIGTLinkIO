@@ -30,6 +30,7 @@
 
 // VTK includes
 #include <vtkObject.h>
+#include <vtkSmartPointer.h>
 
 // STD includes
 #include <string>
@@ -102,10 +103,10 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   typedef std::map<int, DeviceInfoType>   DeviceInfoMapType;   // Device list:  index is referred as
                                                                // a device id in the connector.
   typedef std::set<int>                   DeviceIDSetType;
-  typedef std::list<vtkIGTLToMRMLBase*>   MessageConverterListType;
-  typedef std::vector<vtkMRMLNode*>       MRMLNodeListType;
+  typedef std::list< vtkSmartPointer<vtkIGTLToMRMLBase> >   MessageConverterListType;
+  typedef std::vector< vtkSmartPointer<vtkMRMLNode> >       MRMLNodeListType;
   typedef std::vector<NodeInfoType>       NodeInfoListType;
-  typedef std::map<std::string, vtkIGTLToMRMLBase*> MessageConverterMapType;
+  typedef std::map<std::string, vtkSmartPointer <vtkIGTLToMRMLBase> > MessageConverterMapType;
 
  public:
 

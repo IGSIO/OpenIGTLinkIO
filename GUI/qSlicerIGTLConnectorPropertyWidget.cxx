@@ -47,10 +47,12 @@ void qSlicerIGTLConnectorPropertyWidgetPrivate::init()
                    q, SLOT(updateIGTLConnectorNode()));
   QObject::connect(&this->ConnectorTypeButtonGroup, SIGNAL(buttonClicked(int)),
                    q, SLOT(updateIGTLConnectorNode()));
+
   this->ConnectorNotDefinedRadioButton->setVisible(false);
   this->ConnectorTypeButtonGroup.addButton(this->ConnectorNotDefinedRadioButton, vtkMRMLIGTLConnectorNode::TYPE_NOT_DEFINED);
   this->ConnectorTypeButtonGroup.addButton(this->ConnectorServerRadioButton, vtkMRMLIGTLConnectorNode::TYPE_SERVER);
   this->ConnectorTypeButtonGroup.addButton(this->ConnectorClientRadioButton, vtkMRMLIGTLConnectorNode::TYPE_CLIENT);
+
 }
 
 //------------------------------------------------------------------------------
