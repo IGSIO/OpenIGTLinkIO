@@ -84,6 +84,8 @@ int vtkIGTLToMRMLImageMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vt
     return 0;
     }
 
+  vtkIGTLToMRMLBase::IGTLToMRML(buffer, node);
+
   // Create a message buffer to receive image meta data
   igtl::ImageMetaMessage::Pointer imgMeta;
   imgMeta = igtl::ImageMetaMessage::New();

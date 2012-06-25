@@ -96,6 +96,8 @@ vtkIntArray* vtkIGTLToMRMLLinearTransform::GetNodeEvents()
 //---------------------------------------------------------------------------
 int vtkIGTLToMRMLLinearTransform::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node)
 {
+  vtkIGTLToMRMLBase::IGTLToMRML(buffer, node);
+
   // Create a message buffer to receive transform data
   igtl::TransformMessage::Pointer transMsg;
   transMsg = igtl::TransformMessage::New();

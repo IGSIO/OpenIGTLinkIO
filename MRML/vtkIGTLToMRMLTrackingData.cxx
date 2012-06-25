@@ -91,6 +91,7 @@ int vtkIGTLToMRMLTrackingData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtk
     return 0;
     }
 
+  vtkIGTLToMRMLBase::IGTLToMRML(buffer, node);
 
   //------------------------------------------------------------
   // Allocate TrackingData Message Class
