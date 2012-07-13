@@ -289,6 +289,13 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
       inode = node->GetOutgoingMRMLNode(i);
       }
 
+    // NOTE: We set MRML node ID with a prefix "io" for data in
+    //       QStandardItem. For example, if the node ID is "vtkMRMLLinearTransformNode3",
+    //       the data is "iovtkMRMLLinearTransformNode3." 
+    //       (We do not use a raw node ID to prevent the parent class hide the
+    //       item from the treeview... this happens when the node is loaded from
+    //       scene file.)
+
     if (inode != NULL)
       {
       int row = -1;
@@ -301,7 +308,7 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
         if (c)
           {
           QString text = c->data().toString();
-          if (text.compare(QString(inode->GetID())) == 0)
+          if (text.compare("io"+QString(inode->GetID())) == 0)
             {
             // Found the node... skip
             row = r;
@@ -316,20 +323,20 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
         // Node name
         QStandardItem* item0 = new QStandardItem;
         item0->setText(inode->GetName());
-        item0->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
+        item0->setData("io"+QString(inode->GetID()), qMRMLSceneModel::UIDRole);
         item0->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
         items << item0;
         
         // Node tag name
         QStandardItem* item1 = new QStandardItem;
         item1->setText(inode->GetNodeTagName());
-        item1->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
+        item1->setData("io"+QString(inode->GetID()), qMRMLSceneModel::UIDRole);
         item1->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
         items << item1;
         
         // IGTL name
         QStandardItem* item2 = new QStandardItem;
-        item2->setData(QString(inode->GetID()), qMRMLSceneModel::UIDRole);
+        item2->setData("io"+QString(inode->GetID()), qMRMLSceneModel::UIDRole);
         item2->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
         vtkIGTLToMRMLBase* converter = node->GetConverterByNodeID(inode->GetID());
         if (converter)

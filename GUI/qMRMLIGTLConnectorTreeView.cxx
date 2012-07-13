@@ -75,7 +75,6 @@ void qMRMLIGTLConnectorTreeViewPrivate::init()
   this->SceneModel = new qMRMLSceneIGTLConnectorModel(q);
   q->setSceneModel(this->SceneModel, "IGTLConnector");
 
-  // we only want to show vtkMRMLAnnotationNodes and vtkMRMLAnnotationHierarchyNodes
   QStringList nodeTypes = QStringList();
   nodeTypes.append("vtkMRMLIGTLConnectorNode");
 

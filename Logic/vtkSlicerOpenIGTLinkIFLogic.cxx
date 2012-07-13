@@ -182,11 +182,11 @@ void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded(vtkMRMLNode* node)
 {
   //vtkDebugMacro("vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded");
 
-  vtkMRMLScene * scene = this->GetMRMLScene();
-  if (scene && scene->IsBatchProcessing())
-    {
-    return;
-    }
+  //vtkMRMLScene * scene = this->GetMRMLScene();
+  //if (scene && scene->IsBatchProcessing())
+  //  {
+  //  return;
+  //  }
 
   vtkMRMLIGTLConnectorNode * cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
   if (cnode)

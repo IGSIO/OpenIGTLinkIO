@@ -232,7 +232,17 @@ int qMRMLIGTLIOTreeView::rowProperty(const QModelIndex& index, vtkMRMLIGTLConnec
   cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
 
   QString id = parent1->child(item->row(), 0)->data().toString();
-  dnode = this->mrmlScene()->GetNodeByID(id.toAscii());
+
+  const char* datastr = id.toAscii();
+  if (strncmp(datastr, "io", 2) == 0)
+    {
+    // remove the prefix "io". See NOTE in qMRMLIGTLIOModel.cxx
+    dnode = this->mrmlScene()->GetNodeByID(&datastr[2]);
+    }
+  else
+    {
+    dnode = this->mrmlScene()->GetNodeByID(id.toAscii());
+    }
   //vtkMRMLNode* dnode = sceneModel->mrmlNodeFromIndex(index); // Does this work?
   
   if (cnode && parent1 && grandParent)
