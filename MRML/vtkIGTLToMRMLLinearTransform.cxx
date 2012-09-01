@@ -317,7 +317,7 @@ vtkMRMLModelNode* vtkIGTLToMRMLLinearTransform::AddLocatorModel(vtkMRMLScene * s
   color[0] = r;
   color[1] = g;
   color[2] = b;
-  locatorDisp->SetPolyData(locatorModel->GetPolyData());
+  //locatorDisp->SetPolyData(locatorModel->GetPolyData());
   locatorDisp->SetColor(color);
 
   trans->Delete();
