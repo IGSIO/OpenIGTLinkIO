@@ -114,7 +114,7 @@ vtkMRMLIGTLConnectorNode::~vtkMRMLIGTLConnectorNode()
     {
     this->Mutex->Delete();
     }
-
+  
   this->CircularBufferMutex->Lock();
   CircularBufferMap::iterator iter;
   for (iter = this->Buffer.begin(); iter != this->Buffer.end(); iter ++)
@@ -138,6 +138,9 @@ vtkMRMLIGTLConnectorNode::~vtkMRMLIGTLConnectorNode()
     {
     this->QueryQueueMutex->Delete();
     }
+
+  this->MessageConverterList.clear();
+  this->IGTLNameToConverterMap.clear();
 
 }
 

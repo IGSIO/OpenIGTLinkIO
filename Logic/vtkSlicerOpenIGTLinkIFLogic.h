@@ -40,6 +40,7 @@
 #include <vtkMRMLSliceNode.h>
 
 // VTK includes
+#include <vtkSmartPointer.h>
 #include <vtkMultiThreader.h>
 
 // STD includes
@@ -79,7 +80,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   } IGTLMrmlNodeInfoType;
 
   typedef std::vector<IGTLMrmlNodeInfoType>         IGTLMrmlNodeListType;
-  typedef std::vector<vtkIGTLToMRMLBase*>           MessageConverterListType;
+  typedef std::vector< vtkSmartPointer<vtkIGTLToMRMLBase> >           MessageConverterListType;
 
   // Work phase keywords used in NaviTrack (defined in BRPTPRInterface.h)
 
@@ -132,7 +133,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   //----------------------------------------------------------------
   // MRML Management
   //----------------------------------------------------------------
-  
+
+  virtual void ProcessMRMLSceneEvents(vtkObject* caller,unsigned long event, void * callData);
   virtual void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void * callData);
   //virtual void ProcessLogicEvents(vtkObject * caller, unsigned long event, void * callData);
 
@@ -181,11 +183,11 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   //----------------------------------------------------------------
   // IGTL-MRML converters
   //----------------------------------------------------------------
-  vtkIGTLToMRMLLinearTransform* LinearTransformConverter;
-  vtkIGTLToMRMLImage*           ImageConverter;
-  vtkIGTLToMRMLPosition*        PositionConverter;
-  vtkIGTLToMRMLImageMetaList*   ImageMetaListConverter;
-  vtkIGTLToMRMLTrackingData*    TrackingDataConverter;
+  //vtkIGTLToMRMLLinearTransform* LinearTransformConverter;
+  //vtkIGTLToMRMLImage*           ImageConverter;
+  //vtkIGTLToMRMLPosition*        PositionConverter;
+  //vtkIGTLToMRMLImageMetaList*   ImageMetaListConverter;
+  //vtkIGTLToMRMLTrackingData*    TrackingDataConverter;
 
   //----------------------------------------------------------------
   // Real-time image

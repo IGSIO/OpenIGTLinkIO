@@ -105,7 +105,7 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, const char* 
     displayNode->SetScene(scene);
 
 
-    double range[2];
+    ///double range[2];
     vtkDebugMacro("Set basic display info");
     //scalarNode->GetImageData()->GetScalarRange(range);
     //range[0] = 0.0;

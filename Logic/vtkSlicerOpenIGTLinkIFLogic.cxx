@@ -78,18 +78,22 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
   this->MessageConverterList.clear();
 
   // register default data types
-  this->LinearTransformConverter = vtkIGTLToMRMLLinearTransform::New();
-  this->ImageConverter           = vtkIGTLToMRMLImage::New();
-  this->PositionConverter        = vtkIGTLToMRMLPosition::New();
+  //this->LinearTransformConverter = vtkIGTLToMRMLLinearTransform::New();
+  //this->ImageConverter           = vtkIGTLToMRMLImage::New();
+  //this->PositionConverter        = vtkIGTLToMRMLPosition::New();
+  //this->ImageMetaListConverter   = vtkIGTLToMRMLImageMetaList::New();
+  //this->TrackingDataConverter    = vtkIGTLToMRMLTrackingData::New();
+  //RegisterMessageConverter(this->LinearTransformConverter);
+  //RegisterMessageConverter(this->ImageConverter);
+  //RegisterMessageConverter(this->PositionConverter);
+  //RegisterMessageConverter(this->ImageMetaListConverter);
+  //RegisterMessageConverter(this->TrackingDataConverter);
 
-  this->ImageMetaListConverter   = vtkIGTLToMRMLImageMetaList::New();
-  this->TrackingDataConverter    = vtkIGTLToMRMLTrackingData::New();
-
-  RegisterMessageConverter(this->LinearTransformConverter);
-  RegisterMessageConverter(this->ImageConverter);
-  RegisterMessageConverter(this->PositionConverter);
-  RegisterMessageConverter(this->ImageMetaListConverter);
-  RegisterMessageConverter(this->TrackingDataConverter);
+  RegisterMessageConverter(vtkNew<vtkIGTLToMRMLLinearTransform>().GetPointer());
+  RegisterMessageConverter(vtkNew<vtkIGTLToMRMLImage>().GetPointer());
+  RegisterMessageConverter(vtkNew<vtkIGTLToMRMLPosition>().GetPointer());
+  RegisterMessageConverter(vtkNew<vtkIGTLToMRMLImageMetaList>().GetPointer());
+  RegisterMessageConverter(vtkNew<vtkIGTLToMRMLTrackingData>().GetPointer());
 
   //this->LocatorTransformNode = NULL;
 }
@@ -97,39 +101,26 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
 //---------------------------------------------------------------------------
 vtkSlicerOpenIGTLinkIFLogic::~vtkSlicerOpenIGTLinkIFLogic()
 {
-  if (this->LinearTransformConverter)
-    {
-    UnregisterMessageConverter(this->LinearTransformConverter);
-    this->LinearTransformConverter->Delete();
-    }
+  std::cerr << "vtkSlicerOpenIGTLinkIFLogic::~vtkSlicerOpenIGTLinkIFLogic() is called." << std::endl;
 
-  if (this->ImageConverter)
-    {
-    UnregisterMessageConverter(this->ImageConverter);
-    this->ImageConverter->Delete();
-    }
+  this->MessageConverterList.clear();
 
-  if (this->PositionConverter)
-    {
-    UnregisterMessageConverter(this->PositionConverter);
-    this->PositionConverter->Delete();
-    }
+  //// Unregister all convertes in all connector nodes
+  //std::vector<vtkMRMLNode*> nodes;
+  //if (this->GetMRMLScene())
+  //  {
+  //  this->GetMRMLScene()->GetNodesByClass("vtkMRMLIGTLConnectorNode", nodes);
+  //  std::vector<vtkMRMLNode*>::iterator iter;
+  //  for (iter = nodes.begin(); iter != nodes.end(); iter ++)
+  //    {
+  //    vtkMRMLIGTLConnectorNode* connector = vtkMRMLIGTLConnectorNode::SafeDownCast(*iter);
+  //    if (connector)
+  //      {
+  //      connector->UnregisterMessageConverterAll();
+  //      }
+  //    }
+  //  }
 
-  if (this->ImageMetaListConverter)
-    {
-    UnregisterMessageConverter(this->ImageMetaListConverter);
-    this->ImageMetaListConverter->Delete();
-    }
-  if (this->TrackingDataConverter)
-    {
-    UnregisterMessageConverter(this->TrackingDataConverter);
-    this->TrackingDataConverter->Delete();
-    }
-
-  if (this->DataCallbackCommand)
-    {
-    this->DataCallbackCommand->Delete();
-    }
 }
 
 //---------------------------------------------------------------------------
@@ -145,6 +136,7 @@ void vtkSlicerOpenIGTLinkIFLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 {
   vtkNew<vtkIntArray> sceneEvents;
   sceneEvents->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
+  sceneEvents->InsertNextValue(vtkMRMLScene::NodeRemovedEvent);
 
   this->SetAndObserveMRMLSceneEventsInternal(newScene, sceneEvents.GetPointer());
 }
@@ -156,7 +148,7 @@ void vtkSlicerOpenIGTLinkIFLogic::RegisterNodes()
   if(!scene)
     {
     return;
-    }
+   }
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLConnectorNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLImageMetaListNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataQueryNode>().GetPointer());
@@ -178,6 +170,7 @@ void vtkSlicerOpenIGTLinkIFLogic::UpdateAll()
 }
 
 //---------------------------------------------------------------------------
+
 void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded(vtkMRMLNode* node)
 {
   //vtkDebugMacro("vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded");
@@ -198,6 +191,7 @@ void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded(vtkMRMLNode* node)
     vtkMRMLNode *node = NULL; // TODO: is this OK?
     vtkIntArray* nodeEvents = vtkIntArray::New();
     nodeEvents->InsertNextValue(vtkMRMLIGTLConnectorNode::DeviceModifiedEvent);
+    nodeEvents->InsertNextValue(vtkMRMLScene::NodeRemovedEvent);
     vtkSetAndObserveMRMLNodeEventsMacro(node,cnode,nodeEvents);
     nodeEvents->Delete();
     
@@ -530,6 +524,22 @@ vtkIGTLToMRMLBase* vtkSlicerOpenIGTLinkIFLogic::GetConverterByDeviceType(const c
 }
 
 //---------------------------------------------------------------------------
+void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLSceneEvents(vtkObject* caller,unsigned long event, void * callData)
+{
+  if (event == vtkMRMLScene::NodeRemovedEvent)
+    {
+    vtkMRMLNode* node = (vtkMRMLNode*)callData;
+    vtkMRMLIGTLConnectorNode* cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+    if (cnode)
+      {
+      vtkUnObserveMRMLNodeMacro(cnode);
+      }
+    }
+}
+
+
+
+//---------------------------------------------------------------------------
 void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLNodesEvents(vtkObject * caller, unsigned long event, void * callData)
 {
 
@@ -538,7 +548,11 @@ void vtkSlicerOpenIGTLinkIFLogic::ProcessMRMLNodesEvents(vtkObject * caller, uns
     vtkSlicerModuleLogic::ProcessMRMLNodesEvents(caller, event, callData);
 
     vtkMRMLIGTLConnectorNode* cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(caller);
-    if (cnode && event == vtkMRMLIGTLConnectorNode::DeviceModifiedEvent)
+    if (cnode && event == vtkMRMLScene::NodeRemovedEvent)
+      {
+      vtkUnObserveMRMLNodeMacro(cnode);
+      }
+    else if (cnode && event == vtkMRMLIGTLConnectorNode::DeviceModifiedEvent)
       {
       // Check visibility
       int nnodes;
