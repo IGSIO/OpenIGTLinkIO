@@ -54,22 +54,9 @@ class vtkTransform;
 class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic : public vtkSlicerModuleLogic
 {
  public:
-  enum {
-    SLICE_DRIVER_USER    = 0,
-    SLICE_DRIVER_LOCATOR = 1,
-    SLICE_DRIVER_RTIMAGE = 2
-  };
-
-  enum ImageOrient{
-    SLICE_RTIMAGE_NONE      = 0,
-    SLICE_RTIMAGE_PERP      = 1,
-    SLICE_RTIMAGE_INPLANE90 = 2,
-    SLICE_RTIMAGE_INPLANE   = 3
-  };
 
   enum {  // Events
     StatusUpdateEvent       = 50001,
-    //SliceUpdateEvent        = 50002,
   };
 
   typedef struct {
@@ -90,16 +77,10 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   vtkTypeRevisionMacro(vtkSlicerOpenIGTLinkIFLogic, vtkSlicerModuleLogic);
   void PrintSelf(ostream&, vtkIndent);
 
-  vtkSetMacro ( EnableOblique,           bool );
-  vtkGetMacro ( EnableOblique,           bool );
-  vtkSetMacro ( FreezePlane,             bool );
-  vtkGetMacro ( FreezePlane,              bool );
-  
   /// The selected transform node is observed for TransformModified events and the transform
   /// data is copied to the slice nodes depending on the current mode
 
   virtual void SetMRMLSceneInternal(vtkMRMLScene * newScene);
-
   virtual void RegisterNodes();
 
   //----------------------------------------------------------------
@@ -137,15 +118,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   virtual void ProcessMRMLNodesEvents(vtkObject* caller, unsigned long event, void * callData);
   //virtual void ProcessLogicEvents(vtkObject * caller, unsigned long event, void * callData);
 
-  int  SetRealTimeImageSource(const char* nodeID);
-  int  SetSliceDriver(int index, int v);
-  int  GetSliceDriver(int index);
-  void UpdateSliceNode(int sliceNodeNumber, vtkMatrix4x4* transform);
-  void UpdateSliceNodeByImage(int sliceNodeNuber);
-  void CheckSliceNode();
-
-  void ProcCommand(const char* nodeName, int size, unsigned char* data);
-
   void GetDeviceNamesFromMrml(IGTLMrmlNodeListType &list);
   void GetDeviceNamesFromMrml(IGTLMrmlNodeListType &list, const char* mrmlTagName);
   //void GetDeviceTypes(std::vector<char*> &list);
@@ -162,7 +134,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   static void DataCallback(vtkObject*, unsigned long, void *, void *);
 
   void UpdateAll();
-  void UpdateSliceDisplay();
   vtkCallbackCommand *DataCallbackCommand;
 
  private:
@@ -180,29 +151,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   int RestrictDeviceName;
 
   //----------------------------------------------------------------
-  // IGTL-MRML converters
-  //----------------------------------------------------------------
-  //vtkIGTLToMRMLLinearTransform* LinearTransformConverter;
-  //vtkIGTLToMRMLImage*           ImageConverter;
-  //vtkIGTLToMRMLPosition*        PositionConverter;
-  //vtkIGTLToMRMLImageMetaList*   ImageMetaListConverter;
-  //vtkIGTLToMRMLTrackingData*    TrackingDataConverter;
-
-  //----------------------------------------------------------------
   // Real-time image
   //----------------------------------------------------------------
-
-  vtkMRMLSliceNode *SliceNode[3];
-
-  int   SliceDriver[3];
-  int   SliceDriverConnectorID[3]; // will be obsolete
-  int   SliceDriverDeviceID[3];    // will be obsolete
-
-  std::string   RealTimeImageSourceNodeID;
-
-  bool  EnableOblique;
-  bool  FreezePlane;
-  int   SliceOrientation[3];
 
 private:
 
