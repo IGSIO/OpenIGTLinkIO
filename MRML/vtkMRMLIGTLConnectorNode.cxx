@@ -163,6 +163,7 @@ void vtkMRMLIGTLConnectorNode::WriteXML(ostream& of, int nIndent)
     }
 
   of << " serverPort=\"" << this->ServerPort << "\" ";
+  of << " state=\"" << this->State <<"\""; 
   of << " restrictDeviceName=\"" << this->RestrictDeviceName << "\" ";
 
 }
@@ -180,6 +181,7 @@ void vtkMRMLIGTLConnectorNode::ReadXMLAttributes(const char** atts)
   int port = 0;
   int type = -1;
   int restrictDeviceName = 0;
+  int state = vtkMRMLIGTLConnectorNode::STATE_OFF;
 
   while (*atts != NULL)
     {
@@ -217,6 +219,12 @@ void vtkMRMLIGTLConnectorNode::ReadXMLAttributes(const char** atts)
       ss << attValue;
       ss >> restrictDeviceName;;
       }
+    if (!strcmp(attName, "state"))
+      {
+      std::stringstream ss;
+      ss << attValue;
+      ss >> state;
+      }
     }
 
   switch(type)
@@ -232,6 +240,10 @@ void vtkMRMLIGTLConnectorNode::ReadXMLAttributes(const char** atts)
     default: // not defined
       // do nothing
       break;
+    }
+  if (state!=vtkMRMLIGTLConnectorNode::STATE_OFF)
+    {
+    this->Start();
     }
 
 }
