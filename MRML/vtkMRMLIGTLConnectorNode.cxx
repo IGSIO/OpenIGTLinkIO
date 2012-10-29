@@ -576,7 +576,7 @@ int vtkMRMLIGTLConnectorNode::ReceiveController()
     if (r != headerMsg->GetPackSize())
       {
       //vtkErrorMacro("Irregluar size.");
-      vtkErrorMacro("Irregluar size " << r << " expecting " << headerMsg->GetPackSize() );
+      //vtkErrorMacro("Irregluar size " << r << " expecting " << headerMsg->GetPackSize() );
       break;
       }
 
