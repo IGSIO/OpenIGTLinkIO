@@ -103,7 +103,6 @@ vtkMRMLIGTLConnectorNode::vtkMRMLIGTLConnectorNode()
 //----------------------------------------------------------------------------
 vtkMRMLIGTLConnectorNode::~vtkMRMLIGTLConnectorNode()
 {
-
   this->Stop();
   if (this->Thread)
     {
@@ -114,7 +113,7 @@ vtkMRMLIGTLConnectorNode::~vtkMRMLIGTLConnectorNode()
     {
     this->Mutex->Delete();
     }
-  
+
   this->CircularBufferMutex->Lock();
   CircularBufferMap::iterator iter;
   for (iter = this->Buffer.begin(); iter != this->Buffer.end(); iter ++)
@@ -138,9 +137,6 @@ vtkMRMLIGTLConnectorNode::~vtkMRMLIGTLConnectorNode()
     {
     this->QueryQueueMutex->Delete();
     }
-
-  this->MessageConverterList.clear();
-  this->IGTLNameToConverterMap.clear();
 
 }
 
@@ -1041,19 +1037,16 @@ int vtkMRMLIGTLConnectorNode::RegisterMessageConverter(vtkIGTLToMRMLBase* conver
 //---------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::UnregisterMessageConverter(vtkIGTLToMRMLBase* converter)
 {
-
-  if (converter)
+  if (!converter)
     {
-    MessageConverterListType::iterator iter;
-    for (iter = this->MessageConverterList.begin(); iter != this->MessageConverterList.end(); iter ++)
-      {
-      if (*iter == converter)
-        {
-        this->MessageConverterList.erase(iter); // TODO: Does this work properly? Does the iterator need to be incremented?
-        }
-      }
+    return;
     }
-
+  MessageConverterListType::iterator iter = this->MessageConverterList.begin();
+  while(iter != this->MessageConverterList.end())
+    {
+    this->MessageConverterList.erase(iter);
+    iter = this->MessageConverterList.begin();
+    }
 }
 
 
