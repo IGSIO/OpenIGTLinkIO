@@ -3,16 +3,18 @@
 
 // SlicerQt includes
 #include "qSlicerLoadableModule.h"
-
 #include "qSlicerOpenIGTLinkIFModuleExport.h"
+#include "qSlicerApplication.h"
 
 class qSlicerOpenIGTLinkIFModulePrivate;
+class vtkObject;
 
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
 class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qSlicerOpenIGTLinkIFModule :
   public qSlicerLoadableModule
 {
-  Q_OBJECT
+  Q_OBJECT;
+  QVTK_OBJECT;
   Q_INTERFACES(qSlicerLoadableModule);
 
 public:
@@ -44,6 +46,12 @@ protected:
 
   /// Create and return the logic associated to this module
   virtual vtkMRMLAbstractLogic* createLogic();
+
+public slots:
+  virtual void setMRMLScene(vtkMRMLScene*);
+  void onNodeAddedEvent(vtkObject*, vtkObject*);
+  void onNodeRemovedEvent(vtkObject*, vtkObject*);
+  void importDataAndEvents();
 
 protected:
   QScopedPointer<qSlicerOpenIGTLinkIFModulePrivate> d_ptr;

@@ -14,6 +14,9 @@
 
 // Qt includes
 #include <QtPlugin>
+#include <QTimer>
+
+#include "qSlicerCoreApplication.h"
 
 // OpenIGTLinkIF MRML includes
 #include "qSlicerOpenIGTLinkIFModule.h"
@@ -21,6 +24,9 @@
 
 // OpenIGTLinkIF Logic includes
 #include <vtkSlicerOpenIGTLinkIFLogic.h>
+
+#include "vtkMRMLIGTLConnectorNode.h"
+
 
 //-----------------------------------------------------------------------------
 Q_EXPORT_PLUGIN2(qSlicerOpenIGTLinkIFModule, qSlicerOpenIGTLinkIFModule);
@@ -31,6 +37,8 @@ class qSlicerOpenIGTLinkIFModulePrivate
 {
 public:
   qSlicerOpenIGTLinkIFModulePrivate();
+
+  QTimer ImportDataAndEventsTimer;
 };
 
 //-----------------------------------------------------------------------------
@@ -49,6 +57,21 @@ qSlicerOpenIGTLinkIFModule::qSlicerOpenIGTLinkIFModule(QObject* _parent)
   : Superclass(_parent)
   , d_ptr(new qSlicerOpenIGTLinkIFModulePrivate)
 {
+  Q_D(qSlicerOpenIGTLinkIFModule);
+
+  connect(&d->ImportDataAndEventsTimer, SIGNAL(timeout()),
+          this, SLOT(importDataAndEvents()));
+
+  vtkMRMLScene * scene = qSlicerCoreApplication::application()->mrmlScene();
+  if (scene)
+    {
+    // Need to listen for any new connector nodes being added to start/stop timer
+    this->qvtkConnect(scene, vtkMRMLScene::NodeAddedEvent, 
+                        this, SLOT(onNodeAddedEvent(vtkObject*,vtkObject*)));
+    this->qvtkConnect(scene, vtkMRMLScene::NodeRemovedEvent, 
+                      this, SLOT(onNodeRemovedEvent(vtkObject*,vtkObject*)));
+    }
+  //d->ImportDataAndEventsTimer.start(5);
 }
 
 //-----------------------------------------------------------------------------
@@ -93,6 +116,24 @@ void qSlicerOpenIGTLinkIFModule::setup()
 }
 
 //-----------------------------------------------------------------------------
+void qSlicerOpenIGTLinkIFModule::setMRMLScene(vtkMRMLScene* scene)
+{
+  vtkMRMLScene* oldScene = this->mrmlScene();
+  this->Superclass::setMRMLScene(scene);
+
+  if (scene == NULL)
+    {
+    return;
+    }
+
+  // Need to listen for any new connector nodes being added to start/stop timer
+  this->qvtkReconnect(oldScene, scene, vtkMRMLScene::NodeAddedEvent, 
+                      this, SLOT(onNodeAddedEvent(vtkObject*,vtkObject*)));
+  this->qvtkReconnect(oldScene, scene, vtkMRMLScene::NodeRemovedEvent, 
+                      this, SLOT(onNodeRemovedEvent(vtkObject*,vtkObject*)));
+}
+
+//-----------------------------------------------------------------------------
 qSlicerAbstractModuleRepresentation * qSlicerOpenIGTLinkIFModule::createWidgetRepresentation()
 {
   return new qSlicerOpenIGTLinkIFModuleWidget;
@@ -102,4 +143,62 @@ qSlicerAbstractModuleRepresentation * qSlicerOpenIGTLinkIFModule::createWidgetRe
 vtkMRMLAbstractLogic* qSlicerOpenIGTLinkIFModule::createLogic()
 {
   return vtkSlicerOpenIGTLinkIFLogic::New();
+}
+
+
+// --------------------------------------------------------------------------
+void qSlicerOpenIGTLinkIFModule::onNodeAddedEvent(vtkObject*, vtkObject* node)
+{
+  Q_D(qSlicerOpenIGTLinkIFModule);
+
+  vtkMRMLIGTLConnectorNode* connectorNode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+  if (connectorNode)
+    {
+    // If the timer is not active
+    if (!d->ImportDataAndEventsTimer.isActive())
+      {
+      d->ImportDataAndEventsTimer.start(5);    
+      }
+    }
+}
+
+
+// --------------------------------------------------------------------------
+void qSlicerOpenIGTLinkIFModule::onNodeRemovedEvent(vtkObject*, vtkObject* node)
+{
+  Q_D(qSlicerOpenIGTLinkIFModule);
+
+  vtkMRMLIGTLConnectorNode* connectorNode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+  if (connectorNode)
+    {
+    // If the timer is active
+    if (d->ImportDataAndEventsTimer.isActive())
+      {
+      // Check if there is any other connector node left in the Scene
+      vtkMRMLScene * scene = qSlicerCoreApplication::application()->mrmlScene();
+      if (scene)
+        {
+        std::vector<vtkMRMLNode *> nodes;
+        this->mrmlScene()->GetNodesByClass("vtkMRMLIGTLConnectorNode", nodes);
+        if (nodes.size() == 0)
+          {
+          // The last connector was removed
+          d->ImportDataAndEventsTimer.stop();
+          }
+        }
+      }
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+void qSlicerOpenIGTLinkIFModule::importDataAndEvents()
+{
+  vtkMRMLAbstractLogic* l = this->logic();
+  vtkSlicerOpenIGTLinkIFLogic * igtlLogic = vtkSlicerOpenIGTLinkIFLogic::SafeDownCast(l);
+  if (igtlLogic)
+    {
+    igtlLogic->ImportEvents();
+    igtlLogic->ImportFromCircularBuffers();
+    }
 }

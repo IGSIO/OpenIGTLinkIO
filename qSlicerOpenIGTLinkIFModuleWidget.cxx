@@ -1,7 +1,6 @@
 // Qt includes
 #include <QDebug>
 #include <QStandardItemModel>
-#include <QTimer>
 #include <QTreeView>
 
 // SlicerQt includes
@@ -29,7 +28,6 @@ public:
 
   vtkSlicerOpenIGTLinkIFLogic * logic();
 
-  QTimer ImportDataAndEventsTimer;
 };
 
 //-----------------------------------------------------------------------------
@@ -90,20 +88,14 @@ void qSlicerOpenIGTLinkIFModuleWidget::setup()
   connect(d->IOTreeView, SIGNAL(ioTreeViewUpdated(int,vtkMRMLIGTLConnectorNode*,int)),
           d->IGTIONodeSelectorWidget, SLOT(updateEnabledStatus(int,vtkMRMLIGTLConnectorNode*,int)));
 
-  // TODO We should probably listen for the logic and implement a onLogicModified() slot
-  //      Doing so we would be able to update the UI if the locator is externally enabled.
-
-  connect(&d->ImportDataAndEventsTimer, SIGNAL(timeout()),
-          this, SLOT(importDataAndEvents()));
-  d->ImportDataAndEventsTimer.start(5);
-
-
 }
 
 //-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::setMRMLScene(vtkMRMLScene* scene)
 {
   Q_D(qSlicerOpenIGTLinkIFModuleWidget);
+
+  vtkMRMLScene* oldScene = this->mrmlScene();
 
   this->Superclass::setMRMLScene(scene);
   if (scene == NULL)
@@ -112,6 +104,7 @@ void qSlicerOpenIGTLinkIFModuleWidget::setMRMLScene(vtkMRMLScene* scene)
     }
   d->ConnectorListView->setMRMLScene(scene);
   d->IOTreeView->setMRMLScene(scene);
+
 }
 
 //-----------------------------------------------------------------------------
@@ -146,10 +139,3 @@ void qSlicerOpenIGTLinkIFModuleWidget::onRemoveConnectorButtonClicked()
 }
 
 
-//-----------------------------------------------------------------------------
-void qSlicerOpenIGTLinkIFModuleWidget::importDataAndEvents()
-{
-  Q_D(qSlicerOpenIGTLinkIFModuleWidget);
-  d->logic()->ImportEvents();
-  d->logic()->ImportFromCircularBuffers();
-}
