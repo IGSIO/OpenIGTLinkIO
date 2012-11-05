@@ -1,6 +1,16 @@
+cmake_minimum_required(VERSION 2.8)
+
 # Module name (usually identique to the directory name)
-set(qt_module_name "OpenIGTLinkIF")
-set(qt_module_title "OpenIGTLink I/F")
+set(MODULE_NAME "OpenIGTLinkIF")
+set(MODULE_TITLE "OpenIGTLink I/F")
+
+string(TOUPPER ${MODULE_NAME} MODULE_NAME_UPPER)
+
+#-----------------------------------------------------------------------------
+if(NOT Slicer_SOURCE_DIR)
+  find_package(Slicer REQUIRED)
+  include(${Slicer_USE_FILE})
+endif()
 
 # --------------------------------------------------------------------------
 # Check if version 2 protocol is available
@@ -80,7 +90,7 @@ set(qt_module_resources
   )
 
 slicerMacroBuildQtModule(
-  NAME ${qt_module_name}
+  NAME ${MODULE_NAME}
   EXPORT_DIRECTIVE ${qt_module_export_directive}
   INCLUDE_DIRECTORIES ${qt_module_include_directories}
   SRCS ${qt_module_SRCS}

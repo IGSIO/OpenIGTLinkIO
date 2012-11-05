@@ -262,6 +262,8 @@ void vtkIGTLToMRMLLinearTransform::SetVisibility(int sw, vtkMRMLScene * scene, v
   else
     {
     locatorModel = vtkMRMLModelNode::SafeDownCast(scene->GetNodeByID(attr));
+    locatorModel->SetAndObserveTransformNodeID(tnode->GetID());
+    locatorModel->InvokeEvent(vtkMRMLTransformableNode::TransformModifiedEvent);
     }
   if (locatorModel)
     {
