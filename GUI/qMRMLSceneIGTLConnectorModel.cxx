@@ -49,7 +49,6 @@
 qMRMLSceneIGTLConnectorModel::qMRMLSceneIGTLConnectorModel(QObject *vparent)
   :qMRMLSceneDisplayableModel(vparent)
 {
-  this->setListenNodeModifiedEvent(true);
   this->setIDColumn(-1);
   this->setHorizontalHeaderLabels(
         QStringList() << "Name" << "Type" << "Status" << "Hostname" << "Port");

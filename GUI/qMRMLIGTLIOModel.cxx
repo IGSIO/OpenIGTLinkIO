@@ -97,7 +97,6 @@ qMRMLIGTLIOModel::qMRMLIGTLIOModel(QObject *vparent)
   Q_D(qMRMLIGTLIOModel);
   d->init(/*new qMRMLSceneModelItemHelperFactory*/);
 
-  this->setListenNodeModifiedEvent(true);
   this->setIDColumn(-1);
   this->setCheckableColumn(qMRMLIGTLIOModel::VisualizationColumn);
   this->setColumnCount(4);
