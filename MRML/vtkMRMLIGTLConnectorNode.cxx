@@ -98,6 +98,21 @@ vtkMRMLIGTLConnectorNode::vtkMRMLIGTLConnectorNode()
   this->QueryWaitingQueue.clear();
   this->QueryQueueMutex = vtkMutexLock::New();
 
+  this->IncomingNodeReferenceRole=NULL;
+  this->IncomingNodeReferenceMRMLAttributeName=NULL;
+  this->OutgoingNodeReferenceRole=NULL;
+  this->OutgoingNodeReferenceMRMLAttributeName=NULL;
+
+  this->SetIncomingNodeReferenceRole("incoming");
+  this->SetIncomingNodeReferenceMRMLAttributeName("incomingNodeRef");
+  this->AddNodeReferenceRole(this->GetIncomingNodeReferenceRole(),
+                             this->GetIncomingNodeReferenceMRMLAttributeName());
+
+  this->SetOutgoingNodeReferenceRole("outgoing");
+  this->SetOutgoingNodeReferenceMRMLAttributeName("outgoingNodeRef");
+  this->AddNodeReferenceRole(this->GetOutgoingNodeReferenceRole(),
+                             this->GetOutgoingNodeReferenceMRMLAttributeName());
+
 }
 
 //----------------------------------------------------------------------------
@@ -309,6 +324,81 @@ void vtkMRMLIGTLConnectorNode::ProcessMRMLEvents( vtkObject *caller, unsigned lo
       }
     }
 }
+
+
+//----------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::OnNodeReferenceAdded(vtkMRMLNodeReference *reference)
+{
+  vtkMRMLScene* scene = this->GetScene();
+  if (!scene) 
+    {
+    return;
+    }
+
+  vtkMRMLNode* node = scene->GetNodeByID(reference->GetReferencedNodeID());
+  if (!node)
+    {
+    return;
+    }
+
+  if (strcmp(reference->GetReferenceRole(), this->GetIncomingNodeReferenceRole()) == 0)
+    {
+    // TODO: Copy code from RegisterIncomingMRMLNode()
+    }
+  else
+    {
+    // TODO: Copy code from RegisterOutgoingMRMLNode()
+    }
+}
+
+
+//----------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::OnNodeReferenceRemoved(vtkMRMLNodeReference *reference)
+{
+  vtkMRMLScene* scene = this->GetScene();
+  if (!scene) 
+    {
+    return;
+    }
+
+  vtkMRMLNode* node = scene->GetNodeByID(reference->GetReferencedNodeID());
+  if (!node)
+    {
+    return;
+    }
+  if (strcmp(reference->GetReferenceRole(), this->GetIncomingNodeReferenceRole()) == 0)
+    {
+    // TODO: Copy code from UnregisterIncomingMRMLNode()
+    }
+  else
+    {
+    // TODO: Copy code from UnregisterOutgoingMRMLNode()
+    }
+}
+
+
+//----------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::OnNodeReferenceModified(vtkMRMLNodeReference *reference)
+{
+  vtkMRMLScene* scene = this->GetScene();
+  if (!scene) 
+    {
+    return;
+    }
+
+  vtkMRMLNode* node = scene->GetNodeByID(reference->GetReferencedNodeID());
+  if (!node)
+    {
+    return;
+    }
+  if (strcmp(reference->GetReferenceRole(), this->GetIncomingNodeReferenceRole()) == 0)
+    {
+    }
+  else
+    {
+    }
+}
+
 
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::PrintSelf(ostream& os, vtkIndent indent)
@@ -1122,6 +1212,8 @@ int vtkMRMLIGTLConnectorNode::RegisterOutgoingMRMLNode(vtkMRMLNode* node, const 
 
   this->Modified();
 
+  this->AddAndObserveNodeReferenceID(this->GetOutgoingNodeReferenceRole(), node->GetID());
+
   return 1;
 
 }
@@ -1185,6 +1277,10 @@ vtkMRMLIGTLConnectorNode::NodeInfoType* vtkMRMLIGTLConnectorNode::RegisterIncomi
   nodeInfo.nanosecond = 0;
   this->IncomingMRMLNodeInfoList.push_back(nodeInfo);
   this->Modified();
+
+  //vtkNew<vtkIntArray> events;
+  //events->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
+  this->AddAndObserveNodeReferenceID(this->GetIncomingNodeReferenceRole(), node->GetID());
 
   return &(this->IncomingMRMLNodeInfoList.back());
 }

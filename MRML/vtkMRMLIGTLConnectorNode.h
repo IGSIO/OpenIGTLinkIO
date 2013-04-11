@@ -141,6 +141,14 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   // method to propagate events generated in mrml
   virtual void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData );
 
+  //BTX
+  virtual void OnNodeReferenceAdded(vtkMRMLNodeReference *reference);
+
+  virtual void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference);
+
+  virtual void OnNodeReferenceModified(vtkMRMLNodeReference *reference);
+  //ETX
+
  protected:
   //----------------------------------------------------------------
   // Constructor and destroctor
@@ -290,7 +298,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   int GetIGTLTimeStamp(vtkMRMLNode* node, int& second, int& nanosecond);
 
 
- private:
+ protected:
 
   vtkIGTLToMRMLBase* GetConverterByMRMLTag(const char* tag);
   vtkIGTLToMRMLBase* GetConverterByIGTLDeviceType(const char* type);
@@ -299,7 +307,27 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   // Inserts the eventId to the EventQueue, and the event will be invoked from the main thread
   void RequestInvokeEvent(unsigned long eventId);
 
- private:
+ protected:
+
+  //----------------------------------------------------------------
+  // Reference role strings
+  //----------------------------------------------------------------
+  char* IncomingNodeReferenceRole;
+  char* IncomingNodeReferenceMRMLAttributeName;
+
+  char* OutgoingNodeReferenceRole;
+  char* OutgoingNodeReferenceMRMLAttributeName;
+
+  vtkSetStringMacro(IncomingNodeReferenceRole);
+  vtkGetStringMacro(IncomingNodeReferenceRole);
+  vtkSetStringMacro(IncomingNodeReferenceMRMLAttributeName);
+  vtkGetStringMacro(IncomingNodeReferenceMRMLAttributeName);
+
+  vtkSetStringMacro(OutgoingNodeReferenceRole);
+  vtkGetStringMacro(OutgoingNodeReferenceRole);
+  vtkSetStringMacro(OutgoingNodeReferenceMRMLAttributeName);
+  vtkGetStringMacro(OutgoingNodeReferenceMRMLAttributeName);
+
   //----------------------------------------------------------------
   // Connector configuration
   //----------------------------------------------------------------
