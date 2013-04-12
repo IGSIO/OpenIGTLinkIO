@@ -105,7 +105,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   typedef std::set<int>                   DeviceIDSetType;
   typedef std::list< vtkSmartPointer<vtkIGTLToMRMLBase> >   MessageConverterListType;
   typedef std::vector< vtkSmartPointer<vtkMRMLNode> >       MRMLNodeListType;
-  typedef std::vector<NodeInfoType>       NodeInfoListType;
+  //typedef std::vector<NodeInfoType>       NodeInfoListType;
+  typedef std::map<std::string, NodeInfoType>       NodeInfoMapType;
   typedef std::map<std::string, vtkSmartPointer <vtkIGTLToMRMLBase> > MessageConverterMapType;
 
  public:
@@ -384,8 +385,9 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   MessageConverterMapType  MRMLIDToConverterMap;
 
   // List of nodes that this connector node is observing.
-  MRMLNodeListType         OutgoingMRMLNodeList;
-  NodeInfoListType         IncomingMRMLNodeInfoList;
+  //MRMLNodeListType         OutgoingMRMLNodeList;      // TODO: -> ReferenceList
+  //NodeInfoListType         IncomingMRMLNodeInfoList;  // TODO: -> ReferenceList with attributes (.lock, .second, .nanosecond)
+  NodeInfoMapType          IncomingMRMLNodeInfoMap;
 
   int CheckCRC;
 
