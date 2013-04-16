@@ -105,7 +105,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   typedef std::set<int>                   DeviceIDSetType;
   typedef std::list< vtkSmartPointer<vtkIGTLToMRMLBase> >   MessageConverterListType;
   typedef std::vector< vtkSmartPointer<vtkMRMLNode> >       MRMLNodeListType;
-  typedef std::vector<NodeInfoType>       NodeInfoListType;
+  //typedef std::vector<NodeInfoType>       NodeInfoListType;
+  typedef std::map<std::string, NodeInfoType>       NodeInfoMapType;
   typedef std::map<std::string, vtkSmartPointer <vtkIGTLToMRMLBase> > MessageConverterMapType;
 
  public:
@@ -140,6 +141,14 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
 
   // method to propagate events generated in mrml
   virtual void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData );
+
+  //BTX
+  virtual void OnNodeReferenceAdded(vtkMRMLNodeReference *reference);
+
+  virtual void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference);
+
+  virtual void OnNodeReferenceModified(vtkMRMLNodeReference *reference);
+  //ETX
 
  protected:
   //----------------------------------------------------------------
@@ -290,7 +299,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   int GetIGTLTimeStamp(vtkMRMLNode* node, int& second, int& nanosecond);
 
 
- private:
+ protected:
 
   vtkIGTLToMRMLBase* GetConverterByMRMLTag(const char* tag);
   vtkIGTLToMRMLBase* GetConverterByIGTLDeviceType(const char* type);
@@ -299,7 +308,27 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   // Inserts the eventId to the EventQueue, and the event will be invoked from the main thread
   void RequestInvokeEvent(unsigned long eventId);
 
- private:
+ protected:
+
+  //----------------------------------------------------------------
+  // Reference role strings
+  //----------------------------------------------------------------
+  char* IncomingNodeReferenceRole;
+  char* IncomingNodeReferenceMRMLAttributeName;
+
+  char* OutgoingNodeReferenceRole;
+  char* OutgoingNodeReferenceMRMLAttributeName;
+
+  vtkSetStringMacro(IncomingNodeReferenceRole);
+  vtkGetStringMacro(IncomingNodeReferenceRole);
+  vtkSetStringMacro(IncomingNodeReferenceMRMLAttributeName);
+  vtkGetStringMacro(IncomingNodeReferenceMRMLAttributeName);
+
+  vtkSetStringMacro(OutgoingNodeReferenceRole);
+  vtkGetStringMacro(OutgoingNodeReferenceRole);
+  vtkSetStringMacro(OutgoingNodeReferenceMRMLAttributeName);
+  vtkGetStringMacro(OutgoingNodeReferenceMRMLAttributeName);
+
   //----------------------------------------------------------------
   // Connector configuration
   //----------------------------------------------------------------
@@ -356,8 +385,9 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   MessageConverterMapType  MRMLIDToConverterMap;
 
   // List of nodes that this connector node is observing.
-  MRMLNodeListType         OutgoingMRMLNodeList;
-  NodeInfoListType         IncomingMRMLNodeInfoList;
+  //MRMLNodeListType         OutgoingMRMLNodeList;      // TODO: -> ReferenceList
+  //NodeInfoListType         IncomingMRMLNodeInfoList;  // TODO: -> ReferenceList with attributes (.lock, .second, .nanosecond)
+  NodeInfoMapType          IncomingMRMLNodeInfoMap;
 
   int CheckCRC;
 

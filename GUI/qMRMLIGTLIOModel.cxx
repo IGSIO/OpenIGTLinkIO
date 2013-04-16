@@ -276,6 +276,20 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
     nnodes = node->GetNumberOfOutgoingMRMLNodes();
     }
 
+  // GetNumberOfOutgoingMRMLNodes map to check if items in the tree exist in the MRML scene.
+  std::map<QString, bool> nodeExist;
+  nodeExist.clear();
+  int nRows = item->rowCount();
+  for (int r = 0; r < nRows; r ++)
+    {
+    QStandardItem* c = item->child(r, 0);
+    if (c)
+      {
+      QString text = c->data().toString();
+      nodeExist[text] = false;
+      }
+    }
+    
   for (int i = 0; i < nnodes; i ++)
     {
     vtkMRMLNode* inode;
@@ -311,6 +325,7 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
             {
             // Found the node... skip
             row = r;
+            nodeExist[text] = true;
             break;
             }
           }
@@ -318,6 +333,8 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
       
       if (row < 0) // If the node is not in the tree, add it.
         {
+        nodeExist["io"+QString(inode->GetID())] = true;
+
         QList<QStandardItem*> items;
         // Node name
         QStandardItem* item0 = new QStandardItem;
@@ -387,6 +404,23 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
     //extraItems[extraType] = extraItems[extraType].toStringList() << text;
     //parent->setData(extraItems, qMRMLSceneModel::ExtraItemsRole );
     }
+
+  // Romove rows for nodes that does not exist in the MRML scene
+  nRows = item->rowCount();
+  for (int r = 0; r < nRows; r ++)
+    {
+    QStandardItem* c = item->child(r, 0);
+    if (c)
+      {
+      if (nodeExist[c->data().toString()] == false)
+        {
+        item->removeRow(r);
+        nRows = item->rowCount();
+        r --;
+        }
+      }
+    }
+
 }
 
 

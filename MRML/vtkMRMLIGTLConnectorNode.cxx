@@ -88,15 +88,29 @@ vtkMRMLIGTLConnectorNode::vtkMRMLIGTLConnectorNode()
   this->IGTLNameToConverterMap.clear();
   this->MRMLIDToConverterMap.clear();
 
-  this->OutgoingMRMLNodeList.clear();
-  //this->IncomingMRMLNodeList.clear();
-  //this->LockedMRMLNodeList.clear();
-  this->IncomingMRMLNodeInfoList.clear();
+  //this->OutgoingMRMLNodeList.clear();
+  //this->IncomingMRMLNodeInfoList.clear();
+  this->IncomingMRMLNodeInfoMap.clear();
 
   this->CheckCRC = 1;
 
   this->QueryWaitingQueue.clear();
   this->QueryQueueMutex = vtkMutexLock::New();
+
+  this->IncomingNodeReferenceRole=NULL;
+  this->IncomingNodeReferenceMRMLAttributeName=NULL;
+  this->OutgoingNodeReferenceRole=NULL;
+  this->OutgoingNodeReferenceMRMLAttributeName=NULL;
+
+  this->SetIncomingNodeReferenceRole("incoming");
+  this->SetIncomingNodeReferenceMRMLAttributeName("incomingNodeRef");
+  this->AddNodeReferenceRole(this->GetIncomingNodeReferenceRole(),
+                             this->GetIncomingNodeReferenceMRMLAttributeName());
+
+  this->SetOutgoingNodeReferenceRole("outgoing");
+  this->SetOutgoingNodeReferenceMRMLAttributeName("outgoingNodeRef");
+  this->AddNodeReferenceRole(this->GetOutgoingNodeReferenceRole(),
+                             this->GetOutgoingNodeReferenceMRMLAttributeName());
 
 }
 
@@ -289,9 +303,14 @@ void vtkMRMLIGTLConnectorNode::ProcessMRMLEvents( vtkObject *caller, unsigned lo
   MRMLNodeListType::iterator iter;
   vtkMRMLNode* node = vtkMRMLNode::SafeDownCast(caller);
 
-  for (iter = this->OutgoingMRMLNodeList.begin(); iter != this->OutgoingMRMLNodeList.end(); iter ++)
+  int n = this->GetNumberOfNodeReferences(this->GetOutgoingNodeReferenceRole());
+
+  //for (iter = this->OutgoingMRMLNodeList.begin(); iter != this->OutgoingMRMLNodeList.end(); iter ++)
+  for (int i = 0; i < n; i ++)
     {
-    if (node == *iter)
+    const char* id = GetNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
+    //if (node == *iter)
+    if (strcmp(node->GetID(), id) == 0)
       {
       int size;
       void* igtlMsg;
@@ -309,6 +328,127 @@ void vtkMRMLIGTLConnectorNode::ProcessMRMLEvents( vtkObject *caller, unsigned lo
       }
     }
 }
+
+
+//----------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::OnNodeReferenceAdded(vtkMRMLNodeReference *reference)
+{
+  vtkMRMLScene* scene = this->GetScene();
+  if (!scene) 
+    {
+    return;
+    }
+
+  vtkMRMLNode* node = scene->GetNodeByID(reference->GetReferencedNodeID());
+  if (!node)
+    {
+    return;
+    }
+
+  if (strcmp(reference->GetReferenceRole(), this->GetIncomingNodeReferenceRole()) == 0)
+    {
+    // Add new NodeInfoType structure
+    NodeInfoType nodeInfo;
+    nodeInfo.node = node;
+    nodeInfo.lock = 0;
+    nodeInfo.second = 0;
+    nodeInfo.nanosecond = 0;
+    this->IncomingMRMLNodeInfoMap[node->GetID()] = nodeInfo;
+    }
+  else
+    {
+    const char* devType = node->GetAttribute("OpenIGTLinkIF.out.type");
+
+    // Find a converter for the node
+    vtkIGTLToMRMLBase* converter = NULL;
+    if (devType == NULL)
+      {
+      const char* tag = node->GetNodeTagName();
+      converter = GetConverterByMRMLTag(tag);
+      }
+    else
+      {
+      converter = GetConverterByIGTLDeviceType(devType);
+      }
+    if (!converter)
+      {
+      // TODO: Remove the reference ID?
+      return;
+      }
+    this->MRMLIDToConverterMap[node->GetID()] = converter;
+
+    // Find the index in the list for the node, and set events to ovserve
+    // TODO: Can we replace this for() search with SetAndObserveNodeReferenceID()?
+    int n = this->GetNumberOfNodeReferences(this->GetOutgoingNodeReferenceRole());
+    for (int i = 0; i < n; i ++)
+      {
+      const char* id = GetNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
+      if (strcmp(node->GetID(), id) == 0)
+        {
+        vtkIntArray* nodeEvents = converter->GetNodeEvents();
+        this->SetAndObserveNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i,
+                                              node->GetID(),nodeEvents );
+        break;
+        }
+      }
+    }
+}
+
+
+//----------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::OnNodeReferenceRemoved(vtkMRMLNodeReference *reference)
+{
+  const char* nodeID = reference->GetReferencedNodeID();
+  if (!nodeID)
+    {
+    return;
+    }
+  if (strcmp(reference->GetReferenceRole(), this->GetIncomingNodeReferenceRole()) == 0)
+    {
+    // Check if the node has already been reagistered.
+    // TODO: MRMLNodeListType can be reimplemented as a std::list
+    // so that the converter can be removed by 'remove()' method.
+    NodeInfoMapType::iterator iter;
+    iter = this->IncomingMRMLNodeInfoMap.find(nodeID);
+    if (iter != this->IncomingMRMLNodeInfoMap.end())
+      {
+      this->IncomingMRMLNodeInfoMap.erase(iter);
+      }
+    }
+  else
+    {
+    // Search converter from MRMLIDToConverterMap
+    MessageConverterMapType::iterator citer = this->MRMLIDToConverterMap.find(nodeID);
+    if (citer != this->MRMLIDToConverterMap.end())
+      {
+      this->MRMLIDToConverterMap.erase(citer);
+      }
+    }
+}
+
+
+//----------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::OnNodeReferenceModified(vtkMRMLNodeReference *reference)
+{
+  vtkMRMLScene* scene = this->GetScene();
+  if (!scene) 
+    {
+    return;
+    }
+
+  vtkMRMLNode* node = scene->GetNodeByID(reference->GetReferencedNodeID());
+  if (!node)
+    {
+    return;
+    }
+  if (strcmp(reference->GetReferenceRole(), this->GetIncomingNodeReferenceRole()) == 0)
+    {
+    }
+  else
+    {
+    }
+}
+
 
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::PrintSelf(ostream& os, vtkIndent indent)
@@ -614,10 +754,11 @@ int vtkMRMLIGTLConnectorNode::ReceiveController()
       {
       // Check if the node has already been registered.
       int registered = 0;
-      NodeInfoListType::iterator iter;
-      for (iter = this->IncomingMRMLNodeInfoList.begin(); iter != this->IncomingMRMLNodeInfoList.end(); iter ++)
+      NodeInfoMapType::iterator iter;
+      for (iter = this->IncomingMRMLNodeInfoMap.begin(); iter != this->IncomingMRMLNodeInfoMap.end(); iter ++)
         {
-        vtkMRMLNode* node = (*iter).node;
+        //vtkMRMLNode* node = (*iter).node;
+        vtkMRMLNode* node = (iter->second).node;
         if (strcmp(node->GetName(), headerMsg->GetDeviceName()) == 0)
           {
           // Find converter for this message's device name to find out the MRML node type
@@ -817,24 +958,28 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
     int found = 0;
 
     // look up the incoming MRML node list
-    NodeInfoListType::iterator inIter;
-    for (inIter = this->IncomingMRMLNodeInfoList.begin();
-         inIter != this->IncomingMRMLNodeInfoList.end();
+    NodeInfoMapType::iterator inIter;
+    for (inIter = this->IncomingMRMLNodeInfoMap.begin();
+         inIter != this->IncomingMRMLNodeInfoMap.end();
          inIter ++)
       {
-      vtkMRMLNode* node = (*inIter).node;
+      //vtkMRMLNode* node = (*inIter).node;
+      vtkMRMLNode* node = (inIter->second).node;
       if (strcmp(node->GetNodeTagName(), converter->GetMRMLName()) == 0 &&
           strcmp(node->GetName(), (*nameIter).c_str()) == 0)
         {
-        if ((*inIter).lock == 0)
+        //if ((*inIter).lock == 0)
+        if ((inIter->second).lock == 0)
           {
           node->DisableModifiedEventOn();
           converter->IGTLToMRML(buffer, node);
           // Save OpenIGTLink time stamp
           igtl::TimeStamp::Pointer ts = igtl::TimeStamp::New();
           buffer->GetTimeStamp(ts);
-          (*inIter).second = ts->GetSecond();
-          (*inIter).nanosecond = ts->GetNanosecond();
+          //(*inIter).second = ts->GetSecond();
+          //(*inIter).nanosecond = ts->GetNanosecond();
+          (inIter->second).second = ts->GetSecond();
+          (inIter->second).nanosecond = ts->GetNanosecond();
           //node->SetAttribute("IGTLTime", )
           node->Modified();  // in case converter doesn't call any Modified()s
           node->DisableModifiedEventOff();
@@ -1071,54 +1216,26 @@ int vtkMRMLIGTLConnectorNode::RegisterOutgoingMRMLNode(vtkMRMLNode* node, const 
     return 0;
     }
 
-  // Find a converter for the node
-  vtkIGTLToMRMLBase* converter = NULL;
-  if (devType == NULL)
+  // TODO: Need to check the existing device type?
+  if (node->GetAttribute("OpenIGTLinkIF.out.type") == NULL)
     {
-    const char* tag = node->GetNodeTagName();
-    converter = GetConverterByMRMLTag(tag);
-    }
-  else
-    {
-    converter = GetConverterByIGTLDeviceType(devType);
-    }
-  if (!converter)
-    {
-    return 0;
+    node->SetAttribute("OpenIGTLinkIF.out.type", devType);
     }
 
-  // Check if the node has already been reagistered.
-  MRMLNodeListType::iterator iter;
-  for (iter = this->OutgoingMRMLNodeList.begin(); iter != this->OutgoingMRMLNodeList.end(); iter ++)
+  // Check if the node is on the reference list for outgoing nodes
+  int n = this->GetNumberOfNodeReferences(this->GetOutgoingNodeReferenceRole());
+  for (int i = 0; i < n; i ++)
     {
-    if (*iter == node) // the node has been already registered.
+    const char* id = GetNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
+    if (strcmp(node->GetID(), id) == 0)
       {
-      // Unregister events
-      vtkIntArray* nodeEvents = converter->GetNodeEvents();
-      int n = nodeEvents->GetNumberOfTuples();
-      for (int i = 0; i < n; i ++)
-        {
-        int event = nodeEvents->GetValue(i);
-        vtkEventBroker::GetInstance()
-          ->RemoveObservations(*iter, event, this, this->MRMLCallbackCommand );
-        }
-      this->OutgoingMRMLNodeList.erase(iter);
+      // Alredy on the list. Remove it.
+      this->RemoveNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
       break;
       }
     }
 
-  this->MRMLIDToConverterMap[node->GetID()] = converter;
-  this->OutgoingMRMLNodeList.push_back(node);
-
-  vtkIntArray* nodeEvents = converter->GetNodeEvents();
-  int n = nodeEvents->GetNumberOfTuples();
-  for (int i = 0; i < n; i ++)
-    {
-    // regiser events
-    int event = nodeEvents->GetValue(i);
-    vtkEventBroker::GetInstance()
-      ->AddObservation(node, event, this, this->MRMLCallbackCommand );
-    }
+  this->AddAndObserveNodeReferenceID(this->GetOutgoingNodeReferenceRole(), node->GetID());
 
   this->Modified();
 
@@ -1135,26 +1252,19 @@ void vtkMRMLIGTLConnectorNode::UnregisterOutgoingMRMLNode(vtkMRMLNode* node)
     return;
     }
 
-  // Check if the node has already been reagistered.
-  MRMLNodeListType::iterator iter;
-  for (iter = this->OutgoingMRMLNodeList.begin(); iter != this->OutgoingMRMLNodeList.end(); iter ++)
+  // Check if the node is on the reference list for outgoing nodes
+  int n = this->GetNumberOfNodeReferences(this->GetOutgoingNodeReferenceRole());
+  for (int i = 0; i < n; i ++)
     {
-    if (*iter == node) // the node has been already registered.
+    const char* id = this->GetNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
+    if (strcmp(node->GetID(), id) == 0)
       {
-      vtkEventBroker::GetInstance()
-        ->RemoveObservations(*iter, vtkCommand::ModifiedEvent, this, this->MRMLCallbackCommand );
-      this->OutgoingMRMLNodeList.erase(iter);
-
-      // Search converter from MRMLIDToConverterMap
-      MessageConverterMapType::iterator citer = this->MRMLIDToConverterMap.find(node->GetID());
-      if (citer != this->MRMLIDToConverterMap.end())
-        {
-        this->MRMLIDToConverterMap.erase(citer);
-        break;
-        }
+      // Alredy on the list. Remove it.
+      this->RemoveNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
       break;
       }
     }
+
 }
 
 
@@ -1168,25 +1278,18 @@ vtkMRMLIGTLConnectorNode::NodeInfoType* vtkMRMLIGTLConnectorNode::RegisterIncomi
     }
 
   // Check if the node has already been registered.
-  NodeInfoListType::iterator iter;
-  for (iter = this->IncomingMRMLNodeInfoList.begin(); iter != this->IncomingMRMLNodeInfoList.end(); iter ++)
+  if (this->HasNodeReferenceID(this->GetIncomingNodeReferenceRole(), node->GetID()))
     {
-    if ((*iter).node == node) // the node has been already registered.
-      {
-      return &(*iter);
-      }
+    // the node has been already registered.
+    }
+  else
+    {
+    this->AddAndObserveNodeReferenceID(this->GetIncomingNodeReferenceRole(), node->GetID());
+    this->Modified();
     }
 
-  // Add new NodeInfoType structure
-  NodeInfoType nodeInfo;
-  nodeInfo.node = node;
-  nodeInfo.lock = 0;
-  nodeInfo.second = 0;
-  nodeInfo.nanosecond = 0;
-  this->IncomingMRMLNodeInfoList.push_back(nodeInfo);
-  this->Modified();
+  return &this->IncomingMRMLNodeInfoMap[node->GetID()];
 
-  return &(this->IncomingMRMLNodeInfoList.back());
 }
 
 
@@ -1199,15 +1302,15 @@ void vtkMRMLIGTLConnectorNode::UnregisterIncomingMRMLNode(vtkMRMLNode* node)
     return;
     }
 
-  // Check if the node has already been reagistered.
-  // TODO: MRMLNodeListType can be reimplemented as a std::list
-  // so that the converter can be removed by 'remove()' method.
-  NodeInfoListType::iterator iter;
-  for (iter = this->IncomingMRMLNodeInfoList.begin(); iter != this->IncomingMRMLNodeInfoList.end(); iter ++)
+  // Check if the node is on the reference list for outgoing nodes
+  int n = this->GetNumberOfNodeReferences(this->GetIncomingNodeReferenceRole());
+  for (int i = 0; i < n; i ++)
     {
-    if ((*iter).node == node) // the node has been already registered.
+    const char* id = this->GetNthNodeReferenceID(this->GetIncomingNodeReferenceRole(), i);
+    if (strcmp(node->GetID(), id) == 0)
       {
-      this->IncomingMRMLNodeInfoList.erase(iter);
+      // Alredy on the list. Remove it.
+      this->RemoveNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
       break;
       }
     }
@@ -1218,18 +1321,23 @@ void vtkMRMLIGTLConnectorNode::UnregisterIncomingMRMLNode(vtkMRMLNode* node)
 //---------------------------------------------------------------------------
 unsigned int vtkMRMLIGTLConnectorNode::GetNumberOfOutgoingMRMLNodes()
 {
-  return this->OutgoingMRMLNodeList.size();
+  //return this->OutgoingMRMLNodeList.size();
+  return this->GetNumberOfNodeReferences(this->GetOutgoingNodeReferenceRole());
 }
 
 
 //---------------------------------------------------------------------------
 vtkMRMLNode* vtkMRMLIGTLConnectorNode::GetOutgoingMRMLNode(unsigned int i)
 {
-  if (i < this->OutgoingMRMLNodeList.size())
+  if (i < this->GetNumberOfNodeReferences(this->GetOutgoingNodeReferenceRole()))
     {
-    return this->OutgoingMRMLNodeList[i];
+    vtkMRMLScene* scene = this->GetScene();
+    if (!scene)
+      return NULL;
+    vtkMRMLNode* node = scene->GetNodeByID(this->GetNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i));
+    return node;
     }
-  else
+  else 
     {
     return NULL;
     }
@@ -1254,23 +1362,26 @@ vtkIGTLToMRMLBase* vtkMRMLIGTLConnectorNode::GetConverterByNodeID(const char* id
 //---------------------------------------------------------------------------
 unsigned int vtkMRMLIGTLConnectorNode::GetNumberOfIncomingMRMLNodes()
 {
-  return this->IncomingMRMLNodeInfoList.size();
+  //return this->IncomingMRMLNodeInfoMap.size();
+  return this->GetNumberOfNodeReferences(this->GetIncomingNodeReferenceRole());
 }
 
 
 //---------------------------------------------------------------------------
 vtkMRMLNode* vtkMRMLIGTLConnectorNode::GetIncomingMRMLNode(unsigned int i)
 {
-
-  if (i < this->IncomingMRMLNodeInfoList.size())
+  if (i < this->GetNumberOfNodeReferences(this->GetIncomingNodeReferenceRole()))
     {
-    return this->IncomingMRMLNodeInfoList[i].node;
+    vtkMRMLScene* scene = this->GetScene();
+    if (!scene)
+      return NULL;
+    vtkMRMLNode* node = scene->GetNodeByID(this->GetNthNodeReferenceID(this->GetIncomingNodeReferenceRole(), i));
+    return node;
     }
-  else
+  else 
     {
     return NULL;
     }
-
 }
 
 
@@ -1380,12 +1491,12 @@ void vtkMRMLIGTLConnectorNode::PushQuery(vtkMRMLIGTLQueryNode* node)
 //---------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::LockIncomingMRMLNode(vtkMRMLNode* node)
 {
-  NodeInfoListType::iterator iter;
-  for (iter = this->IncomingMRMLNodeInfoList.begin(); iter != this->IncomingMRMLNodeInfoList.end(); iter++)
+  NodeInfoMapType::iterator iter;
+  for (iter = this->IncomingMRMLNodeInfoMap.begin(); iter != this->IncomingMRMLNodeInfoMap.end(); iter++)
     {
-    if ((*iter).node == node)
+    if ((iter->second).node == node)
       {
-      (*iter).lock = 1;
+      (iter->second).lock = 1;
       }
     }
 
@@ -1396,12 +1507,12 @@ void vtkMRMLIGTLConnectorNode::LockIncomingMRMLNode(vtkMRMLNode* node)
 void vtkMRMLIGTLConnectorNode::UnlockIncomingMRMLNode(vtkMRMLNode* node)
 {
   // Check if the node has already been added in the locked node list
-  NodeInfoListType::iterator iter;
-  for (iter = this->IncomingMRMLNodeInfoList.begin(); iter != this->IncomingMRMLNodeInfoList.end(); iter++)
+  NodeInfoMapType::iterator iter;
+  for (iter = this->IncomingMRMLNodeInfoMap.begin(); iter != this->IncomingMRMLNodeInfoMap.end(); iter++)
     {
-    if ((*iter).node == node)
+    if ((iter->second).node == node)
       {
-      (*iter).lock = 0;
+      (iter->second).lock = 0;
       return;
       }
     }
@@ -1412,13 +1523,13 @@ void vtkMRMLIGTLConnectorNode::UnlockIncomingMRMLNode(vtkMRMLNode* node)
 int vtkMRMLIGTLConnectorNode::GetIGTLTimeStamp(vtkMRMLNode* node, int& second, int& nanosecond)
 {
   // Check if the node has already been added in the locked node list
-  NodeInfoListType::iterator iter;
-  for (iter = this->IncomingMRMLNodeInfoList.begin(); iter != this->IncomingMRMLNodeInfoList.end(); iter++)
+  NodeInfoMapType::iterator iter;
+  for (iter = this->IncomingMRMLNodeInfoMap.begin(); iter != this->IncomingMRMLNodeInfoMap.end(); iter++)
     {
-    if ((*iter).node == node)
+    if ((iter->second).node == node)
       {
-      second = (*iter).second;
-      nanosecond = (*iter).nanosecond;
+      second = (iter->second).second;
+      nanosecond = (iter->second).nanosecond;
       return 1;
       }
     }
