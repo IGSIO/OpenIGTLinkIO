@@ -1329,7 +1329,7 @@ unsigned int vtkMRMLIGTLConnectorNode::GetNumberOfOutgoingMRMLNodes()
 //---------------------------------------------------------------------------
 vtkMRMLNode* vtkMRMLIGTLConnectorNode::GetOutgoingMRMLNode(unsigned int i)
 {
-  if (i < this->GetNumberOfNodeReferences(this->GetOutgoingNodeReferenceRole()))
+  if (i < (unsigned int)this->GetNumberOfNodeReferences(this->GetOutgoingNodeReferenceRole()))
     {
     vtkMRMLScene* scene = this->GetScene();
     if (!scene)
@@ -1370,7 +1370,7 @@ unsigned int vtkMRMLIGTLConnectorNode::GetNumberOfIncomingMRMLNodes()
 //---------------------------------------------------------------------------
 vtkMRMLNode* vtkMRMLIGTLConnectorNode::GetIncomingMRMLNode(unsigned int i)
 {
-  if (i < this->GetNumberOfNodeReferences(this->GetIncomingNodeReferenceRole()))
+  if (i < (unsigned int)this->GetNumberOfNodeReferences(this->GetIncomingNodeReferenceRole()))
     {
     vtkMRMLScene* scene = this->GetScene();
     if (!scene)

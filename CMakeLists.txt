@@ -65,7 +65,7 @@ set(qt_module_MOC_SRCS
   GUI/qMRMLSceneIGTLConnectorModel.h
   GUI/qMRMLIGTLConnectorTreeView.h
   GUI/qMRMLIGTLIOModel.h
-  GUI/qMRMLIGTLIOModel_p.h
+#  GUI/qMRMLIGTLIOModel_p.h
   GUI/qMRMLIGTLIOTreeView.h
   GUI/qSlicerIGTLConnectorPropertyWidget.h
   GUI/qSlicerIGTLIONodeSelectorWidget.h
