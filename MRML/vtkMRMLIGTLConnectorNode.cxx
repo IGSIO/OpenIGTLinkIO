@@ -1052,7 +1052,7 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
     if (this->QueryWaitingQueue.size() > 0 && updatedNode != NULL)
       {
       std::list<vtkMRMLIGTLQueryNode*>::iterator iter;
-      for (iter = this->QueryWaitingQueue.begin(); iter != this->QueryWaitingQueue.end(); iter ++)
+      for (iter = this->QueryWaitingQueue.begin(); iter != this->QueryWaitingQueue.end(); )
         {
         // If there is a query that has either the same device name as
         // the incominig message or a NULL name.
@@ -1067,8 +1067,11 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
           //this->QueryQueueMutex->Unlock();
           (*iter)->SetResponseDataNodeID(updatedNode->GetID());
           (*iter)->InvokeEvent(vtkMRMLIGTLQueryNode::ResponseEvent);
-          this->QueryWaitingQueue.remove((*iter));
-          iter = this->QueryWaitingQueue.end();
+          iter = this->QueryWaitingQueue.erase(iter);
+          }
+        else
+          {
+          iter++;
           }
         }
       }
