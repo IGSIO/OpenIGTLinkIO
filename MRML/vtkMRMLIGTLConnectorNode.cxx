@@ -1310,7 +1310,7 @@ void vtkMRMLIGTLConnectorNode::UnregisterIncomingMRMLNode(vtkMRMLNode* node)
     if (strcmp(node->GetID(), id) == 0)
       {
       // Alredy on the list. Remove it.
-      this->RemoveNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
+      this->RemoveNthNodeReferenceID(this->GetIncomingNodeReferenceRole(), i);
       break;
       }
     }
