@@ -19,6 +19,7 @@
 #include "vtkIGTLCircularBuffer.h"
 #include "vtkMRMLIGTLConnectorNode.h"
 #include "vtkMRMLImageMetaListNode.h"
+#include "vtkMRMLPointMetaListNode.h"
 #include "vtkMRMLIGTLTrackingDataQueryNode.h"
 #include "vtkMRMLIGTLTrackingDataBundleNode.h"
 
@@ -83,12 +84,14 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
   this->PositionConverter        = vtkIGTLToMRMLPosition::New();
 
   this->ImageMetaListConverter   = vtkIGTLToMRMLImageMetaList::New();
+  this->PointMetaListConverter   = vtkIGTLToMRMLPointMetaList::New();
   this->TrackingDataConverter    = vtkIGTLToMRMLTrackingData::New();
 
   RegisterMessageConverter(this->LinearTransformConverter);
   RegisterMessageConverter(this->ImageConverter);
   RegisterMessageConverter(this->PositionConverter);
   RegisterMessageConverter(this->ImageMetaListConverter);
+  RegisterMessageConverter(this->PointMetaListConverter);
   RegisterMessageConverter(this->TrackingDataConverter);
 
   //this->LocatorTransformNode = NULL;
