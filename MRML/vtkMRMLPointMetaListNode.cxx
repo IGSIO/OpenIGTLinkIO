@@ -26,13 +26,15 @@ Version:   $Revision: 1.2 $
 #include "igtlMessageBase.h"
 #include "igtlMessageHeader.h"
 
+typedef std::map<std::string, std::vector<vtkMRMLPointMetaListNode::PointMetaElement>> PointGroupsType;
+
 //------------------------------------------------------------------------------
 vtkMRMLNodeNewMacro(vtkMRMLPointMetaListNode);
 
 //----------------------------------------------------------------------------
 vtkMRMLPointMetaListNode::vtkMRMLPointMetaListNode()
 {
-  this->PointMetaList.clear();
+  this->ClearPointMetaList();
 }
 
 //----------------------------------------------------------------------------
@@ -46,10 +48,6 @@ void vtkMRMLPointMetaListNode::WriteXML(ostream& of, int nIndent)
 {
   // Start by having the superclass write its information
   Superclass::WriteXML(of, nIndent);
-
-  //of << " serverPort=\"" << this->ServerPort << "\" ";
-  //of << " restrictDeviceName=\"" << this->RestrictDeviceName << "\" ";
-
 }
 
 
@@ -57,73 +55,6 @@ void vtkMRMLPointMetaListNode::WriteXML(ostream& of, int nIndent)
 void vtkMRMLPointMetaListNode::ReadXMLAttributes(const char** atts)
 {
   vtkMRMLNode::ReadXMLAttributes(atts);
-
-  const char* attName;
-  const char* attValue;
-
-  /*
-  const char* serverHostname = "";
-  int port = 0;
-  int type = -1;
-  int restrictDeviceName = 0;
-  */
-
-  while (*atts != NULL)
-    {
-    attName = *(atts++);
-    attValue = *(atts++);
-
-    /*
-    if (!strcmp(attName, "connectorType"))
-      {
-      if (!strcmp(attValue, "SERVER"))
-        {
-        type = TYPE_SERVER;
-        }
-      else if (!strcmp(attValue, "CLIENT"))
-        {
-        type = TYPE_CLIENT;
-        }
-      else
-        {
-        type = TYPE_NOT_DEFINED;
-        }
-      }
-    if (!strcmp(attName, "serverHostname"))
-      {
-      serverHostname = attValue;
-      }
-    if (!strcmp(attName, "serverPort"))
-      {
-      std::stringstream ss;
-      ss << attValue;
-      ss >> port;
-      }
-    if (!strcmp(attName, "restrictDeviceName"))
-      {
-      std::stringstream ss;
-      ss << attValue;
-      ss >> restrictDeviceName;;
-      }
-    */
-    }
-
-  /*
-  switch(type)
-    {
-    case TYPE_SERVER:
-      this->SetTypeServer(port);
-      this->SetRestrictDeviceName(restrictDeviceName);
-      break;
-    case TYPE_CLIENT:
-      this->SetTypeClient(serverHostname, port);
-      this->SetRestrictDeviceName(restrictDeviceName);
-      break;
-    default: // not defined
-      // do nothing
-      break;
-    }
-  */
 }
 
 
@@ -134,32 +65,6 @@ void vtkMRMLPointMetaListNode::Copy(vtkMRMLNode *anode)
 {
 
   Superclass::Copy(anode);
-  /*
-  vtkMRMLPointMetaListNode *node = (vtkMRMLPointMetaListNode *) anode;
-  */
-
-  /*
-  int type = node->GetType();
-  
-  switch(type)
-    {
-    case TYPE_SERVER:
-      this->SetType(TYPE_SERVER);
-      this->SetTypeServer(node->GetServerPort());
-      this->SetRestrictDeviceName(node->GetRestrictDeviceName());
-      break;
-    case TYPE_CLIENT:
-      this->SetType(TYPE_CLIENT);
-      this->SetTypeClient(node->GetServerHostname(), node->GetServerPort());
-      this->SetRestrictDeviceName(node->GetRestrictDeviceName());
-      break;
-    default: // not defined
-      // do nothing
-      this->SetType(TYPE_NOT_DEFINED);
-      break;
-    }
-  */
-
 }
 
 
@@ -167,30 +72,6 @@ void vtkMRMLPointMetaListNode::Copy(vtkMRMLNode *anode)
 void vtkMRMLPointMetaListNode::ProcessMRMLEvents( vtkObject *caller, unsigned long event, void *callData )
 {
   Superclass::ProcessMRMLEvents(caller, event, callData);
-
-  /*
-  MRMLNodeListType::iterator iter;
-  for (iter = this->OutgoingMRMLNodeList.begin(); iter != this->OutgoingMRMLNodeList.end(); iter ++)
-    {
-    vtkMRMLNode* node = vtkMRMLNode::SafeDownCast(caller);
-    if (node == *iter)
-      {
-      int size;
-      void* igtlMsg;
-      vtkIGTLToMRMLBase* converter = this->MRMLIDToConverterMap[node->GetID()];
-      if (converter->MRMLToIGTL(event, node, &size, &igtlMsg))
-        {
-        int r = this->SendData(size, (unsigned char*)igtlMsg);
-        if (r == 0)
-          {
-          // TODO: error handling
-          //std::cerr << "ERROR: send data." << std::endl;
-          }
-        return;
-        }
-      }
-    }
-  */
 }
 
 
@@ -202,39 +83,38 @@ void vtkMRMLPointMetaListNode::PrintSelf(ostream& os, vtkIndent indent)
 
 
 //----------------------------------------------------------------------------
-int  vtkMRMLPointMetaListNode::GetNumberOfPointMetaElement()
+void vtkMRMLPointMetaListNode::GetPointGroupNames(std::vector<std::string>& names)
 {
-  return this->PointMetaList.size();
+  PointGroupsType::iterator iter = this->PointGroups.begin();
+  for (; iter != this->PointGroups.end(); iter++)
+    names.push_back(iter->first);  
 }
 
 
 //----------------------------------------------------------------------------
-void vtkMRMLPointMetaListNode::AddPointMetaElement(PointMetaElement element)
+void vtkMRMLPointMetaListNode::
+AddPointMetaElement(PointMetaElement element)
 {
-  this->PointMetaList.push_back(element);
+  this->PointGroups[element.GroupName].push_back(element);
 }
 
 
 //----------------------------------------------------------------------------
-void vtkMRMLPointMetaListNode::GetPointMetaElement(int index, PointMetaElement* element)
+void vtkMRMLPointMetaListNode::
+GetPointGroup(std::string groupID, std::vector<PointMetaElement>& elements)
 {
-  if (index >= 0 && index < (int) this->PointMetaList.size())
-    {
-    *element = this->PointMetaList[index];
-    }
-  else
-    {
-//    element->DeviceName = "";
-    }
-
+  std::vector<PointMetaElement> ptgroup = this->PointGroups[groupID];
+  std::vector<PointMetaElement>::iterator ptiter = ptgroup.begin();
+  for (; ptiter != ptgroup.end(); ptiter++)
+    elements.push_back(*ptiter);
 }
 
 
 //----------------------------------------------------------------------------
-void vtkMRMLPointMetaListNode::ClearPointMetaElement()
+void vtkMRMLPointMetaListNode::ClearPointMetaList()
 {
-  this->PointMetaList.clear();
+  PointGroupsType::iterator iter =
+      this->PointGroups.begin();
+  for (; iter != this->PointGroups.end(); iter++)
+    iter->second.clear();
 }
-
-
-

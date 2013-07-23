@@ -83,27 +83,34 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLPointMetaListNode : pub
   // Description:
   // Get node XML tag name (like Volume, Model)
   virtual const char* GetNodeTagName()
-  {return "PointMetaList";};
+    { return "PointMetaList"; }
 
   // method to propagate events generated in mrml
   virtual void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData );
 
+  //BTX
   // Description:
-  // Get number of image meta element stored in this class instance
-  int  GetNumberOfPointMetaElement();
+  // Get group names of point lists stored in this class instance
+  void GetPointGroupNames(std::vector<std::string>& ids);
+
+  // Description:
+  // Get list of PointMetaElement with given group ID
+  void GetPointGroup(std::string groupID, std::vector<PointMetaElement>& elements);
+  //ETX
 
   // Description:
   // Add image meta element
   void AddPointMetaElement(PointMetaElement element);
 
+
   // Description:
-  // Get image meta element. If the element does not eists,
+  // Get point meta element. If the element does not eists,
   // DeviceName is set to "".
   void GetPointMetaElement(int index, PointMetaElement* element);
 
   // Description:
-  // Clear image meta element list
-  void ClearPointMetaElement();
+  // Clear point meta element list
+  void ClearPointMetaList();
 
  protected:
   //----------------------------------------------------------------
@@ -127,7 +134,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLPointMetaListNode : pub
   //----------------------------------------------------------------
 
   //BTX
-  std::vector<PointMetaElement> PointMetaList;
+   std::map<std::string, std::vector<PointMetaElement>> PointGroups;
   //ETX
 
 };

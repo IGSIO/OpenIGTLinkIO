@@ -125,6 +125,11 @@ vtkSlicerOpenIGTLinkIFLogic::~vtkSlicerOpenIGTLinkIFLogic()
     UnregisterMessageConverter(this->ImageMetaListConverter);
     this->ImageMetaListConverter->Delete();
     }
+  if (this->PointMetaListConverter)
+    {
+    UnregisterMessageConverter(this->PointMetaListConverter);
+    this->PointMetaListConverter->Delete();
+    }
   if (this->TrackingDataConverter)
     {
     UnregisterMessageConverter(this->TrackingDataConverter);

@@ -30,22 +30,15 @@ vtkCxxRevisionMacro(vtkIGTLToMRMLPointMetaList, "$Revision: 10577 $");
 
 
 //---------------------------------------------------------------------------
-vtkIGTLToMRMLPointMetaList::vtkIGTLToMRMLPointMetaList()
-{
-std::cout << "initialized vtkIGTLToMRMLPointMetaList" << std::endl;
-}
+vtkIGTLToMRMLPointMetaList::vtkIGTLToMRMLPointMetaList() {}
 
 
 //---------------------------------------------------------------------------
-vtkIGTLToMRMLPointMetaList::~vtkIGTLToMRMLPointMetaList()
-{
-}
+vtkIGTLToMRMLPointMetaList::~vtkIGTLToMRMLPointMetaList() {}
 
 
 //---------------------------------------------------------------------------
-void vtkIGTLToMRMLPointMetaList::PrintSelf(ostream& os, vtkIndent indent)
-{
-}
+void vtkIGTLToMRMLPointMetaList::PrintSelf(ostream& os, vtkIndent indent) {}
 
 
 //---------------------------------------------------------------------------
@@ -76,10 +69,9 @@ vtkIntArray* vtkIGTLToMRMLPointMetaList::GetNodeEvents()
 //---------------------------------------------------------------------------
 int vtkIGTLToMRMLPointMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node)
 {
-  std::cout << " vtkIGTLToMRMLPointMetaList->IGTLToMRML " << std::endl;
   if (strcmp(node->GetNodeTagName(), this->GetMRMLName()) != 0)
     {
-    std::cerr << "Invalide node. NodeTagName: " << node->GetNodeTagName() << " MRMLName: " << this->GetMRMLName() << std::endl;
+    std::cerr << "Invalid node. NodeTagName: " << node->GetNodeTagName() << " MRMLName: " << this->GetMRMLName() << std::endl;
     return 0;
     }
 
@@ -94,18 +86,12 @@ int vtkIGTLToMRMLPointMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vt
   // Deserialize the transform data
   // If you want to skip CRC check, call Unpack() without argument.
   int c = pointMsg->Unpack();
-	std::cout << "crc check result: " << c << std::endl;
-  //if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
-  if (igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
+  if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
     {
-		std::cout << "inside CRC check" << std::endl;
     vtkMRMLPointMetaListNode* pmnode = vtkMRMLPointMetaListNode::SafeDownCast(node);
-		std::cout << "    attempting crash: " << std::endl; 
-		std::cout << "     " << pmnode->GetID() << std::endl;
-		std::cout << "got past SafeDownCast" << std::endl;
     if (pmnode)
       {
-			std::cout << "inside node check" << std::endl;
+      pmnode->ClearPointMetaList();
       int modid = pmnode->StartModify();
       int nElements = pointMsg->GetNumberOfPointElement();
       for (int i = 0; i < nElements; i ++)
@@ -135,7 +121,7 @@ int vtkIGTLToMRMLPointMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vt
 				element.Owner				= pointElement->GetOwner();
 				
 				pmnode->AddPointMetaElement(element);
-					
+				
         std::cerr << "========== Element #" << i << " ==========" << std::endl;
         std::cerr << " Name      : " << pointElement->GetName() << std::endl;
         std::cerr << " GroupName : " << pointElement->GetGroupName() << std::endl;
@@ -147,7 +133,6 @@ int vtkIGTLToMRMLPointMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vt
 
         }
       pmnode->EndModify(modid);
-			std::cerr << "PointMetaList contains: " << pmnode->GetNumberOfPointMetaElement() << "  points" << pmnode->GetID() << std::endl;
     	pmnode->Modified();
       }
     }
@@ -179,26 +164,22 @@ int vtkIGTLToMRMLPointMetaList::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrm
       {
       if (qnode->GetQueryType() == vtkMRMLIGTLQueryNode::TYPE_GET)
        {
-       if (this->OutPointMsg.IsNull())
+       if (this->GetPointMsg.IsNull())
           {
-          this->OutPointMsg = igtl::PointMessage::New();
+          this->GetPointMsg = igtl::GetPointMessage::New();
           }
-        if (qnode->GetNoNameQuery() == 1)
+        if (qnode->GetNoNameQuery())
           {
-          this->OutPointMsg->SetDeviceName("");
+          this->GetPointMsg->SetDeviceName("");
           }
         else
           {
-          this->OutPointMsg->SetDeviceName(mrmlNode->GetName());
+          this->GetPointMsg->SetDeviceName(mrmlNode->GetName());
           }
-				std::cout << "built OutPointMsg" << std::endl;
-				std::cout << " DeviceName: " << this->OutPointMsg->GetDeviceName() << std::endl;
-				std::cout << " DeviceType: " << this->OutPointMsg->GetDeviceType() << std::endl;
-				std::cout << " BodyType: " << this->OutPointMsg->GetBodyType() << std::endl;
-				this->OutPointMsg->Pack();
-        *size = this->OutPointMsg->GetPackSize();
+				this->GetPointMsg->Pack();
+        *size = this->GetPointMsg->GetPackSize();
 
-	      *igtlMsg = this->OutPointMsg->GetPackPointer();
+	      *igtlMsg = this->GetPointMsg->GetPackPointer();
         return 1;
         }
       else if (qnode->GetQueryType() == vtkMRMLIGTLQueryNode::TYPE_START)

@@ -51,8 +51,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPointMetaList : p
 
  protected:
   //BTX
-  //igtl::TransformMessage::Pointer OutTransformMsg;
-  igtl::PointMessage::Pointer      OutPointMsg;
+  igtl::PointMessage::Pointer      PointMsg;
+  igtl::GetPointMessage::Pointer   GetPointMsg;
   //ETX
   
 };
