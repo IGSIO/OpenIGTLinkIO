@@ -60,7 +60,7 @@ vtkMRMLNode* vtkIGTLToMRMLImageMetaList::CreateNewNode(vtkMRMLScene* scene, cons
   imetaNode->SetDescription("Received by OpenIGTLink");
 
   scene->AddNode(imetaNode);
-
+  imetaNode->Delete();
   return imetaNode;
 }
 
@@ -175,8 +175,6 @@ int vtkIGTLToMRMLImageMetaList::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrm
       {
       if (qnode->GetQueryType() == vtkMRMLIGTLQueryNode::TYPE_GET)
         {
-
-        //igtl::TransformMessage::Pointer OutTransformMsg;
         if (this->GetImageMetaMessage.IsNull())
           {
           this->GetImageMetaMessage = igtl::GetImageMetaMessage::New();

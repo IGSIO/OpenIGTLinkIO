@@ -31,6 +31,8 @@ if(OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
   list(APPEND module_mrml_SRCS
     vtkMRMLIGTLQueryNode.cxx
     vtkMRMLImageMetaListNode.cxx
+    vtkMRMLPointMetaListNode.cxx
+    vtkIGTLToMRMLPointMetaList.cxx
     vtkIGTLToMRMLImageMetaList.cxx
     vtkIGTLToMRMLTrackingData.cxx
     vtkMRMLIGTLTrackingDataQueryNode.cxx
