@@ -95,8 +95,6 @@ void qSlicerOpenIGTLinkIFModuleWidget::setMRMLScene(vtkMRMLScene* scene)
 {
   Q_D(qSlicerOpenIGTLinkIFModuleWidget);
 
-  vtkMRMLScene* oldScene = this->mrmlScene();
-
   this->Superclass::setMRMLScene(scene);
   if (scene == NULL)
     {

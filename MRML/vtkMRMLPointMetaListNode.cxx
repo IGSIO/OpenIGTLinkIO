@@ -26,7 +26,7 @@ Version:   $Revision: 1.2 $
 #include "igtlMessageBase.h"
 #include "igtlMessageHeader.h"
 
-typedef std::map<std::string, std::vector<vtkMRMLPointMetaListNode::PointMetaElement>> PointGroupsType;
+typedef std::map< std::string, std::vector<vtkMRMLPointMetaListNode::PointMetaElement> > PointGroupsType;
 
 //------------------------------------------------------------------------------
 vtkMRMLNodeNewMacro(vtkMRMLPointMetaListNode);

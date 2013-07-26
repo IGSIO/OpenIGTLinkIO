@@ -38,7 +38,10 @@ vtkIGTLToMRMLPointMetaList::~vtkIGTLToMRMLPointMetaList() {}
 
 
 //---------------------------------------------------------------------------
-void vtkIGTLToMRMLPointMetaList::PrintSelf(ostream& os, vtkIndent indent) {}
+void vtkIGTLToMRMLPointMetaList::PrintSelf(ostream& os, vtkIndent indent)
+{
+  this->vtkObject::PrintSelf(os, indent);
+}
 
 
 //---------------------------------------------------------------------------

@@ -134,7 +134,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLPointMetaListNode : pub
   //----------------------------------------------------------------
 
   //BTX
-   std::map<std::string, std::vector<PointMetaElement>> PointGroups;
+   std::map< std::string, std::vector<PointMetaElement> > PointGroups;
   //ETX
 
 };
