@@ -235,7 +235,7 @@ void vtkMRMLIGTLTrackingDataBundleNode::UpdateTransformNode(const char* name, vt
     }
 
   node->ApplyTransformMatrix(matrix);
-
+  node->Delete();
 }
 
 //----------------------------------------------------------------------------
@@ -278,7 +278,7 @@ void vtkMRMLIGTLTrackingDataBundleNode::UpdateTransformNode(const char* name, ig
     }
   mat->Modified();
   //node->Modified();
-
+  node->Delete();
 }
 
 //----------------------------------------------------------------------------
