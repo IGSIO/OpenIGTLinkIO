@@ -64,7 +64,7 @@ vtkMRMLNode* vtkIGTLToMRMLTrackingData::CreateNewNode(vtkMRMLScene* scene, const
   node->SetDescription("Received by OpenIGTLink");
 
   scene->AddNode(node);
-
+  node->Delete();
   return node;
 }
 

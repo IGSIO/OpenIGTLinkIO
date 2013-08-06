@@ -680,6 +680,7 @@ int vtkMRMLIGTLConnectorNode::WaitForConnection()
         }
       else
         {
+        igtl::Sleep(100);
         break;
         }
       }
