@@ -23,6 +23,7 @@
 #include "vtkIGTLToMRMLImage.h"
 #include "vtkIGTLToMRMLPosition.h"
 #include "vtkIGTLToMRMLImageMetaList.h"
+#include "vtkIGTLToMRMLLabelMetaList.h"
 #include "vtkIGTLToMRMLPointMetaList.h"
 #include "vtkIGTLToMRMLTrackingData.h"
 #include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
@@ -193,6 +194,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   vtkIGTLToMRMLImage*           ImageConverter;
   vtkIGTLToMRMLPosition*        PositionConverter;
   vtkIGTLToMRMLImageMetaList*   ImageMetaListConverter;
+  vtkIGTLToMRMLLabelMetaList*   LabelMetaListConverter;
   vtkIGTLToMRMLPointMetaList*   PointMetaListConverter;
   vtkIGTLToMRMLTrackingData*    TrackingDataConverter;
 

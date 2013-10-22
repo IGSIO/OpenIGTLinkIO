@@ -19,6 +19,7 @@
 #include "vtkIGTLCircularBuffer.h"
 #include "vtkMRMLIGTLConnectorNode.h"
 #include "vtkMRMLImageMetaListNode.h"
+#include "vtkMRMLLabelMetaListNode.h"
 #include "vtkMRMLPointMetaListNode.h"
 #include "vtkMRMLIGTLTrackingDataQueryNode.h"
 #include "vtkMRMLIGTLTrackingDataBundleNode.h"
@@ -84,6 +85,7 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
   this->PositionConverter        = vtkIGTLToMRMLPosition::New();
 
   this->ImageMetaListConverter   = vtkIGTLToMRMLImageMetaList::New();
+  this->LabelMetaListConverter   = vtkIGTLToMRMLLabelMetaList::New();
   this->PointMetaListConverter   = vtkIGTLToMRMLPointMetaList::New();
   this->TrackingDataConverter    = vtkIGTLToMRMLTrackingData::New();
 
@@ -91,6 +93,7 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
   RegisterMessageConverter(this->ImageConverter);
   RegisterMessageConverter(this->PositionConverter);
   RegisterMessageConverter(this->ImageMetaListConverter);
+  RegisterMessageConverter(this->LabelMetaListConverter);
   RegisterMessageConverter(this->PointMetaListConverter);
   RegisterMessageConverter(this->TrackingDataConverter);
 
@@ -124,6 +127,11 @@ vtkSlicerOpenIGTLinkIFLogic::~vtkSlicerOpenIGTLinkIFLogic()
     {
     UnregisterMessageConverter(this->ImageMetaListConverter);
     this->ImageMetaListConverter->Delete();
+    }
+  if (this->LabelMetaListConverter)
+    {
+    UnregisterMessageConverter(this->LabelMetaListConverter);
+    this->LabelMetaListConverter->Delete();
     }
   if (this->PointMetaListConverter)
     {
@@ -169,6 +177,7 @@ void vtkSlicerOpenIGTLinkIFLogic::RegisterNodes()
     }
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLConnectorNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLImageMetaListNode>().GetPointer());
+  scene->RegisterNodeClass(vtkNew<vtkMRMLLabelMetaListNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataQueryNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataBundleNode>().GetPointer());
 }
