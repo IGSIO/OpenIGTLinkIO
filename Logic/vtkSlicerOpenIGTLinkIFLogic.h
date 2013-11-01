@@ -47,8 +47,6 @@
 #include <vector>
 
 class vtkMRMLIGTLConnectorNode;
-class vtkMRMLModelNode;
-class vtkTransform;
 
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
 class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic : public vtkSlicerModuleLogic
