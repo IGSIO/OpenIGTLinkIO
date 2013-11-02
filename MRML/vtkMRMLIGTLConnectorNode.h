@@ -94,7 +94,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   } DeviceInfoType;
 
   typedef struct {
-    vtkMRMLNode*  node;
+    //vtkMRMLNode*  node;
     int           lock;
     int           second;
     int           nanosecond;
