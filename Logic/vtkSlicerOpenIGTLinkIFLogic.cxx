@@ -13,6 +13,7 @@
 ==========================================================================*/
 
 // Slicer includes
+#include <vtkObjectFactory.h>
 #include <vtkSlicerColorLogic.h>
 
 // OpenIGTLinkIF MRML includes
