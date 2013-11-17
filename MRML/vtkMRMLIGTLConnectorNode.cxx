@@ -80,6 +80,9 @@ vtkMRMLIGTLConnectorNode::vtkMRMLIGTLConnectorNode()
 
   this->EventQueueMutex = vtkMutexLock::New();
 
+  this->PushOutgoingMessageFlag = 0;
+  this->PushOutgoingMessageMutex = vtkMutexLock::New();
+
   this->IncomingDeviceIDSet.clear();
   this->OutgoingDeviceIDSet.clear();
   this->UnspecifiedDeviceIDSet.clear();
@@ -152,6 +155,10 @@ vtkMRMLIGTLConnectorNode::~vtkMRMLIGTLConnectorNode()
     this->QueryQueueMutex->Delete();
     }
 
+  if (this->PushOutgoingMessageMutex)
+    {
+    this->PushOutgoingMessageMutex->Delete();
+    }
 }
 
 
@@ -616,6 +623,7 @@ void* vtkMRMLIGTLConnectorNode::ThreadFunction(void* ptr)
       // need to Request the InvokeEvent, because we are not on the main thread now
       igtlcon->RequestInvokeEvent(vtkMRMLIGTLConnectorNode::ConnectedEvent);
       //vtkErrorMacro("vtkOpenIGTLinkIFLogic::ThreadFunction(): Client Connected.");
+      igtlcon->RequestPushOutgoingMessages();
       igtlcon->ReceiveController();
       igtlcon->State = STATE_WAIT_CONNECTION;
       igtlcon->RequestInvokeEvent(vtkMRMLIGTLConnectorNode::DisconnectedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
@@ -639,6 +647,7 @@ void* vtkMRMLIGTLConnectorNode::ThreadFunction(void* ptr)
   return NULL;
 }
 
+
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::RequestInvokeEvent(unsigned long eventId)
 {
@@ -646,6 +655,16 @@ void vtkMRMLIGTLConnectorNode::RequestInvokeEvent(unsigned long eventId)
   this->EventQueue.push_back(eventId);
   this->EventQueueMutex->Unlock();
 }
+
+
+//----------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::RequestPushOutgoingMessages()
+{
+  this->PushOutgoingMessageMutex->Lock();
+  this->PushOutgoingMessageFlag = 1;
+  this->PushOutgoingMessageMutex->Unlock();
+}
+
 
 //----------------------------------------------------------------------------
 int vtkMRMLIGTLConnectorNode::WaitForConnection()
@@ -1110,6 +1129,37 @@ void vtkMRMLIGTLConnectorNode::ImportEventsFromEventBuffer()
 
   } while (!emptyQueue);
 
+}
+
+
+//---------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::PushOutgoingMessages()
+{
+
+  int push = 0;
+
+  // Read PushOutgoingMessageFlag and reset it.
+  this->PushOutgoingMessageMutex->Lock();
+  push = this->PushOutgoingMessageFlag;
+  this->PushOutgoingMessageFlag = 0;
+  this->PushOutgoingMessageMutex->Unlock();
+
+  if (push)
+    {
+    int nNode = this->GetNumberOfOutgoingMRMLNodes();
+    for (int i = 0; i < nNode; i ++)
+      {
+      vtkMRMLNode* node = this->GetOutgoingMRMLNode(i);
+      if (node)
+        {
+        const char* flag = node->GetAttribute("OpenIGTLinkIF.pushOnConnection");
+        if (flag && strcmp(flag, "1") == 0)
+          {
+          this->PushNode(node);
+          }
+        }
+      }
+    }
 }
 
 

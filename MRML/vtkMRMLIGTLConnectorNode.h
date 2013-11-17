@@ -224,6 +224,12 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   void ImportEventsFromEventBuffer();
 
   // Description:
+  // Push all outgoing messages to the network stream, if permitted.
+  // This function is used, when the connection is established. To permit the OpenIGTLink IF
+  // to push individual "outgoing" MRML nodes, set "OpenIGTLinkIF.pushOnConnection" attribute to 1. 
+  void PushOutgoingMessages();
+
+  // Description:
   // Register IGTL to MRML message converter.
   // This is used by vtkOpenIGTLinkIFLogic class.
   int RegisterMessageConverter(vtkIGTLToMRMLBase* converter);
@@ -308,6 +314,13 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   // Inserts the eventId to the EventQueue, and the event will be invoked from the main thread
   void RequestInvokeEvent(unsigned long eventId);
 
+  // Description:
+  // Reeust to push all outgoing messages to the network stream, if permitted.
+  // This function is used, when the connection is established. To permit the OpenIGTLink IF
+  // to push individual "outgoing" MRML nodes, set "OpenIGTLinkIF.pushOnConnection" attribute to 1. 
+  // The request will be processed in PushOutgonigMessages().
+  void RequestPushOutgoingMessages();
+
  protected:
 
   //----------------------------------------------------------------
@@ -373,6 +386,11 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   std::list<vtkMRMLIGTLQueryNode*> QueryWaitingQueue;
   vtkMutexLock* QueryQueueMutex;
 
+  // Flag for the push outoing message request
+  // If the flag is ON, the external timer will update the outgoing nodes with 
+  // "OpenIGTLinkIF.pushOnConnection" attribute to push the nodes to the network.
+  int PushOutgoingMessageFlag;
+  vtkMutexLock* PushOutgoingMessageMutex;
 
   // -- Device Name (same as MRML node) and data type (data type string defined in OpenIGTLink)
   DeviceIDSetType   IncomingDeviceIDSet;

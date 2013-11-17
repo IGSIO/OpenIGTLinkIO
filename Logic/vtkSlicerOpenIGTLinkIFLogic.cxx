@@ -247,7 +247,7 @@ vtkMRMLIGTLConnectorNode* vtkSlicerOpenIGTLinkIFLogic::GetConnector(const char* 
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::ImportFromCircularBuffers()
+void vtkSlicerOpenIGTLinkIFLogic::CallConnectorTimerHander()
 {
   //ConnectorMapType::iterator cmiter;
   std::vector<vtkMRMLNode*> nodes;
@@ -263,30 +263,9 @@ void vtkSlicerOpenIGTLinkIFLogic::ImportFromCircularBuffers()
       {
       continue;
       }
-
     connector->ImportDataFromCircularBuffer();
-    }
-}
-
-//---------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::ImportEvents()
-{
-  //ConnectorMapType::iterator cmiter;
-  std::vector<vtkMRMLNode*> nodes;
-  this->GetMRMLScene()->GetNodesByClass("vtkMRMLIGTLConnectorNode", nodes);
-
-  std::vector<vtkMRMLNode*>::iterator iter;
-
-  //for (cmiter = this->ConnectorMap.begin(); cmiter != this->ConnectorMap.end(); cmiter ++)
-  for (iter = nodes.begin(); iter != nodes.end(); iter ++)
-    {
-    vtkMRMLIGTLConnectorNode* connector = vtkMRMLIGTLConnectorNode::SafeDownCast(*iter);
-    if (connector == NULL)
-      {
-      continue;
-      }
-
     connector->ImportEventsFromEventBuffer();
+    connector->PushOutgoingMessages();
     }
 }
 

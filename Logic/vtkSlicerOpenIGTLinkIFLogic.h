@@ -97,8 +97,9 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
 
   // Access connectors
   vtkMRMLIGTLConnectorNode* GetConnector(const char* conID);
-  void                      ImportFromCircularBuffers();
-  void                      ImportEvents(); // check if there are any events in the connectors that should be invoked in the main thread (such as connected, disconnected)
+
+  // Call timer-driven routines for each connector
+  void                      CallConnectorTimerHander(); 
 
   // Device Name management
   int  SetRestrictDeviceName(int f);
