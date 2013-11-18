@@ -307,7 +307,7 @@ void qMRMLIGTLIOTreeView::onClicked(const QModelIndex& index)
     }
   else if (index.column() == qMRMLIGTLIOModel::PushOnConnectColumn)
     {
-    if (dnode && type == TYPE_DATANODE)
+    if (dnode && type == TYPE_DATANODE && dir == vtkMRMLIGTLConnectorNode::IO_OUTGOING)
       {
       // Toggle the checkbox for "push on connect" feature
       const char * attr = dnode->GetAttribute("OpenIGTLinkIF.pushOnConnect");

@@ -382,18 +382,25 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
         
         // Push on Connect
         QStandardItem* item4 = new QStandardItem;
-        const char * attr4 = inode->GetAttribute("OpenIGTLinkIF.pushOnConnect");
-        if (attr4 && strcmp(attr4, "true") == 0)
+        if (dir == qMRMLIGTLIOModel::OUTGOING)
           {
-          item4->setCheckState(Qt::Checked);
+          const char * attr4 = inode->GetAttribute("OpenIGTLinkIF.pushOnConnect");
+          if (attr4 && strcmp(attr4, "true") == 0)
+            {
+            item4->setCheckState(Qt::Checked);
+            }
+          else
+            {
+            item4->setCheckState(Qt::Unchecked);
+            }
+          item4->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
           }
         else
           {
-          item4->setCheckState(Qt::Unchecked);
+          item4->setText("");
           }
-        item4->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
         items << item4;
-
+        
         // Insert the row
         item->insertRow(i, items);
         }
@@ -412,15 +419,18 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
             item3->setData(QPixmap(":/Icons/Small/SlicerInvisible.png"),Qt::DecorationRole);
             }
           }
-        QStandardItem* item4 = item->child(row, qMRMLIGTLIOModel::PushOnConnectColumn);
-        const char * attr = inode->GetAttribute("OpenIGTLinkIF.pushOnConnect");
-        if (attr && strcmp(attr, "true") == 0)
+        if (dir == qMRMLIGTLIOModel::OUTGOING)
           {
-          item4->setCheckState(Qt::Checked);
-          }
-        else
-          {
-          item4->setCheckState(Qt::Unchecked);
+          QStandardItem* item4 = item->child(row, qMRMLIGTLIOModel::PushOnConnectColumn);
+          const char * attr = inode->GetAttribute("OpenIGTLinkIF.pushOnConnect");
+          if (attr && strcmp(attr, "true") == 0)
+            {
+            item4->setCheckState(Qt::Checked);
+            }
+          else
+            {
+            item4->setCheckState(Qt::Unchecked);
+            }
           }
         }
       }
