@@ -278,9 +278,9 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   vtkMRMLNode* GetIncomingMRMLNode(unsigned int i);
 
   // Description:
-  // A function to explicitly push node to OpenIGTLink
-  // (Usually, data stored in MRML scene are exported, when the registered events are invoked.)
-  void PushNode(vtkMRMLNode* node);
+  // A function to explicitly push node to OpenIGTLink. The function is called either by 
+  // external nodes or MRML event hander in the connector node. 
+  int PushNode(vtkMRMLNode* node);
 
   // Description:
   // Push query int the query list.

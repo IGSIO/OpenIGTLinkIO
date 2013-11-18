@@ -309,29 +309,19 @@ void vtkMRMLIGTLConnectorNode::ProcessMRMLEvents( vtkObject *caller, unsigned lo
 
   MRMLNodeListType::iterator iter;
   vtkMRMLNode* node = vtkMRMLNode::SafeDownCast(caller);
+  if (!node)
+    {
+    return;
+    }
 
   int n = this->GetNumberOfNodeReferences(this->GetOutgoingNodeReferenceRole());
 
-  //for (iter = this->OutgoingMRMLNodeList.begin(); iter != this->OutgoingMRMLNodeList.end(); iter ++)
   for (int i = 0; i < n; i ++)
     {
     const char* id = GetNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
-    //if (node == *iter)
     if (strcmp(node->GetID(), id) == 0)
       {
-      int size;
-      void* igtlMsg;
-      vtkIGTLToMRMLBase* converter = this->MRMLIDToConverterMap[node->GetID()];
-      if (converter->MRMLToIGTL(event, node, &size, &igtlMsg))
-        {
-        int r = this->SendData(size, (unsigned char*)igtlMsg);
-        if (r == 0)
-          {
-          // TODO: error handling
-          //std::cerr << "ERROR: send data." << std::endl;
-          }
-        return;
-        }
+      this->PushNode(node);
       }
     }
 }
@@ -1506,24 +1496,44 @@ vtkIGTLToMRMLBase* vtkMRMLIGTLConnectorNode::GetConverterByIGTLDeviceType(const 
 
 
 //---------------------------------------------------------------------------
-void vtkMRMLIGTLConnectorNode::PushNode(vtkMRMLNode* node)
+int vtkMRMLIGTLConnectorNode::PushNode(vtkMRMLNode* node)
 {
   if (!node)
     {
-    return;
+    return 0;
     }
 
   vtkIGTLToMRMLBase* converter = this->MRMLIDToConverterMap[node->GetID()];
   if (!converter)
     {
-    return;
+    return 0;
     }
 
-  vtkIntArray* eventlist = converter->GetNodeEvents();
-  if (eventlist->GetNumberOfTuples() > 0)
+  int size;
+  void* igtlMsg;
+
+  // Obtain a node event that will be accepted by the MRML to IGTL converter
+  vtkIntArray* events = converter->GetNodeEvents();
+  int event = 0;
+  if (events->GetNumberOfTuples() > 0)
     {
-    node->InvokeEvent(eventlist->GetValue(0));
+    event = events->GetValue(0);
     }
+  events->Delete();
+
+  if (converter->MRMLToIGTL(event, node, &size, &igtlMsg))
+    {
+    int r = this->SendData(size, (unsigned char*)igtlMsg);
+    if (r == 0)
+      {
+      // TODO: error handling
+      //std::cerr << "ERROR: send data." << std::endl;
+      return 0;
+      }
+    return r;
+    }
+
+  return 0;
 }
 
 
