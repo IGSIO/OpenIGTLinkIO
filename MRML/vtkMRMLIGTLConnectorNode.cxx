@@ -1142,8 +1142,8 @@ void vtkMRMLIGTLConnectorNode::PushOutgoingMessages()
       vtkMRMLNode* node = this->GetOutgoingMRMLNode(i);
       if (node)
         {
-        const char* flag = node->GetAttribute("OpenIGTLinkIF.pushOnConnection");
-        if (flag && strcmp(flag, "1") == 0)
+        const char* flag = node->GetAttribute("OpenIGTLinkIF.pushOnConnect");
+        if (flag && strcmp(flag, "true") == 0)
           {
           this->PushNode(node);
           }
