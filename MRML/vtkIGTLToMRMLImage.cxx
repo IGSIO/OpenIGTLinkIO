@@ -227,11 +227,11 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
   float spacing[3];       // spacing (mm/pixel)
   int   svsize[3];        // sub-volume size
   int   svoffset[3];      // sub-volume offset
-  int   scalarType;       // scalar type
+  int   scalarType;       // VTK scalar type
   int   endian;
   igtl::Matrix4x4 matrix; // Image origin and orientation matrix
 
-  scalarType = imgMsg->GetScalarType();
+  scalarType = IGTLToVTKScalarType( imgMsg->GetScalarType() );
   endian = imgMsg->GetEndian();
   imgMsg->GetDimensions(size);
   imgMsg->GetSpacing(spacing);
@@ -243,14 +243,16 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
   vtkImageData* imageData;
   vtkImageData* newImageData = NULL;
   
+  int dsize[3]={0,0,0};
+  int dscalarType=VTK_VOID;
+
   // Get vtk image from MRML node
   imageData = volumeNode->GetImageData();
-  int dsize[3];
-  int dscalarType;
-
-  imageData->GetDimensions(dsize);
-
-  dscalarType = imageData->GetScalarType();
+  if (imageData)
+    {
+    imageData->GetDimensions(dsize);
+    dscalarType = imageData->GetScalarType();
+    }
 
   if (dsize[0] != size[0] || dsize[1] != size[1] || dsize[2] != size[2] ||
       scalarType != dscalarType)
@@ -261,37 +263,7 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
     newImageData->SetOrigin(0.0, 0.0, 0.0);
     newImageData->SetSpacing(1.0, 1.0, 1.0);
     newImageData->SetNumberOfScalarComponents(1);
-    //newImageData->SetScalarType(scalarType);
-    switch (scalarType)
-      {
-      case igtl::ImageMessage::TYPE_INT8:
-        newImageData->SetScalarTypeToChar();
-        break;
-      case igtl::ImageMessage::TYPE_UINT8:
-        newImageData->SetScalarTypeToUnsignedChar();
-        break;
-      case igtl::ImageMessage::TYPE_INT16:
-        newImageData->SetScalarTypeToShort();
-        break;
-      case igtl::ImageMessage::TYPE_UINT16:
-        newImageData->SetScalarTypeToUnsignedShort();
-        break;
-      case igtl::ImageMessage::TYPE_INT32:
-        newImageData->SetScalarTypeToUnsignedLong();
-        break;
-      case igtl::ImageMessage::TYPE_UINT32:
-        newImageData->SetScalarTypeToUnsignedLong();
-        break;
-      case igtl::ImageMessage::TYPE_FLOAT32:
-        newImageData->SetScalarTypeToFloat();
-        break;
-      case igtl::ImageMessage::TYPE_FLOAT64:
-        newImageData->SetScalarTypeToDouble();
-        break;
-      default:
-        vtkErrorMacro ("Invalid Scalar Type\n");
-        break;
-      }
+    newImageData->SetScalarType(scalarType);
     newImageData->AllocateScalars();
     imageData = newImageData;
     }
@@ -697,4 +669,23 @@ void vtkIGTLToMRMLImage::CenterImage(vtkMRMLVolumeNode *volumeNode)
         ijkToRAS->Delete();
         }
       }
+}
+
+//---------------------------------------------------------------------------
+int vtkIGTLToMRMLImage::IGTLToVTKScalarType(int igtlType)
+{
+  switch (igtlType)
+    {
+    case igtl::ImageMessage::TYPE_INT8: return VTK_CHAR;
+    case igtl::ImageMessage::TYPE_UINT8: return VTK_UNSIGNED_CHAR;
+    case igtl::ImageMessage::TYPE_INT16: return VTK_SHORT;
+    case igtl::ImageMessage::TYPE_UINT16: return VTK_UNSIGNED_SHORT;
+    case igtl::ImageMessage::TYPE_INT32: return VTK_UNSIGNED_LONG;
+    case igtl::ImageMessage::TYPE_UINT32: return VTK_UNSIGNED_LONG;
+    case igtl::ImageMessage::TYPE_FLOAT32: return VTK_FLOAT;
+    case igtl::ImageMessage::TYPE_FLOAT64: return VTK_DOUBLE;
+    default:
+      vtkErrorMacro ("Invalid IGTL scalar Type: "<<igtlType);
+      return VTK_VOID;
+    }
 }
