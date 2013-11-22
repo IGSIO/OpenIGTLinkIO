@@ -305,6 +305,24 @@ void qMRMLIGTLIOTreeView::onClicked(const QModelIndex& index)
       }
     emit ioTreeViewUpdated(type, cnode, dir);
     }
+  else if (index.column() == qMRMLIGTLIOModel::PushOnConnectColumn)
+    {
+    if (dnode && type == TYPE_DATANODE && dir == vtkMRMLIGTLConnectorNode::IO_OUTGOING)
+      {
+      // Toggle the checkbox for "push on connect" feature
+      const char * attr = dnode->GetAttribute("OpenIGTLinkIF.pushOnConnect");
+      if (attr && strcmp(attr, "true") == 0)
+        {
+        dnode->SetAttribute("OpenIGTLinkIF.pushOnConnect", "false");
+        }
+      else
+        {
+        dnode->SetAttribute("OpenIGTLinkIF.pushOnConnect", "true");
+        }
+      cnode->InvokeEvent(vtkMRMLIGTLConnectorNode::DeviceModifiedEvent);
+      }
+    emit ioTreeViewUpdated(type, cnode, dir);
+    }
   else if (index != this->CurrentIndex)
     {
     this->CurrentIndex = index;

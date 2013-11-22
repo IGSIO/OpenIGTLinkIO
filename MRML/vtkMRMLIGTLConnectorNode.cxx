@@ -80,6 +80,9 @@ vtkMRMLIGTLConnectorNode::vtkMRMLIGTLConnectorNode()
 
   this->EventQueueMutex = vtkMutexLock::New();
 
+  this->PushOutgoingMessageFlag = 0;
+  this->PushOutgoingMessageMutex = vtkMutexLock::New();
+
   this->IncomingDeviceIDSet.clear();
   this->OutgoingDeviceIDSet.clear();
   this->UnspecifiedDeviceIDSet.clear();
@@ -152,6 +155,10 @@ vtkMRMLIGTLConnectorNode::~vtkMRMLIGTLConnectorNode()
     this->QueryQueueMutex->Delete();
     }
 
+  if (this->PushOutgoingMessageMutex)
+    {
+    this->PushOutgoingMessageMutex->Delete();
+    }
 }
 
 
@@ -302,35 +309,19 @@ void vtkMRMLIGTLConnectorNode::ProcessMRMLEvents( vtkObject *caller, unsigned lo
 
   MRMLNodeListType::iterator iter;
   vtkMRMLNode* node = vtkMRMLNode::SafeDownCast(caller);
+  if (!node)
+    {
+    return;
+    }
 
   int n = this->GetNumberOfNodeReferences(this->GetOutgoingNodeReferenceRole());
 
-  //for (iter = this->OutgoingMRMLNodeList.begin(); iter != this->OutgoingMRMLNodeList.end(); iter ++)
   for (int i = 0; i < n; i ++)
     {
     const char* id = GetNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
-    //if (node == *iter)
     if (strcmp(node->GetID(), id) == 0)
       {
-      int size;
-      void* igtlMsg;
-      MessageConverterMapType::iterator iter = this->MRMLIDToConverterMap.find(node->GetID());
-      if (iter == this->MRMLIDToConverterMap.end())
-        {
-        vtkErrorMacro("Node is not found in MRMLIDToConverterMap: "<<node->GetID());
-        return;
-        }
-      vtkIGTLToMRMLBase* converter = iter->second;
-      if (converter->MRMLToIGTL(event, node, &size, &igtlMsg))
-        {
-        int r = this->SendData(size, (unsigned char*)igtlMsg);
-        if (r == 0)
-          {
-          // TODO: error handling
-          //std::cerr << "ERROR: send data." << std::endl;
-          }
-        return;
-        }
+      this->PushNode(node, event);
       }
     }
 }
@@ -622,6 +613,7 @@ void* vtkMRMLIGTLConnectorNode::ThreadFunction(void* ptr)
       // need to Request the InvokeEvent, because we are not on the main thread now
       igtlcon->RequestInvokeEvent(vtkMRMLIGTLConnectorNode::ConnectedEvent);
       //vtkErrorMacro("vtkOpenIGTLinkIFLogic::ThreadFunction(): Client Connected.");
+      igtlcon->RequestPushOutgoingMessages();
       igtlcon->ReceiveController();
       igtlcon->State = STATE_WAIT_CONNECTION;
       igtlcon->RequestInvokeEvent(vtkMRMLIGTLConnectorNode::DisconnectedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
@@ -645,6 +637,7 @@ void* vtkMRMLIGTLConnectorNode::ThreadFunction(void* ptr)
   return NULL;
 }
 
+
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::RequestInvokeEvent(unsigned long eventId)
 {
@@ -652,6 +645,16 @@ void vtkMRMLIGTLConnectorNode::RequestInvokeEvent(unsigned long eventId)
   this->EventQueue.push_back(eventId);
   this->EventQueueMutex->Unlock();
 }
+
+
+//----------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::RequestPushOutgoingMessages()
+{
+  this->PushOutgoingMessageMutex->Lock();
+  this->PushOutgoingMessageFlag = 1;
+  this->PushOutgoingMessageMutex->Unlock();
+}
+
 
 //----------------------------------------------------------------------------
 int vtkMRMLIGTLConnectorNode::WaitForConnection()
@@ -1120,6 +1123,37 @@ void vtkMRMLIGTLConnectorNode::ImportEventsFromEventBuffer()
 
 
 //---------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::PushOutgoingMessages()
+{
+
+  int push = 0;
+
+  // Read PushOutgoingMessageFlag and reset it.
+  this->PushOutgoingMessageMutex->Lock();
+  push = this->PushOutgoingMessageFlag;
+  this->PushOutgoingMessageFlag = 0;
+  this->PushOutgoingMessageMutex->Unlock();
+
+  if (push)
+    {
+    int nNode = this->GetNumberOfOutgoingMRMLNodes();
+    for (int i = 0; i < nNode; i ++)
+      {
+      vtkMRMLNode* node = this->GetOutgoingMRMLNode(i);
+      if (node)
+        {
+        const char* flag = node->GetAttribute("OpenIGTLinkIF.pushOnConnect");
+        if (flag && strcmp(flag, "true") == 0)
+          {
+          this->PushNode(node);
+          }
+        }
+      }
+    }
+}
+
+
+//---------------------------------------------------------------------------
 int vtkMRMLIGTLConnectorNode::RegisterMessageConverter(vtkIGTLToMRMLBase* converter)
 {
   if (converter == NULL)
@@ -1462,24 +1496,51 @@ vtkIGTLToMRMLBase* vtkMRMLIGTLConnectorNode::GetConverterByIGTLDeviceType(const 
 
 
 //---------------------------------------------------------------------------
-void vtkMRMLIGTLConnectorNode::PushNode(vtkMRMLNode* node)
+int vtkMRMLIGTLConnectorNode::PushNode(vtkMRMLNode* node, int event)
 {
   if (!node)
     {
-    return;
+    return 0;
     }
 
-  vtkIGTLToMRMLBase* converter = this->MRMLIDToConverterMap[node->GetID()];
-  if (!converter)
+  int size;
+  void* igtlMsg;
+
+  MessageConverterMapType::iterator iter = this->MRMLIDToConverterMap.find(node->GetID());
+  if (iter == this->MRMLIDToConverterMap.end())
     {
-    return;
+    vtkErrorMacro("Node is not found in MRMLIDToConverterMap: "<<node->GetID());
+    return 0;
     }
 
-  vtkIntArray* eventlist = converter->GetNodeEvents();
-  if (eventlist->GetNumberOfTuples() > 0)
+  vtkIGTLToMRMLBase* converter = iter->second;
+
+  int e = event;
+
+  if (e < 0)
     {
-    node->InvokeEvent(eventlist->GetValue(0));
+    // If event is not specified, 
+    // Obtain a node event that will be accepted by the MRML to IGTL converter
+    vtkIntArray* events = converter->GetNodeEvents();
+    if (events->GetNumberOfTuples() > 0)
+      {
+      e = events->GetValue(0);
+      }
+    events->Delete();
     }
+
+  if (converter->MRMLToIGTL(e, node, &size, &igtlMsg))
+    {
+    int r = this->SendData(size, (unsigned char*)igtlMsg);
+    if (r == 0)
+      {
+      vtkErrorMacro("Sending OpenIGTLinkMessage: " << node->GetID());
+      return 0;
+      }
+    return r;
+    }
+
+  return 0;
 }
 
 

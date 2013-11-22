@@ -43,7 +43,9 @@ class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qMRMLIGTLIOModel : public qMRMLSce
     NameColumn = 0,
     TypeColumn,
     StatusColumn,
-    VisualizationColumn
+    VisualizationColumn,
+    PushOnConnectColumn,
+    NumColumns
   };
   enum Direction{
     UNDEFINED = 0,

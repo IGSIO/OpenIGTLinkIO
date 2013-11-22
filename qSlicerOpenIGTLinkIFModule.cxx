@@ -198,7 +198,6 @@ void qSlicerOpenIGTLinkIFModule::importDataAndEvents()
   vtkSlicerOpenIGTLinkIFLogic * igtlLogic = vtkSlicerOpenIGTLinkIFLogic::SafeDownCast(l);
   if (igtlLogic)
     {
-    igtlLogic->ImportEvents();
-    igtlLogic->ImportFromCircularBuffers();
+    igtlLogic->CallConnectorTimerHander();
     }
 }

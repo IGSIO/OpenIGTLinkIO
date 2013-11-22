@@ -99,8 +99,9 @@ qMRMLIGTLIOModel::qMRMLIGTLIOModel(QObject *vparent)
 
   this->setIDColumn(-1);
   this->setCheckableColumn(qMRMLIGTLIOModel::VisualizationColumn);
-  this->setColumnCount(4);
-  this->setHorizontalHeaderLabels(QStringList() << "Name" << "MRML Type" << "IGTL Type" << "Vis");
+  this->setCheckableColumn(qMRMLIGTLIOModel::PushOnConnectColumn);
+  this->setColumnCount(NumColumns);
+  this->setHorizontalHeaderLabels(QStringList() << "Name" << "MRML Type" << "IGTL Type" << "Vis" << "Push on Connect");
 
   // Hack: disconnect signal and slot to prevent this->mrmlNodeFromItem(item) call
   // that returns NULL. (in onItemChanged())
@@ -367,8 +368,8 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
 
         // Visibility icon
         QStandardItem* item3 = new QStandardItem;
-        const char * attr = inode->GetAttribute("IGTLVisible");
-        if (attr && strcmp(attr, "true") == 0)
+        const char * attr3 = inode->GetAttribute("IGTLVisible");
+        if (attr3 && strcmp(attr3, "true") == 0)
           {
           item3->setData(QPixmap(":/Icons/Small/SlicerVisible.png"),Qt::DecorationRole);        
           }
@@ -379,11 +380,33 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
         item3->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
         items << item3;
         
+        // Push on Connect
+        QStandardItem* item4 = new QStandardItem;
+        if (dir == qMRMLIGTLIOModel::OUTGOING)
+          {
+          const char * attr4 = inode->GetAttribute("OpenIGTLinkIF.pushOnConnect");
+          if (attr4 && strcmp(attr4, "true") == 0)
+            {
+            item4->setCheckState(Qt::Checked);
+            }
+          else
+            {
+            item4->setCheckState(Qt::Unchecked);
+            }
+          item4->setFlags(Qt::ItemIsEnabled|Qt::ItemIsSelectable);
+          }
+        else
+          {
+          item4->setText("");
+          }
+        items << item4;
+        
+        // Insert the row
         item->insertRow(i, items);
         }
-      else // If the node is in the tree, only update visibility icon
+      else // If the node is in the tree, only update visibility icon and "push on connect" checkbox
         {
-        QStandardItem* item3 = item->child(row, 3);
+        QStandardItem* item3 = item->child(row, qMRMLIGTLIOModel::VisualizationColumn);
         if (item3)
           {
           const char * attr = inode->GetAttribute("IGTLVisible");
@@ -394,6 +417,19 @@ void qMRMLIGTLIOModel::updateIOTreeBranch(vtkMRMLIGTLConnectorNode* node, QStand
           else
             {
             item3->setData(QPixmap(":/Icons/Small/SlicerInvisible.png"),Qt::DecorationRole);
+            }
+          }
+        if (dir == qMRMLIGTLIOModel::OUTGOING)
+          {
+          QStandardItem* item4 = item->child(row, qMRMLIGTLIOModel::PushOnConnectColumn);
+          const char * attr = inode->GetAttribute("OpenIGTLinkIF.pushOnConnect");
+          if (attr && strcmp(attr, "true") == 0)
+            {
+            item4->setCheckState(Qt::Checked);
+            }
+          else
+            {
+            item4->setCheckState(Qt::Unchecked);
             }
           }
         }
