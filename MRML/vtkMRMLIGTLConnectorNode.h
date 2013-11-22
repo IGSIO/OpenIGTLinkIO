@@ -90,11 +90,9 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
     std::string   name;
     std::string   type;
     int           io;
-    //vtkMRMLNode*  node;
   } DeviceInfoType;
 
   typedef struct {
-    //vtkMRMLNode*  node;
     int           lock;
     int           second;
     int           nanosecond;
@@ -105,7 +103,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   typedef std::set<int>                   DeviceIDSetType;
   typedef std::list< vtkSmartPointer<vtkIGTLToMRMLBase> >   MessageConverterListType;
   typedef std::vector< vtkSmartPointer<vtkMRMLNode> >       MRMLNodeListType;
-  //typedef std::vector<NodeInfoType>       NodeInfoListType;
   typedef std::map<std::string, NodeInfoType>       NodeInfoMapType;
   typedef std::map<std::string, vtkSmartPointer <vtkIGTLToMRMLBase> > MessageConverterMapType;
 
@@ -171,7 +168,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   vtkGetMacro( Type, int );
   vtkSetMacro( Type, int );
   vtkGetMacro( State, int );
-  //vtkSetMacro( State, int );
   vtkSetMacro( RestrictDeviceName, int );
   vtkGetMacro( RestrictDeviceName, int );
 

@@ -1026,7 +1026,7 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
           node->DisableModifiedEventOff();
           node->InvokePendingModifiedEvent();
           updatedNode = node;
-          this->InvokeEvent(vtkMRMLIGTLConnectorNode::NewDeviceEvent);
+          this->InvokeEvent(vtkMRMLIGTLConnectorNode::NewDeviceEvent, node);
           }
         else
           {
