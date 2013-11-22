@@ -314,7 +314,13 @@ void vtkMRMLIGTLConnectorNode::ProcessMRMLEvents( vtkObject *caller, unsigned lo
       {
       int size;
       void* igtlMsg;
-      vtkIGTLToMRMLBase* converter = this->MRMLIDToConverterMap[node->GetID()];
+      MessageConverterMapType::iterator iter = this->MRMLIDToConverterMap.find(node->GetID());
+      if (iter == this->MRMLIDToConverterMap.end())
+        {
+        vtkErrorMacro("Node is not found in MRMLIDToConverterMap: "<<node->GetID());
+        return;
+        }
+      vtkIGTLToMRMLBase* converter = iter->second;
       if (converter->MRMLToIGTL(event, node, &size, &igtlMsg))
         {
         int r = this->SendData(size, (unsigned char*)igtlMsg);

@@ -53,6 +53,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLImage : public vt
   ~vtkIGTLToMRMLImage();
 
   void CenterImage(vtkMRMLVolumeNode *volumeNode);
+  int IGTLToVTKScalarType(int igtlType);
 
  protected:
   igtl::ImageMessage::Pointer OutImageMessage;
