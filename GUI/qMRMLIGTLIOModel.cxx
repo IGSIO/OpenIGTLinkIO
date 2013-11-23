@@ -120,7 +120,7 @@ qMRMLIGTLIOModel::qMRMLIGTLIOModel(qMRMLIGTLIOModelPrivate* pimpl, QObject *pare
 //------------------------------------------------------------------------------
 qMRMLIGTLIOModel::~qMRMLIGTLIOModel()
 {
-
+  this->qvtkDisconnectAll();
 }
 
 
