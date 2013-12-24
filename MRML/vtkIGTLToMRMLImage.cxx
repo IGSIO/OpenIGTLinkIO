@@ -494,17 +494,17 @@ int vtkIGTLToMRMLImage::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, i
     int   isize[3];          // image dimension
     //int   svsize[3];        // sub-volume size
     int   scalarType;       // scalar type
-    double *origin;
+    //double *origin;
     double *spacing;       // spacing (mm/pixel)
-    int   ncomp;
+    //int   ncomp;
     int   svoffset[] = {0, 0, 0};           // sub-volume offset
     int   endian;
 
     scalarType = imageData->GetScalarType();
-    ncomp = imageData->GetNumberOfScalarComponents();
+    //ncomp = imageData->GetNumberOfScalarComponents();
     imageData->GetDimensions(isize);
     //imageData->GetExtent(0, isize[0]-1, 0, isize[1]-1, 0, isize[2]-1);
-    origin = imageData->GetOrigin();
+    //origin = imageData->GetOrigin();
     spacing = imageData->GetSpacing();
 
     // Check endianness of the machine
