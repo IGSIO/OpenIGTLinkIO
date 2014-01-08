@@ -108,6 +108,8 @@ void qSlicerOpenIGTLinkIFModuleWidget::setMRMLScene(vtkMRMLScene* scene)
 //-----------------------------------------------------------------------------
 void qSlicerOpenIGTLinkIFModuleWidget::onAddConnectorButtonClicked()
 {
+  Q_D(qSlicerOpenIGTLinkIFModuleWidget);
+
   if (this->mrmlScene())
     {
     vtkMRMLIGTLConnectorNode* node = 
@@ -115,6 +117,8 @@ void qSlicerOpenIGTLinkIFModuleWidget::onAddConnectorButtonClicked()
     if (node)
       {
       this->mrmlScene()->AddNode(node);
+      d->ConnectorListView->setSelectedNode(node->GetID());
+      node->SetType(vtkMRMLIGTLConnectorNode::TYPE_CLIENT);
       node->Delete();
       }
     }
