@@ -1,6 +1,6 @@
 /*==========================================================================
 
-  Portions (c) Copyright 2008-2009 Brigham and Women's Hospital (BWH) All Rights Reserved.
+  Portions (c) Copyright 2008-2014 Brigham and Women's Hospital (BWH) All Rights Reserved.
 
   See Doc/copyright/copyright.txt
   or http://www.slicer.org/copyright/copyright.txt for details.
@@ -9,15 +9,15 @@
 
 ==========================================================================*/
 
-#ifndef __vtkIGTLToMRMLPosition_h
-#define __vtkIGTLToMRMLPosition_h
+#ifndef __vtkIGTLToMRMLSensor_h
+#define __vtkIGTLToMRMLSensor_h
 
 // OpenIGTLinkIF MRML includes
 #include "vtkIGTLToMRMLBase.h"
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
 // OpenIGTLink includes
-#include <igtlPositionMessage.h>
+#include <igtlSensorMessage.h>
 
 // MRML includes
 #include <vtkMRMLNode.h>
@@ -25,17 +25,17 @@
 // VTK includes
 #include <vtkObject.h>
 
-class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPosition : public vtkIGTLToMRMLBase
+class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLSensor : public vtkIGTLToMRMLBase
 {
  public:
 
-  static vtkIGTLToMRMLPosition *New();
-  vtkTypeRevisionMacro(vtkIGTLToMRMLPosition,vtkObject);
+  static vtkIGTLToMRMLSensor *New();
+  vtkTypeRevisionMacro(vtkIGTLToMRMLSensor,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual const char*  GetIGTLName() { return "POSITION"; };
-  virtual const char*  GetMRMLName() { return "LinearTransform"; };
+  virtual const char*  GetIGTLName() { return "SENSOR"; };
+  virtual const char*  GetMRMLName() { return "IGTLSensor"; };
   virtual vtkIntArray* GetNodeEvents();
   virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name);
 
@@ -44,13 +44,15 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPosition : public
 
 
  protected:
-  vtkIGTLToMRMLPosition();
-  ~vtkIGTLToMRMLPosition();
+  vtkIGTLToMRMLSensor();
+  ~vtkIGTLToMRMLSensor();
 
  protected:
-  igtl::PositionMessage::Pointer OutPositionMsg;
+  igtl::SensorMessage::Pointer OutSensorMsg;
 
 };
 
 
-#endif //__vtkIGTLToMRMLPosition_h
+#endif //__vtkIGTLToMRMLSensor_h
+
+

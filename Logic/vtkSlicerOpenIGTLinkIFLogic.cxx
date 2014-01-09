@@ -56,19 +56,29 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
   this->LinearTransformConverter = vtkIGTLToMRMLLinearTransform::New();
   this->ImageConverter           = vtkIGTLToMRMLImage::New();
   this->PositionConverter        = vtkIGTLToMRMLPosition::New();
+  this->StatusConverter          = vtkIGTLToMRMLStatus::New();
 
   this->ImageMetaListConverter   = vtkIGTLToMRMLImageMetaList::New();
   this->LabelMetaListConverter   = vtkIGTLToMRMLLabelMetaList::New();
   this->PointMetaListConverter   = vtkIGTLToMRMLPointMetaList::New();
+  this->SensorConverter          = vtkIGTLToMRMLSensor::New();
+  this->StringConverter          = vtkIGTLToMRMLString::New();
   this->TrackingDataConverter    = vtkIGTLToMRMLTrackingData::New();
-
+  this->TrajectoryConverter      = vtkIGTLToMRMLTrajectory::New();
+  
+  
   RegisterMessageConverter(this->LinearTransformConverter);
   RegisterMessageConverter(this->ImageConverter);
   RegisterMessageConverter(this->PositionConverter);
+  RegisterMessageConverter(this->StatusConverter);
+
   RegisterMessageConverter(this->ImageMetaListConverter);
   RegisterMessageConverter(this->LabelMetaListConverter);
   RegisterMessageConverter(this->PointMetaListConverter);
+  RegisterMessageConverter(this->SensorConverter);
+  RegisterMessageConverter(this->StringConverter);
   RegisterMessageConverter(this->TrackingDataConverter);
+  RegisterMessageConverter(this->TrajectoryConverter);
 
   //this->LocatorTransformNode = NULL;
 }
