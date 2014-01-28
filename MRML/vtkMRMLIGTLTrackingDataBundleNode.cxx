@@ -143,6 +143,7 @@ void vtkMRMLIGTLTrackingDataBundleNode::UpdateTransformNode(const char* name, ig
     if (this->GetScene())
       {
       this->GetScene()->AddNode(node);
+      node->Delete();
       }
     TrackingDataInfo info;
     info.type = type;
@@ -166,7 +167,6 @@ void vtkMRMLIGTLTrackingDataBundleNode::UpdateTransformNode(const char* name, ig
     }
   mat->Modified();
   //node->Modified();
-  node->Delete();
 }
 
 //----------------------------------------------------------------------------
