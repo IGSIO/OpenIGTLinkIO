@@ -73,7 +73,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
  public:
 
   static vtkSlicerOpenIGTLinkIFLogic *New();
-  vtkTypeRevisionMacro(vtkSlicerOpenIGTLinkIFLogic, vtkSlicerModuleLogic);
+  vtkTypeMacro(vtkSlicerOpenIGTLinkIFLogic, vtkSlicerModuleLogic);
   void PrintSelf(ostream&, vtkIndent);
 
   /// The selected transform node is observed for TransformModified events and the transform

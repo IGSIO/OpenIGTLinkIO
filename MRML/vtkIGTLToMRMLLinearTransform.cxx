@@ -43,7 +43,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLLinearTransform);
-vtkCxxRevisionMacro(vtkIGTLToMRMLLinearTransform, "$Revision: 15552 $");
 
 
 //---------------------------------------------------------------------------
@@ -303,7 +302,11 @@ vtkMRMLModelNode* vtkIGTLToMRMLLinearTransform::AddLocatorModel(vtkMRMLScene * s
   trans->RotateX(90.0);
   trans->Translate(0.0, -50.0, 0.0);
   trans->Update();
+#if (VTK_MAJOR_VERSION <= 5)
   tfilter->SetInput(cylinder->GetOutput());
+#else
+  tfilter->SetInputConnection(cylinder->GetOutputPort());
+#endif
   tfilter->SetTransform(trans);
   tfilter->Update();
 
@@ -314,9 +317,14 @@ vtkMRMLModelNode* vtkIGTLToMRMLLinearTransform::AddLocatorModel(vtkMRMLScene * s
   sphere->Update();
 
   vtkAppendPolyData *apd = vtkAppendPolyData::New();
+#if (VTK_MAJOR_VERSION <= 5)
   apd->AddInput(sphere->GetOutput());
   //apd->AddInput(cylinder->GetOutput());
   apd->AddInput(tfilter->GetOutput());
+#else
+  apd->AddInputConnection(sphere->GetOutputPort());
+  apd->AddInputConnection(tfilter->GetOutputPort());
+#endif
   apd->Update();
 
   locatorModel->SetAndObservePolyData(apd->GetOutput());

@@ -31,7 +31,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLBase);
-vtkCxxRevisionMacro(vtkIGTLToMRMLBase, "$Revision: 10576 $");
 
 //---------------------------------------------------------------------------
 class vtkIGTLToMRMLBasePrivate

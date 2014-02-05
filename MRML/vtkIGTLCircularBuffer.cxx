@@ -28,7 +28,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLCircularBuffer);
-vtkCxxRevisionMacro(vtkIGTLCircularBuffer, "$Revision: 10236 $");
 
 //---------------------------------------------------------------------------
 vtkIGTLCircularBuffer::vtkIGTLCircularBuffer()

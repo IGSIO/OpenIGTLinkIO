@@ -33,7 +33,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPosition : public
  public:
 
   static vtkIGTLToMRMLPosition *New();
-  vtkTypeRevisionMacro(vtkIGTLToMRMLPosition,vtkObject);
+  vtkTypeMacro(vtkIGTLToMRMLPosition,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 

@@ -35,7 +35,6 @@
 #include <vtkTransform.h>
 
 //---------------------------------------------------------------------------
-vtkCxxRevisionMacro(vtkSlicerOpenIGTLinkIFLogic, "$Revision: 1.9.12.1 $");
 vtkStandardNewMacro(vtkSlicerOpenIGTLinkIFLogic);
 
 //---------------------------------------------------------------------------
