@@ -68,6 +68,7 @@ vtkMRMLIGTLConnectorNode::vtkMRMLIGTLConnectorNode()
 
   this->Type   = TYPE_NOT_DEFINED;
   this->State  = STATE_OFF;
+  this->Persistent = PERSISTENT_OFF;
 
   this->Thread = vtkMultiThreader::New();
   this->ServerStopFlag = false;
@@ -184,6 +185,7 @@ void vtkMRMLIGTLConnectorNode::WriteXML(ostream& of, int nIndent)
     }
 
   of << " serverPort=\"" << this->ServerPort << "\" ";
+  of << " persistent=\"" << this->Persistent << "\" ";
   of << " state=\"" << this->State <<"\""; 
   of << " restrictDeviceName=\"" << this->RestrictDeviceName << "\" ";
 
@@ -203,6 +205,7 @@ void vtkMRMLIGTLConnectorNode::ReadXMLAttributes(const char** atts)
   int type = -1;
   int restrictDeviceName = 0;
   int state = vtkMRMLIGTLConnectorNode::STATE_OFF;
+  int persistent = vtkMRMLIGTLConnectorNode::PERSISTENT_OFF;
 
   while (*atts != NULL)
     {
@@ -240,13 +243,19 @@ void vtkMRMLIGTLConnectorNode::ReadXMLAttributes(const char** atts)
       ss << attValue;
       ss >> restrictDeviceName;;
       }
+	if (!strcmp(attName, "persistent"))
+	  {
+	  std::stringstream ss;
+	  ss << attValue;
+	  ss >> persistent;
+	  }
     if (!strcmp(attName, "state"))
       {
       std::stringstream ss;
       ss << attValue;
       ss >> state;
       }
-    }
+	}
 
   switch(type)
     {
@@ -262,11 +271,16 @@ void vtkMRMLIGTLConnectorNode::ReadXMLAttributes(const char** atts)
       // do nothing
       break;
     }
-  if (state!=vtkMRMLIGTLConnectorNode::STATE_OFF)
+  if (persistent == vtkMRMLIGTLConnectorNode::PERSISTENT_ON)
+    {
+	this->SetPersistent(vtkMRMLIGTLConnectorNode::PERSISTENT_ON);
+	this->Modified();
+    }
+  if (persistent == vtkMRMLIGTLConnectorNode::PERSISTENT_ON
+	  && state!=vtkMRMLIGTLConnectorNode::STATE_OFF)
     {
     this->Start();
     }
-
 }
 
 
@@ -298,7 +312,8 @@ void vtkMRMLIGTLConnectorNode::Copy(vtkMRMLNode *anode)
       this->SetType(TYPE_NOT_DEFINED);
       break;
     }
-
+  this->State = node->GetState();
+  this->SetPersistent(node->GetPersistent());
 }
 
 

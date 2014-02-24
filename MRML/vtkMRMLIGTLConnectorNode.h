@@ -86,6 +86,11 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
     IO_OUTGOING   = 0x02,
   };
 
+  enum {
+	PERSISTENT_OFF,
+	PERSISTENT_ON,
+  };
+
   typedef struct {
     std::string   name;
     std::string   type;
@@ -170,6 +175,11 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   vtkGetMacro( State, int );
   vtkSetMacro( RestrictDeviceName, int );
   vtkGetMacro( RestrictDeviceName, int );
+
+  // Controls if active connection will be resumed when
+  // scene is loaded (cf: PERSISTENT_ON/_OFF)
+  vtkSetMacro( Persistent, int );
+  vtkGetMacro( Persistent, int );
 
   const char* GetServerHostname();
   void SetServerHostname(std::string str);
@@ -344,6 +354,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   std::string Name;
   int Type;
   int State;
+  int Persistent;
 
   //----------------------------------------------------------------
   // Thread and Socket

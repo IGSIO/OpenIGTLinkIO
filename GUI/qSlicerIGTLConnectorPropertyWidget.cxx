@@ -41,6 +41,8 @@ void qSlicerIGTLConnectorPropertyWidgetPrivate::init()
                    q, SLOT(updateIGTLConnectorNode()));
   QObject::connect(this->ConnectorStateCheckBox, SIGNAL(toggled(bool)),
                    q, SLOT(startCurrentIGTLConnector(bool)));
+  QObject::connect(this->PersistentStateCheckBox, SIGNAL(toggled(bool)),
+                   q, SLOT(updateIGTLConnectorNode()));
   QObject::connect(this->ConnectorHostNameEdit, SIGNAL(editingFinished()),
                    q, SLOT(updateIGTLConnectorNode()));
   QObject::connect(this->ConnectorPortEdit, SIGNAL(editingFinished()),
@@ -171,6 +173,7 @@ void qSlicerIGTLConnectorPropertyWidget::onMRMLNodeModified()
     setPortEnabled(d, false);
     }
   d->ConnectorStateCheckBox->setChecked(!deactivated);
+  d->PersistentStateCheckBox->setChecked(d->IGTLConnectorNode->GetPersistent() == vtkMRMLIGTLConnectorNode::PERSISTENT_ON);
 }
 
 //------------------------------------------------------------------------------
@@ -199,6 +202,9 @@ void qSlicerIGTLConnectorPropertyWidget::updateIGTLConnectorNode()
   d->IGTLConnectorNode->SetType(d->ConnectorTypeButtonGroup.checkedId());
   d->IGTLConnectorNode->SetServerHostname(d->ConnectorHostNameEdit->text().toStdString());
   d->IGTLConnectorNode->SetServerPort(d->ConnectorPortEdit->text().toInt());
+  d->IGTLConnectorNode->SetPersistent(d->PersistentStateCheckBox->isChecked() ?
+										vtkMRMLIGTLConnectorNode::PERSISTENT_ON :
+										vtkMRMLIGTLConnectorNode::PERSISTENT_OFF);
 
   d->IGTLConnectorNode->DisableModifiedEventOff();
   d->IGTLConnectorNode->InvokePendingModifiedEvent();
