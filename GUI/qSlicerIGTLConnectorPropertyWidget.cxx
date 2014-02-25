@@ -203,8 +203,8 @@ void qSlicerIGTLConnectorPropertyWidget::updateIGTLConnectorNode()
   d->IGTLConnectorNode->SetServerHostname(d->ConnectorHostNameEdit->text().toStdString());
   d->IGTLConnectorNode->SetServerPort(d->ConnectorPortEdit->text().toInt());
   d->IGTLConnectorNode->SetPersistent(d->PersistentStateCheckBox->isChecked() ?
-										vtkMRMLIGTLConnectorNode::PERSISTENT_ON :
-										vtkMRMLIGTLConnectorNode::PERSISTENT_OFF);
+                                      vtkMRMLIGTLConnectorNode::PERSISTENT_ON :
+                                      vtkMRMLIGTLConnectorNode::PERSISTENT_OFF);
 
   d->IGTLConnectorNode->DisableModifiedEventOff();
   d->IGTLConnectorNode->InvokePendingModifiedEvent();

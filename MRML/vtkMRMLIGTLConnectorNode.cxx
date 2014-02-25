@@ -243,19 +243,19 @@ void vtkMRMLIGTLConnectorNode::ReadXMLAttributes(const char** atts)
       ss << attValue;
       ss >> restrictDeviceName;;
       }
-	if (!strcmp(attName, "persistent"))
-	  {
-	  std::stringstream ss;
-	  ss << attValue;
-	  ss >> persistent;
-	  }
+    if (!strcmp(attName, "persistent"))
+      {
+      std::stringstream ss;
+      ss << attValue;
+      ss >> persistent;
+      }
     if (!strcmp(attName, "state"))
       {
       std::stringstream ss;
       ss << attValue;
       ss >> state;
       }
-	}
+        }
 
   switch(type)
     {
@@ -271,16 +271,17 @@ void vtkMRMLIGTLConnectorNode::ReadXMLAttributes(const char** atts)
       // do nothing
       break;
     }
+
   if (persistent == vtkMRMLIGTLConnectorNode::PERSISTENT_ON)
     {
-	this->SetPersistent(vtkMRMLIGTLConnectorNode::PERSISTENT_ON);
-	this->Modified();
+    this->SetPersistent(vtkMRMLIGTLConnectorNode::PERSISTENT_ON);
+    this->Modified();
+    if (state!=vtkMRMLIGTLConnectorNode::STATE_OFF)
+      {
+      this->Start();
+      }
     }
-  if (persistent == vtkMRMLIGTLConnectorNode::PERSISTENT_ON
-	  && state!=vtkMRMLIGTLConnectorNode::STATE_OFF)
-    {
-    this->Start();
-    }
+
 }
 
 

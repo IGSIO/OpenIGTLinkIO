@@ -79,16 +79,16 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   };
 
   static const char* ConnectorStateStr[vtkMRMLIGTLConnectorNode::NUM_STATE];
-
+  
   enum {
     IO_UNSPECIFIED = 0x00,
     IO_INCOMING   = 0x01,
     IO_OUTGOING   = 0x02,
   };
-
+  
   enum {
-	PERSISTENT_OFF,
-	PERSISTENT_ON,
+    PERSISTENT_OFF,
+    PERSISTENT_ON,
   };
 
   typedef struct {
