@@ -26,6 +26,7 @@
 // VTK includes
 #include <vtkIntArray.h>
 #include <vtkMatrix4x4.h>
+#include <vtkNew.h>
 #include <vtkObjectFactory.h>
 
 // VTKSYS includes
@@ -119,7 +120,7 @@ int vtkIGTLToMRMLPosition::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
 
   igtl::QuaternionToMatrix(quaternion, matrix);
 
-  vtkMatrix4x4* transformToParent = transformNode->GetMatrixTransformToParent();
+  vtkNew<vtkMatrix4x4> transformToParent;
   int row, column;
   for (row = 0; row < 3; row++)
     {
@@ -134,7 +135,11 @@ int vtkIGTLToMRMLPosition::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
   transformToParent->Element[3][2] = 0.0;
   transformToParent->Element[3][3] = 1.0;
 
-  transformToParent->Modified();
+#ifdef TRANSFORM_NODE_MATRIX_COPY_REQUIRED
+  transformNode->SetMatrixTransformToParent(transformToParent.GetPointer());
+#else
+  transformNode->SetAndObserveMatrixTransformToParent(transformToParent.GetPointer());
+#endif
 
   return 1;
 }
@@ -146,7 +151,12 @@ int vtkIGTLToMRMLPosition::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
     {
     vtkMRMLLinearTransformNode* transformNode =
       vtkMRMLLinearTransformNode::SafeDownCast(mrmlNode);
+#ifdef TRANSFORM_NODE_MATRIX_COPY_REQUIRED
+    vtkNew<vtkMatrix4x4> matrix;
+    transformNode->GetMatrixTransformToParent(matrix.GetPointer());
+#else
     vtkMatrix4x4* matrix = transformNode->GetMatrixTransformToParent();
+#endif
 
     //igtl::PositionMessage::Pointer OutPositionMsg;
     if (this->OutPositionMsg.IsNull())
