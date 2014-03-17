@@ -26,6 +26,7 @@ Version:   $Revision: 1.2 $
 
 // VTK includes
 #include <vtkMatrix4x4.h>
+#include <vtkNew.h>
 #include <vtkObjectFactory.h>
 
 // STD includes
@@ -158,15 +159,19 @@ void vtkMRMLIGTLTrackingDataBundleNode::UpdateTransformNode(const char* name, ig
     node = iter->second.node;
     }
 
-  vtkMatrix4x4* mat = node->GetMatrixTransformToParent();
+  vtkNew<vtkMatrix4x4> mat;
   double *vtkmat = &mat->Element[0][0];
   float *igtlmat = &matrix[0][0];
   for (int i = 0; i < 16; i++)
     {
     vtkmat[i] = igtlmat[i];
     }
-  mat->Modified();
-  //node->Modified();
+#ifdef TRANSFORM_NODE_MATRIX_COPY_REQUIRED
+  node->SetMatrixTransformToParent(mat.GetPointer());
+#else
+  node->SetAndObserveMatrixTransformToParent(mat.GetPointer());
+#endif
+
 }
 
 //----------------------------------------------------------------------------

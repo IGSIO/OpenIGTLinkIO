@@ -29,6 +29,7 @@
 #include <vtkIntArray.h>
 #include <vtkObjectFactory.h>
 #include <vtkMatrix4x4.h>
+#include <vtkNew.h>
 
 #include <vtkAppendPolyData.h>
 #include <vtkCylinderSource.h>
@@ -144,9 +145,7 @@ int vtkIGTLToMRMLLinearTransform::IGTLToMRML(igtl::MessageBase::Pointer buffer, 
   //std::cerr << px << ", " << py << ", " << pz << std::endl;
 
   // set volume orientation
-  vtkMatrix4x4* transform = vtkMatrix4x4::New();
-  vtkMatrix4x4* transformToParent = transformNode->GetMatrixTransformToParent();
-
+  vtkNew<vtkMatrix4x4> transform;
   transform->Identity();
   transform->Element[0][0] = tx;
   transform->Element[1][0] = ty;
@@ -161,15 +160,17 @@ int vtkIGTLToMRMLLinearTransform::IGTLToMRML(igtl::MessageBase::Pointer buffer, 
   transform->Element[1][3] = py;
   transform->Element[2][3] = pz;
 
-  transformToParent->DeepCopy(transform);
+#ifdef TRANSFORM_NODE_MATRIX_COPY_REQUIRED
+  transformNode->SetMatrixTransformToParent(transform.GetPointer());
+#else
+  transformNode->SetAndObserveMatrixTransformToParent(transform.GetPointer());
+#endif
 
 
   //std::cerr << "IGTL matrix = " << std::endl;
   //transform->Print(cerr);
   //std::cerr << "MRML matrix = " << std::endl;
   //transformToParent->Print(cerr);
-
-  transform->Delete();
 
   return 1;
 
@@ -182,7 +183,12 @@ int vtkIGTLToMRMLLinearTransform::MRMLToIGTL(unsigned long event, vtkMRMLNode* m
     {
     vtkMRMLLinearTransformNode* transformNode =
       vtkMRMLLinearTransformNode::SafeDownCast(mrmlNode);
-    vtkMatrix4x4* matrix = transformNode->GetMatrixTransformToParent();
+#ifdef TRANSFORM_NODE_MATRIX_COPY_REQUIRED
+    vtkNew<vtkMatrix4x4> matrix;
+    transformNode->GetMatrixTransformToParent(matrix.GetPointer());
+#else
+    vtkMatrix4x4* matrix=transformNode->GetMatrixTransformToParent();
+#endif
 
     //igtl::TransformMessage::Pointer OutTransformMsg;
     if (this->OutTransformMsg.IsNull())
