@@ -49,10 +49,8 @@ void vtkIGTLToMRMLLabelMetaList::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-vtkMRMLNode* vtkIGTLToMRMLLabelMetaList::CreateNewNode(vtkMRMLScene* scene, igtl::MessageBase::Pointer incomingLabelMetaListMessage)
+vtkMRMLNode* vtkIGTLToMRMLLabelMetaList::CreateNewNode(vtkMRMLScene* scene, const char* name)
 {
-  const char* name = incomingLabelMetaListMessage->GetDeviceName();
-
   vtkMRMLLabelMetaListNode *imetaNode = vtkMRMLLabelMetaListNode::New();
   imetaNode->SetName(name);
   imetaNode->SetDescription("Received by OpenIGTLink");

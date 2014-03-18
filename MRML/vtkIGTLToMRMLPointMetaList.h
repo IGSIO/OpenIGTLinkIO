@@ -35,7 +35,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPointMetaList : p
   virtual const char*  GetMRMLName() { return "PointMetaList"; };
 
   virtual vtkIntArray* GetNodeEvents();
-  virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, igtl::MessageBase::Pointer incomingPointMetaListMessage);
+  virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name);
 
   //BTX
   virtual int          IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node);

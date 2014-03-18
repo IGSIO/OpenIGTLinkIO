@@ -61,23 +61,30 @@ void vtkIGTLToMRMLImage::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, igtl::MessageBase::Pointer incomingImageMessage)
+vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, const char* name)
 {
-  const char* name = incomingImageMessage->GetDeviceName();
+  return this->CreateNewNode(scene, name, NULL);
+}
 
+//---------------------------------------------------------------------------
+vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, const char* name, igtl::MessageBase::Pointer incomingImageMessage)
+{
   vtkMRMLScalarVolumeDisplayNode *displayNode(NULL);
   int numberOfComponents(1);
 
-  igtl::MessageBase* innerPtr = incomingImageMessage.GetPointer();
-  igtl::ImageMessage* imgMsg = dynamic_cast<igtl::ImageMessage*>(innerPtr);
+  if( incomingImageMessage.GetPointer() != NULL )
+  {
+    igtl::MessageBase* innerPtr = incomingImageMessage.GetPointer();
+    igtl::ImageMessage* imgMsg = dynamic_cast<igtl::ImageMessage*>(innerPtr);
 
-  if( imgMsg == NULL )
-  {
-    vtkWarningMacro("Unable to cast incoming message to image message. Defaulting display node to greyscale.");
-  }
-  else
-  {
-    numberOfComponents = imgMsg->GetNumComponents();
+    if( imgMsg == NULL )
+    {
+      vtkWarningMacro("Unable to cast incoming message to image message. Defaulting display node to greyscale.");
+    }
+    else
+    {
+      numberOfComponents = imgMsg->GetNumComponents();
+    }
   }
 
   vtkMRMLScalarVolumeNode *scalarNode = vtkMRMLScalarVolumeNode::New();

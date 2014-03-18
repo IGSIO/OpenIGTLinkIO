@@ -53,10 +53,8 @@ void vtkIGTLToMRMLPosition::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-vtkMRMLNode* vtkIGTLToMRMLPosition::CreateNewNode(vtkMRMLScene* scene, igtl::MessageBase::Pointer incomingPositionMessage)
+vtkMRMLNode* vtkIGTLToMRMLPosition::CreateNewNode(vtkMRMLScene* scene, const char* name)
 {
-  const char* name = incomingPositionMessage->GetDeviceName();
-
   vtkMRMLLinearTransformNode* transformNode;
 
   transformNode = vtkMRMLLinearTransformNode::New();

@@ -43,7 +43,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLTrackingData : pu
   virtual const char*  GetMRMLName() { return "IGTLTrackingDataSplitter"; };
 
   virtual vtkIntArray* GetNodeEvents();
-  virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, igtl::MessageBase::Pointer incomingTransformMessage);
+  virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name);
 
   virtual int          IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node);
   virtual int          MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg);
