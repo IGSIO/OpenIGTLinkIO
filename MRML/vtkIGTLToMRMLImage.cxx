@@ -23,6 +23,7 @@
 // Slicer includes
 //#include <vtkSlicerColorLogic.h>
 #include <vtkMRMLColorLogic.h>
+#include <vtkMRMLColorTableNode.h>
 
 // MRML includes
 #include <vtkMRMLScalarVolumeNode.h>
@@ -60,9 +61,25 @@ void vtkIGTLToMRMLImage::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, const char* name)
+vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, igtl::MessageBase::Pointer incomingImageMessage)
 {
-  vtkMRMLScalarVolumeDisplayNode *displayNode = NULL;
+  const char* name = incomingImageMessage->GetDeviceName();
+
+  vtkMRMLScalarVolumeDisplayNode *displayNode(NULL);
+  int numberOfComponents(1);
+
+  igtl::MessageBase* innerPtr = incomingImageMessage.GetPointer();
+  igtl::ImageMessage* imgMsg = dynamic_cast<igtl::ImageMessage*>(innerPtr);
+
+  if( imgMsg == NULL )
+  {
+    vtkWarningMacro("Unable to cast incoming message to image message. Defaulting display node to greyscale.");
+  }
+  else
+  {
+    numberOfComponents = imgMsg->GetNumComponents();
+  }
+
   vtkMRMLScalarVolumeNode *scalarNode = vtkMRMLScalarVolumeNode::New();
   vtkImageData* image = vtkImageData::New();
 
@@ -73,7 +90,7 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, const char* 
   image->SetSpacing(1.0, 1.0, 1.0);
   //image->SetOrigin( fov/2, -fov/2, -0.0 );
   image->SetOrigin(0.0, 0.0, 0.0);
-  image->SetNumberOfScalarComponents(1);
+  image->SetNumberOfScalarComponents(numberOfComponents);
   image->SetScalarTypeToShort();
   image->AllocateScalars();
 
@@ -123,7 +140,16 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, const char* 
     if (this->GetOpenIGTLinkIFLogic() && this->GetOpenIGTLinkIFLogic()->GetApplicationLogic())
       {
       vtkMRMLColorLogic *colorLogic = this->GetOpenIGTLinkIFLogic()->GetApplicationLogic()->GetColorLogic();
-      displayNode->SetAndObserveColorNodeID(colorLogic->GetDefaultVolumeColorNodeID());
+      const char* colorTableId(NULL);
+      if( numberOfComponents == 1 )
+      {
+        vtkMRMLColorLogic::GetColorTableNodeID(vtkMRMLColorTableNode::Grey);
+      }
+      else
+      {
+        vtkMRMLColorLogic::GetColorTableNodeID(vtkMRMLColorTableNode::Rainbow);
+      }
+      displayNode->SetAndObserveColorNodeID(colorTableId);
       scalarNode->SetAndObserveDisplayNodeID(displayNode->GetID());
       }
 
@@ -228,6 +254,7 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
   int   svsize[3];        // sub-volume size
   int   svoffset[3];      // sub-volume offset
   int   scalarType;       // VTK scalar type
+  int   numComponents;    // number of scalar components
   int   endian;
   igtl::Matrix4x4 matrix; // Image origin and orientation matrix
 
@@ -235,6 +262,7 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
   endian = imgMsg->GetEndian();
   imgMsg->GetDimensions(size);
   imgMsg->GetSpacing(spacing);
+  numComponents = imgMsg->GetNumComponents();
   imgMsg->GetSubVolume(svsize, svoffset);
   imgMsg->GetMatrix(matrix);
 
@@ -262,7 +290,7 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
     newImageData->SetExtent(0, size[0]-1, 0, size[1]-1, 0, size[2]-1);
     newImageData->SetOrigin(0.0, 0.0, 0.0);
     newImageData->SetSpacing(1.0, 1.0, 1.0);
-    newImageData->SetNumberOfScalarComponents(1);
+    newImageData->SetNumberOfScalarComponents(numComponents);
     newImageData->SetScalarType(scalarType);
     newImageData->AllocateScalars();
     imageData = newImageData;

@@ -56,8 +56,9 @@ void vtkIGTLToMRMLTrackingData::PrintSelf(ostream& os, vtkIndent indent)
 
 
 //---------------------------------------------------------------------------
-vtkMRMLNode* vtkIGTLToMRMLTrackingData::CreateNewNode(vtkMRMLScene* scene, const char* name)
+vtkMRMLNode* vtkIGTLToMRMLTrackingData::CreateNewNode(vtkMRMLScene* scene, igtl::MessageBase::Pointer incomingTransformMessage)
 {
+  const char* name = incomingTransformMessage->GetDeviceName();
 
   vtkMRMLIGTLTrackingDataBundleNode *node = vtkMRMLIGTLTrackingDataBundleNode::New();
   node->SetName(name);

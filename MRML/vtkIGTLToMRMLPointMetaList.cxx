@@ -45,8 +45,10 @@ void vtkIGTLToMRMLPointMetaList::PrintSelf(ostream& os, vtkIndent indent)
 
 
 //---------------------------------------------------------------------------
-vtkMRMLNode* vtkIGTLToMRMLPointMetaList::CreateNewNode(vtkMRMLScene* scene, const char* name)
+vtkMRMLNode* vtkIGTLToMRMLPointMetaList::CreateNewNode(vtkMRMLScene* scene, igtl::MessageBase::Pointer incomingPointMetaListMessage)
 {
+  const char* name = incomingPointMetaListMessage->GetDeviceName();
+
   vtkMRMLPointMetaListNode *node = vtkMRMLPointMetaListNode::New();
   node->SetName(name);
   node->SetDescription("Received by OpenIGTLink");

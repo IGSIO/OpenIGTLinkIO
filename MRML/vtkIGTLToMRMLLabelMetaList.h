@@ -37,7 +37,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLLabelMetaList : p
   virtual const char*  GetMRMLName() { return "LabelMetaList"; };
 
   virtual vtkIntArray* GetNodeEvents();
-  virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name);
+  virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, igtl::MessageBase::Pointer incomingLabelMetaListMessage);
 
   virtual int          IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node);
   virtual int          MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg);
