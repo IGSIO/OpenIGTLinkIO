@@ -67,19 +67,19 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, const char* 
   int numberOfComponents(1);
 
   if( incomingImageMessage.GetPointer() != NULL )
-  {
+    {
     igtl::MessageBase* innerPtr = incomingImageMessage.GetPointer();
     igtl::ImageMessage* imgMsg = dynamic_cast<igtl::ImageMessage*>(innerPtr);
-
+    
     if( imgMsg == NULL )
-    {
+      {
       vtkWarningMacro("Unable to cast incoming message to image message. Defaulting display node to greyscale.");
-    }
+      }
     else
-    {
+      {
       numberOfComponents = imgMsg->GetNumComponents();
+      }
     }
-  }
 
   vtkMRMLScalarVolumeNode *scalarNode = vtkMRMLScalarVolumeNode::New();
   vtkImageData* image = vtkImageData::New();

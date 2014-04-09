@@ -1030,13 +1030,13 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
         int nCol = collection->GetNumberOfItems();
         if (nCol == 0)
           {
-            // Call the advanced creation call first to see if the requested converter needs the message itself
+          // Call the advanced creation call first to see if the requested converter needs the message itself
           vtkMRMLNode* node = converter->CreateNewNode(this->GetScene(), buffer->GetDeviceName(), buffer);
           if( node == NULL )
-          {
+            {
             // If the converter does not support the advanced call, fallback to the basic creation mechanism
             node = converter->CreateNewNode(this->GetScene(), buffer->GetDeviceName());
-          }
+            }
           NodeInfoType* nodeInfo = RegisterIncomingMRMLNode(node);
           node->DisableModifiedEventOn();
           converter->IGTLToMRML(buffer, node);
