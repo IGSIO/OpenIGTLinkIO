@@ -64,7 +64,7 @@ void vtkIGTLToMRMLImage::PrintSelf(ostream& os, vtkIndent indent)
 vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, const char* name, igtl::MessageBase::Pointer incomingImageMessage)
 {
   vtkMRMLScalarVolumeDisplayNode *displayNode(NULL);
-  int numberOfComponents(1);
+  int numberOfComponents = 1;
 
   if( incomingImageMessage.GetPointer() != NULL )
     {
@@ -141,15 +141,15 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, c
     if (this->GetOpenIGTLinkIFLogic() && this->GetOpenIGTLinkIFLogic()->GetApplicationLogic())
       {
       vtkMRMLColorLogic *colorLogic = this->GetOpenIGTLinkIFLogic()->GetApplicationLogic()->GetColorLogic();
-      const char* colorTableId(NULL);
+      const char* colorTableId = NULL;
       if( numberOfComponents == 1 )
-      {
-        vtkMRMLColorLogic::GetColorTableNodeID(vtkMRMLColorTableNode::Grey);
-      }
+        {
+        colorTableId = vtkMRMLColorLogic::GetColorTableNodeID(vtkMRMLColorTableNode::Grey);
+        }
       else
-      {
-        vtkMRMLColorLogic::GetColorTableNodeID(vtkMRMLColorTableNode::Rainbow);
-      }
+        {
+        colorTableId = vtkMRMLColorLogic::GetColorTableNodeID(vtkMRMLColorTableNode::Rainbow);
+        }
       displayNode->SetAndObserveColorNodeID(colorTableId);
       scalarNode->SetAndObserveDisplayNodeID(displayNode->GetID());
       }
