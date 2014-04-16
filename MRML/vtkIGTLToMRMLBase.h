@@ -78,7 +78,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLBase : public vtk
   virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* vtkNotUsed(scene), const char* vtkNotUsed(name))
   { return NULL; };
   // This call enables the created node to query the message to determine any necessary properties
-  virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name, igtl::MessageBase::Pointer vtkNotUsed(message))
+  virtual vtkMRMLNode* CreateNewNodeWithMessage(vtkMRMLScene* scene, const char* name, igtl::MessageBase::Pointer vtkNotUsed(message))
   { return this->CreateNewNode(scene, name); };
 
   // for TYPE_MULTI_IGTL_NAMES

@@ -1031,7 +1031,7 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
         if (nCol == 0)
           {
           // Call the advanced creation call first to see if the requested converter needs the message itself
-          vtkMRMLNode* node = converter->CreateNewNode(this->GetScene(), buffer->GetDeviceName(), buffer);
+          vtkMRMLNode* node = converter->CreateNewNodeWithMessage(this->GetScene(), buffer->GetDeviceName(), buffer);
           NodeInfoType* nodeInfo = RegisterIncomingMRMLNode(node);
           node->DisableModifiedEventOn();
           converter->IGTLToMRML(buffer, node);

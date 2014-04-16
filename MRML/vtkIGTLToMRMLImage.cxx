@@ -61,7 +61,7 @@ void vtkIGTLToMRMLImage::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNode(vtkMRMLScene* scene, const char* name, igtl::MessageBase::Pointer incomingImageMessage)
+vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, const char* name, igtl::MessageBase::Pointer incomingImageMessage)
 {
   vtkMRMLScalarVolumeDisplayNode *displayNode(NULL);
   int numberOfComponents(1);
