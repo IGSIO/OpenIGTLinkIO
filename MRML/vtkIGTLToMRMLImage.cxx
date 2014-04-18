@@ -116,15 +116,11 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, c
     scalarNode->SetName(name);
     scene->SaveStateForUndo();
 
-    vtkDebugMacro("Setting scene info");
     scalarNode->SetScene(scene);
     scalarNode->SetDescription("Received by OpenIGTLink");
 
     displayNode->SetScene(scene);
 
-
-    ///double range[2];
-    vtkDebugMacro("Set basic display info");
     //scalarNode->GetImageData()->GetScalarRange(range);
     //range[0] = 0.0;
     //range[1] = 256.0;
@@ -133,14 +129,13 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, c
     //displayNode->SetWindow(range[1] - range[0]);
     //displayNode->SetLevel(0.5 * (range[1] + range[0]) );
 
-    vtkDebugMacro("Adding node..");
     scene->AddNode(displayNode);
 
     //displayNode->SetDefaultColorMap();
     //vtkSlicerColorLogic *colorLogic = vtkSlicerColorLogic::New();
     if (this->GetOpenIGTLinkIFLogic() && this->GetOpenIGTLinkIFLogic()->GetApplicationLogic())
       {
-      vtkMRMLColorLogic *colorLogic = this->GetOpenIGTLinkIFLogic()->GetApplicationLogic()->GetColorLogic();
+      //vtkMRMLColorLogic *colorLogic = this->GetOpenIGTLinkIFLogic()->GetApplicationLogic()->GetColorLogic();
       const char* colorTableId = NULL;
       if( numberOfComponents == 1 )
         {
