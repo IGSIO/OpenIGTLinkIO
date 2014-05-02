@@ -34,7 +34,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLImageMetaList);
-vtkCxxRevisionMacro(vtkIGTLToMRMLImageMetaList, "$Revision: 10577 $");
 
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLImageMetaList::vtkIGTLToMRMLImageMetaList()

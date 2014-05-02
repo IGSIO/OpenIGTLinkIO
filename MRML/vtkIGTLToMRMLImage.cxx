@@ -42,8 +42,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLImage);
-vtkCxxRevisionMacro(vtkIGTLToMRMLImage, "$Revision: 15621 $");
-
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLImage::vtkIGTLToMRMLImage()
 {
@@ -91,15 +89,21 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, c
   image->SetSpacing(1.0, 1.0, 1.0);
   //image->SetOrigin( fov/2, -fov/2, -0.0 );
   image->SetOrigin(0.0, 0.0, 0.0);
+#if (VTK_MAJOR_VERSION <= 5)
   image->SetNumberOfScalarComponents(numberOfComponents);
   image->SetScalarTypeToShort();
   image->AllocateScalars();
+#else
+  image->AllocateScalars(VTK_SHORT, numberOfComponents);
+#endif
 
   short* dest = (short*) image->GetScalarPointer();
   if (dest)
     {
     memset(dest, 0x00, 256*256*sizeof(short));
+#if (VTK_MAJOR_VERSION <= 5)
     image->Update();
+#endif
     }
 
   scalarNode->SetAndObserveImageData(image);
@@ -116,11 +120,15 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, c
     scalarNode->SetName(name);
     scene->SaveStateForUndo();
 
+    vtkDebugMacro("Setting scene info");
     scalarNode->SetScene(scene);
     scalarNode->SetDescription("Received by OpenIGTLink");
 
     displayNode->SetScene(scene);
 
+
+    ///double range[2];
+    vtkDebugMacro("Set basic display info");
     //scalarNode->GetImageData()->GetScalarRange(range);
     //range[0] = 0.0;
     //range[1] = 256.0;
@@ -129,6 +137,7 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, c
     //displayNode->SetWindow(range[1] - range[0]);
     //displayNode->SetLevel(0.5 * (range[1] + range[0]) );
 
+    vtkDebugMacro("Adding node..");
     scene->AddNode(displayNode);
 
     //displayNode->SetDefaultColorMap();
@@ -286,9 +295,13 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
     newImageData->SetExtent(0, size[0]-1, 0, size[1]-1, 0, size[2]-1);
     newImageData->SetOrigin(0.0, 0.0, 0.0);
     newImageData->SetSpacing(1.0, 1.0, 1.0);
+#if (VTK_MAJOR_VERSION <= 5)
     newImageData->SetNumberOfScalarComponents(numComponents);
     newImageData->SetScalarType(scalarType);
     newImageData->AllocateScalars();
+#else
+    newImageData->AllocateScalars(scalarType, numComponents);
+#endif
     imageData = newImageData;
     }
 

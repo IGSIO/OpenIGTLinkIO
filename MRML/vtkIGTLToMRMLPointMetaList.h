@@ -27,7 +27,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPointMetaList : p
  public:
 
   static vtkIGTLToMRMLPointMetaList *New();
-  vtkTypeRevisionMacro(vtkIGTLToMRMLPointMetaList,vtkObject);
+  vtkTypeMacro(vtkIGTLToMRMLPointMetaList,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 

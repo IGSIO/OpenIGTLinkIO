@@ -35,7 +35,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLTrackingData : pu
  public:
 
   static vtkIGTLToMRMLTrackingData *New();
-  vtkTypeRevisionMacro(vtkIGTLToMRMLTrackingData,vtkObject);
+  vtkTypeMacro(vtkIGTLToMRMLTrackingData,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 

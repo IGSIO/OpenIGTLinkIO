@@ -26,7 +26,6 @@
 #include <vtkObjectFactory.h>
 
 vtkStandardNewMacro(vtkIGTLToMRMLPointMetaList);
-vtkCxxRevisionMacro(vtkIGTLToMRMLPointMetaList, "$Revision: 10577 $");
 
 
 //---------------------------------------------------------------------------
