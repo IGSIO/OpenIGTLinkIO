@@ -30,7 +30,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLLabelMetaList);
-vtkCxxRevisionMacro(vtkIGTLToMRMLLabelMetaList, "$Revision: 10577 $");
 
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLLabelMetaList::vtkIGTLToMRMLLabelMetaList()

@@ -44,8 +44,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLImage);
-vtkCxxRevisionMacro(vtkIGTLToMRMLImage, "$Revision: 15621 $");
-
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLImage::vtkIGTLToMRMLImage()
 {
@@ -148,15 +146,21 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, c
   image->SetSpacing(1.0, 1.0, 1.0);
   //image->SetOrigin( fov/2, -fov/2, -0.0 );
   image->SetOrigin(0.0, 0.0, 0.0);
+#if (VTK_MAJOR_VERSION <= 5)
   image->SetNumberOfScalarComponents(numberOfComponents);
   image->SetScalarTypeToShort();
   image->AllocateScalars();
+#else
+  image->AllocateScalars(VTK_SHORT, numberOfComponents);
+#endif
 
   short* dest = (short*) image->GetScalarPointer();
   if (dest)
     {
     memset(dest, 0x00, 256*256*sizeof(short));
+#if (VTK_MAJOR_VERSION <= 5)
     image->Update();
+#endif
     }
 
   vtkSmartPointer<vtkMRMLVolumeNode> volumeNode = vtkSmartPointer<vtkMRMLScalarVolumeNode>::New();
@@ -179,14 +183,26 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, c
   //displayNode->SetWindow(range[1] - range[0]);
   //displayNode->SetLevel(0.5 * (range[1] + range[0]) );
 
-  vtkDebugMacro("Adding node..");
+    vtkDebugMacro("Setting scene info");
+    scalarNode->SetScene(scene);
+    scalarNode->SetDescription("Received by OpenIGTLink");
 
   vtkDebugMacro("Name vol node "<<volumeNode->GetClassName());
   vtkMRMLNode* n = scene->AddNode(volumeNode);
 
-  SetDefaultDisplayNode(volumeNode, numberOfComponents);
 
-  vtkDebugMacro("Node added to scene");
+    ///double range[2];
+    vtkDebugMacro("Set basic display info");
+    //scalarNode->GetImageData()->GetScalarRange(range);
+    //range[0] = 0.0;
+    //range[1] = 256.0;
+    //displayNode->SetLowerThreshold(range[0]);
+    //displayNode->SetUpperThreshold(range[1]);
+    //displayNode->SetWindow(range[1] - range[0]);
+    //displayNode->SetLevel(0.5 * (range[1] + range[0]) );
+
+    vtkDebugMacro("Adding node..");
+    scene->AddNode(displayNode);
 
   this->CenterImage(volumeNode);
 
@@ -305,50 +321,19 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
       || scalarType != scalarTypeInNode
       || numComponentsInNode != numComponents)
     {
-
-    if (numComponentsInNode != numComponents)
-      {
-      // number of components changed, so we need to remove the incompatible
-      // dispay nodes and create a default display node if no compatible display
-      // node remains
-
-      bool scalarDisplayNodeRequired = (numComponents==1);
-      bool mayNeedToRemoveDisplayNodes=false;
-      do
-        {
-        mayNeedToRemoveDisplayNodes=false;
-        for (int i=0; i<volumeNode->GetNumberOfDisplayNodes(); i++)
-          {
-          vtkMRMLVolumeDisplayNode* currentDisplayNode = vtkMRMLVolumeDisplayNode::SafeDownCast(volumeNode->GetNthDisplayNode(i));
-          bool currentDisplayNodeIsScalar = (vtkMRMLVectorVolumeDisplayNode::SafeDownCast(currentDisplayNode)==NULL);
-          if (scalarDisplayNodeRequired!=currentDisplayNodeIsScalar)
-            {
-            // incompatible display node, remove it
-            //volumeNode->RemoveNthDisplayNodeID(i);
-            volumeNode->GetScene()->RemoveNode(currentDisplayNode);
-            mayNeedToRemoveDisplayNodes=true;
-            }
-          }
-        }
-      while (mayNeedToRemoveDisplayNodes);
-      
-      if (volumeNode->GetNumberOfDisplayNodes()==0)
-        {
-        // the new defaul display node may be incompatible with the current image data,
-        // so clear it to make sure no display is attempted with incompatible image data
-        volumeNode->SetAndObserveImageData(NULL);
-        SetDefaultDisplayNode(volumeNode, numComponents);
-        }
-      }
-
-    imageData = vtkSmartPointer<vtkImageData>::New();
-    imageData->SetDimensions(size[0], size[1], size[2]);
-    imageData->SetExtent(0, size[0]-1, 0, size[1]-1, 0, size[2]-1);
-    imageData->SetOrigin(0.0, 0.0, 0.0);
-    imageData->SetSpacing(1.0, 1.0, 1.0);
-    imageData->SetNumberOfScalarComponents(numComponents);
-    imageData->SetScalarType(scalarType);
-    imageData->AllocateScalars();
+    newImageData = vtkImageData::New();
+    newImageData->SetDimensions(size[0], size[1], size[2]);
+    newImageData->SetExtent(0, size[0]-1, 0, size[1]-1, 0, size[2]-1);
+    newImageData->SetOrigin(0.0, 0.0, 0.0);
+    newImageData->SetSpacing(1.0, 1.0, 1.0);
+#if (VTK_MAJOR_VERSION <= 5)
+    newImageData->SetNumberOfScalarComponents(numComponents);
+    newImageData->SetScalarType(scalarType);
+    newImageData->AllocateScalars();
+#else
+    newImageData->AllocateScalars(scalarType, numComponents);
+#endif
+    imageData = newImageData;
     }
 
   float tx = matrix[0][0];

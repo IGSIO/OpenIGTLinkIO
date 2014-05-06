@@ -33,7 +33,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLTrackingData);
-vtkCxxRevisionMacro(vtkIGTLToMRMLTrackingData, "$Revision: 10577 $");
 
 
 //---------------------------------------------------------------------------

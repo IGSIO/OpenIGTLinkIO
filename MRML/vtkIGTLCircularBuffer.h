@@ -36,7 +36,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLCircularBuffer : public
  public:
 
   static vtkIGTLCircularBuffer *New();
-  vtkTypeRevisionMacro(vtkIGTLCircularBuffer,vtkObject);
+  vtkTypeMacro(vtkIGTLCircularBuffer,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 

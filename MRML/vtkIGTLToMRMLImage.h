@@ -35,7 +35,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLImage : public vt
  public:
 
   static vtkIGTLToMRMLImage *New();
-  vtkTypeRevisionMacro(vtkIGTLToMRMLImage,vtkObject);
+  vtkTypeMacro(vtkIGTLToMRMLImage,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 

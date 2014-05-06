@@ -29,7 +29,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLLabelMetaList : p
  public:
 
   static vtkIGTLToMRMLLabelMetaList *New();
-  vtkTypeRevisionMacro(vtkIGTLToMRMLLabelMetaList,vtkObject);
+  vtkTypeMacro(vtkIGTLToMRMLLabelMetaList,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
