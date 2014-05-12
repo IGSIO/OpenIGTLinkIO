@@ -28,12 +28,14 @@
 // MRML includes
 #include <vtkMRMLScalarVolumeNode.h>
 #include <vtkMRMLScalarVolumeDisplayNode.h>
+#include <vtkMRMLVectorVolumeDisplayNode.h>
 
 // VTK includes
 #include <vtkImageData.h>
 #include <vtkIntArray.h>
 #include <vtkMatrix4x4.h>
 #include <vtkObjectFactory.h>
+#include <vtkSmartPointer.h>
 
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
@@ -59,29 +61,84 @@ void vtkIGTLToMRMLImage::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, const char* name, igtl::MessageBase::Pointer incomingImageMessage)
+void vtkIGTLToMRMLImage::SetDefaultDisplayNode(vtkMRMLVolumeNode *volumeNode, int numberOfComponents)
 {
-  vtkMRMLScalarVolumeDisplayNode *displayNode(NULL);
-  int numberOfComponents = 1;
-
-  if( incomingImageMessage.GetPointer() != NULL )
+  if (volumeNode==NULL)
     {
-    igtl::MessageBase* innerPtr = incomingImageMessage.GetPointer();
-    igtl::ImageMessage* imgMsg = dynamic_cast<igtl::ImageMessage*>(innerPtr);
-    
-    if( imgMsg == NULL )
-      {
-      vtkWarningMacro("Unable to cast incoming message to image message. Defaulting display node to greyscale.");
-      }
-    else
-      {
-      numberOfComponents = imgMsg->GetNumComponents();
-      }
+    vtkWarningMacro("Failed to create display node for volume node");
+    return;
     }
 
-  vtkMRMLScalarVolumeNode *scalarNode = vtkMRMLScalarVolumeNode::New();
-  vtkImageData* image = vtkImageData::New();
+  vtkMRMLScene* scene=volumeNode->GetScene();
+  if (scene==NULL)
+    {
+    vtkWarningMacro("Failed to create display node for "<<(volumeNode->GetID()?volumeNode->GetID():"unknown volume node")<<": scene is invalid");
+    return;
+    }
+  if (numberOfComponents!=1 && numberOfComponents!=3)
+    {
+    vtkWarningMacro("Failed to create display node for "<<(volumeNode->GetID()?volumeNode->GetID():"unknown volume node")
+      <<": only 1 or 3 scalar components are supported, received: "<<numberOfComponents);
+    return;
+    }
 
+  // If the input is a 3-component image then we assume it is a color image,
+  // and we display it in true color. For true color display we need to use
+  // a vtkMRMLVectorVolumeDisplayNode.
+  bool scalarDisplayNodeRequired = (numberOfComponents==1);
+  vtkSmartPointer<vtkMRMLVolumeDisplayNode> displayNode;
+  if (scalarDisplayNodeRequired)
+    {
+    displayNode = vtkSmartPointer<vtkMRMLScalarVolumeDisplayNode>::New();
+    }
+  else
+    {
+    displayNode = vtkSmartPointer<vtkMRMLVectorVolumeDisplayNode>::New();
+    }
+
+  scene->AddNode(displayNode);
+
+  if (scalarDisplayNodeRequired)
+    {
+    const char* colorTableId = vtkMRMLColorLogic::GetColorTableNodeID(vtkMRMLColorTableNode::Grey);
+    displayNode->SetAndObserveColorNodeID(colorTableId);
+    }
+  else
+    {
+    displayNode->SetDefaultColorMap();
+    }
+
+  volumeNode->SetAndObserveDisplayNodeID(displayNode->GetID());
+
+  vtkDebugMacro("Display node "<<displayNode->GetClassName());
+}
+
+//---------------------------------------------------------------------------
+vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, const char* name, igtl::MessageBase::Pointer incomingImageMessage)
+{
+  igtl::MessageBase* innerPtr = incomingImageMessage.GetPointer();
+  if( innerPtr == NULL )
+    {
+    vtkErrorMacro("Unable to create MRML node from incoming IMAGE message: incomingImageMessage is invalid");
+    return 0;
+    }
+
+  igtl::ImageMessage::Pointer imgMsg = igtl::ImageMessage::New();
+  // As this method is only called when the first image message is received,
+  // (it is called when receiving each image message) the performance impact of the
+  // additional Copy() and Unpack() method calls are negligible.
+  imgMsg->Copy(incomingImageMessage.GetPointer());
+  // Deserialize the transform data
+  // If CheckCRC==0, CRC check is skipped.
+  int c = imgMsg->Unpack(this->CheckCRC);
+  if ((c & igtl::MessageHeader::UNPACK_BODY) == 0) // if CRC check fails
+    {
+    vtkErrorMacro("Unable to create MRML node from incoming IMAGE message. Failed to unpack the message");
+    return 0;
+    }
+
+  vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
+  int numberOfComponents=imgMsg->GetNumComponents();
   //float fov = 256.0;
   image->SetDimensions(256, 256, 1);
   image->SetExtent(0, 255, 0, 255, 0, 0 );
@@ -106,69 +163,34 @@ vtkMRMLNode* vtkIGTLToMRMLImage::CreateNewNodeWithMessage(vtkMRMLScene* scene, c
 #endif
     }
 
-  scalarNode->SetAndObserveImageData(image);
+  vtkSmartPointer<vtkMRMLVolumeNode> volumeNode = vtkSmartPointer<vtkMRMLScalarVolumeNode>::New();
+  volumeNode->SetAndObserveImageData(image);
+  volumeNode->SetName(name);
 
-  /* Based on the code in vtkSlicerVolumeLogic::AddHeaderVolume() */
-  //displayNode = vtkMRMLVolumeDisplayNode::New();
-  displayNode = vtkMRMLScalarVolumeDisplayNode::New();
-  scalarNode->SetLabelMap(0);
+  scene->SaveStateForUndo();
 
-  vtkMRMLNode* n = NULL;
+  vtkDebugMacro("Setting scene info");
+  volumeNode->SetScene(scene);
+  volumeNode->SetDescription("Received by OpenIGTLink");
 
-  if (scalarNode != NULL)
-    {
-    scalarNode->SetName(name);
-    scene->SaveStateForUndo();
+  ///double range[2];
+  vtkDebugMacro("Set basic display info");
+  //volumeNode->GetImageData()->GetScalarRange(range);
+  //range[0] = 0.0;
+  //range[1] = 256.0;
+  //displayNode->SetLowerThreshold(range[0]);
+  //displayNode->SetUpperThreshold(range[1]);
+  //displayNode->SetWindow(range[1] - range[0]);
+  //displayNode->SetLevel(0.5 * (range[1] + range[0]) );
 
-    vtkDebugMacro("Setting scene info");
-    scalarNode->SetScene(scene);
-    scalarNode->SetDescription("Received by OpenIGTLink");
+  vtkDebugMacro("Name vol node "<<volumeNode->GetClassName());
+  vtkMRMLNode* n = scene->AddNode(volumeNode);
 
-    displayNode->SetScene(scene);
+  this->SetDefaultDisplayNode(volumeNode, numberOfComponents);
 
+  vtkDebugMacro("Node added to scene");
 
-    ///double range[2];
-    vtkDebugMacro("Set basic display info");
-    //scalarNode->GetImageData()->GetScalarRange(range);
-    //range[0] = 0.0;
-    //range[1] = 256.0;
-    //displayNode->SetLowerThreshold(range[0]);
-    //displayNode->SetUpperThreshold(range[1]);
-    //displayNode->SetWindow(range[1] - range[0]);
-    //displayNode->SetLevel(0.5 * (range[1] + range[0]) );
-
-    vtkDebugMacro("Adding node..");
-    scene->AddNode(displayNode);
-
-    //displayNode->SetDefaultColorMap();
-    //vtkSlicerColorLogic *colorLogic = vtkSlicerColorLogic::New();
-    if (this->GetOpenIGTLinkIFLogic() && this->GetOpenIGTLinkIFLogic()->GetApplicationLogic())
-      {
-      //vtkMRMLColorLogic *colorLogic = this->GetOpenIGTLinkIFLogic()->GetApplicationLogic()->GetColorLogic();
-      const char* colorTableId = NULL;
-      if( numberOfComponents == 1 )
-        {
-        colorTableId = vtkMRMLColorLogic::GetColorTableNodeID(vtkMRMLColorTableNode::Grey);
-        }
-      else
-        {
-        colorTableId = vtkMRMLColorLogic::GetColorTableNodeID(vtkMRMLColorTableNode::Rainbow);
-        }
-      displayNode->SetAndObserveColorNodeID(colorTableId);
-      scalarNode->SetAndObserveDisplayNodeID(displayNode->GetID());
-      }
-
-    vtkDebugMacro("Name vol node "<<scalarNode->GetClassName());
-    vtkDebugMacro("Display node "<<displayNode->GetClassName());
-
-    n = scene->AddNode(scalarNode);
-    vtkDebugMacro("Node added to scene");
-    this->CenterImage(scalarNode);
-    }
-
-  scalarNode->Delete();
-  displayNode->Delete();
-  image->Delete();
+  this->CenterImage(volumeNode);
 
   return n;
 }
@@ -227,9 +249,10 @@ int swapCopy64(igtlUint64 * dst, igtlUint64 * src, int n)
 //---------------------------------------------------------------------------
 int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node)
 {
-  if (strcmp(node->GetNodeTagName(), "Volume") != 0)
+  vtkMRMLVolumeNode* volumeNode = vtkMRMLVolumeNode::SafeDownCast(node);
+  if (volumeNode==NULL)
     {
-    //std::cerr << "Invalid node!!!!" << std::endl;
+    vtkErrorMacro("vtkIGTLToMRMLImage::IGTLToMRML failed: invalid node");
     return 0;
     }
 
@@ -248,12 +271,7 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
     return 0;
     }
 
-  if (node == NULL)
-    {
-    return 0;
-    }
-
-  // Retrive the image data
+  // Retrieve the image data
   int   size[3];          // image dimension
   float spacing[3];       // spacing (mm/pixel)
   int   svsize[3];        // sub-volume size
@@ -271,40 +289,73 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
   imgMsg->GetSubVolume(svsize, svoffset);
   imgMsg->GetMatrix(matrix);
 
-  // check if the IGTL data fits to the current MRML node
-  vtkMRMLScalarVolumeNode* volumeNode = vtkMRMLScalarVolumeNode::SafeDownCast(node);
-  vtkImageData* imageData;
-  vtkImageData* newImageData = NULL;
-  
-  int dsize[3]={0,0,0};
-  int dscalarType=VTK_VOID;
-
+  // check if the IGTL data fits to the current MRML node  
+  int sizeInNode[3]={0,0,0};
+  int scalarTypeInNode=VTK_VOID;
+  int numComponentsInNode=0;
   // Get vtk image from MRML node
-  imageData = volumeNode->GetImageData();
-  if (imageData)
+  vtkSmartPointer<vtkImageData> imageData = volumeNode->GetImageData();
+  if (imageData.GetPointer()!=NULL)
     {
-    imageData->GetDimensions(dsize);
-    dscalarType = imageData->GetScalarType();
+    imageData->GetDimensions(sizeInNode);
+    scalarTypeInNode = imageData->GetScalarType();
+    numComponentsInNode = imageData->GetNumberOfScalarComponents();
     }
 
-  if (dsize[0] != size[0] || dsize[1] != size[1] || dsize[2] != size[2] ||
-      scalarType != dscalarType)
+  if (imageData.GetPointer()==NULL
+      || sizeInNode[0] != size[0] || sizeInNode[1] != size[1] || sizeInNode[2] != size[2]
+      || scalarType != scalarTypeInNode
+      || numComponentsInNode != numComponents)
     {
-    newImageData = vtkImageData::New();
-    newImageData->SetDimensions(size[0], size[1], size[2]);
-    newImageData->SetExtent(0, size[0]-1, 0, size[1]-1, 0, size[2]-1);
-    newImageData->SetOrigin(0.0, 0.0, 0.0);
-    newImageData->SetSpacing(1.0, 1.0, 1.0);
+    if (numComponentsInNode != numComponents)
+      {
+      // number of components changed, so we need to remove the incompatible
+      // dispay nodes and create a default display node if no compatible display
+      // node remains
+      
+      bool scalarDisplayNodeRequired = (numComponents==1);
+      bool mayNeedToRemoveDisplayNodes=false;
+      do
+        {
+        mayNeedToRemoveDisplayNodes=false;
+        for (int i=0; i<volumeNode->GetNumberOfDisplayNodes(); i++)
+          {
+          vtkMRMLVolumeDisplayNode* currentDisplayNode = vtkMRMLVolumeDisplayNode::SafeDownCast(volumeNode->GetNthDisplayNode(i));
+          bool currentDisplayNodeIsScalar = (vtkMRMLVectorVolumeDisplayNode::SafeDownCast(currentDisplayNode)==NULL);
+          if (scalarDisplayNodeRequired!=currentDisplayNodeIsScalar)
+            {
+            // incompatible display node, remove it
+            //volumeNode->RemoveNthDisplayNodeID(i);
+            volumeNode->GetScene()->RemoveNode(currentDisplayNode);
+            mayNeedToRemoveDisplayNodes=true;
+            }
+          }
+        }
+      while (mayNeedToRemoveDisplayNodes);
+
+      if (volumeNode->GetNumberOfDisplayNodes()==0)
+        {
+        // the new default display node may be incompatible with the current image data,
+        // so clear it to make sure no display is attempted with incompatible image data
+        volumeNode->SetAndObserveImageData(NULL);
+        SetDefaultDisplayNode(volumeNode, numComponents);
+        }
+      }
+    
+    imageData = vtkSmartPointer<vtkImageData>::New();
+    imageData->SetDimensions(size[0], size[1], size[2]);
+    imageData->SetExtent(0, size[0]-1, 0, size[1]-1, 0, size[2]-1);
+    imageData->SetOrigin(0.0, 0.0, 0.0);
+    imageData->SetSpacing(1.0, 1.0, 1.0);
 #if (VTK_MAJOR_VERSION <= 5)
-    newImageData->SetNumberOfScalarComponents(numComponents);
-    newImageData->SetScalarType(scalarType);
-    newImageData->AllocateScalars();
+    imageData->SetNumberOfScalarComponents(numComponents);
+    imageData->SetScalarType(scalarType);
+    imageData->AllocateScalars();
 #else
-    newImageData->AllocateScalars(scalarType, numComponents);
+    imageData->AllocateScalars(scalarType, numComponents);
 #endif
-    imageData = newImageData;
     }
-
+  
   float tx = matrix[0][0];
   float ty = matrix[1][0];
   float tz = matrix[2][0];
@@ -495,11 +546,7 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
   volumeNode->SetIJKToRASMatrix(rtimgTransform);
   rtimgTransform->Delete();
 
-  if (newImageData)
-    {
-    volumeNode->SetAndObserveImageData(newImageData);
-    newImageData->Delete();
-    }
+  volumeNode->SetAndObserveImageData(imageData);
 
   imageData->Modified();
   volumeNode->Modified();
