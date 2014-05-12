@@ -303,45 +303,45 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
     }
 
   if (imageData.GetPointer()==NULL
-    || sizeInNode[0] != size[0] || sizeInNode[1] != size[1] || sizeInNode[2] != size[2]
-  || scalarType != scalarTypeInNode
-    || numComponentsInNode != numComponents)
-  {
-    if (numComponentsInNode != numComponents)
+      || sizeInNode[0] != size[0] || sizeInNode[1] != size[1] || sizeInNode[2] != size[2]
+      || scalarType != scalarTypeInNode
+      || numComponentsInNode != numComponents)
     {
+    if (numComponentsInNode != numComponents)
+      {
       // number of components changed, so we need to remove the incompatible
       // dispay nodes and create a default display node if no compatible display
       // node remains
-
+      
       bool scalarDisplayNodeRequired = (numComponents==1);
       bool mayNeedToRemoveDisplayNodes=false;
       do
-      {
+        {
         mayNeedToRemoveDisplayNodes=false;
         for (int i=0; i<volumeNode->GetNumberOfDisplayNodes(); i++)
-        {
+          {
           vtkMRMLVolumeDisplayNode* currentDisplayNode = vtkMRMLVolumeDisplayNode::SafeDownCast(volumeNode->GetNthDisplayNode(i));
           bool currentDisplayNodeIsScalar = (vtkMRMLVectorVolumeDisplayNode::SafeDownCast(currentDisplayNode)==NULL);
           if (scalarDisplayNodeRequired!=currentDisplayNodeIsScalar)
-          {
+            {
             // incompatible display node, remove it
             //volumeNode->RemoveNthDisplayNodeID(i);
             volumeNode->GetScene()->RemoveNode(currentDisplayNode);
             mayNeedToRemoveDisplayNodes=true;
+            }
           }
         }
-      }
       while (mayNeedToRemoveDisplayNodes);
 
       if (volumeNode->GetNumberOfDisplayNodes()==0)
-      {
+        {
         // the new default display node may be incompatible with the current image data,
         // so clear it to make sure no display is attempted with incompatible image data
         volumeNode->SetAndObserveImageData(NULL);
         SetDefaultDisplayNode(volumeNode, numComponents);
+        }
       }
-    }
-
+    
     imageData = vtkSmartPointer<vtkImageData>::New();
     imageData->SetDimensions(size[0], size[1], size[2]);
     imageData->SetExtent(0, size[0]-1, 0, size[1]-1, 0, size[2]-1);
@@ -354,8 +354,8 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
 #else
     imageData->AllocateScalars(scalarType, numComponents);
 #endif
-  }
-
+    }
+  
   float tx = matrix[0][0];
   float ty = matrix[1][0];
   float tz = matrix[2][0];
