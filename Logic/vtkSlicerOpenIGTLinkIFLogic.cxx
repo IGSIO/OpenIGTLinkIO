@@ -135,7 +135,7 @@ void vtkSlicerOpenIGTLinkIFLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 {
   vtkNew<vtkIntArray> sceneEvents;
   sceneEvents->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
-
+  sceneEvents->InsertNextValue(vtkMRMLScene::EndImportEvent);
   this->SetAndObserveMRMLSceneEventsInternal(newScene, sceneEvents.GetPointer());
 }
 
@@ -206,6 +206,32 @@ void vtkSlicerOpenIGTLinkIFLogic::RegisterMessageConverters(vtkMRMLIGTLConnector
   for (unsigned short i = 0; i < this->GetNumberOfConverters(); i ++)
     {
     connectorNode->RegisterMessageConverter(this->GetConverter(i));
+    }
+}
+
+//---------------------------------------------------------------------------
+void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneEndImport()
+{
+  // Scene loading/import is finished, so now start the command processing thread
+  // of all the active persistent connector nodes
+
+  std::vector<vtkMRMLNode*> nodes;
+  this->GetMRMLScene()->GetNodesByClass("vtkMRMLIGTLConnectorNode", nodes);
+  for (std::vector< vtkMRMLNode* >::iterator iter = nodes.begin(); iter != nodes.end(); ++iter)
+    {
+    vtkMRMLIGTLConnectorNode* connector = vtkMRMLIGTLConnectorNode::SafeDownCast(*iter);
+    if (connector == NULL)
+      {
+      continue;
+      }
+    if (connector->GetPersistent() == vtkMRMLIGTLConnectorNode::PERSISTENT_ON)
+      {
+      this->Modified();
+      if (connector->GetState()!=vtkMRMLIGTLConnectorNode::STATE_OFF)
+        {
+        connector->Start();
+        }
+      }
     }
 }
 
