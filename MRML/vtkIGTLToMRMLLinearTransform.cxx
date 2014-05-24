@@ -41,6 +41,8 @@
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
 
+const char LocatorModelReferenceRole[] = "LocatorModel";
+
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLLinearTransform);
 
@@ -240,11 +242,9 @@ void vtkIGTLToMRMLLinearTransform::SetVisibility(int sw, vtkMRMLScene * scene, v
     return;
     }
 
-  vtkMRMLModelNode*   locatorModel = NULL;
-  vtkMRMLDisplayNode* locatorDisp  = NULL;
-  
-  const char * attr = tnode->GetAttribute("IGTLModelID");
-  if (!attr || !scene->GetNodeByID(attr)) // no locator has been created
+  vtkMRMLModelNode* locatorModel = vtkMRMLModelNode::SafeDownCast(tnode->GetNodeReference(LocatorModelReferenceRole));
+ 
+  if (!locatorModel) // no locator has been created
     {
     if (sw)
       {
@@ -253,7 +253,7 @@ void vtkIGTLToMRMLLinearTransform::SetVisibility(int sw, vtkMRMLScene * scene, v
       locatorModel = AddLocatorModel(scene, ss.str().c_str(), 0.0, 1.0, 1.0);
       if (locatorModel)
         {
-        tnode->SetAttribute("IGTLModelID", locatorModel->GetID());
+        tnode->SetNodeReferenceID(LocatorModelReferenceRole, locatorModel->GetID());
         scene->Modified();
         locatorModel->SetAndObserveTransformNodeID(tnode->GetID());
         locatorModel->InvokeEvent(vtkMRMLTransformableNode::TransformModifiedEvent);
@@ -266,15 +266,18 @@ void vtkIGTLToMRMLLinearTransform::SetVisibility(int sw, vtkMRMLScene * scene, v
     }
   else
     {
-    locatorModel = vtkMRMLModelNode::SafeDownCast(scene->GetNodeByID(attr));
     locatorModel->SetAndObserveTransformNodeID(tnode->GetID());
     locatorModel->InvokeEvent(vtkMRMLTransformableNode::TransformModifiedEvent);
     }
+
   if (locatorModel)
     {
-    locatorDisp = locatorModel->GetDisplayNode();
-    locatorDisp->SetVisibility(sw);
-    locatorModel->Modified();
+    vtkMRMLDisplayNode* locatorDisp = locatorModel->GetDisplayNode();
+    if (locatorDisp)
+      {
+      locatorDisp->SetVisibility(sw);
+      locatorModel->Modified();
+      }
     }
 }
 
