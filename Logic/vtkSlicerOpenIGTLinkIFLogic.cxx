@@ -75,8 +75,6 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
 //---------------------------------------------------------------------------
 vtkSlicerOpenIGTLinkIFLogic::~vtkSlicerOpenIGTLinkIFLogic()
 {
-  this->RemoveMRMLConnectorNodesObservers();
-
   if (this->LinearTransformConverter)
     {
     UnregisterMessageConverter(this->LinearTransformConverter);
@@ -135,6 +133,7 @@ void vtkSlicerOpenIGTLinkIFLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 {
   vtkNew<vtkIntArray> sceneEvents;
   sceneEvents->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
+  sceneEvents->InsertNextValue(vtkMRMLScene::NodeRemovedEvent);
   sceneEvents->InsertNextValue(vtkMRMLScene::EndImportEvent);
   this->SetAndObserveMRMLSceneEventsInternal(newScene, sceneEvents.GetPointer());
 }
@@ -169,31 +168,28 @@ void vtkSlicerOpenIGTLinkIFLogic::UpdateAll()
 }
 
 //----------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::AddMRMLConnectorNodeObservers(vtkMRMLIGTLConnectorNode * connectorNode)
+void vtkSlicerOpenIGTLinkIFLogic::AddMRMLConnectorNodeObserver(vtkMRMLIGTLConnectorNode * connectorNode)
 {
   if (!connectorNode)
     {
     return;
     }
+  // Make sure we don't add duplicate observation
+  vtkUnObserveMRMLNodeMacro(connectorNode);
   // Start observing the connector node
-  this->ObservedConnectorNodes.push_back(NULL);
   vtkNew<vtkIntArray> connectorNodeEvents;
   connectorNodeEvents->InsertNextValue(vtkMRMLIGTLConnectorNode::DeviceModifiedEvent);
-
-  vtkSetAndObserveMRMLNodeEventsMacro(
-        this->ObservedConnectorNodes[this->ObservedConnectorNodes.size() - 1],
-        connectorNode,
-        connectorNodeEvents.GetPointer());
+  vtkObserveMRMLNodeEventsMacro(connectorNode, connectorNodeEvents.GetPointer());
 }
 
 //----------------------------------------------------------------------------
-void vtkSlicerOpenIGTLinkIFLogic::RemoveMRMLConnectorNodesObservers()
+void vtkSlicerOpenIGTLinkIFLogic::RemoveMRMLConnectorNodeObserver(vtkMRMLIGTLConnectorNode * connectorNode)
 {
-  for (unsigned int i = 0; i < this->ObservedConnectorNodes.size(); i++)
+  if (!connectorNode)
     {
-    vtkSetAndObserveMRMLNodeMacro(this->ObservedConnectorNodes[i], NULL);
+    return;
     }
-  this->ObservedConnectorNodes.clear();
+  vtkUnObserveMRMLNodeMacro(connectorNode);
 }
 
 //---------------------------------------------------------------------------
@@ -240,20 +236,24 @@ void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded(vtkMRMLNode* node)
 {
   //vtkDebugMacro("vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeAdded");
 
-  //vtkMRMLScene * scene = this->GetMRMLScene();
-  //if (scene && scene->IsBatchProcessing())
-  //  {
-  //  return;
-  //  }
-
   vtkMRMLIGTLConnectorNode * connectorNode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
   if (connectorNode)
     {
     // TODO Remove this line when the corresponding UI option will be added
     connectorNode->SetRestrictDeviceName(0);
 
-    this->AddMRMLConnectorNodeObservers(connectorNode);
+    this->AddMRMLConnectorNodeObserver(connectorNode);
     this->RegisterMessageConverters(connectorNode);
+    }
+}
+
+//---------------------------------------------------------------------------
+void vtkSlicerOpenIGTLinkIFLogic::OnMRMLSceneNodeRemoved(vtkMRMLNode* node)
+{
+  vtkMRMLIGTLConnectorNode * connectorNode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
+  if (connectorNode)
+    {
+    this->RemoveMRMLConnectorNodeObserver(connectorNode);
     }
 }
 

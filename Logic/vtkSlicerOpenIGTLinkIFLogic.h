@@ -91,6 +91,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
 
   virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* /*node*/);
 
+  virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* /*node*/);
+
   virtual void OnMRMLNodeModified(vtkMRMLNode* /*node*/){}
 
   //----------------------------------------------------------------
@@ -138,8 +140,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
 
   static void DataCallback(vtkObject*, unsigned long, void *, void *);
 
-  void AddMRMLConnectorNodeObservers(vtkMRMLIGTLConnectorNode * connectorNode);
-  void RemoveMRMLConnectorNodesObservers();
+  void AddMRMLConnectorNodeObserver(vtkMRMLIGTLConnectorNode * connectorNode);
+  void RemoveMRMLConnectorNodeObserver(vtkMRMLIGTLConnectorNode * connectorNode);
 
   void RegisterMessageConverters(vtkMRMLIGTLConnectorNode * connectorNode);
 
@@ -160,8 +162,6 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
 
   //int LastConnectorID;
   int RestrictDeviceName;
-
-  std::vector<vtkMRMLIGTLConnectorNode *> ObservedConnectorNodes;
 
   //----------------------------------------------------------------
   // IGTL-MRML converters
