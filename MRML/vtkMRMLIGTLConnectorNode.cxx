@@ -255,7 +255,7 @@ void vtkMRMLIGTLConnectorNode::ReadXMLAttributes(const char** atts)
       ss << attValue;
       ss >> state;
       }
-        }
+    }
 
   switch(type)
     {
@@ -275,11 +275,14 @@ void vtkMRMLIGTLConnectorNode::ReadXMLAttributes(const char** atts)
   if (persistent == vtkMRMLIGTLConnectorNode::PERSISTENT_ON)
     {
     this->SetPersistent(vtkMRMLIGTLConnectorNode::PERSISTENT_ON);
+    // At this point not all the nodes are loaded so we cannot start
+    // the processing thread (if we activate the connection then it may immediately
+    // start receiving messages, create corresponding MRML nodes, while the same
+    // MRML nodes are being loaded from the scene; this would result in duplicate
+    // MRML nodes).
+    // All the nodes will be activated by the module logic when the scene import is finished.
+    this->State=state;
     this->Modified();
-    if (state!=vtkMRMLIGTLConnectorNode::STATE_OFF)
-      {
-      this->Start();
-      }
     }
 
 }

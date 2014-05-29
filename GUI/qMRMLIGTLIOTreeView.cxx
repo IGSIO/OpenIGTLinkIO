@@ -231,9 +231,9 @@ int qMRMLIGTLIOTreeView::rowProperty(const QModelIndex& index, vtkMRMLIGTLConnec
   vtkMRMLNode* node = sceneModel->mrmlNodeFromIndex(grandParent->index());
   cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
 
-  QString id = parent1->child(item->row(), 0)->data().toString();
-
-  const char* datastr = id.toAscii();
+   // toLatin1() creates a temporary array, so we need to save it to an object to keeep the buffer valid
+  QByteArray idStrArray = parent1->child(item->row(), 0)->data().toString().toLatin1();
+  const char* datastr = idStrArray.data();
   if (strncmp(datastr, "io", 2) == 0)
     {
     // remove the prefix "io". See NOTE in qMRMLIGTLIOModel.cxx
@@ -241,7 +241,7 @@ int qMRMLIGTLIOTreeView::rowProperty(const QModelIndex& index, vtkMRMLIGTLConnec
     }
   else
     {
-    dnode = this->mrmlScene()->GetNodeByID(id.toAscii());
+    dnode = this->mrmlScene()->GetNodeByID(datastr);
     }
   //vtkMRMLNode* dnode = sceneModel->mrmlNodeFromIndex(index); // Does this work?
   
