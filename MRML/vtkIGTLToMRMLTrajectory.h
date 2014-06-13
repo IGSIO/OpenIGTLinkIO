@@ -36,7 +36,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLTrajectory : publ
  public:
 
   static vtkIGTLToMRMLTrajectory *New();
-  vtkTypeRevisionMacro(vtkIGTLToMRMLTrajectory,vtkObject);
+  vtkTypeMacro(vtkIGTLToMRMLTrajectory,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 

@@ -29,7 +29,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLStatus);
-vtkCxxRevisionMacro(vtkIGTLToMRMLStatus, "$Revision: 15552 $");
 
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLStatus::vtkIGTLToMRMLStatus()

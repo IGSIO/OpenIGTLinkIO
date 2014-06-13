@@ -21,7 +21,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLString);
-vtkCxxRevisionMacro(vtkIGTLToMRMLString, "$Revision: 1.0 $");
 
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLString

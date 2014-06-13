@@ -30,7 +30,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLSensor : public v
  public:
 
   static vtkIGTLToMRMLSensor *New();
-  vtkTypeRevisionMacro(vtkIGTLToMRMLSensor,vtkObject);
+  vtkTypeMacro(vtkIGTLToMRMLSensor,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 

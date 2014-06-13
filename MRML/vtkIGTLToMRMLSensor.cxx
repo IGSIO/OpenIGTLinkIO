@@ -29,7 +29,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLSensor);
-vtkCxxRevisionMacro(vtkIGTLToMRMLSensor, "$Revision: 15552 $");
 
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLSensor::vtkIGTLToMRMLSensor()

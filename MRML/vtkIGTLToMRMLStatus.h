@@ -30,7 +30,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLStatus : public v
  public:
 
   static vtkIGTLToMRMLStatus *New();
-  vtkTypeRevisionMacro(vtkIGTLToMRMLStatus,vtkObject);
+  vtkTypeMacro(vtkIGTLToMRMLStatus,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 

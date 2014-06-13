@@ -28,7 +28,6 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLTrajectory);
-vtkCxxRevisionMacro(vtkIGTLToMRMLTrajectory, "$Revision: 15552 $");
 
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLTrajectory::vtkIGTLToMRMLTrajectory()
