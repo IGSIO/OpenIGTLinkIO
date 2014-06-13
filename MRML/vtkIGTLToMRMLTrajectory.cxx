@@ -235,6 +235,8 @@ void vtkIGTLToMRMLTrajectory::AddTrajectoryElement(igtl::TrajectoryElement::Poin
       ruler->SetPosition1(0.0, 0.0, 0.0);
       ruler->SetPosition2(0.0, 0.0, 0.0);
       ruler->Initialize(scene);
+      ruler->SetLocked(1);
+      ruler->SelectedOn();
       annotationID = ruler->GetID();
 
       vtkSmartPointer<vtkMRMLAnnotationHierarchyNode> associatedHierarchyNode =
@@ -249,6 +251,8 @@ void vtkIGTLToMRMLTrajectory::AddTrajectoryElement(igtl::TrajectoryElement::Poin
         vtkSmartPointer<vtkMRMLAnnotationFiducialNode>::New();
       fiducial->SetFiducialCoordinates(0.0, 0.0, 0.0);
       fiducial->Initialize(scene);
+      fiducial->SetLocked(1);
+      fiducial->SelectedOn();
       annotationID = fiducial->GetID();
 
       vtkSmartPointer<vtkMRMLAnnotationHierarchyNode> associatedHierarchyNode =
