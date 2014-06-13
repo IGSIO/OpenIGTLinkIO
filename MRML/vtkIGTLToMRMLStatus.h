@@ -1,6 +1,6 @@
 /*==========================================================================
 
-  Portions (c) Copyright 2008-2009 Brigham and Women's Hospital (BWH) All Rights Reserved.
+  Portions (c) Copyright 2008-2014 Brigham and Women's Hospital (BWH) All Rights Reserved.
 
   See Doc/copyright/copyright.txt
   or http://www.slicer.org/copyright/copyright.txt for details.
@@ -9,15 +9,15 @@
 
 ==========================================================================*/
 
-#ifndef __vtkIGTLToMRMLPosition_h
-#define __vtkIGTLToMRMLPosition_h
+#ifndef __vtkIGTLToMRMLStatus_h
+#define __vtkIGTLToMRMLStatus_h
 
 // OpenIGTLinkIF MRML includes
 #include "vtkIGTLToMRMLBase.h"
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
 // OpenIGTLink includes
-#include <igtlPositionMessage.h>
+#include <igtlStatusMessage.h>
 
 // MRML includes
 #include <vtkMRMLNode.h>
@@ -25,17 +25,17 @@
 // VTK includes
 #include <vtkObject.h>
 
-class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPosition : public vtkIGTLToMRMLBase
+class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLStatus : public vtkIGTLToMRMLBase
 {
  public:
 
-  static vtkIGTLToMRMLPosition *New();
-  vtkTypeMacro(vtkIGTLToMRMLPosition,vtkObject);
+  static vtkIGTLToMRMLStatus *New();
+  vtkTypeRevisionMacro(vtkIGTLToMRMLStatus,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual const char*  GetIGTLName() { return "POSITION"; };
-  virtual const char*  GetMRMLName() { return "LinearTransform"; };
+  virtual const char*  GetIGTLName() { return "STATUS"; };
+  virtual const char*  GetMRMLName() { return "IGTLStatus"; };
   virtual vtkIntArray* GetNodeEvents();
   virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name);
 
@@ -44,13 +44,15 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPosition : public
 
 
  protected:
-  vtkIGTLToMRMLPosition();
-  ~vtkIGTLToMRMLPosition();
+  vtkIGTLToMRMLStatus();
+  ~vtkIGTLToMRMLStatus();
 
  protected:
-  igtl::PositionMessage::Pointer OutPositionMsg;
+  igtl::StatusMessage::Pointer OutStatusMsg;
 
 };
 
 
-#endif //__vtkIGTLToMRMLPosition_h
+#endif //__vtkIGTLToMRMLStatus_h
+
+
