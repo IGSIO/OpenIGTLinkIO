@@ -73,6 +73,9 @@ protected slots:
   /// Remove node from the I/O tree
   void onRemoveNodeButtonClicked();
 
+  /// Send node from the I/O tree
+  void onSendButtonClicked();
+
 signals:
   //void addNode(vtkMRMLNode*);
   //void removeNode(vtkMRMLNode*);

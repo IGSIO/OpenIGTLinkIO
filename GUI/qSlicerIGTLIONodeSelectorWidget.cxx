@@ -46,6 +46,8 @@ void qSlicerIGTLIONodeSelectorWidgetPrivate::init()
                    q, SLOT(onAddNodeButtonClicked()));
   QObject::connect(this->RemoveNodeButton, SIGNAL(clicked()),
                    q, SLOT(onRemoveNodeButtonClicked()));
+  QObject::connect(this->SendButton, SIGNAL(clicked()),
+                   q, SLOT(onSendButtonClicked()));
 
 }
 
@@ -87,18 +89,28 @@ void qSlicerIGTLIONodeSelectorWidget::updateEnabledStatus(int type, vtkMRMLIGTLC
     d->AddNodeButton->setEnabled(false);
     d->RemoveNodeButton->setEnabled(false);
     d->NodeSelector->setEnabled(false);
+    d->SendButton->setEnabled(false);
     }
   else if (type == qMRMLIGTLIOTreeView::TYPE_STREAM)
     {
     d->AddNodeButton->setEnabled(true);
     d->RemoveNodeButton->setEnabled(false);
     d->NodeSelector->setEnabled(true);
+    d->SendButton->setEnabled(false);
     }
   else
     {
     d->AddNodeButton->setEnabled(true);
     d->RemoveNodeButton->setEnabled(true);
     d->NodeSelector->setEnabled(true);
+    if (dir == 2) // outgoing
+      {
+      d->SendButton->setEnabled(true);
+      }
+    else
+      {
+      d->SendButton->setEnabled(false);
+      }
     }
 
   d->ConnectorNode = cnode;
@@ -149,6 +161,22 @@ void qSlicerIGTLIONodeSelectorWidget::onRemoveNodeButtonClicked()
     else if (d->Direction == 2)
       {
       d->ConnectorNode->UnregisterOutgoingMRMLNode(d->DataNode);
+      }
+    }
+
+}
+
+
+//------------------------------------------------------------------------------
+void qSlicerIGTLIONodeSelectorWidget::onSendButtonClicked()
+{
+  Q_D(qSlicerIGTLIONodeSelectorWidget);
+
+  if (d->ConnectorNode && d->DataNode)
+    {
+    if (d->Direction == 2)
+      {
+      d->ConnectorNode->PushNode(d->DataNode);
       }
     }
 
