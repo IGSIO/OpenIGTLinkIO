@@ -1328,6 +1328,7 @@ void vtkMRMLIGTLConnectorNode::UnregisterOutgoingMRMLNode(vtkMRMLNode* node)
       {
       // Alredy on the list. Remove it.
       this->RemoveNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
+      this->Modified();
       break;
       }
     }
@@ -1384,6 +1385,7 @@ void vtkMRMLIGTLConnectorNode::UnregisterIncomingMRMLNode(vtkMRMLNode* node)
         {
         this->IncomingMRMLNodeInfoMap.erase(iter);
         }
+      this->Modified();
       break;
       }
     }
