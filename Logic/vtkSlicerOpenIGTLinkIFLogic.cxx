@@ -24,6 +24,10 @@
 #include "vtkMRMLPointMetaListNode.h"
 #include "vtkMRMLIGTLTrackingDataQueryNode.h"
 #include "vtkMRMLIGTLTrackingDataBundleNode.h"
+#include "vtkMRMLIGTLQueryNode.h"
+#include "vtkMRMLIGTLStatusNode.h"
+#include "vtkMRMLIGTLSensorNode.h"
+
 
 // OpenIGTLinkIF Logic includes
 #include "vtkSlicerOpenIGTLinkIFLogic.h"
@@ -156,11 +160,17 @@ void vtkSlicerOpenIGTLinkIFLogic::RegisterNodes()
     {
     return;
     }
+
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLConnectorNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLImageMetaListNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLLabelMetaListNode>().GetPointer());
+  scene->RegisterNodeClass(vtkNew<vtkMRMLPointMetaListNode>().GetPointer());
+  scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLQueryNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataQueryNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataBundleNode>().GetPointer());
+  scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLStatusNode>().GetPointer());
+  scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLSensorNode>().GetPointer());
+
 }
 
 //---------------------------------------------------------------------------
