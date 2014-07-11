@@ -26,6 +26,11 @@
 #include "vtkIGTLToMRMLLabelMetaList.h"
 #include "vtkIGTLToMRMLPointMetaList.h"
 #include "vtkIGTLToMRMLTrackingData.h"
+#include "vtkIGTLToMRMLStatus.h"
+#include "vtkIGTLToMRMLSensor.h"
+#include "vtkIGTLToMRMLString.h"
+#include "vtkIGTLToMRMLTrajectory.h"
+
 #include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
 
 // OpenIGTLink includes
@@ -169,10 +174,14 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT vtkSlicerOpenIGTLinkIFLogic :
   vtkIGTLToMRMLLinearTransform* LinearTransformConverter;
   vtkIGTLToMRMLImage*           ImageConverter;
   vtkIGTLToMRMLPosition*        PositionConverter;
+  vtkIGTLToMRMLStatus*          StatusConverter;
   vtkIGTLToMRMLImageMetaList*   ImageMetaListConverter;
   vtkIGTLToMRMLLabelMetaList*   LabelMetaListConverter;
   vtkIGTLToMRMLPointMetaList*   PointMetaListConverter;
+  vtkIGTLToMRMLSensor*          SensorConverter;
+  vtkIGTLToMRMLString*          StringConverter;
   vtkIGTLToMRMLTrackingData*    TrackingDataConverter;
+  vtkIGTLToMRMLTrajectory*      TrajectoryConverter;
 
 private:
 
