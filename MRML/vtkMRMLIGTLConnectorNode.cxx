@@ -469,7 +469,38 @@ void vtkMRMLIGTLConnectorNode::OnNodeReferenceModified(vtkMRMLNodeReference *ref
 //----------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::PrintSelf(ostream& os, vtkIndent indent)
 {
-  vtkMRMLNode::PrintSelf(os,indent);
+  Superclass::PrintSelf(os,indent);
+
+  if (this->Type == TYPE_SERVER)
+    {
+    os << indent << "Connector Type : SERVER\n";
+    os << indent << "Listening Port #: " << this->ServerPort << "\n";
+    }
+  else if (this->Type == TYPE_CLIENT)
+    {
+    os << indent << "Connector Type: CLIENT\n";
+    os << indent << "Server Hostname: " << this->ServerHostname << "\n";
+    os << indent << "Server Port #: " << this->ServerPort << "\n";
+    }
+
+  switch (this->State)
+    {
+    case STATE_OFF:
+      os << indent << "State: OFF\n";
+      break;
+    case STATE_WAIT_CONNECTION:
+      os << indent << "State: WAIT FOR CONNECTION\n";
+      break;
+    case STATE_CONNECTED:
+      os << indent << "State: CONNECTED\n";
+      break;
+    }
+  os << indent << "Persistent: " << this->Persistent << "\n";
+  os << indent << "Restrict Device Name: " << this->RestrictDeviceName << "\n";
+  os << indent << "Push Outgoing Message Flag: " << this->PushOutgoingMessageFlag << "\n";
+  os << indent << "Check CRC: " << this->CheckCRC << "\n";
+  os << indent << "Number of outgoing nodes: " << this->GetNumberOfOutgoingMRMLNodes() << "\n";
+  os << indent << "Number of incoming nodes: " << this->GetNumberOfIncomingMRMLNodes() << "\n";
 }
 
 //----------------------------------------------------------------------------
