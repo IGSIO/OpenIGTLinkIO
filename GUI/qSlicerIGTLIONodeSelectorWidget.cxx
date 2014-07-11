@@ -24,6 +24,7 @@ public:
 
   vtkMRMLIGTLConnectorNode * ConnectorNode;
   int Direction;
+  vtkMRMLNode * DataNode;
 };
 
 //------------------------------------------------------------------------------
@@ -45,6 +46,8 @@ void qSlicerIGTLIONodeSelectorWidgetPrivate::init()
                    q, SLOT(onAddNodeButtonClicked()));
   QObject::connect(this->RemoveNodeButton, SIGNAL(clicked()),
                    q, SLOT(onRemoveNodeButtonClicked()));
+  QObject::connect(this->SendButton, SIGNAL(clicked()),
+                   q, SLOT(onSendButtonClicked()));
 
 }
 
@@ -74,7 +77,8 @@ void qSlicerIGTLIONodeSelectorWidget::setMRMLScene(vtkMRMLScene* scene)
 
 
 //------------------------------------------------------------------------------
-void qSlicerIGTLIONodeSelectorWidget::updateEnabledStatus(int type, vtkMRMLIGTLConnectorNode* node, int dir)
+
+void qSlicerIGTLIONodeSelectorWidget::updateEnabledStatus(int type, vtkMRMLIGTLConnectorNode* cnode, int dir, vtkMRMLNode* dnode)
 {
   Q_D(qSlicerIGTLIONodeSelectorWidget);
 
@@ -85,22 +89,33 @@ void qSlicerIGTLIONodeSelectorWidget::updateEnabledStatus(int type, vtkMRMLIGTLC
     d->AddNodeButton->setEnabled(false);
     d->RemoveNodeButton->setEnabled(false);
     d->NodeSelector->setEnabled(false);
+    d->SendButton->setEnabled(false);
     }
   else if (type == qMRMLIGTLIOTreeView::TYPE_STREAM)
     {
     d->AddNodeButton->setEnabled(true);
     d->RemoveNodeButton->setEnabled(false);
     d->NodeSelector->setEnabled(true);
+    d->SendButton->setEnabled(false);
     }
   else
     {
     d->AddNodeButton->setEnabled(true);
     d->RemoveNodeButton->setEnabled(true);
     d->NodeSelector->setEnabled(true);
+    if (dir == 2) // outgoing
+      {
+      d->SendButton->setEnabled(true);
+      }
+    else
+      {
+      d->SendButton->setEnabled(false);
+      }
     }
 
-  d->ConnectorNode = node;
+  d->ConnectorNode = cnode;
   d->Direction = dir;
+  d->DataNode = dnode;
   
 }
 
@@ -129,7 +144,6 @@ void qSlicerIGTLIONodeSelectorWidget::onAddNodeButtonClicked()
     }
   
   //emit addNode(node);
-
 }
 
 
@@ -138,13 +152,33 @@ void qSlicerIGTLIONodeSelectorWidget::onRemoveNodeButtonClicked()
 {
   Q_D(qSlicerIGTLIONodeSelectorWidget);
 
-  vtkMRMLNode* node = d->NodeSelector->currentNode();
-  if (node == 0)
+  if (d->ConnectorNode && d->DataNode)
     {
-    return;
+    if (d->Direction == 1)
+      {
+      d->ConnectorNode->UnregisterIncomingMRMLNode(d->DataNode);
+      }
+    else if (d->Direction == 2)
+      {
+      d->ConnectorNode->UnregisterOutgoingMRMLNode(d->DataNode);
+      }
     }
-  
-  //emit removeNode(node);
+
+}
+
+
+//------------------------------------------------------------------------------
+void qSlicerIGTLIONodeSelectorWidget::onSendButtonClicked()
+{
+  Q_D(qSlicerIGTLIONodeSelectorWidget);
+
+  if (d->ConnectorNode && d->DataNode)
+    {
+    if (d->Direction == 2)
+      {
+      d->ConnectorNode->PushNode(d->DataNode);
+      }
+    }
 
 }
 

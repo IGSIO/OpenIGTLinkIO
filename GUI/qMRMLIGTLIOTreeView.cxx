@@ -122,8 +122,9 @@ void qMRMLIGTLIOTreeViewPrivate::setSortFilterProxyModel(qMRMLSortFilterProxyMod
   // Setting a new model to the view resets the selection model
 
   // The following call has been replaced by onClick();
-  //QObject::connect(q->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
-  //q, SLOT(onCurrentRowChanged(QModelIndex)));
+  QObject::connect(q->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
+                   q, SLOT(onCurrentRowChanged(QModelIndex)));
+
   if (!this->SortFilterModel)
     {
     return;
@@ -303,7 +304,7 @@ void qMRMLIGTLIOTreeView::onClicked(const QModelIndex& index)
         }
       cnode->InvokeEvent(vtkMRMLIGTLConnectorNode::DeviceModifiedEvent);
       }
-    emit ioTreeViewUpdated(type, cnode, dir);
+    emit ioTreeViewUpdated(type, cnode, dir, dnode);
     }
   else if (index.column() == qMRMLIGTLIOModel::PushOnConnectColumn)
     {
@@ -321,32 +322,33 @@ void qMRMLIGTLIOTreeView::onClicked(const QModelIndex& index)
         }
       cnode->InvokeEvent(vtkMRMLIGTLConnectorNode::DeviceModifiedEvent);
       }
-    emit ioTreeViewUpdated(type, cnode, dir);
+    emit ioTreeViewUpdated(type, cnode, dir, dnode);
     }
   else if (index != this->CurrentIndex)
     {
     this->CurrentIndex = index;
     //emit connectorNodeUpdated(cnode, dir);
-    emit ioTreeViewUpdated(type, cnode, dir);
+    emit ioTreeViewUpdated(type, cnode, dir, dnode);
     }
 
 }
 
 
-//void qMRMLIGTLIOTreeView::onCurrentRowChanged(const QModelIndex& index)
-//{
-//  Q_D(qMRMLIGTLIOTreeView);
-//  Q_ASSERT(d->SortFilterModel);
-//  //Q_ASSERT(this->currentNode() == d->SortFilterModel->mrmlNodeFromIndex(index));
-//
-//  vtkMRMLIGTLConnectorNode* cnode;
-//  int dir;
-//  int type = rowProperty(index, cnode, dir);
-//
-//  //emit connectorNodeUpdated(cnode, dir);
-//  //emit ioTreeViewUpdated(type, cnode, dir);
-//
-//}
+void qMRMLIGTLIOTreeView::onCurrentRowChanged(const QModelIndex& index)
+{
+  //Q_D(qMRMLIGTLIOTreeView);
+  //Q_ASSERT(d->SortFilterModel);
+  //Q_ASSERT(this->currentNode() == d->SortFilterModel->mrmlNodeFromIndex(index));
+
+  vtkMRMLIGTLConnectorNode* cnode;
+  vtkMRMLNode* dnode;
+  int dir;
+  int type = rowProperty(index, cnode, dir, dnode);
+  emit ioTreeViewUpdated(type, cnode, dir, dnode);
+
+  //emit connectorNodeUpdated(cnode, dir);
+  //emit ioTreeViewUpdated(type, cnode, dir);
+}
 
 
 //------------------------------------------------------------------------------
@@ -408,7 +410,6 @@ void qMRMLIGTLIOTreeView::setSelectedNode(const char* id)
   Q_D(qMRMLIGTLIOTreeView);
 
   vtkMRMLNode* node = this->mrmlScene()->GetNodeByID(id);
-
   if (node)
     {
     this->setCurrentIndex(d->SortFilterModel->indexFromMRMLNode(node));

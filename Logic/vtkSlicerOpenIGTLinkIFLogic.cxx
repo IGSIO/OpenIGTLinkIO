@@ -127,6 +127,26 @@ vtkSlicerOpenIGTLinkIFLogic::~vtkSlicerOpenIGTLinkIFLogic()
     UnregisterMessageConverter(this->TrackingDataConverter);
     this->TrackingDataConverter->Delete();
     }
+  if (this->StatusConverter)
+    {
+    UnregisterMessageConverter(this->StatusConverter);
+    this->StatusConverter->Delete();
+    }
+  if (this->SensorConverter)
+    {
+    UnregisterMessageConverter(this->SensorConverter);
+    this->SensorConverter->Delete();
+    }
+  if (this->TrajectoryConverter)
+    {
+    UnregisterMessageConverter(this->TrajectoryConverter);
+    this->TrajectoryConverter->Delete();
+    }
+  if (this->StringConverter)
+    {
+    UnregisterMessageConverter(this->StringConverter);
+    this->StringConverter->Delete();
+    }
 
   if (this->DataCallbackCommand)
     {
@@ -165,7 +185,6 @@ void vtkSlicerOpenIGTLinkIFLogic::RegisterNodes()
   scene->RegisterNodeClass(vtkNew<vtkMRMLImageMetaListNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLLabelMetaListNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLPointMetaListNode>().GetPointer());
-  scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLQueryNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataQueryNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataBundleNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLStatusNode>().GetPointer());

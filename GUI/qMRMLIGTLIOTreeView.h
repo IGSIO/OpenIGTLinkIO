@@ -66,11 +66,11 @@ public slots:
 
 signals:  
   //void connectorNodeUpdated(vtkMRMLIGTLConnectorNode*, int);
-  void ioTreeViewUpdated(int, vtkMRMLIGTLConnectorNode*, int);
+  void ioTreeViewUpdated(int, vtkMRMLIGTLConnectorNode*, int, vtkMRMLNode*);
 
 protected slots:
   void onClicked(const QModelIndex& index);
-  //virtual void onCurrentRowChanged(const QModelIndex& index);
+  virtual void onCurrentRowChanged(const QModelIndex& index);
 
 protected:
   QScopedPointer<qMRMLIGTLIOTreeViewPrivate> d_ptr;

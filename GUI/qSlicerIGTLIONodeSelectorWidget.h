@@ -62,7 +62,7 @@ public slots:
   //void setCurrentNode(vtkMRMLNode* node);
 
   /// Set the MRML node of interest
-  void updateEnabledStatus(int type, vtkMRMLIGTLConnectorNode* node, int dir);
+  void updateEnabledStatus(int type, vtkMRMLIGTLConnectorNode* cnode, int dir, vtkMRMLNode* dnode);
   
 
 
@@ -72,6 +72,9 @@ protected slots:
   
   /// Remove node from the I/O tree
   void onRemoveNodeButtonClicked();
+
+  /// Send node from the I/O tree
+  void onSendButtonClicked();
 
 signals:
   //void addNode(vtkMRMLNode*);
