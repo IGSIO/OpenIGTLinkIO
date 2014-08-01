@@ -450,12 +450,12 @@ void vtkIGTLToMRMLTrajectory::CrossCheckTrajectoryName(igtl::TrajectoryElement::
     {
     return;
     }
-  
+
   const char* elementName = tElemt->GetName();
   if (!elementName)
     {
     return;
-    } 
+    }
 
   igtl::TrajectoryElement::Pointer otherElemt;
   if (strcmp(elementName, "") == 0)
@@ -474,7 +474,7 @@ void vtkIGTLToMRMLTrajectory::CrossCheckTrajectoryName(igtl::TrajectoryElement::
       }
 
     trajMsg->GetTrajectoryElement(j, otherElemt);
-        
+
     if (strcmp(elementName, otherElemt->GetName()) == 0)
       {
       // Same name
