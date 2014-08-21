@@ -393,8 +393,7 @@ int vtkIGTLToMRMLTrajectory::PrepareTrajectoryElement(igtl::TrajectoryElement::P
   // Gather necessary information
   vtkMRMLAnnotationDisplayNode* displayNode = NULL;
   const char*   name = node->GetName();
-  double*       rgba;
-  double        opacity;
+  double        rgba[4] = {0.0, 0.0, 0.0, 1.0};
   double        entryPos[3] = {0.0, 0.0, 0.0};
   double        targetPos[3] = {0.0, 0.0, 0.0};
   unsigned char trajectoryType = igtl::TrajectoryElement::TYPE_ENTRY_TARGET;
@@ -428,14 +427,14 @@ int vtkIGTLToMRMLTrajectory::PrepareTrajectoryElement(igtl::TrajectoryElement::P
   // Get display information
   if (displayNode)
     {
-    rgba = displayNode->GetColor();
-    opacity = displayNode->GetOpacity();
+    displayNode->GetColor(rgba);
+    rgba[3] = displayNode->GetOpacity();
     }
 
   // Set information to elements
   tElemt->SetName(name);
   tElemt->SetType(trajectoryType);
-  tElemt->SetRGBA(rgba[0]*255, rgba[1]*255, rgba[2]*255, opacity*255);
+  tElemt->SetRGBA(rgba[0]*255, rgba[1]*255, rgba[2]*255, rgba[3]*255);
   tElemt->SetEntryPosition(entryPos[0], entryPos[1], entryPos[2]);
   tElemt->SetTargetPosition(targetPos[0], targetPos[1], targetPos[2]);
 
@@ -450,12 +449,12 @@ void vtkIGTLToMRMLTrajectory::CrossCheckTrajectoryName(igtl::TrajectoryElement::
     {
     return;
     }
-  
+
   const char* elementName = tElemt->GetName();
   if (!elementName)
     {
     return;
-    } 
+    }
 
   igtl::TrajectoryElement::Pointer otherElemt;
   if (strcmp(elementName, "") == 0)
@@ -474,7 +473,7 @@ void vtkIGTLToMRMLTrajectory::CrossCheckTrajectoryName(igtl::TrajectoryElement::
       }
 
     trajMsg->GetTrajectoryElement(j, otherElemt);
-        
+
     if (strcmp(elementName, otherElemt->GetName()) == 0)
       {
       // Same name
