@@ -54,6 +54,7 @@ set(module_mrml_target_libraries
   ${MRML_LIBRARIES}
   SlicerBaseLogic
   vtkSlicerAnnotationsModuleMRML
+  vtkSlicerMarkupsModuleMRML
   )
 
 SlicerMacroBuildModuleMRML(

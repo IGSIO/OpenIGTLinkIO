@@ -19,7 +19,8 @@
 #include "igtlPointMessage.h"
 
 #include "vtkMRMLFiducialListNode.h"
-#include "vtkMRMLPointMetaListNode.h"
+//#include "vtkMRMLPointMetaListNode.h"
+#include "vtkMRMLMarkupsFiducialNode.h"
 #include "vtkMRMLIGTLQueryNode.h"
 
 // VTK includes
@@ -46,7 +47,9 @@ void vtkIGTLToMRMLPointMetaList::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 vtkMRMLNode* vtkIGTLToMRMLPointMetaList::CreateNewNode(vtkMRMLScene* scene, const char* name)
 {
-  vtkMRMLPointMetaListNode *node = vtkMRMLPointMetaListNode::New();
+  //vtkMRMLPointMetaListNode *node = vtkMRMLPointMetaListNode::New();
+  vtkMRMLMarkupsFiducialNode* node = vtkMRMLMarkupsFiducialNode::New();
+  
   node->SetName(name);
   node->SetDescription("Received by OpenIGTLink");
 
@@ -62,7 +65,7 @@ vtkIntArray* vtkIGTLToMRMLPointMetaList::GetNodeEvents()
   vtkIntArray* events;
 
   events = vtkIntArray::New();
-  //events->InsertNextValue(vtkMRMLPointNode::ModifiedEvent); 
+  events->InsertNextValue(vtkMRMLMarkupsNode::PointModifiedEvent); 
 
   return events;
 }
@@ -79,8 +82,6 @@ int vtkIGTLToMRMLPointMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vt
 
   //------------------------------------------------------------
   // Allocate Point Message Class
-
-  // Create a message buffer to receive transform data
   igtl::PointMessage::Pointer pointMsg;
   pointMsg = igtl::PointMessage::New();
   pointMsg->Copy(buffer);
@@ -90,12 +91,27 @@ int vtkIGTLToMRMLPointMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vt
   int c = pointMsg->Unpack();
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
     {
-    vtkMRMLPointMetaListNode* pmnode = vtkMRMLPointMetaListNode::SafeDownCast(node);
-    if (pmnode)
+    //vtkMRMLPointMetaListNode* pmnode = vtkMRMLPointMetaListNode::SafeDownCast(node);
+    vtkMRMLMarkupsFiducialNode* mfnode = vtkMRMLMarkupsFiducialNode::SafeDownCast(node);
+    if (mfnode)
       {
-      pmnode->ClearPointMetaList();
-      int modid = pmnode->StartModify();
+      //mfnode->ClearPointMetaList();
+      int modid = mfnode->StartModify();
       int nElements = pointMsg->GetNumberOfPointElement();
+
+      // Check the number of points in the MarkupsFiducialNode:
+      int nFiducials = mfnode->GetNumberOfFiducials();
+      
+      if (nElements > nFiducials)
+        {
+        // Reduce the number of poitns in the Fiducial node
+        int nr = nElements - nFiducials;
+        for (int i = 0; i < nr; i ++)
+          {
+          mfnode->RemoveMarkup(0);
+          }
+        }
+
       for (int i = 0; i < nElements; i ++)
         {
         igtl::PointElement::Pointer pointElement;
@@ -106,24 +122,22 @@ int vtkIGTLToMRMLPointMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vt
         
         igtlFloat32 pos[3];
         pointElement->GetPosition(pos);
-       
-				vtkMRMLPointMetaListNode::PointMetaElement element;
-				element.Name 				= pointElement->GetName();
-				element.GroupName 	= pointElement->GetGroupName();
-				element.Radius			= pointElement->GetRadius();
-				
-				element.RGBA[0]			= rgba[0];
-				element.RGBA[1]			= rgba[1];
-				element.RGBA[2]			= rgba[2];
-				element.RGBA[3]			= rgba[3];
+  
+        mfnode->SetAttribute("GroupName", pointElement->GetGroupName());
+        //mfnode->SetAttribute("Radius", pointElement->GetRadius());
+        //mfnode->SetAttribute("RGBA", rgba);
+        //mfnode->SetAttribute("Owner", pointElement->GetOwner());
 
-				element.Position[0] = pos[0];
-				element.Position[1] = pos[1];
-				element.Position[2] = pos[2];
-				element.Owner				= pointElement->GetOwner();
-				
-				pmnode->AddPointMetaElement(element);
-				
+        if (i < nFiducials)
+          {
+          mfnode->SetNthFiducialPosition(i, (double)pos[0], (double)pos[1], (double)pos[2]);
+          mfnode->SetNthFiducialLabel(i, pointElement->GetName());
+          }
+        else
+          {
+          mfnode->AddFiducial((double)pos[0], (double)pos[1], (double)pos[2], pointElement->GetName());
+          }
+        
         std::cerr << "========== Element #" << i << " ==========" << std::endl;
         std::cerr << " Name      : " << pointElement->GetName() << std::endl;
         std::cerr << " GroupName : " << pointElement->GetGroupName() << std::endl;
@@ -134,8 +148,9 @@ int vtkIGTLToMRMLPointMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vt
         std::cerr << "================================" << std::endl;
 
         }
-      pmnode->EndModify(modid);
-    	pmnode->Modified();
+
+      mfnode->EndModify(modid);
+      mfnode->Modified();
       }
     }
   return 1;
@@ -151,11 +166,66 @@ int vtkIGTLToMRMLPointMetaList::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrm
     return 0;
     }
 
-  if ((event == vtkMRMLFiducialListNode::FiducialModifiedEvent ||
-       event == vtkMRMLFiducialListNode::FiducialIndexModifiedEvent ||
-       event == vtkMRMLFiducialListNode::DisplayModifiedEvent)
-      && strcmp(mrmlNode->GetNodeTagName(), this->GetMRMLName()) == 0)
+  std::cerr << mrmlNode->GetNodeTagName() << std::endl;
+  std::cerr << this->GetMRMLName() << std::endl;
+  std::cerr << "event = " << event << std::endl;
+
+  if (strcmp(mrmlNode->GetNodeTagName(), this->GetMRMLName()) == 0 &&
+      (event == vtkMRMLMarkupsNode::LockModifiedEvent ||
+       event == vtkMRMLMarkupsNode::LabelFormatModifiedEvent ||
+       event == vtkMRMLMarkupsNode::PointModifiedEvent ||
+       event == vtkMRMLMarkupsNode::PointEndInteractionEvent ||
+       event == vtkMRMLMarkupsNode::NthMarkupModifiedEvent ||
+       event == vtkMRMLMarkupsNode::MarkupAddedEvent ||
+       event == vtkMRMLMarkupsNode::MarkupRemovedEvent))
     {
+    vtkMRMLMarkupsFiducialNode* mfnode = vtkMRMLMarkupsFiducialNode::SafeDownCast(mrmlNode);
+    if (mfnode)
+      {
+      // Create a message buffer to receive transform data
+      if (this->PointMsg.IsNull())
+        {
+        this->PointMsg = igtl::PointMessage::New();
+        }
+      this->PointMsg->SetDeviceName(mrmlNode->GetName());
+      this->PointMsg->ClearPointElement();
+      
+      // Check the number of points in the MarkupsFiducialNode:
+      int nFiducials = mfnode->GetNumberOfFiducials();
+      for (int i = 0; i < nFiducials; i ++)
+        {
+        double pos[3];
+        mfnode->GetNthFiducialPosition(i, pos);
+
+        igtl::PointElement::Pointer point;
+        point = igtl::PointElement::New();
+        point->SetName(mfnode->GetNthFiducialLabel(i).c_str());
+        point->SetPosition((float)pos[0], (float)pos[1], (float)pos[2]);
+
+        // following parameters are tentative
+        point->SetRadius(15.0);
+        point->SetGroupName("GROUP_0");
+        point->SetOwner("IMAGE_0");
+        point->SetRGBA(0xFF, 0x00, 0x00, 0xFF);
+
+        std::cerr << "========== Element #" << i << " ==========" << std::endl;
+        std::cerr << " Name      : " << point->GetName() << std::endl;
+        std::cerr << " GroupName : " << point->GetGroupName() << std::endl;
+        std::cerr << " Position  : ( " << std::fixed << pos[0] << ", " << pos[1] << ", " << pos[2] << " )" << std::endl;
+        std::cerr << " Radius    : " << std::fixed << point->GetRadius() << std::endl;
+        std::cerr << " Owner     : " << point->GetOwner() << std::endl;
+        std::cerr << "================================" << std::endl;
+
+        this->PointMsg->AddPointElement(point);
+        }
+
+      this->PointMsg->Pack();
+      
+      *size = this->PointMsg->GetPackSize();
+      *igtlMsg = (void*)this->PointMsg->GetPackPointer();
+
+      return 1;
+      }
     
     }
   // If mrmlNode is query node

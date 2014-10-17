@@ -32,7 +32,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPointMetaList : p
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual const char*  GetIGTLName() { return "POINT"; };
-  virtual const char*  GetMRMLName() { return "PointMetaList"; };
+  virtual const char*  GetMRMLName() { return "MarkupsFiducial"; };
 
   virtual vtkIntArray* GetNodeEvents();
   virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name);
