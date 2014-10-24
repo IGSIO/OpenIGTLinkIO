@@ -6,14 +6,14 @@
   or http://www.slicer.org/copyright/copyright.txt for details.
 
   Program:   3D Slicer
-  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLToMRMLPointMetaList.h $
+  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLToMRMLPoint.h $
   Date:      $Date: 2009-08-12 21:30:38 -0400 (Wed, 12 Aug 2009) $
   Version:   $Revision: 10236 $
 
 ==========================================================================*/
 
-#ifndef __vtkIGTLToMRMLPointMetaList_h
-#define __vtkIGTLToMRMLPointMetaList_h
+#ifndef __vtkIGTLToMRMLPoint_h
+#define __vtkIGTLToMRMLPoint_h
 
 #include "vtkMRMLNode.h"
 #include "vtkIGTLToMRMLBase.h"
@@ -22,12 +22,12 @@
 
 class vtkMRMLVolumeNode;
 
-class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPointMetaList : public vtkIGTLToMRMLBase
+class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPoint : public vtkIGTLToMRMLBase
 {
  public:
 
-  static vtkIGTLToMRMLPointMetaList *New();
-  vtkTypeMacro(vtkIGTLToMRMLPointMetaList,vtkObject);
+  static vtkIGTLToMRMLPoint *New();
+  vtkTypeMacro(vtkIGTLToMRMLPoint,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
@@ -44,8 +44,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPointMetaList : p
 
 
  protected:
-  vtkIGTLToMRMLPointMetaList();
-  ~vtkIGTLToMRMLPointMetaList();
+  vtkIGTLToMRMLPoint();
+  ~vtkIGTLToMRMLPoint();
 
   void CenterImage(vtkMRMLVolumeNode *volumeNode);
 
@@ -58,4 +58,4 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPointMetaList : p
 };
 
 
-#endif //__vtkIGTLToMRMLPointMetaList_h
+#endif //__vtkIGTLToMRMLPoint_h

@@ -6,48 +6,48 @@
   or http://www.slicer.org/copyright/copyright.txt for details.
 
   Program:   3D Slicer
-  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLToMRMLPointMetaList.cxx $
+  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLToMRMLPoint.cxx $
   Date:      $Date: 2009-10-05 17:37:20 -0400 (Mon, 05 Oct 2009) $
   Version:   $Revision: 10577 $
 
 ==========================================================================*/
 
-#include "vtkIGTLToMRMLPointMetaList.h"
+#include "vtkIGTLToMRMLPoint.h"
 
 #include "vtkImageData.h"
 #include "vtkMRMLScalarVolumeNode.h"
 #include "igtlPointMessage.h"
 
 #include "vtkMRMLFiducialListNode.h"
-//#include "vtkMRMLPointMetaListNode.h"
+//#include "vtkMRMLPointNode.h"
 #include "vtkMRMLMarkupsFiducialNode.h"
 #include "vtkMRMLIGTLQueryNode.h"
 
 // VTK includes
 #include <vtkObjectFactory.h>
 
-vtkStandardNewMacro(vtkIGTLToMRMLPointMetaList);
+vtkStandardNewMacro(vtkIGTLToMRMLPoint);
 
 
 //---------------------------------------------------------------------------
-vtkIGTLToMRMLPointMetaList::vtkIGTLToMRMLPointMetaList() {}
+vtkIGTLToMRMLPoint::vtkIGTLToMRMLPoint() {}
 
 
 //---------------------------------------------------------------------------
-vtkIGTLToMRMLPointMetaList::~vtkIGTLToMRMLPointMetaList() {}
+vtkIGTLToMRMLPoint::~vtkIGTLToMRMLPoint() {}
 
 
 //---------------------------------------------------------------------------
-void vtkIGTLToMRMLPointMetaList::PrintSelf(ostream& os, vtkIndent indent)
+void vtkIGTLToMRMLPoint::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkObject::PrintSelf(os, indent);
 }
 
 
 //---------------------------------------------------------------------------
-vtkMRMLNode* vtkIGTLToMRMLPointMetaList::CreateNewNode(vtkMRMLScene* scene, const char* name)
+vtkMRMLNode* vtkIGTLToMRMLPoint::CreateNewNode(vtkMRMLScene* scene, const char* name)
 {
-  //vtkMRMLPointMetaListNode *node = vtkMRMLPointMetaListNode::New();
+  //vtkMRMLPointNode *node = vtkMRMLPointNode::New();
   vtkMRMLMarkupsFiducialNode* node = vtkMRMLMarkupsFiducialNode::New();
   
   node->SetName(name);
@@ -60,7 +60,7 @@ vtkMRMLNode* vtkIGTLToMRMLPointMetaList::CreateNewNode(vtkMRMLScene* scene, cons
 
 
 //---------------------------------------------------------------------------
-vtkIntArray* vtkIGTLToMRMLPointMetaList::GetNodeEvents()
+vtkIntArray* vtkIGTLToMRMLPoint::GetNodeEvents()
 {
   vtkIntArray* events;
 
@@ -72,7 +72,7 @@ vtkIntArray* vtkIGTLToMRMLPointMetaList::GetNodeEvents()
 
 
 //---------------------------------------------------------------------------
-int vtkIGTLToMRMLPointMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node)
+int vtkIGTLToMRMLPoint::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node)
 {
   if (strcmp(node->GetNodeTagName(), this->GetMRMLName()) != 0)
     {
@@ -91,11 +91,11 @@ int vtkIGTLToMRMLPointMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vt
   int c = pointMsg->Unpack();
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
     {
-    //vtkMRMLPointMetaListNode* pmnode = vtkMRMLPointMetaListNode::SafeDownCast(node);
+    //vtkMRMLPointNode* pmnode = vtkMRMLPointNode::SafeDownCast(node);
     vtkMRMLMarkupsFiducialNode* mfnode = vtkMRMLMarkupsFiducialNode::SafeDownCast(node);
     if (mfnode)
       {
-      //mfnode->ClearPointMetaList();
+      //mfnode->ClearPoint();
       int modid = mfnode->StartModify();
       int nElements = pointMsg->GetNumberOfPointElement();
 
@@ -159,7 +159,7 @@ int vtkIGTLToMRMLPointMetaList::IGTLToMRML(igtl::MessageBase::Pointer buffer, vt
 
 
 //---------------------------------------------------------------------------
-int vtkIGTLToMRMLPointMetaList::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg)
+int vtkIGTLToMRMLPoint::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg)
 {
   if (!mrmlNode)
     {

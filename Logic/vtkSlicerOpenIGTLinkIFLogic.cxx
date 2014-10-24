@@ -21,7 +21,6 @@
 #include "vtkMRMLIGTLConnectorNode.h"
 #include "vtkMRMLImageMetaListNode.h"
 #include "vtkMRMLLabelMetaListNode.h"
-#include "vtkMRMLPointMetaListNode.h"
 #include "vtkMRMLIGTLTrackingDataQueryNode.h"
 #include "vtkMRMLIGTLTrackingDataBundleNode.h"
 #include "vtkMRMLIGTLQueryNode.h"
@@ -63,7 +62,7 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
 
   this->ImageMetaListConverter   = vtkIGTLToMRMLImageMetaList::New();
   this->LabelMetaListConverter   = vtkIGTLToMRMLLabelMetaList::New();
-  this->PointMetaListConverter   = vtkIGTLToMRMLPointMetaList::New();
+  this->PointConverter           = vtkIGTLToMRMLPoint::New();
   this->SensorConverter          = vtkIGTLToMRMLSensor::New();
   this->StringConverter          = vtkIGTLToMRMLString::New();
   this->TrackingDataConverter    = vtkIGTLToMRMLTrackingData::New();
@@ -77,7 +76,7 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
 
   RegisterMessageConverter(this->ImageMetaListConverter);
   RegisterMessageConverter(this->LabelMetaListConverter);
-  RegisterMessageConverter(this->PointMetaListConverter);
+  RegisterMessageConverter(this->PointConverter);
   RegisterMessageConverter(this->SensorConverter);
   RegisterMessageConverter(this->StringConverter);
   RegisterMessageConverter(this->TrackingDataConverter);
@@ -117,10 +116,10 @@ vtkSlicerOpenIGTLinkIFLogic::~vtkSlicerOpenIGTLinkIFLogic()
     UnregisterMessageConverter(this->LabelMetaListConverter);
     this->LabelMetaListConverter->Delete();
     }
-  if (this->PointMetaListConverter)
+  if (this->PointConverter)
     {
-    UnregisterMessageConverter(this->PointMetaListConverter);
-    this->PointMetaListConverter->Delete();
+    UnregisterMessageConverter(this->PointConverter);
+    this->PointConverter->Delete();
     }
   if (this->TrackingDataConverter)
     {
@@ -184,7 +183,6 @@ void vtkSlicerOpenIGTLinkIFLogic::RegisterNodes()
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLConnectorNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLImageMetaListNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLLabelMetaListNode>().GetPointer());
-  scene->RegisterNodeClass(vtkNew<vtkMRMLPointMetaListNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataQueryNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLTrackingDataBundleNode>().GetPointer());
   scene->RegisterNodeClass(vtkNew<vtkMRMLIGTLStatusNode>().GetPointer());
