@@ -34,8 +34,7 @@ if(OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
     vtkMRMLIGTLQueryNode.cxx
     vtkMRMLImageMetaListNode.cxx
     vtkMRMLLabelMetaListNode.cxx
-    vtkMRMLPointMetaListNode.cxx
-    vtkIGTLToMRMLPointMetaList.cxx
+    vtkIGTLToMRMLPoints.cxx
     vtkIGTLToMRMLImageMetaList.cxx
     vtkIGTLToMRMLLabelMetaList.cxx
     vtkIGTLToMRMLTrackingData.cxx
@@ -54,6 +53,7 @@ set(module_mrml_target_libraries
   ${MRML_LIBRARIES}
   SlicerBaseLogic
   vtkSlicerAnnotationsModuleMRML
+  vtkSlicerMarkupsModuleMRML
   )
 
 SlicerMacroBuildModuleMRML(

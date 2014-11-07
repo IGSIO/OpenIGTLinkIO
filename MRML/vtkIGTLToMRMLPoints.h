@@ -6,14 +6,14 @@
   or http://www.slicer.org/copyright/copyright.txt for details.
 
   Program:   3D Slicer
-  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLToMRMLPointMetaList.h $
+  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLToMRMLPoints.h $
   Date:      $Date: 2009-08-12 21:30:38 -0400 (Wed, 12 Aug 2009) $
   Version:   $Revision: 10236 $
 
 ==========================================================================*/
 
-#ifndef __vtkIGTLToMRMLPointMetaList_h
-#define __vtkIGTLToMRMLPointMetaList_h
+#ifndef __vtkIGTLToMRMLPoints_h
+#define __vtkIGTLToMRMLPoints_h
 
 #include "vtkMRMLNode.h"
 #include "vtkIGTLToMRMLBase.h"
@@ -22,17 +22,17 @@
 
 class vtkMRMLVolumeNode;
 
-class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPointMetaList : public vtkIGTLToMRMLBase
+class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPoints : public vtkIGTLToMRMLBase
 {
  public:
 
-  static vtkIGTLToMRMLPointMetaList *New();
-  vtkTypeMacro(vtkIGTLToMRMLPointMetaList,vtkObject);
+  static vtkIGTLToMRMLPoints *New();
+  vtkTypeMacro(vtkIGTLToMRMLPoints,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual const char*  GetIGTLName() { return "POINT"; };
-  virtual const char*  GetMRMLName() { return "PointMetaList"; };
+  virtual const char*  GetMRMLName() { return "MarkupsFiducial"; };
 
   virtual vtkIntArray* GetNodeEvents();
   virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name);
@@ -44,8 +44,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPointMetaList : p
 
 
  protected:
-  vtkIGTLToMRMLPointMetaList();
-  ~vtkIGTLToMRMLPointMetaList();
+  vtkIGTLToMRMLPoints();
+  ~vtkIGTLToMRMLPoints();
 
   void CenterImage(vtkMRMLVolumeNode *volumeNode);
 
@@ -58,4 +58,4 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPointMetaList : p
 };
 
 
-#endif //__vtkIGTLToMRMLPointMetaList_h
+#endif //__vtkIGTLToMRMLPoints_h
