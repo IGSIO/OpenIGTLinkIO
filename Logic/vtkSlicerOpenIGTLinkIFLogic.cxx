@@ -62,7 +62,7 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
 
   this->ImageMetaListConverter   = vtkIGTLToMRMLImageMetaList::New();
   this->LabelMetaListConverter   = vtkIGTLToMRMLLabelMetaList::New();
-  this->PointConverter           = vtkIGTLToMRMLPoint::New();
+  this->PointConverter           = vtkIGTLToMRMLPoints::New();
   this->SensorConverter          = vtkIGTLToMRMLSensor::New();
   this->StringConverter          = vtkIGTLToMRMLString::New();
   this->TrackingDataConverter    = vtkIGTLToMRMLTrackingData::New();

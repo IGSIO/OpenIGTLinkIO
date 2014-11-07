@@ -6,13 +6,13 @@
   or http://www.slicer.org/copyright/copyright.txt for details.
 
   Program:   3D Slicer
-  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLToMRMLPoint.cxx $
+  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLToMRMLPoints.cxx $
   Date:      $Date: 2009-10-05 17:37:20 -0400 (Mon, 05 Oct 2009) $
   Version:   $Revision: 10577 $
 
 ==========================================================================*/
 
-#include "vtkIGTLToMRMLPoint.h"
+#include "vtkIGTLToMRMLPoints.h"
 
 #include "vtkImageData.h"
 #include "vtkMRMLScalarVolumeNode.h"
@@ -26,26 +26,26 @@
 // VTK includes
 #include <vtkObjectFactory.h>
 
-vtkStandardNewMacro(vtkIGTLToMRMLPoint);
+vtkStandardNewMacro(vtkIGTLToMRMLPoints);
 
 
 //---------------------------------------------------------------------------
-vtkIGTLToMRMLPoint::vtkIGTLToMRMLPoint() {}
+vtkIGTLToMRMLPoints::vtkIGTLToMRMLPoints() {}
 
 
 //---------------------------------------------------------------------------
-vtkIGTLToMRMLPoint::~vtkIGTLToMRMLPoint() {}
+vtkIGTLToMRMLPoints::~vtkIGTLToMRMLPoints() {}
 
 
 //---------------------------------------------------------------------------
-void vtkIGTLToMRMLPoint::PrintSelf(ostream& os, vtkIndent indent)
+void vtkIGTLToMRMLPoints::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkObject::PrintSelf(os, indent);
 }
 
 
 //---------------------------------------------------------------------------
-vtkMRMLNode* vtkIGTLToMRMLPoint::CreateNewNode(vtkMRMLScene* scene, const char* name)
+vtkMRMLNode* vtkIGTLToMRMLPoints::CreateNewNode(vtkMRMLScene* scene, const char* name)
 {
   //vtkMRMLPointNode *node = vtkMRMLPointNode::New();
   vtkMRMLMarkupsFiducialNode* node = vtkMRMLMarkupsFiducialNode::New();
@@ -60,7 +60,7 @@ vtkMRMLNode* vtkIGTLToMRMLPoint::CreateNewNode(vtkMRMLScene* scene, const char* 
 
 
 //---------------------------------------------------------------------------
-vtkIntArray* vtkIGTLToMRMLPoint::GetNodeEvents()
+vtkIntArray* vtkIGTLToMRMLPoints::GetNodeEvents()
 {
   vtkIntArray* events;
 
@@ -72,7 +72,7 @@ vtkIntArray* vtkIGTLToMRMLPoint::GetNodeEvents()
 
 
 //---------------------------------------------------------------------------
-int vtkIGTLToMRMLPoint::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node)
+int vtkIGTLToMRMLPoints::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node)
 {
   if (strcmp(node->GetNodeTagName(), this->GetMRMLName()) != 0)
     {
@@ -159,7 +159,7 @@ int vtkIGTLToMRMLPoint::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
 
 
 //---------------------------------------------------------------------------
-int vtkIGTLToMRMLPoint::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg)
+int vtkIGTLToMRMLPoints::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg)
 {
   if (!mrmlNode)
     {
