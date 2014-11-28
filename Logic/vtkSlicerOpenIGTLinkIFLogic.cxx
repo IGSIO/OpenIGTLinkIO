@@ -63,6 +63,7 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
   this->ImageMetaListConverter   = vtkIGTLToMRMLImageMetaList::New();
   this->LabelMetaListConverter   = vtkIGTLToMRMLLabelMetaList::New();
   this->PointConverter           = vtkIGTLToMRMLPoints::New();
+  this->PolyDataConverter        = vtkIGTLToMRMLPolyData::New();
   this->SensorConverter          = vtkIGTLToMRMLSensor::New();
   this->StringConverter          = vtkIGTLToMRMLString::New();
   this->TrackingDataConverter    = vtkIGTLToMRMLTrackingData::New();
@@ -77,6 +78,7 @@ vtkSlicerOpenIGTLinkIFLogic::vtkSlicerOpenIGTLinkIFLogic()
   RegisterMessageConverter(this->ImageMetaListConverter);
   RegisterMessageConverter(this->LabelMetaListConverter);
   RegisterMessageConverter(this->PointConverter);
+  RegisterMessageConverter(this->PolyDataConverter);
   RegisterMessageConverter(this->SensorConverter);
   RegisterMessageConverter(this->StringConverter);
   RegisterMessageConverter(this->TrackingDataConverter);
@@ -120,6 +122,11 @@ vtkSlicerOpenIGTLinkIFLogic::~vtkSlicerOpenIGTLinkIFLogic()
     {
     UnregisterMessageConverter(this->PointConverter);
     this->PointConverter->Delete();
+    }
+  if (this->PolyDataConverter)
+    {
+    UnregisterMessageConverter(this->PolyDataConverter);
+    this->PolyDataConverter->Delete();
     }
   if (this->TrackingDataConverter)
     {
