@@ -334,7 +334,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
     data->SetNumberOfTuples(n);
     attribute->GetData(static_cast<igtl_float32*>(data->GetPointer(0)));
 
-    if ((attribute->GetType() & 0x0F) == 0) // POINT
+    if ((attribute->GetType() & 0xF0) == 0) // POINT
       {
       poly->GetPointData()->AddArray(data);
       }
@@ -514,6 +514,95 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
         }
       }
 
+    // Attributes
+    vtkSmartPointer<vtkPointData> pdata = poly->GetPointData();
+    int nPointAttributes = pdata->GetNumberOfArrays();
+    if (nPointAttributes > 0)
+      {
+      for (int i = 0; i < nPointAttributes; i ++)
+        {
+        igtl::PolyDataAttribute::Pointer attribute = igtl::PolyDataAttribute::New();
+        vtkSmartPointer<vtkDataArray> array = pdata->GetArray(i);
+        int ncomps  = array->GetNumberOfComponents();
+        if (ncomps == 1)
+          {
+          attribute->SetType(igtl::PolyDataAttribute::POINT_SCALAR);
+          }
+        else if (ncomps == 3)
+          {
+          // TODO: how to differenciate normal and vector?
+          attribute->SetType(igtl::PolyDataAttribute::POINT_NORMAL);
+          }
+        else if (ncomps == 9)
+          {
+          attribute->SetType(igtl::PolyDataAttribute::POINT_TENSOR);
+          }
+        else if (ncomps == 4)
+          {
+          attribute->SetType(igtl::PolyDataAttribute::POINT_RGBA);
+          }
+        attribute->SetName(array->GetName());
+        int ntuples = array->GetNumberOfTuples();
+        attribute->SetSize(ntuples);
+
+        for (int j = 0; j < ntuples; j ++)
+          {
+          double * tuple = array->GetTuple(j);
+          igtlFloat32 data[9];
+          for (int k = 0; k < ncomps; k ++)
+            {
+            data[k] = static_cast<igtlFloat32>(tuple[k]);
+            }
+          attribute->SetNthData(j, data);
+          }
+        this->OutPolyDataMessage->AddAttribute(attribute);
+        }
+      }
+
+    vtkSmartPointer<vtkCellData> cdata = poly->GetCellData();
+    int nCellAttributes = cdata->GetNumberOfArrays();
+    if (nCellAttributes > 0)
+      {
+      for (int i = 0; i < nPointAttributes; i ++)
+        {
+        igtl::PolyDataAttribute::Pointer attribute = igtl::PolyDataAttribute::New();
+        vtkSmartPointer<vtkDataArray> array = pdata->GetArray(i);
+        int ncomps  = array->GetNumberOfComponents();
+        if (ncomps == 1)
+          {
+          attribute->SetType(igtl::PolyDataAttribute::CELL_SCALAR);
+          }
+        else if (ncomps == 3)
+          {
+          // TODO: how to differenciate normal and vector?
+          attribute->SetType(igtl::PolyDataAttribute::CELL_NORMAL);
+          }
+        else if (ncomps == 9)
+          {
+          attribute->SetType(igtl::PolyDataAttribute::CELL_TENSOR);
+          }
+        else if (ncomps == 4)
+          {
+          attribute->SetType(igtl::PolyDataAttribute::CELL_RGBA);
+          }
+        attribute->SetName(array->GetName());
+        int ntuples = array->GetNumberOfTuples();
+        attribute->SetSize(ntuples);
+
+        for (int j = 0; j < ntuples; j ++)
+          {
+          double * tuple = array->GetTuple(j);
+          igtlFloat32 data[9];
+          for (int k = 0; k < ncomps; k ++)
+            {
+            data[k] = static_cast<igtlFloat32>(tuple[k]);
+            }
+          attribute->SetNthData(j, data);
+          }
+        this->OutPolyDataMessage->AddAttribute(attribute);
+        }
+      }
+    
     this->OutPolyDataMessage->Pack();
 
     *size = this->OutPolyDataMessage->GetPackSize();
