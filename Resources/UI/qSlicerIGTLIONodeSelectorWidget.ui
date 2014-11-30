@@ -39,6 +39,7 @@
        <string>vtkMRMLLinearTransformNode</string>
        <string>vtkMRMLScalarVolumeNode</string>
        <string>vtkMRMLMarkupsFiducialNode</string>
+       <string>vtkMRMLModelNode</string>
       </stringlist>
      </property>
      <property name="addEnabled">

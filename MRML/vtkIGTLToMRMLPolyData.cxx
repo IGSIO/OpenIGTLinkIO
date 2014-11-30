@@ -39,6 +39,10 @@
 #include <vtkPolyLine.h>
 #include <vtkPolygon.h>
 #include <vtkTriangleStrip.h>
+#include <vtkFloatArray.h>
+#include <vtkPointData.h>
+#include <vtkCellData.h>
+
 
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
@@ -85,7 +89,6 @@ vtkMRMLNode* vtkIGTLToMRMLPolyData::CreateNewNodeWithMessage(vtkMRMLScene* scene
   modelNode->SetScene(scene);
   modelNode->SetDescription("Received by OpenIGTLink");
 
-
   // Display Node
   vtkSmartPointer< vtkMRMLModelDisplayNode > displayNode = vtkSmartPointer< vtkMRMLModelDisplayNode >::New();
 
@@ -94,7 +97,7 @@ vtkMRMLNode* vtkIGTLToMRMLPolyData::CreateNewNodeWithMessage(vtkMRMLScene* scene
   color[1] = 0.5;
   color[2] = 1.0;
   displayNode->SetColor(color);
-  displayNode->SetOpacity(0.5);
+  displayNode->SetOpacity(1.0);
 
   //modelNode->SetAndObservePolyData(poly);
   //modelNode->SetModifiedSinceRead(1);
@@ -112,6 +115,7 @@ vtkMRMLNode* vtkIGTLToMRMLPolyData::CreateNewNodeWithMessage(vtkMRMLScene* scene
   
   return modelNode;
 }
+
 
 //---------------------------------------------------------------------------
 vtkIntArray* vtkIGTLToMRMLPolyData::GetNodeEvents()
@@ -184,7 +188,8 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
     {
     // ERROR: No points defined
     }
-    
+
+  // Vertices
   int nvertices = verticesArray->GetNumberOfCells();
   if (nvertices > 0)
     {
@@ -270,13 +275,75 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
       int j = 0;
       for (iter = cell.begin(); iter != cell.end(); iter ++)
         {
-        tstrip->GetPointIds()->SetId(i, i);
+        tstrip->GetPointIds()->SetId(j, *iter);
         j++;
         }
       tstripCells->InsertNextCell(tstrip);
       }
-    poly->SetPolys(tstripCells);
+    poly->SetStrips(tstripCells);
     }
+
+  // Attribute
+  int nAttributes = polyDataMsg->GetNumberOfAttributes();
+  for (int i = 0; i < nAttributes; i ++)
+    {
+    igtl::PolyDataAttribute::Pointer attribute;    
+    attribute = polyDataMsg->GetAttribute(i);
+
+    vtkSmartPointer<vtkFloatArray> data = 
+      vtkSmartPointer<vtkFloatArray>::New();
+
+    data->SetName(attribute->GetName()); //set the name of the value
+    int n = attribute->GetSize();
+
+    // NOTE: Data types for POINT (igtl::PolyDataMessage::POINT_*) and CELL
+    // (igtl::PolyDataMessage::CELL_*) have the same lower 4 bit. 
+    // By masking the values with 0x0F, attribute types (either SCALAR, VECTOR, NORMAL,
+    // TENSOR, or RGBA) can be obtained. On the other hand, by masking the value
+    // with 0xF0, data types (POINT or CELL) can be obtained.
+    // See, igtlPolyDataMessage.h in the OpenIGTLink library.
+    switch (attribute->GetType() & 0x0F)
+      {
+      case igtl::PolyDataAttribute::POINT_SCALAR:
+        {
+        data->SetNumberOfComponents(1);
+        break;
+        }
+      case igtl::PolyDataAttribute::POINT_VECTOR:
+      case igtl::PolyDataAttribute::POINT_NORMAL:
+        {
+        data->SetNumberOfComponents(3);
+        break;
+        }
+      case igtl::PolyDataAttribute::POINT_TENSOR:
+        {
+        data->SetNumberOfComponents(9); // TODO: Is it valid in Slicer?
+        break;
+        }
+      case igtl::PolyDataAttribute::POINT_RGBA:
+        {
+        data->SetNumberOfComponents(4); // TODO: Is it valid in Slicer?
+        break;
+        }
+      default:
+        {
+        // ERROR
+        break;
+        }
+      }
+    data->SetNumberOfTuples(n);
+    attribute->GetData(static_cast<igtl_float32*>(data->GetPointer(0)));
+
+    if ((attribute->GetType() & 0x0F) == 0) // POINT
+      {
+      poly->GetPointData()->AddArray(data);
+      }
+    else // CELL
+      {
+      poly->GetCellData()->AddArray(data);
+      }
+    }
+
 
   modelNode->SetAndObservePolyData(poly);
 
@@ -303,10 +370,149 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
 
     if (!modelNode)
       {
+      // TODO: the node not found
       return 0;
       }
+    
+    vtkSmartPointer<vtkPolyData> poly = modelNode->GetPolyData();
+    if (poly.GetPointer() == NULL)
+      {
+      // TODO: poly data is not available
+      return 0;
+      }
+    
+    //------------------------------------------------------------
+    // Allocate Status Message Class
+    if (this->OutPolyDataMessage.IsNull())
+      {
+      this->OutPolyDataMessage = igtl::PolyDataMessage::New();
+      }
+    
+    // Set message name -- use the same name as the MRML node 
+    this->OutPolyDataMessage->SetDeviceName(modelNode->GetName());
 
-    //TODO: Create IGTL message
+    // Points
+    vtkSmartPointer<vtkPoints> points = poly->GetPoints();
+    if (points.GetPointer() != NULL)
+      {
+      int npoints = points->GetNumberOfPoints();
+      if (npoints > 0)
+        {
+        igtl::PolyDataPointArray::Pointer pointArray = igtl::PolyDataPointArray::New();
+        for (unsigned int i = 0; i < npoints; i ++)
+          {
+          double *p = points->GetPoint(i);
+          pointArray->AddPoint(static_cast<igtlFloat32>(p[0]),
+                               static_cast<igtlFloat32>(p[1]),
+                               static_cast<igtlFloat32>(p[2]));
+          }
+        this->OutPolyDataMessage->SetPoints(pointArray);
+        }
+      }
+    
+    // Vertices
+    vtkSmartPointer<vtkCellArray> vertCells = poly->GetVerts();
+    if (vertCells.GetPointer() != NULL)
+      {
+      int nverts = vertCells->GetNumberOfCells();
+      if (nverts > 0)
+        {
+        igtl::PolyDataCellArray::Pointer verticesArray = igtl::PolyDataCellArray::New();
+        vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
+
+        vertCells->InitTraversal();
+        while (vertCells->GetNextCell(idList))
+          {
+          std::list<igtlUint32> cell;
+          int nIds = idList->GetNumberOfIds();
+          for (int i = 0; i < nIds; i ++)
+            {
+            cell.push_back(idList->GetId(i));
+            }
+          verticesArray->AddCell(cell);
+          }
+        this->OutPolyDataMessage->SetVertices(verticesArray);
+        }
+      }
+
+    // Lines
+    igtl::PolyDataCellArray::Pointer linesArray;
+    vtkSmartPointer<vtkCellArray> lineCells = poly->GetLines();
+    if (lineCells.GetPointer() != NULL)
+      {
+      int nlines = lineCells->GetNumberOfCells();
+      if (nlines > 0)
+        {
+        igtl::PolyDataCellArray::Pointer linesArray = igtl::PolyDataCellArray::New();
+        vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
+
+        lineCells->InitTraversal();
+        while (lineCells->GetNextCell(idList))
+          {
+          std::list<igtlUint32> cell;
+          int nIds = idList->GetNumberOfIds();
+          for (int i = 0; i < nIds; i ++)
+            {
+            cell.push_back(idList->GetId(i));
+            }
+          linesArray->AddCell(cell);
+          }
+        this->OutPolyDataMessage->SetLines(linesArray);
+        }
+      }
+
+
+    // Polygons
+    igtl::PolyDataCellArray::Pointer polygonsArray;
+    vtkSmartPointer<vtkCellArray> polygonCells = poly->GetPolys();
+    if (polygonCells.GetPointer() != NULL)
+      {
+      int npolygons = polygonCells->GetNumberOfCells();
+      if (npolygons > 0)
+        {
+        igtl::PolyDataCellArray::Pointer polygonsArray = igtl::PolyDataCellArray::New();
+        vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
+
+        polygonCells->InitTraversal();
+        while (polygonCells->GetNextCell(idList))
+          {
+          std::list<igtlUint32> cell;
+          int nIds = idList->GetNumberOfIds();
+          for (int i = 0; i < nIds; i ++)
+            {
+            cell.push_back(idList->GetId(i));
+            }
+          polygonsArray->AddCell(cell);
+          }
+        this->OutPolyDataMessage->SetPolygons(polygonsArray);
+        }
+      }
+
+    // Triangl strips
+    igtl::PolyDataCellArray::Pointer triangleStripsArray;
+    vtkSmartPointer<vtkCellArray> triangleStripCells = poly->GetStrips();
+    if (triangleStripCells.GetPointer() != NULL)
+      {
+      int ntriangleStrips = triangleStripCells->GetNumberOfCells();
+      if (ntriangleStrips > 0)
+        {
+        igtl::PolyDataCellArray::Pointer triangleStripsArray = igtl::PolyDataCellArray::New();
+        vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
+
+        triangleStripCells->InitTraversal();
+        while (triangleStripCells->GetNextCell(idList))
+          {
+          std::list<igtlUint32> cell;
+          int nIds = idList->GetNumberOfIds();
+          for (int i = 0; i < nIds; i ++)
+            {
+            cell.push_back(idList->GetId(i));
+            }
+          triangleStripsArray->AddCell(cell);
+          }
+        this->OutPolyDataMessage->SetTriangleStrips(triangleStripsArray);
+        }
+      }
 
     this->OutPolyDataMessage->Pack();
 
