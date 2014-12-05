@@ -138,14 +138,14 @@ int vtkIGTLToMRMLPoints::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNo
           mfnode->AddFiducial((double)pos[0], (double)pos[1], (double)pos[2], pointElement->GetName());
           }
         
-        std::cerr << "========== Element #" << i << " ==========" << std::endl;
-        std::cerr << " Name      : " << pointElement->GetName() << std::endl;
-        std::cerr << " GroupName : " << pointElement->GetGroupName() << std::endl;
-        std::cerr << " RGBA      : ( " << (int)rgba[0] << ", " << (int)rgba[1] << ", " << (int)rgba[2] << ", " << (int)rgba[3] << " )" << std::endl;
-        std::cerr << " Position  : ( " << std::fixed << pos[0] << ", " << pos[1] << ", " << pos[2] << " )" << std::endl;
-        std::cerr << " Radius    : " << std::fixed << pointElement->GetRadius() << std::endl;
-        std::cerr << " Owner     : " << pointElement->GetOwner() << std::endl;
-        std::cerr << "================================" << std::endl;
+        //std::cerr << "========== Element #" << i << " ==========" << std::endl;
+        //std::cerr << " Name      : " << pointElement->GetName() << std::endl;
+        //std::cerr << " GroupName : " << pointElement->GetGroupName() << std::endl;
+        //std::cerr << " RGBA      : ( " << (int)rgba[0] << ", " << (int)rgba[1] << ", " << (int)rgba[2] << ", " << (int)rgba[3] << " )" << std::endl;
+        //std::cerr << " Position  : ( " << std::fixed << pos[0] << ", " << pos[1] << ", " << pos[2] << " )" << std::endl;
+        //std::cerr << " Radius    : " << std::fixed << pointElement->GetRadius() << std::endl;
+        //std::cerr << " Owner     : " << pointElement->GetOwner() << std::endl;
+        //std::cerr << "================================" << std::endl;
 
         }
 
@@ -208,13 +208,13 @@ int vtkIGTLToMRMLPoints::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, 
         point->SetOwner("IMAGE_0");
         point->SetRGBA(0xFF, 0x00, 0x00, 0xFF);
 
-        std::cerr << "========== Element #" << i << " ==========" << std::endl;
-        std::cerr << " Name      : " << point->GetName() << std::endl;
-        std::cerr << " GroupName : " << point->GetGroupName() << std::endl;
-        std::cerr << " Position  : ( " << std::fixed << pos[0] << ", " << pos[1] << ", " << pos[2] << " )" << std::endl;
-        std::cerr << " Radius    : " << std::fixed << point->GetRadius() << std::endl;
-        std::cerr << " Owner     : " << point->GetOwner() << std::endl;
-        std::cerr << "================================" << std::endl;
+        //std::cerr << "========== Element #" << i << " ==========" << std::endl;
+        //std::cerr << " Name      : " << point->GetName() << std::endl;
+        //std::cerr << " GroupName : " << point->GetGroupName() << std::endl;
+        //std::cerr << " Position  : ( " << std::fixed << pos[0] << ", " << pos[1] << ", " << pos[2] << " )" << std::endl;
+        //std::cerr << " Radius    : " << std::fixed << point->GetRadius() << std::endl;
+        //std::cerr << " Owner     : " << point->GetOwner() << std::endl;
+        //std::cerr << "================================" << std::endl;
 
         this->PointMsg->AddPointElement(point);
         }
