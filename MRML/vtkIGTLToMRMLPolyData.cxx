@@ -155,13 +155,6 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
     return 0;
     }
 
-
-  igtl::PolyDataPointArray::Pointer pointsArray        = polyDataMsg->GetPoints();        
-  igtl::PolyDataCellArray::Pointer verticesArray       = polyDataMsg->GetVertices();      
-  igtl::PolyDataCellArray::Pointer linesArray          = polyDataMsg->GetLines();         
-  igtl::PolyDataCellArray::Pointer polygonsArray       = polyDataMsg->GetPolygons();      
-  igtl::PolyDataCellArray::Pointer triangleStripsArray = polyDataMsg->GetTriangleStrips();
-
   vtkSmartPointer<vtkPolyData> poly = vtkSmartPointer<vtkPolyData>::New();
 
   if (poly.GetPointer()==NULL)
@@ -170,6 +163,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
     }
 
   // Points
+  igtl::PolyDataPointArray::Pointer pointsArray = polyDataMsg->GetPoints();
   int npoints = pointsArray->GetNumberOfPoints();
   if (npoints > 0)
     {
@@ -188,6 +182,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
     }
 
   // Vertices
+  igtl::PolyDataCellArray::Pointer verticesArray =  polyDataMsg->GetVertices();
   int nvertices = verticesArray->GetNumberOfCells();
   if (nvertices > 0)
     {
@@ -210,6 +205,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
     }
 
   // Lines
+  igtl::PolyDataCellArray::Pointer linesArray = polyDataMsg->GetLines();
   int nlines = linesArray->GetNumberOfCells();
   if (nlines > 0)
     {
@@ -234,6 +230,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
     }
 
   // Polygons
+  igtl::PolyDataCellArray::Pointer polygonsArray = polyDataMsg->GetPolygons();
   int npolygons = polygonsArray->GetNumberOfCells();
   if (npolygons > 0)
     {
@@ -258,6 +255,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
     }
 
   // Triangle Strips
+  igtl::PolyDataCellArray::Pointer triangleStripsArray = polyDataMsg->GetTriangleStrips();
   int ntstrips = triangleStripsArray->GetNumberOfCells();
   if (ntstrips > 0)
     {
