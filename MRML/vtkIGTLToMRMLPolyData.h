@@ -26,6 +26,7 @@
 // VTK includes
 #include <vtkObject.h>
 
+class vtkCellArray;
 class vtkMRMLVolumeNode;
 
 class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPolyData : public vtkIGTLToMRMLBase
@@ -52,9 +53,11 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPolyData : public
 
   int IGTLToVTKScalarType(int igtlType);
 
- protected:
-  igtl::PolyDataMessage::Pointer OutPolyDataMessage;
+  int VTKToIGTLCellArray(vtkCellArray* src, igtl::PolyDataCellArray* dest);
 
+ protected:
+
+  igtl::PolyDataMessage::Pointer OutPolyDataMessage;
   igtl::GetPolyDataMessage::Pointer GetPolyDataMessage;
 
 };

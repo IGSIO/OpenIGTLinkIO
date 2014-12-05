@@ -99,9 +99,6 @@ vtkMRMLNode* vtkIGTLToMRMLPolyData::CreateNewNodeWithMessage(vtkMRMLScene* scene
   displayNode->SetColor(color);
   displayNode->SetOpacity(1.0);
 
-  //modelNode->SetAndObservePolyData(poly);
-  //modelNode->SetModifiedSinceRead(1);
-  //displayNode->SetModifiedSinceRead(1); 
   displayNode->SliceIntersectionVisibilityOn();  
   displayNode->VisibilityOn();
 
@@ -354,6 +351,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
 
 }
 
+
 //---------------------------------------------------------------------------
 int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg)
 {
@@ -414,102 +412,46 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
     vtkSmartPointer<vtkCellArray> vertCells = poly->GetVerts();
     if (vertCells.GetPointer() != NULL)
       {
-      int nverts = vertCells->GetNumberOfCells();
-      if (nverts > 0)
+      igtl::PolyDataCellArray::Pointer verticesArray = igtl::PolyDataCellArray::New();
+      this->VTKToIGTLCellArray(vertCells, verticesArray);
+      if (verticesArray->GetNumberOfCells() > 0)
         {
-        igtl::PolyDataCellArray::Pointer verticesArray = igtl::PolyDataCellArray::New();
-        vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
-
-        vertCells->InitTraversal();
-        while (vertCells->GetNextCell(idList))
-          {
-          std::list<igtlUint32> cell;
-          int nIds = idList->GetNumberOfIds();
-          for (int i = 0; i < nIds; i ++)
-            {
-            cell.push_back(idList->GetId(i));
-            }
-          verticesArray->AddCell(cell);
-          }
         this->OutPolyDataMessage->SetVertices(verticesArray);
         }
       }
-
+      
     // Lines
-    igtl::PolyDataCellArray::Pointer linesArray;
     vtkSmartPointer<vtkCellArray> lineCells = poly->GetLines();
     if (lineCells.GetPointer() != NULL)
       {
-      int nlines = lineCells->GetNumberOfCells();
-      if (nlines > 0)
+      igtl::PolyDataCellArray::Pointer linesArray = igtl::PolyDataCellArray::New();
+      this->VTKToIGTLCellArray(lineCells, linesArray);
+      if (linesArray->GetNumberOfCells() > 0)
         {
-        igtl::PolyDataCellArray::Pointer linesArray = igtl::PolyDataCellArray::New();
-        vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
-
-        lineCells->InitTraversal();
-        while (lineCells->GetNextCell(idList))
-          {
-          std::list<igtlUint32> cell;
-          int nIds = idList->GetNumberOfIds();
-          for (int i = 0; i < nIds; i ++)
-            {
-            cell.push_back(idList->GetId(i));
-            }
-          linesArray->AddCell(cell);
-          }
         this->OutPolyDataMessage->SetLines(linesArray);
         }
       }
 
-
     // Polygons
-    igtl::PolyDataCellArray::Pointer polygonsArray;
     vtkSmartPointer<vtkCellArray> polygonCells = poly->GetPolys();
     if (polygonCells.GetPointer() != NULL)
       {
-      int npolygons = polygonCells->GetNumberOfCells();
-      if (npolygons > 0)
+      igtl::PolyDataCellArray::Pointer polygonsArray;
+      this->VTKToIGTLCellArray(polygonCells, polygonsArray);
+      if (polygonsArray->GetNumberOfCells() > 0)
         {
-        igtl::PolyDataCellArray::Pointer polygonsArray = igtl::PolyDataCellArray::New();
-        vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
-
-        polygonCells->InitTraversal();
-        while (polygonCells->GetNextCell(idList))
-          {
-          std::list<igtlUint32> cell;
-          int nIds = idList->GetNumberOfIds();
-          for (int i = 0; i < nIds; i ++)
-            {
-            cell.push_back(idList->GetId(i));
-            }
-          polygonsArray->AddCell(cell);
-          }
         this->OutPolyDataMessage->SetPolygons(polygonsArray);
         }
       }
 
     // Triangl strips
-    igtl::PolyDataCellArray::Pointer triangleStripsArray;
     vtkSmartPointer<vtkCellArray> triangleStripCells = poly->GetStrips();
     if (triangleStripCells.GetPointer() != NULL)
       {
-      int ntriangleStrips = triangleStripCells->GetNumberOfCells();
-      if (ntriangleStrips > 0)
+      igtl::PolyDataCellArray::Pointer triangleStripsArray = igtl::PolyDataCellArray::New();
+      this->VTKToIGTLCellArray(triangleStripCells, triangleStripsArray);
+      if (triangleStripsArray->GetNumberOfCells() > 0)
         {
-        igtl::PolyDataCellArray::Pointer triangleStripsArray = igtl::PolyDataCellArray::New();
-        vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
-
-        triangleStripCells->InitTraversal();
-        while (triangleStripCells->GetNextCell(idList))
-          {
-          std::list<igtlUint32> cell;
-          int nIds = idList->GetNumberOfIds();
-          for (int i = 0; i < nIds; i ++)
-            {
-            cell.push_back(idList->GetId(i));
-            }
-          triangleStripsArray->AddCell(cell);
-          }
         this->OutPolyDataMessage->SetTriangleStrips(triangleStripsArray);
         }
       }
@@ -566,7 +508,7 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
       for (int i = 0; i < nPointAttributes; i ++)
         {
         igtl::PolyDataAttribute::Pointer attribute = igtl::PolyDataAttribute::New();
-        vtkSmartPointer<vtkDataArray> array = pdata->GetArray(i);
+        vtkSmartPointer<vtkDataArray> array = cdata->GetArray(i);
         int ncomps  = array->GetNumberOfComponents();
         if (ncomps == 1)
           {
@@ -658,3 +600,33 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
 }
 
 
+//---------------------------------------------------------------------------
+int vtkIGTLToMRMLPolyData::VTKToIGTLCellArray(vtkCellArray* src, igtl::PolyDataCellArray* dest)
+{
+
+  if (src != NULL)
+    {
+    int ncells = src->GetNumberOfCells();
+    if (ncells > 0)
+      {
+      vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
+      src->InitTraversal();
+      while (src->GetNextCell(idList))
+        {
+        std::list<igtlUint32> cell;
+        int nIds = idList->GetNumberOfIds();
+        for (int i = 0; i < nIds; i ++)
+          {
+          cell.push_back(idList->GetId(i));
+          }
+        dest->AddCell(cell);
+        }
+      }
+    return ncells;
+    }
+  else
+    {
+    return 0;
+    }
+
+}
