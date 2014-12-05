@@ -40,6 +40,7 @@
 #include <vtkPolygon.h>
 #include <vtkTriangleStrip.h>
 #include <vtkFloatArray.h>
+#include <vtkDataSetAttributes.h>
 #include <vtkPointData.h>
 #include <vtkCellData.h>
 
@@ -413,8 +414,7 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
     if (vertCells.GetPointer() != NULL)
       {
       igtl::PolyDataCellArray::Pointer verticesArray = igtl::PolyDataCellArray::New();
-      this->VTKToIGTLCellArray(vertCells, verticesArray);
-      if (verticesArray->GetNumberOfCells() > 0)
+      if (this->VTKToIGTLCellArray(vertCells, verticesArray) > 0)
         {
         this->OutPolyDataMessage->SetVertices(verticesArray);
         }
@@ -425,8 +425,7 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
     if (lineCells.GetPointer() != NULL)
       {
       igtl::PolyDataCellArray::Pointer linesArray = igtl::PolyDataCellArray::New();
-      this->VTKToIGTLCellArray(lineCells, linesArray);
-      if (linesArray->GetNumberOfCells() > 0)
+      if (this->VTKToIGTLCellArray(lineCells, linesArray) > 0)
         {
         this->OutPolyDataMessage->SetLines(linesArray);
         }
@@ -437,8 +436,7 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
     if (polygonCells.GetPointer() != NULL)
       {
       igtl::PolyDataCellArray::Pointer polygonsArray;
-      this->VTKToIGTLCellArray(polygonCells, polygonsArray);
-      if (polygonsArray->GetNumberOfCells() > 0)
+      if (this->VTKToIGTLCellArray(polygonCells, polygonsArray) > 0)
         {
         this->OutPolyDataMessage->SetPolygons(polygonsArray);
         }
@@ -449,14 +447,13 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
     if (triangleStripCells.GetPointer() != NULL)
       {
       igtl::PolyDataCellArray::Pointer triangleStripsArray = igtl::PolyDataCellArray::New();
-      this->VTKToIGTLCellArray(triangleStripCells, triangleStripsArray);
-      if (triangleStripsArray->GetNumberOfCells() > 0)
+      if (this->VTKToIGTLCellArray(triangleStripCells, triangleStripsArray) > 0)
         {
         this->OutPolyDataMessage->SetTriangleStrips(triangleStripsArray);
         }
       }
 
-    // Attributes
+    // Attributes for points
     vtkSmartPointer<vtkPointData> pdata = poly->GetPointData();
     int nPointAttributes = pdata->GetNumberOfArrays();
     if (nPointAttributes > 0)
@@ -464,87 +461,30 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
       for (int i = 0; i < nPointAttributes; i ++)
         {
         igtl::PolyDataAttribute::Pointer attribute = igtl::PolyDataAttribute::New();
-        vtkSmartPointer<vtkDataArray> array = pdata->GetArray(i);
-        int ncomps  = array->GetNumberOfComponents();
-        if (ncomps == 1)
+        if (this->VTKToIGTLAttribute(pdata, i, attribute) > 0)
           {
-          attribute->SetType(igtl::PolyDataAttribute::POINT_SCALAR);
+          this->OutPolyDataMessage->AddAttribute(attribute);
           }
-        else if (ncomps == 3)
-          {
-          // TODO: how to differenciate normal and vector?
-          attribute->SetType(igtl::PolyDataAttribute::POINT_NORMAL);
-          }
-        else if (ncomps == 9)
-          {
-          attribute->SetType(igtl::PolyDataAttribute::POINT_TENSOR);
-          }
-        else if (ncomps == 4)
-          {
-          attribute->SetType(igtl::PolyDataAttribute::POINT_RGBA);
-          }
-        attribute->SetName(array->GetName());
-        int ntuples = array->GetNumberOfTuples();
-        attribute->SetSize(ntuples);
-
-        for (int j = 0; j < ntuples; j ++)
-          {
-          double * tuple = array->GetTuple(j);
-          igtlFloat32 data[9];
-          for (int k = 0; k < ncomps; k ++)
-            {
-            data[k] = static_cast<igtlFloat32>(tuple[k]);
-            }
-          attribute->SetNthData(j, data);
-          }
-        this->OutPolyDataMessage->AddAttribute(attribute);
         }
-      }
+      }        
 
+
+    // Attributes for cells
     vtkSmartPointer<vtkCellData> cdata = poly->GetCellData();
     int nCellAttributes = cdata->GetNumberOfArrays();
     if (nCellAttributes > 0)
       {
-      for (int i = 0; i < nPointAttributes; i ++)
+      for (int i = 0; i < nCellAttributes; i ++)
         {
         igtl::PolyDataAttribute::Pointer attribute = igtl::PolyDataAttribute::New();
-        vtkSmartPointer<vtkDataArray> array = cdata->GetArray(i);
-        int ncomps  = array->GetNumberOfComponents();
-        if (ncomps == 1)
+        if (this->VTKToIGTLAttribute(pdata, i, attribute) > 0)
           {
-          attribute->SetType(igtl::PolyDataAttribute::CELL_SCALAR);
+          this->OutPolyDataMessage->AddAttribute(attribute);
           }
-        else if (ncomps == 3)
-          {
-          // TODO: how to differenciate normal and vector?
-          attribute->SetType(igtl::PolyDataAttribute::CELL_NORMAL);
-          }
-        else if (ncomps == 9)
-          {
-          attribute->SetType(igtl::PolyDataAttribute::CELL_TENSOR);
-          }
-        else if (ncomps == 4)
-          {
-          attribute->SetType(igtl::PolyDataAttribute::CELL_RGBA);
-          }
-        attribute->SetName(array->GetName());
-        int ntuples = array->GetNumberOfTuples();
-        attribute->SetSize(ntuples);
-
-        for (int j = 0; j < ntuples; j ++)
-          {
-          double * tuple = array->GetTuple(j);
-          igtlFloat32 data[9];
-          for (int k = 0; k < ncomps; k ++)
-            {
-            data[k] = static_cast<igtlFloat32>(tuple[k]);
-            }
-          attribute->SetNthData(j, data);
-          }
-        this->OutPolyDataMessage->AddAttribute(attribute);
         }
-      }
-    
+      }        
+
+    // Pack the message
     this->OutPolyDataMessage->Pack();
 
     *size = this->OutPolyDataMessage->GetPackSize();
@@ -604,7 +544,7 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
 int vtkIGTLToMRMLPolyData::VTKToIGTLCellArray(vtkCellArray* src, igtl::PolyDataCellArray* dest)
 {
 
-  if (src != NULL)
+  if (src && dest)
     {
     int ncells = src->GetNumberOfCells();
     if (ncells > 0)
@@ -628,5 +568,74 @@ int vtkIGTLToMRMLPolyData::VTKToIGTLCellArray(vtkCellArray* src, igtl::PolyDataC
     {
     return 0;
     }
+
+}
+
+
+//---------------------------------------------------------------------------
+int vtkIGTLToMRMLPolyData::VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl::PolyDataAttribute* dest)
+{
+
+  //vtkSmartPointer<vtkPointData> src = poly->GetPointData();
+  if ((!src) || (!dest))
+    {
+    return 0;
+    }
+
+  // Check the range of index i
+  if (i < 0 || i >= src->GetNumberOfArrays())
+    {
+    return 0;
+    }
+
+  // NOTE: Data types for POINT (igtl::PolyDataMessage::POINT_*) and CELL
+  // (igtl::PolyDataMessage::CELL_*) have the same bits exept the 3rd bit (0x10).
+  // attrType will contain the 3rd bit based on the type of vtkDataSetAttributes
+  // (either vtkCellData or vtkPointData). See, igtlPolyDataMessage.h in the OpenIGTLink library.
+  int attrTypeBit;
+  if (src->IsTypeOf("vtkCellData"))
+    {
+    attrTypeBit = 0x10;
+    }
+  else // vtkPointData
+    {
+    attrTypeBit = 0x00;
+    }
+  
+  vtkSmartPointer<vtkDataArray> array = src->GetArray(i);
+  int ncomps  = array->GetNumberOfComponents();
+  if (ncomps == 1)
+    {
+    dest->SetType(igtl::PolyDataAttribute::POINT_SCALAR | attrTypeBit);
+    }
+  else if (ncomps == 3)
+    {
+    // TODO: how to differenciate normal and vector?
+    dest->SetType(igtl::PolyDataAttribute::POINT_NORMAL | attrTypeBit);
+    }
+  else if (ncomps == 9)
+    {
+    dest->SetType(igtl::PolyDataAttribute::POINT_TENSOR | attrTypeBit);
+    }
+  else if (ncomps == 4)
+    {
+    dest->SetType(igtl::PolyDataAttribute::POINT_RGBA | attrTypeBit);
+    }
+  dest->SetName(array->GetName());
+  int ntuples = array->GetNumberOfTuples();
+  dest->SetSize(ntuples);
+  
+  for (int j = 0; j < ntuples; j ++)
+    {
+    double * tuple = array->GetTuple(j);
+    igtlFloat32 data[9];
+    for (int k = 0; k < ncomps; k ++)
+      {
+      data[k] = static_cast<igtlFloat32>(tuple[k]);
+      }
+    dest->SetNthData(j, data);
+    }
+
+  return 1;
 
 }

@@ -27,6 +27,7 @@
 #include <vtkObject.h>
 
 class vtkCellArray;
+class vtkDataSetAttributes;
 class vtkMRMLVolumeNode;
 
 class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPolyData : public vtkIGTLToMRMLBase
@@ -41,7 +42,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPolyData : public
   virtual const char*  GetIGTLName() { return "POLYDATA"; };
   virtual const char*  GetMRMLName() { return "Model"; };
   virtual vtkIntArray* GetNodeEvents();
-  virtual vtkMRMLNode* CreateNewNodeWithMessage(vtkMRMLScene* scene, const char* name, igtl::MessageBase::Pointer incomingPolyDataMessage);
+  virtual vtkMRMLNode* CreateNewNodeWithMessage(vtkMRMLScene* scene, const char* name,
+                                                igtl::MessageBase::Pointer incomingPolyDataMessage);
 
   virtual int          IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node);
   virtual int          MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg);
@@ -53,7 +55,12 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPolyData : public
 
   int IGTLToVTKScalarType(int igtlType);
 
+  // Utility function for MRMLToIGTL(): Convert vtkCellArray to igtl::PolyDataCellArray
   int VTKToIGTLCellArray(vtkCellArray* src, igtl::PolyDataCellArray* dest);
+
+  // Utility function for MRMLToIGTL(): Convert i-th vtkDataSetAttributes (vtkCellData and vtkPointData)
+  // to igtl::PolyDataAttribute
+  int VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl::PolyDataAttribute* dest);
 
  protected:
 
