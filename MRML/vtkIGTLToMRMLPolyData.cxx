@@ -168,7 +168,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
   if (npoints > 0)
     {
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
-    for (unsigned int i = 0; i < npoints; i ++)
+    for (int i = 0; i < npoints; i ++)
       {
       igtlFloat32 point[3];
       pointsArray->GetPoint(i, point);
@@ -187,7 +187,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
   if (nvertices > 0)
     {
     vtkSmartPointer<vtkCellArray> vertCells = vtkSmartPointer<vtkCellArray>::New();
-    for (unsigned int i = 0; i < nvertices; i ++)
+    for (int i = 0; i < nvertices; i ++)
       {
       vtkSmartPointer<vtkVertex> vertex = vtkSmartPointer<vtkVertex>::New();
 
@@ -210,7 +210,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
   if (nlines > 0)
     {
     vtkSmartPointer<vtkCellArray> lineCells = vtkSmartPointer<vtkCellArray>::New();
-    for(unsigned int i = 0; i < nlines; i++)
+    for(int i = 0; i < nlines; i++)
       {
       vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
       
@@ -235,7 +235,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
   if (npolygons > 0)
     {
     vtkSmartPointer<vtkCellArray> polygonCells = vtkSmartPointer<vtkCellArray>::New();
-    for(unsigned int i = 0; i < npolygons; i++)
+    for(int i = 0; i < npolygons; i++)
       {
       vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New();
 
@@ -260,7 +260,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
   if (ntstrips > 0)
     {
     vtkSmartPointer<vtkCellArray> tstripCells = vtkSmartPointer<vtkCellArray>::New();
-    for(unsigned int i = 0; i < ntstrips; i++)
+    for(int i = 0; i < ntstrips; i++)
       {
       vtkSmartPointer<vtkTriangleStrip> tstrip = vtkSmartPointer<vtkTriangleStrip>::New();
 
