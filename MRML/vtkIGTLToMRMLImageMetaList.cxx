@@ -178,14 +178,7 @@ int vtkIGTLToMRMLImageMetaList::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrm
           {
           this->GetImageMetaMessage = igtl::GetImageMetaMessage::New();
           }
-        if (qnode->GetNoNameQuery())
-          {
-          this->GetImageMetaMessage->SetDeviceName("");
-          }
-        else
-          {
-          this->GetImageMetaMessage->SetDeviceName(mrmlNode->GetName());
-          }
+        this->GetImageMetaMessage->SetDeviceName(qnode->GetIGTLDeviceName());
         this->GetImageMetaMessage->Pack();
         *size = this->GetImageMetaMessage->GetPackSize();
         *igtlMsg = this->GetImageMetaMessage->GetPackPointer();

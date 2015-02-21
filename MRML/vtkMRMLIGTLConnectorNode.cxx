@@ -17,6 +17,7 @@ Version:   $Revision: 1.2 $
 #include "vtkMRMLIGTLConnectorNode.h"
 
 // OpenIGTLink includes
+#include <igtl_header.h>
 #include <igtlServerSocket.h>
 #include <igtlClientSocket.h>
 #include <igtlOSUtil.h>
@@ -35,6 +36,7 @@ Version:   $Revision: 1.2 $
 #include <vtkMultiThreader.h>
 #include <vtkMutexLock.h>
 #include <vtkObjectFactory.h>
+#include <vtkTimerLog.h>
 
 // STD includes
 #include <string>
@@ -1005,7 +1007,7 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
       continue;
       }
 
-    if (strncmp("OpenIGTLink_MESSAGE_", (*nameIter).c_str(), 20) == 0)
+    if (strncmp("OpenIGTLink_MESSAGE_", (*nameIter).c_str(), IGTL_HEADER_NAME_SIZE) == 0)
       {
       buffer->SetDeviceName("OpenIGTLink");
       }
@@ -1111,26 +1113,42 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
         }
       }
 
-    // If the message is a responce to one of the querys in the list
-    // TODO: Should QueryWaitingQueue be a std::map ?
+    // If the message is a response to one of the querys in the list
+    // Remove query nodes from the queue that are replied or expired.
+    // Process the removed nodes after the QueryQueueMutex is released
+    // to avoid accidental modification of the query queue as a result of response processing.
+    std::vector< vtkMRMLIGTLQueryNode* > repliedQueryNodes;
+    std::vector< vtkMRMLIGTLQueryNode* > expiredQueryNodes;
+    this->QueryQueueMutex->Lock();
+    double currentTime = vtkTimerLog::GetUniversalTime();
     if (this->QueryWaitingQueue.size() > 0 && updatedNode != NULL)
       {
-      std::list<vtkMRMLIGTLQueryNode*>::iterator iter;
-      for (iter = this->QueryWaitingQueue.begin(); iter != this->QueryWaitingQueue.end(); )
+      for (std::list< vtkWeakPointer<vtkMRMLIGTLQueryNode> >::iterator iter = this->QueryWaitingQueue.begin();
+        iter != this->QueryWaitingQueue.end(); /* increment in the loop to allow erase */ )
         {
+        if (iter->GetPointer()==NULL)
+          {
+          // the node has been deleted, so remove it from the list
+          iter = this->QueryWaitingQueue.erase(iter);
+          continue;
+          }
+        if ((*iter)->GetTimeOut()>0 && currentTime-(*iter)->GetTimeStamp()>(*iter)->GetTimeOut())
+          {
+          // the query is expired
+          expiredQueryNodes.push_back(*iter);
+          (*iter)->SetConnectorNodeID("");
+          iter = this->QueryWaitingQueue.erase(iter);
+          continue;
+          }
         // If there is a query that has either the same device name as
         // the incominig message or a NULL name.
-        // TODO: what happens if there are multiple queries that meet this condition?
-        // (Currently the first query that matches first takes the message.)
-        if (strncmp((*iter)->GetIGTLName(), buffer->GetDeviceType(), 12) == 0 &&
-            ((*iter)->GetNoNameQuery() ||
-             strncmp((*iter)->GetName(), buffer->GetDeviceName(), 20) == 0))
+        // If multiple queries that meet the condition then they will all be processed.
+        if (strncmp((*iter)->GetIGTLName(), buffer->GetDeviceType(), IGTL_HEADER_TYPE_SIZE) == 0 &&
+            (strlen((*iter)->GetIGTLDeviceName())==0 ||
+             strncmp((*iter)->GetIGTLDeviceName(), buffer->GetDeviceName(), IGTL_HEADER_NAME_SIZE) == 0))
           {
-          //this->QueryQueueMutex->Lock();
-          (*iter)->SetQueryStatus(vtkMRMLIGTLQueryNode::STATUS_SUCCESS);
-          //this->QueryQueueMutex->Unlock();
-          (*iter)->SetResponseDataNodeID(updatedNode->GetID());
-          (*iter)->InvokeEvent(vtkMRMLIGTLQueryNode::ResponseEvent);
+          repliedQueryNodes.push_back(*iter);
+          (*iter)->SetConnectorNodeID("");
           iter = this->QueryWaitingQueue.erase(iter);
           }
         else
@@ -1138,6 +1156,21 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
           iter++;
           }
         }
+      }
+    this->QueryQueueMutex->Unlock();
+
+    // Update query nodes that successfully received response
+    for (std::vector< vtkMRMLIGTLQueryNode* >::iterator iter = repliedQueryNodes.begin(); iter != repliedQueryNodes.end(); ++iter)
+      {
+      (*iter)->SetQueryStatus(vtkMRMLIGTLQueryNode::STATUS_SUCCESS);
+      (*iter)->SetResponseDataNodeID(updatedNode->GetID());
+      (*iter)->InvokeEvent(vtkMRMLIGTLQueryNode::ResponseEvent);
+      }
+    // Update expired query nodes
+    for (std::vector< vtkMRMLIGTLQueryNode* >::iterator iter = expiredQueryNodes.begin(); iter != expiredQueryNodes.end(); ++iter)
+      {
+      (*iter)->SetQueryStatus(vtkMRMLIGTLQueryNode::STATUS_EXPIRED);
+      (*iter)->InvokeEvent(vtkMRMLIGTLQueryNode::ResponseEvent);
       }
 
     this->InvokeEvent(vtkMRMLIGTLConnectorNode::ReceiveEvent);
@@ -1600,26 +1633,46 @@ int vtkMRMLIGTLConnectorNode::PushNode(vtkMRMLNode* node, int event)
 //---------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::PushQuery(vtkMRMLIGTLQueryNode* node)
 {
-  if (node)
+  if (node==NULL)
     {
-    vtkIGTLToMRMLBase* converter = this->GetConverterByIGTLDeviceType(node->GetIGTLName());
-    if (converter)
-      {
-      int size;
-      void* igtlMsg;
-      converter->MRMLToIGTL(0, node, &size, &igtlMsg);
-      if (size > 0)
-        {
-        this->SendData(size, (unsigned char*)igtlMsg);
-        this->QueryQueueMutex->Lock();
-        node->SetQueryStatus(vtkMRMLIGTLQueryNode::STATUS_WAITING);
-        this->QueryWaitingQueue.push_back(node);
-        this->QueryQueueMutex->Unlock();
-        }
-      }
+    vtkErrorMacro("vtkMRMLIGTLConnectorNode::PushQuery failed: invalid input node");
+    return;
+    }
+  vtkIGTLToMRMLBase* converter = this->GetConverterByIGTLDeviceType(node->GetIGTLName());
+  if (converter==NULL)
+    {
+    vtkErrorMacro("vtkMRMLIGTLConnectorNode::PushQuery failed: converter not found");
+    return;
+    }
+
+  int size=0;
+  void* igtlMsg=NULL;
+  converter->MRMLToIGTL(0, node, &size, &igtlMsg);
+  if (size > 0)
+    {
+    this->SendData(size, (unsigned char*)igtlMsg);
+    this->QueryQueueMutex->Lock();
+    node->SetTimeStamp(vtkTimerLog::GetUniversalTime());
+    node->SetQueryStatus(vtkMRMLIGTLQueryNode::STATUS_WAITING);
+    node->SetConnectorNodeID(this->GetID());
+    this->QueryWaitingQueue.push_back(node);
+    this->QueryQueueMutex->Unlock();
     }
 }
 
+//---------------------------------------------------------------------------
+void vtkMRMLIGTLConnectorNode::CancelQuery(vtkMRMLIGTLQueryNode* node)
+{
+  if (node==NULL)
+    {
+    vtkErrorMacro("vtkMRMLIGTLConnectorNode::PushQuery failed: invalid input node");
+    return;
+    }
+  this->QueryQueueMutex->Lock();
+  this->QueryWaitingQueue.remove(node);
+  node->SetConnectorNodeID("");
+  this->QueryQueueMutex->Unlock();
+}
 
 //---------------------------------------------------------------------------
 void vtkMRMLIGTLConnectorNode::LockIncomingMRMLNode(vtkMRMLNode* node)

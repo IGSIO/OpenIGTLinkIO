@@ -24,7 +24,6 @@
 #include <vtkMRMLScalarVolumeNode.h>
 
 // VTK includes
-#include <vtkImageData.h>
 #include <vtkIntArray.h>
 #include <vtkObjectFactory.h>
 
@@ -148,17 +147,6 @@ int vtkIGTLToMRMLTrackingData::MRMLToIGTL(unsigned long vtkNotUsed(event), vtkMR
       {
       if (qnode->GetQueryType() == vtkMRMLIGTLQueryNode::TYPE_GET)
         {
-        /*
-        //igtl::TransformMessage::Pointer OutTransformMsg;
-        if (this->GetImageMetaMessage.IsNull())
-          {
-          this->GetImageMetaMessage = igtl::GetTransformDataMessage::New();
-          }
-        this->GetImageMetaMessage->SetDeviceName(mrmlNode->GetName());
-        this->GetImageMetaMessage->Pack();
-        *size = this->GetImageMetaMessage->GetPackSize();
-        *igtlMsg = this->GetImageMetaMessage->GetPackPointer();
-        */
         *size = 0;
         return 0;
         }
@@ -168,15 +156,7 @@ int vtkIGTLToMRMLTrackingData::MRMLToIGTL(unsigned long vtkNotUsed(event), vtkMR
           {
           this->StartTrackingDataMessage = igtl::StartTrackingDataMessage::New();
           }
-        //this->StartTrackingDataMessage->SetDeviceName(mrmlNode->GetName());
-        if (qnode->GetNoNameQuery())
-          {
-          this->StartTrackingDataMessage->SetDeviceName("");
-          }
-        else
-          {
-          this->StartTrackingDataMessage->SetDeviceName(mrmlNode->GetName());
-          }
+        this->StartTrackingDataMessage->SetDeviceName(qnode->GetIGTLDeviceName());
         this->StartTrackingDataMessage->SetResolution(50);
         this->StartTrackingDataMessage->SetCoordinateName("");
         this->StartTrackingDataMessage->Pack();
@@ -190,14 +170,7 @@ int vtkIGTLToMRMLTrackingData::MRMLToIGTL(unsigned long vtkNotUsed(event), vtkMR
           {
           this->StopTrackingDataMessage = igtl::StopTrackingDataMessage::New();
           }
-        if (qnode->GetNoNameQuery())
-          {
-          this->StopTrackingDataMessage->SetDeviceName("");
-          }
-        else
-          {
-          this->StopTrackingDataMessage->SetDeviceName(mrmlNode->GetName());
-          }
+        this->StopTrackingDataMessage->SetDeviceName(qnode->GetIGTLDeviceName());
         this->StopTrackingDataMessage->Pack();
         *size = this->StopTrackingDataMessage->GetPackSize();
         *igtlMsg = this->StopTrackingDataMessage->GetPackPointer();
@@ -210,18 +183,6 @@ int vtkIGTLToMRMLTrackingData::MRMLToIGTL(unsigned long vtkNotUsed(event), vtkMR
       return 0;
       }
     }
-
-  // If mrmlNode is data node
-  /*
-  if (event == vtkMRMLVolumeNode::ImageDataModifiedEvent)
-    {
-    return 1;
-    }
-  else
-    {
-    return 0;
-    }
-  */
   return 0;
 }
 

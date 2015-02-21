@@ -501,14 +501,7 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
           {
           this->GetPolyDataMessage = igtl::GetPolyDataMessage::New();
           }
-        if (qnode->GetNoNameQuery() == 1)
-          {
-          this->GetPolyDataMessage->SetDeviceName("");
-          }
-        else
-          {
-          this->GetPolyDataMessage->SetDeviceName(mrmlNode->GetName());
-          }
+        this->GetPolyDataMessage->SetDeviceName(qnode->GetIGTLDeviceName());
         this->GetPolyDataMessage->Pack();
         *size = this->GetPolyDataMessage->GetPackSize();
         *igtlMsg = this->GetPolyDataMessage->GetPackPointer();

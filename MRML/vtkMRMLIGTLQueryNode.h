@@ -21,16 +21,14 @@
 // MRML includes
 #include <vtkMRML.h>
 #include <vtkMRMLNode.h>
-#include <vtkMRMLStorageNode.h>
 
 // VTK includes
 #include <vtkObject.h>
 
 // STD includes
 #include <string>
-#include <map>
-#include <vector>
-#include <set>
+
+class vtkMRMLIGTLConnectorNode;
 
 class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLQueryNode : public vtkMRMLNode
 {
@@ -59,6 +57,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLQueryNode : public 
     STATUS_WAITING,      // Waiting for response from server
     STATUS_SUCCESS,      // Server accepted query successfuly
     STATUS_ERROR,        // Server failed to accept query
+    STATUS_EXPIRED,      // Server did not respond in the maximum allowed time
     NUM_STATUS,
   };
 
@@ -71,8 +70,29 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLQueryNode : public 
   vtkSetMacro( QueryStatus, int );
   vtkGetMacro( QueryType, int );
   vtkSetMacro( QueryType, int );
-  vtkGetMacro( NoNameQuery, int );
-  vtkSetMacro( NoNameQuery, int );
+
+  // Description:
+  // Get OpenIGTLink type name. If the query node is for IMAGE, "IMAGE" is returned.
+  virtual void SetIGTLName(const char* name);
+  virtual const char* GetIGTLName() { return IGTLName.c_str(); };
+  
+  // Description:
+  // Get OpenIGTLink device name. If it is empty then the query will look for any device name with a matching type (IGTLName).
+  virtual void SetIGTLDeviceName(const char* name);
+  virtual const char* GetIGTLDeviceName() { return IGTLDeviceName.c_str(); };
+  
+  // Description:
+  // Time when the query issued in Universal Time in seconds (see vtkTimerLog::GetUniversalTime())
+  vtkGetMacro( TimeStamp, double );
+  vtkSetMacro( TimeStamp, double );
+
+  // Description:
+  // Timeout of the query in seconds.
+  // If TimeOut>0 then it means that QueryStatus has to be changed to STATUS_TIMEOUT if the status
+  // is still STATUS_WAITING and more than TimeOut time elapsed since the TimeStamp.
+  // If TimeOut==0 then there is no limit on the amount of time waiting for a query response.
+  vtkGetMacro( TimeOut, double );
+  vtkSetMacro( TimeOut, double );
 
   //----------------------------------------------------------------
   // Standard methods for MRML nodes
@@ -102,22 +122,24 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLQueryNode : public 
   virtual const char* GetNodeTagName()
   { return "IGTLQuery"; };
 
-  // method to propagate events generated in mrml
-  virtual void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData );
-
-  // Description:
-  // Get OpenIGTLink device name. If the query node is for IMAGE, "IMAGE" is returned.
-  virtual void SetIGTLName(const char* name);
-  virtual const char* GetIGTLName() { return IGTLName.c_str(); };
-
   // Description:
   // Return error message after receiving requested message.
   virtual const char* GetErrorString();
 
   // Description:
-  // Query node saves MRML node that holds received data as response to the query.
-  virtual void SetResponseDataNodeID(const char* id) { this->DataNodeID = id; };
-  virtual const char* GetResponseDataNodeID()        { return this->DataNodeID.c_str(); };
+  // Node that holds received data as response to the query.
+  virtual void SetResponseDataNodeID(const char* id);
+  virtual const char* GetResponseDataNodeID();
+  vtkMRMLNode* GetResponseDataNode();
+
+  // Description:
+  // Connector node that currently has this query node in its queue (pushed into the queue, waiting for a response).
+  virtual void SetConnectorNodeID(const char* id);
+  virtual const char* GetConnectorNodeID();
+  vtkMRMLIGTLConnectorNode* GetConnectorNode();
+
+  static const char* QueryStatusToString(int queryStatus);
+  static const char* QueryTypeToString(int queryType);
 
  protected:
   //----------------------------------------------------------------
@@ -141,21 +163,11 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLQueryNode : public 
   //----------------------------------------------------------------
 
   std::string IGTLName;
+  std::string IGTLDeviceName;
 
   int QueryStatus;
   int QueryType;
 
-  // Description:
-  // Flag to indicate that the query doesn't specify a node name.
-  // In OpenIGLTLink communication, query without device name may be
-  // used as a 'wild card.' However, the MRML does not allow to set
-  // NULL string in the MRML node name (it will be replaced with the node ID).
-  int NoNameQuery;
-
-  std::string ConnectorNodeID;
-  std::string DataNodeID;
-
-  // Time when the querry issued.
   double TimeStamp;
   double TimeOut;
 

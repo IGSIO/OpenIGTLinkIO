@@ -10,14 +10,15 @@
 
 ==========================================================================*/
 
-#include <vtksys/SystemTools.hxx>
+// OpenIGTLinkIF MRML includes
+#include "vtkIGTLToMRMLString.h"
+#include "vtkMRMLIGTLQueryNode.h"
+#include "vtkMRMLTextNode.h"
 
+// VTK includes
 #include "vtkCommand.h"
 #include "vtkIntArray.h"
 #include "vtkObjectFactory.h"
-
-#include "vtkMRMLAnnotationTextNode.h"
-#include "vtkIGTLToMRMLString.h"
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLString);
@@ -45,13 +46,13 @@ void vtkIGTLToMRMLString::PrintSelf( ostream& os, vtkIndent indent )
 vtkMRMLNode* vtkIGTLToMRMLString
 ::CreateNewNode( vtkMRMLScene* scene, const char* name )
 {
-  vtkSmartPointer< vtkMRMLAnnotationTextNode > annotationTextNode = vtkSmartPointer< vtkMRMLAnnotationTextNode >::New();
-  annotationTextNode->SetName( name );
-  annotationTextNode->SetDescription( "Created by OpenIGTLinkRemote module" );
+  vtkSmartPointer< vtkMRMLTextNode > textNode = vtkSmartPointer< vtkMRMLTextNode >::New();
+  textNode->SetName( name );
+  textNode->SetDescription( "Created by OpenIGTLinkIF module" );
 
-  scene->AddNode( annotationTextNode );
+  scene->AddNode( textNode );
 
-  return annotationTextNode;
+  return textNode;
 }
 
 //---------------------------------------------------------------------------
@@ -91,14 +92,17 @@ int vtkIGTLToMRMLString
     return 0;
     }
 
-  vtkMRMLAnnotationTextNode* textNode = vtkMRMLAnnotationTextNode::SafeDownCast( node );
+  vtkMRMLTextNode* textNode = vtkMRMLTextNode::SafeDownCast( node );
   if ( textNode == NULL )
     {
-    vtkErrorMacro( "Could not convert node to StringNode." );
+    vtkErrorMacro( "Could not convert node to TextNode." );
     return 0;
     }
 
-  textNode->SetText( 0, stringMessage->GetString(), 0, 0 );
+  int oldModify = textNode->StartModify();
+  textNode->SetText(stringMessage->GetString());
+  textNode->SetEncoding(stringMessage->GetEncoding());
+  textNode->EndModify(oldModify);
 
   return 1;
 }
@@ -107,41 +111,48 @@ int vtkIGTLToMRMLString
 int vtkIGTLToMRMLString
 ::MRMLToIGTL( unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg )
 {
-  if ( mrmlNode == NULL || event != vtkCommand::ModifiedEvent )
+  if ( mrmlNode == NULL )
     {
+    vtkErrorMacro("vtkIGTLToMRMLString::MRMLToIGTL failed: invalid input MRML node");
     return 0;
     }
 
-  vtkMRMLAnnotationTextNode* annotationTextNode = vtkMRMLAnnotationTextNode::SafeDownCast( mrmlNode );
-  if ( annotationTextNode == NULL )
+  const char* deviceName = NULL;
+  const char* text = NULL;
+  int encoding = vtkMRMLTextNode::ENCODING_US_ASCII;
+
+  vtkMRMLTextNode* textNode = vtkMRMLTextNode::SafeDownCast( mrmlNode );
+  vtkMRMLIGTLQueryNode* queryNode = vtkMRMLIGTLQueryNode::SafeDownCast( mrmlNode );
+  if ( textNode != NULL && event != vtkCommand::ModifiedEvent)
     {
-    return 0;
+    deviceName = textNode->GetName();
+    text = textNode->GetText();
+    encoding = textNode->GetEncoding();
+    }
+  else if ( queryNode != NULL )
+    {
+    // Special case for STRING command handling.
+    // The command is a regular STRING message with special device name (CMD_...).
+    // Note that the query node has a name that matches the response node name (ACK_...),
+    // as it is for detecting the arrival of the response.
+    deviceName = queryNode->GetAttribute("CommandDeviceName");
+    text = queryNode->GetAttribute("CommandString");
     }
 
-  int numberOfTexts = annotationTextNode->GetNumberOfTexts();
-  if ( numberOfTexts < 1 )
+  if (deviceName!=NULL && text!=NULL)
     {
-    vtkWarningMacro( "No text found in annotation text to be sent through OpenIGTLink." );
-    return 0;
+    if (this->StringMsg.GetPointer()==NULL)
+      {
+      this->StringMsg = igtl::StringMessage::New();
+      }
+    this->StringMsg->SetDeviceName( deviceName );
+    this->StringMsg->SetString( text );
+    this->StringMsg->SetEncoding( encoding );
+    this->StringMsg->Pack();
+    *size = this->StringMsg->GetPackSize();
+    *igtlMsg = (void*)this->StringMsg->GetPackPointer();
+    return 1;
     }
 
-  std::string command = std::string( annotationTextNode->GetText( 0 ).c_str() );
-
-
-  if ( annotationTextNode->GetScene() == NULL )
-    {
-    vtkWarningMacro( "No scene set in annotation text node." );
-    return 0;
-    }
-
-  this->StringMsg = igtl::StringMessage::New();
-  this->StringMsg->SetDeviceName( annotationTextNode->GetName() );
-  this->StringMsg->SetString( command );
-  this->StringMsg->Pack();
-
-  *size = this->StringMsg->GetPackSize();
-  *igtlMsg = (void*)this->StringMsg->GetPackPointer();
-
-  return 1;
+  return 0;
 }
-
