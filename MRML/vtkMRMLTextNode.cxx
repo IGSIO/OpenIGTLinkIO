@@ -1,5 +1,6 @@
 #include "vtkObjectFactory.h"
 #include "vtkMRMLTextNode.h"
+#include "vtkXMLUtilities.h"
 
 //----------------------------------------------------------------------------
 vtkMRMLNodeNewMacro(vtkMRMLTextNode);
@@ -31,7 +32,7 @@ void vtkMRMLTextNode::ReadXMLAttributes(const char** atts)
     attValue = *(atts++);
     if (!strcmp(attName, "text"))
       {
-      this->SetText( vtkMRMLNode::URLDecodeString(attValue) );
+      this->SetText(attValue);
       }
     else if (!strcmp(attName, "encoding"))
       {
@@ -63,7 +64,8 @@ void vtkMRMLTextNode::WriteXML(ostream& of, int nIndent)
   of << indent << " text=\"";
   if (this->GetText()!=NULL)
   {
-    of << vtkMRMLNode::URLEncodeString(this->GetText());
+    // Write to XML, encoding special characters, such as " ' \ < > &
+    vtkXMLUtilities::EncodeString(this->GetText(), VTK_ENCODING_NONE, of, VTK_ENCODING_NONE, 1 /* encode special characters */ );
   }
   of << "\"";
 
