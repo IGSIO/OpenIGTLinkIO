@@ -90,7 +90,7 @@ void vtkMRMLTextNode::PrintSelf(ostream& os, vtkIndent indent)
 {
   Superclass::PrintSelf(os,indent);
 
-  os << "Text: " << ( (this->GetText()) ? this->GetText() : "None" ) << "\n";
+  os << "Text: " << ( (this->GetText()) ? this->GetText() : "(none)" ) << "\n";
   os << "Encoding: " << this->GetEncoding() << "\n";
 }
 
