@@ -31,6 +31,7 @@
 // VTK includes
 #include <vtkObject.h>
 #include <vtkSmartPointer.h>
+#include <vtkWeakPointer.h>
 
 // STD includes
 #include <string>
@@ -292,6 +293,10 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   // Push query int the query list.
   void PushQuery(vtkMRMLIGTLQueryNode* query);
 
+  // Description:
+  // Removes query from the query list.
+  void CancelQuery(vtkMRMLIGTLQueryNode* node);
+
   //----------------------------------------------------------------
   // For OpenIGTLink time stamp access
   //----------------------------------------------------------------
@@ -390,7 +395,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkMRMLIGTLConnectorNode : pub
   // Query queueing mechanism is needed to send all queries from the connector thread.
   // Queries can be pushed to the end of the QueryQueue by calling RequestInvoke from any thread,
   // and they will be Invoked in the main thread.
-  std::list<vtkMRMLIGTLQueryNode*> QueryWaitingQueue;
+  // Use a weak pointer to make sure we don't try to access the query node after it is deleted from the scene.
+  std::list< vtkWeakPointer<vtkMRMLIGTLQueryNode> > QueryWaitingQueue;
   vtkMutexLock* QueryQueueMutex;
 
   // Flag for the push outoing message request

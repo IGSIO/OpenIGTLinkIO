@@ -235,23 +235,16 @@ int vtkIGTLToMRMLPoints::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, 
     if (qnode)
       {
       if (qnode->GetQueryType() == vtkMRMLIGTLQueryNode::TYPE_GET)
-       {
-       if (this->GetPointMsg.IsNull())
+        {
+        if (this->GetPointMsg.IsNull())
           {
           this->GetPointMsg = igtl::GetPointMessage::New();
           }
-        if (qnode->GetNoNameQuery())
-          {
-          this->GetPointMsg->SetDeviceName("");
-          }
-        else
-          {
-          this->GetPointMsg->SetDeviceName(mrmlNode->GetName());
-          }
-				this->GetPointMsg->Pack();
+        this->GetPointMsg->SetDeviceName(qnode->GetIGTLDeviceName());
+        this->GetPointMsg->Pack();
         *size = this->GetPointMsg->GetPackSize();
 
-	      *igtlMsg = this->GetPointMsg->GetPackPointer();
+        *igtlMsg = this->GetPointMsg->GetPackPointer();
         return 1;
         }
       else if (qnode->GetQueryType() == vtkMRMLIGTLQueryNode::TYPE_START)

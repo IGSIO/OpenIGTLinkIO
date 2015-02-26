@@ -31,7 +31,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLString : public v
 
   virtual int          GetConverterType() { return TYPE_NORMAL; };
   virtual const char*  GetIGTLName() { return "STRING"; };
-  virtual const char*  GetMRMLName() { return "AnnotationText"; };
+  virtual const char*  GetMRMLName() { return "Text"; };
   virtual vtkIntArray* GetNodeEvents();
   virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* scene, const char* name);
 

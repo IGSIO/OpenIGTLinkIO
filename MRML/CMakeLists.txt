@@ -34,6 +34,7 @@ if(OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
     vtkMRMLIGTLQueryNode.cxx
     vtkMRMLImageMetaListNode.cxx
     vtkMRMLLabelMetaListNode.cxx
+    vtkMRMLTextNode.cxx
     vtkIGTLToMRMLPoints.cxx
     vtkIGTLToMRMLPolyData.cxx
     vtkIGTLToMRMLImageMetaList.cxx
