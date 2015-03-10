@@ -396,7 +396,7 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
       if (npoints > 0)
         {
         igtl::PolyDataPointArray::Pointer pointArray = igtl::PolyDataPointArray::New();
-        for (unsigned int i = 0; i < npoints; i ++)
+        for (int i = 0; i < npoints; i ++)
           {
           double *p = points->GetPoint(i);
           pointArray->AddPoint(static_cast<igtlFloat32>(p[0]),
