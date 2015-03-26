@@ -123,7 +123,7 @@ int vtkIGTLToMRMLString
 
   vtkMRMLTextNode* textNode = vtkMRMLTextNode::SafeDownCast( mrmlNode );
   vtkMRMLIGTLQueryNode* queryNode = vtkMRMLIGTLQueryNode::SafeDownCast( mrmlNode );
-  if ( textNode != NULL && event != vtkCommand::ModifiedEvent)
+  if ( textNode != NULL && event == vtkCommand::ModifiedEvent)
     {
     deviceName = textNode->GetName();
     text = textNode->GetText();
