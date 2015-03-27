@@ -1625,7 +1625,7 @@ int vtkMRMLIGTLConnectorNode::PushNode(vtkMRMLNode* node, int event)
     int r = this->SendData(size, (unsigned char*)igtlMsg);
     if (r == 0)
       {
-      vtkErrorMacro("Sending OpenIGTLinkMessage: " << node->GetID());
+      vtkDebugMacro("Sending OpenIGTLinkMessage: " << node->GetID());
       return 0;
       }
     return r;
