@@ -395,17 +395,22 @@ void vtkMRMLIGTLConnectorNode::OnNodeReferenceAdded(vtkMRMLNodeReference *refere
       }
     this->MRMLIDToConverterMap[node->GetID()] = converter;
 
-    // Find the index in the list for the node, and set events to ovserve
-    // TODO: Can we replace this for() search with SetAndObserveNodeReferenceID()?
+    // Need to update the events here because observed events are not saved in the scene
+    // for each reference and therefore only the role-default event observers are added.
+    // Get the correct list of events to observe from the converter and update the reference
+    // with that.
+    // Without doing this, outgoing transforms are not updated if connectors are set up from
+    // a saved scene.
     int n = this->GetNumberOfNodeReferences(this->GetOutgoingNodeReferenceRole());
     for (int i = 0; i < n; i ++)
       {
       const char* id = GetNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i);
       if (strcmp(node->GetID(), id) == 0)
         {
-        vtkIntArray* nodeEvents = converter->GetNodeEvents();
+        vtkIntArray* nodeEvents = converter->GetNodeEvents(); // need to delete the returned new vtkIntArray
         this->SetAndObserveNthNodeReferenceID(this->GetOutgoingNodeReferenceRole(), i,
                                               node->GetID(),nodeEvents );
+        nodeEvents->Delete();
         break;
         }
       }
@@ -1607,7 +1612,7 @@ int vtkMRMLIGTLConnectorNode::PushNode(vtkMRMLNode* node, int event)
     {
     // If event is not specified, 
     // Obtain a node event that will be accepted by the MRML to IGTL converter
-    vtkIntArray* events = converter->GetNodeEvents();
+    vtkIntArray* events = converter->GetNodeEvents(); // need to delete the returned new vtkIntArray
     if (events->GetNumberOfTuples() > 0)
       {
       e = events->GetValue(0);
@@ -1620,7 +1625,7 @@ int vtkMRMLIGTLConnectorNode::PushNode(vtkMRMLNode* node, int event)
     int r = this->SendData(size, (unsigned char*)igtlMsg);
     if (r == 0)
       {
-      vtkErrorMacro("Sending OpenIGTLinkMessage: " << node->GetID());
+      vtkDebugMacro("Sending OpenIGTLinkMessage: " << node->GetID());
       return 0;
       }
     return r;
