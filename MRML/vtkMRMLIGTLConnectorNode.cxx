@@ -664,7 +664,7 @@ void* vtkMRMLIGTLConnectorNode::ThreadFunction(void* ptr)
     //igtlcon->Socket = igtlcon->WaitForConnection();
     igtlcon->WaitForConnection();
     igtlcon->Mutex->Unlock();
-    if (igtlcon->Socket->GetConnected())
+    if (igtlcon->Socket.IsNotNull() && igtlcon->Socket->GetConnected())
       {
       igtlcon->State = STATE_CONNECTED;
       // need to Request the InvokeEvent, because we are not on the main thread now
