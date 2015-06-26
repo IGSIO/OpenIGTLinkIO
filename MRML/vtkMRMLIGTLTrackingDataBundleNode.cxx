@@ -190,7 +190,7 @@ vtkMRMLLinearTransformNode* vtkMRMLIGTLTrackingDataBundleNode::GetTransformNode(
 
   TrackingDataInfoMap::iterator iter;
   iter = this->TrackingDataList.begin();
-  for (unsigned int i = 0; i < id; id ++)
+  for (unsigned int i = 0; i < id; i ++)
     {
     iter ++;
     }
