@@ -183,7 +183,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
 
   // Vertices
   igtl::PolyDataCellArray::Pointer verticesArray =  polyDataMsg->GetVertices();
-  int nvertices = verticesArray->GetNumberOfCells();
+  int nvertices = verticesArray.IsNotNull() ? verticesArray->GetNumberOfCells() : 0;
   if (nvertices > 0)
     {
     vtkSmartPointer<vtkCellArray> vertCells = vtkSmartPointer<vtkCellArray>::New();
@@ -206,7 +206,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
 
   // Lines
   igtl::PolyDataCellArray::Pointer linesArray = polyDataMsg->GetLines();
-  int nlines = linesArray->GetNumberOfCells();
+  int nlines = linesArray.IsNotNull() ? linesArray->GetNumberOfCells() : 0;
   if (nlines > 0)
     {
     vtkSmartPointer<vtkCellArray> lineCells = vtkSmartPointer<vtkCellArray>::New();
@@ -231,7 +231,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
 
   // Polygons
   igtl::PolyDataCellArray::Pointer polygonsArray = polyDataMsg->GetPolygons();
-  int npolygons = polygonsArray->GetNumberOfCells();
+  int npolygons = polygonsArray.IsNotNull() ? polygonsArray->GetNumberOfCells() : 0;
   if (npolygons > 0)
     {
     vtkSmartPointer<vtkCellArray> polygonCells = vtkSmartPointer<vtkCellArray>::New();
@@ -256,7 +256,7 @@ int vtkIGTLToMRMLPolyData::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
 
   // Triangle Strips
   igtl::PolyDataCellArray::Pointer triangleStripsArray = polyDataMsg->GetTriangleStrips();
-  int ntstrips = triangleStripsArray->GetNumberOfCells();
+  int ntstrips = triangleStripsArray.IsNotNull() ? triangleStripsArray->GetNumberOfCells() : 0;
   if (ntstrips > 0)
     {
     vtkSmartPointer<vtkCellArray> tstripCells = vtkSmartPointer<vtkCellArray>::New();
@@ -433,7 +433,7 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
     vtkSmartPointer<vtkCellArray> polygonCells = poly->GetPolys();
     if (polygonCells.GetPointer() != NULL)
       {
-      igtl::PolyDataCellArray::Pointer polygonsArray;
+      igtl::PolyDataCellArray::Pointer polygonsArray = igtl::PolyDataCellArray::New();
       if (this->VTKToIGTLCellArray(polygonCells, polygonsArray) > 0)
         {
         this->OutPolyDataMessage->SetPolygons(polygonsArray);
@@ -475,7 +475,7 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
       for (int i = 0; i < nCellAttributes; i ++)
         {
         igtl::PolyDataAttribute::Pointer attribute = igtl::PolyDataAttribute::New();
-        if (this->VTKToIGTLAttribute(pdata, i, attribute) > 0)
+        if (this->VTKToIGTLAttribute(cdata, i, attribute) > 0)
           {
           this->OutPolyDataMessage->AddAttribute(attribute);
           }
@@ -612,7 +612,7 @@ int vtkIGTLToMRMLPolyData::VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, 
     {
     dest->SetType(igtl::PolyDataAttribute::POINT_RGBA | attrTypeBit);
     }
-  dest->SetName(array->GetName());
+  dest->SetName(array->GetName() ? array->GetName() : "");
   int ntuples = array->GetNumberOfTuples();
   dest->SetSize(ntuples);
   
