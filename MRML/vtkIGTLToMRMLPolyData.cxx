@@ -380,10 +380,9 @@ int vtkIGTLToMRMLPolyData::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
     
     //------------------------------------------------------------
     // Allocate Status Message Class
-    if (this->OutPolyDataMessage.IsNull())
-      {
-      this->OutPolyDataMessage = igtl::PolyDataMessage::New();
-      }
+    // Overwrite old message because we want to clear arrays from previous
+    // calls that will not be set anew.
+    this->OutPolyDataMessage = igtl::PolyDataMessage::New();
     
     // Set message name -- use the same name as the MRML node 
     this->OutPolyDataMessage->SetDeviceName(modelNode->GetName());
