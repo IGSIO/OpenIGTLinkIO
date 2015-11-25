@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
 
-# Module name (usually identique to the directory name)
 set(MODULE_NAME "OpenIGTLinkIF")
 set(MODULE_TITLE "OpenIGTLink I/F")
 
@@ -19,14 +18,15 @@ include(${Slicer_USE_FILE})
 #add_definitions(-DOpenIGTLinkIF_USE_VERSION_2)
 #add_definitions(-DOpenIGTLinkIF_LIBRARY_VERSION="${OpenIGTLink_VERSION_MAJOR}-${OpenIGTLink_VERSION_MINOR}-${OpenIGTLink_VERSION_PATCH} for protocol ver. 2")
 
-# Add subdirectories
+#-----------------------------------------------------------------------------
 add_subdirectory(MRML)
 add_subdirectory(Logic)
 
-set(qt_module_export_directive "Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT")
+#-----------------------------------------------------------------------------
+set(MODULE_EXPORT_DIRECTIVE "Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT")
 
 # Additional includes - Current_{source,binary} and Slicer_{Libs,Base} already included
-set(qt_module_include_directories
+set(MODULE_INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}/GUI
   ${CMAKE_CURRENT_BINARY_DIR}/GUI
   ${CMAKE_CURRENT_SOURCE_DIR}/Logic
@@ -35,8 +35,7 @@ set(qt_module_include_directories
   ${CMAKE_CURRENT_BINARY_DIR}/MRML
   )
 
-# Source files
-set(qt_module_SRCS
+set(MODULE_SRCS
   qSlicerOpenIGTLinkIFModule.cxx
   qSlicerOpenIGTLinkIFModule.h
   qSlicerOpenIGTLinkIFModuleWidget.cxx
@@ -56,8 +55,7 @@ set(qt_module_SRCS
   GUI/qSlicerIGTLIONodeSelectorWidget.h
   )
 
-# Headers that should run through moc
-set(qt_module_MOC_SRCS
+set(MODULE_MOC_SRCS
   qSlicerOpenIGTLinkIFModule.h
   qSlicerOpenIGTLinkIFModuleWidget.h
   GUI/qMRMLSceneIGTLConnectorModel.h
@@ -69,33 +67,31 @@ set(qt_module_MOC_SRCS
   GUI/qSlicerIGTLIONodeSelectorWidget.h
   )
 
-# UI files
-set(qt_module_UI_SRCS
+set(MODULE_UI_SRCS
   Resources/UI/qSlicerIGTLConnectorPropertyWidget.ui
   Resources/UI/qSlicerIGTLIONodeSelectorWidget.ui
   Resources/UI/qSlicerOpenIGTLinkIFModule.ui
 )
 
-# Additional Target libraries
-set(qt_module_target_libraries
+set(MODULE_TARGET_LIBRARIES
   vtkSlicerOpenIGTLinkIFModuleLogic
   vtkSlicerOpenIGTLinkIFModuleMRML
   )
 
-# Resources
-set(qt_module_resources
+set(MODULE_RESOURCES
   Resources/qSlicerOpenIGTLinkIFModule.qrc
   )
 
+#-----------------------------------------------------------------------------
 slicerMacroBuildQtModule(
   NAME ${MODULE_NAME}
-  EXPORT_DIRECTIVE ${qt_module_export_directive}
-  INCLUDE_DIRECTORIES ${qt_module_include_directories}
-  SRCS ${qt_module_SRCS}
-  MOC_SRCS ${qt_module_MOC_SRCS}
-  UI_SRCS ${qt_module_UI_SRCS}
-  TARGET_LIBRARIES ${qt_module_target_libraries}
-  RESOURCES ${qt_module_resources}
+  EXPORT_DIRECTIVE ${MODULE_EXPORT_DIRECTIVE}
+  INCLUDE_DIRECTORIES ${MODULE_INCLUDE_DIRECTORIES}
+  SRCS ${MODULE_SRCS}
+  MOC_SRCS ${MODULE_MOC_SRCS}
+  UI_SRCS ${MODULE_UI_SRCS}
+  TARGET_LIBRARIES ${MODULE_TARGET_LIBRARIES}
+  RESOURCES ${MODULE_RESOURCES}
   )
 
 
