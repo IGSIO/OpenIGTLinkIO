@@ -1,35 +1,28 @@
 project(vtkSlicer${MODULE_NAME}ModuleLogic)
 
-#
-# See CMake/SlicerMacroBuildModuleLogic.cmake for details
-#
+set(KIT "${PROJECT_NAME}")
 
-set(module_logic_name "${PROJECT_NAME}")
+set(${KIT}_EXPORT_DIRECTIVE "VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT")
 
-# The header '${PROJECT_NAME}Export.h' will be automatically configured.
-set(module_logic_export_directive "VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT")
-
-# Additional directories to include
-set(module_logic_include_directories
+set(${KIT}_INCLUDE_DIRECTORIES
   ${vtkSlicerOpenIGTLinkIFModuleMRML_SOURCE_DIR}
   ${vtkSlicerOpenIGTLinkIFModuleMRML_BINARY_DIR}
   )
 
-# Source files
-set(module_logic_SRCS
+set(${KIT}_SRCS
   vtkSlicerOpenIGTLinkIFLogic.cxx
   vtkSlicerOpenIGTLinkIFLogic.h
   )
 
-# Additional Target libraries
-set(module_logic_target_libraries
+set(${KIT}_TARGET_LIBRARIES
   vtkSlicerOpenIGTLinkIFModuleMRML
   )
 
+#-----------------------------------------------------------------------------
 SlicerMacroBuildModuleLogic(
-  NAME ${module_logic_name}
-  EXPORT_DIRECTIVE ${module_logic_export_directive}
-  INCLUDE_DIRECTORIES ${module_logic_include_directories}
-  SRCS ${module_logic_SRCS}
-  TARGET_LIBRARIES ${module_logic_target_libraries}
+  NAME ${KIT}
+  EXPORT_DIRECTIVE ${${KIT}_EXPORT_DIRECTIVE}
+  INCLUDE_DIRECTORIES ${${KIT}_INCLUDE_DIRECTORIES}
+  SRCS ${${KIT}_SRCS}
+  TARGET_LIBRARIES ${${KIT}_TARGET_LIBRARIES}
   )

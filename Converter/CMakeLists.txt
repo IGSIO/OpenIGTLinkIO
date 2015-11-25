@@ -1,35 +1,25 @@
 project(OpenIGTLinkIFConverter)
 
+set(KIT "${PROJECT_NAME}")
 
-#
-# See CMake/SlicerMacroBuildModuleLogic.cmake for details
-#
+set(${KIT}_EXPORT_DIRECTIVE "Q_SLICER_QTMODULES_OPENIGTLINKIF_CONVERTER_EXPORT")
 
-
-SET(module_converter_name "${PROJECT_NAME}")
-
-# The header '${PROJECT_NAME}Export.h' will be automatically configured.
-SET(module_converter_export_directive "Q_SLICER_QTMODULES_OPENIGTLINKIF_CONVERTER_EXPORT")
-
-
-if (OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
+if(OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
   ADD_DEFINITIONS(-DOpenIGTLinkIF_USE_VERSION_2)
   ADD_DEFINITIONS(-DOpenIGTLinkIF_LIBRARY_VERSION="${OpenIGTLink_VERSION_MAJOR}-${OpenIGTLink_VERSION_MINOR}-${OpenIGTLink_VERSION_PATCH} for protocol ver. 2")
-else (OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
+else()
   ADD_DEFINITIONS(-DOpenIGTLinkIF_LIBRARY_VERSION="${OpenIGTLink_VERSION_MAJOR}-${OpenIGTLink_VERSION_MINOR}-${OpenIGTLink_VERSION_PATCH} for protocol ver. 1")
-endif (OpenIGTLink_PROTOCOL_VERSION EQUAL 2)
+endif()
 
 
-# Additional directories to include
-SET(module_converter_include_directories
+set(${KIT}_INCLUDE_DIRECTORIES
   ${OpenIGTLinkIFMRML_SOURCE_DIR}
   ${OpenIGTLinkIFMRML_BINARY_DIR}
   ${qt_module_include_directories}
   ${OpenIGTLink_INCLUDE_DIRS}
   )
 
-# Source files
-SET(module_converter_SRCS
+set(${KIT}_SRCS
   vtkIGTLToMRMLImage.cxx
   vtkIGTLToMRMLImage.h
   vtkIGTLToMRMLImageMetaList.cxx
@@ -42,20 +32,17 @@ SET(module_converter_SRCS
   vtkIGTLToMRMLTrackingData.h
   )
 
-# Additional Target libraries
-SET(module_converter_target_libraries
+set(${KIT}_TARGET_LIBRARIES
   ${ITK_LIBRARIES}
   ${OpenIGTLink_LIBRARIES}
   OpenIGTLinkIFMRML
   )
 
-
+#-----------------------------------------------------------------------------
 SlicerMacroBuildModuleLogic(
-  NAME ${module_converter_name}
-  EXPORT_DIRECTIVE ${module_converter_export_directive}
-  INCLUDE_DIRECTORIES ${module_converter_include_directories}
-  SRCS ${module_converter_SRCS}
-  TARGET_LIBRARIES ${module_converter_target_libraries}
+  NAME ${KIT}
+  EXPORT_DIRECTIVE ${${KIT}_EXPORT_DIRECTIVE}
+  INCLUDE_DIRECTORIES ${${KIT}_INCLUDE_DIRECTORIES}
+  SRCS ${${KIT}_SRCS}
+  TARGET_LIBRARIES ${${KIT}_TARGET_LIBRARIES}
   )
-
-
