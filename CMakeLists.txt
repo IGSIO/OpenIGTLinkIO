@@ -7,10 +7,8 @@ set(MODULE_TITLE "OpenIGTLink I/F")
 string(TOUPPER ${MODULE_NAME} MODULE_NAME_UPPER)
 
 #-----------------------------------------------------------------------------
-if(NOT Slicer_SOURCE_DIR)
-  find_package(Slicer REQUIRED)
-  include(${Slicer_USE_FILE})
-endif()
+find_package(Slicer REQUIRED)
+include(${Slicer_USE_FILE})
 
 # --------------------------------------------------------------------------
 # Check if version 2 protocol is available
