@@ -580,12 +580,12 @@ int vtkIGTLToMRMLImage::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, i
     int   scalarType;       // scalar type
     //double *origin;
     double *spacing;       // spacing (mm/pixel)
-    //int   ncomp;
+    int   ncomp;
     int   svoffset[] = {0, 0, 0};           // sub-volume offset
     int   endian;
 
     scalarType = imageData->GetScalarType();
-    //ncomp = imageData->GetNumberOfScalarComponents();
+    ncomp = imageData->GetNumberOfScalarComponents();
     imageData->GetDimensions(isize);
     //imageData->GetExtent(0, isize[0]-1, 0, isize[1]-1, 0, isize[2]-1);
     //origin = imageData->GetOrigin();
@@ -608,6 +608,7 @@ int vtkIGTLToMRMLImage::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, i
     this->OutImageMessage->SetEndian(endian);
     this->OutImageMessage->SetDeviceName(volumeNode->GetName());
     this->OutImageMessage->SetSubVolume(isize, svoffset);
+    this->OutImageMessage->SetNumComponents(ncomp);
     this->OutImageMessage->AllocateScalars();
 
     memcpy(this->OutImageMessage->GetScalarPointer(),
