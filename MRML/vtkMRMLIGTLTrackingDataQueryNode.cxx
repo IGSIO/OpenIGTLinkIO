@@ -46,6 +46,8 @@ vtkMRMLIGTLTrackingDataQueryNode::vtkMRMLIGTLTrackingDataQueryNode()
 
   this->TimeStamp = 0.0;
   this->TimeOut   = 0.0;
+
+  this->HideFromEditors = 1;
 }
 
 //----------------------------------------------------------------------------
