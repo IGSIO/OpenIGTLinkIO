@@ -42,6 +42,8 @@ vtkMRMLNodeNewMacro(vtkMRMLIGTLTrackingDataBundleNode);
 vtkMRMLIGTLTrackingDataBundleNode::vtkMRMLIGTLTrackingDataBundleNode()
 {
   this->TrackingDataList.clear();
+
+  this->HideFromEditors = 1;
 }
 
 //----------------------------------------------------------------------------
