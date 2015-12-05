@@ -1119,11 +1119,10 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
       }
 
     // If the message is a response to one of the querys in the list
-    // Remove query nodes from the queue that are replied or expired.
+    // Remove query nodes from the queue that are replied.
     // Process the removed nodes after the QueryQueueMutex is released
     // to avoid accidental modification of the query queue as a result of response processing.
     std::vector< vtkMRMLIGTLQueryNode* > repliedQueryNodes;
-    std::vector< vtkMRMLIGTLQueryNode* > expiredQueryNodes;
     this->QueryQueueMutex->Lock();
     double currentTime = vtkTimerLog::GetUniversalTime();
     if (this->QueryWaitingQueue.size() > 0 && updatedNode != NULL)
@@ -1134,14 +1133,6 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
         if (iter->GetPointer()==NULL)
           {
           // the node has been deleted, so remove it from the list
-          iter = this->QueryWaitingQueue.erase(iter);
-          continue;
-          }
-        if ((*iter)->GetTimeOut()>0 && currentTime-(*iter)->GetTimeStamp()>(*iter)->GetTimeOut())
-          {
-          // the query is expired
-          expiredQueryNodes.push_back(*iter);
-          (*iter)->SetConnectorNodeID("");
           iter = this->QueryWaitingQueue.erase(iter);
           continue;
           }
@@ -1171,17 +1162,47 @@ void vtkMRMLIGTLConnectorNode::ImportDataFromCircularBuffer()
       (*iter)->SetResponseDataNodeID(updatedNode->GetID());
       (*iter)->InvokeEvent(vtkMRMLIGTLQueryNode::ResponseEvent);
       }
-    // Update expired query nodes
-    for (std::vector< vtkMRMLIGTLQueryNode* >::iterator iter = expiredQueryNodes.begin(); iter != expiredQueryNodes.end(); ++iter)
-      {
-      (*iter)->SetQueryStatus(vtkMRMLIGTLQueryNode::STATUS_EXPIRED);
-      (*iter)->InvokeEvent(vtkMRMLIGTLQueryNode::ResponseEvent);
-      }
-
     this->InvokeEvent(vtkMRMLIGTLConnectorNode::ReceiveEvent);
     circBuffer->EndPull();
     }
 
+  // Remove query nodes from the queue that are expired.
+  // Process the removed nodes after the QueryQueueMutex is released
+  // to avoid accidental modification of the query queue as a result of response processing.
+  std::vector< vtkMRMLIGTLQueryNode* > expiredQueryNodes;
+  this->QueryQueueMutex->Lock();
+  double currentTime = vtkTimerLog::GetUniversalTime();
+  if (this->QueryWaitingQueue.size() > 0)
+    {
+    for (std::list< vtkWeakPointer<vtkMRMLIGTLQueryNode> >::iterator iter = this->QueryWaitingQueue.begin();
+      iter != this->QueryWaitingQueue.end(); /* increment in the loop to allow erase */ )
+      {
+      if (iter->GetPointer()==NULL)
+        {
+        // the node has been deleted, so remove it from the list
+        iter = this->QueryWaitingQueue.erase(iter);
+        continue;
+        }
+      if ((*iter)->GetTimeOut()>0 && currentTime-(*iter)->GetTimeStamp()>(*iter)->GetTimeOut())
+        {
+        // the query is expired
+        expiredQueryNodes.push_back(*iter);
+        (*iter)->SetConnectorNodeID("");
+        iter = this->QueryWaitingQueue.erase(iter);
+        }
+      else
+        {
+        iter++;
+        }
+      }
+    }
+  this->QueryQueueMutex->Unlock();
+  // Update expired query nodes
+  for (std::vector< vtkMRMLIGTLQueryNode* >::iterator iter = expiredQueryNodes.begin(); iter != expiredQueryNodes.end(); ++iter)
+    {
+    (*iter)->SetQueryStatus(vtkMRMLIGTLQueryNode::STATUS_EXPIRED);
+    (*iter)->InvokeEvent(vtkMRMLIGTLQueryNode::ResponseEvent);
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -1653,16 +1674,18 @@ void vtkMRMLIGTLConnectorNode::PushQuery(vtkMRMLIGTLQueryNode* node)
   int size=0;
   void* igtlMsg=NULL;
   converter->MRMLToIGTL(0, node, &size, &igtlMsg);
-  if (size > 0)
+  if (size<=0)
     {
-    this->SendData(size, (unsigned char*)igtlMsg);
-    this->QueryQueueMutex->Lock();
-    node->SetTimeStamp(vtkTimerLog::GetUniversalTime());
-    node->SetQueryStatus(vtkMRMLIGTLQueryNode::STATUS_WAITING);
-    node->SetConnectorNodeID(this->GetID());
-    this->QueryWaitingQueue.push_back(node);
-    this->QueryQueueMutex->Unlock();
+    vtkErrorMacro("vtkMRMLIGTLConnectorNode::PushQuery failed: MRMLToIGTL provided an invalid message");
+    return;
     }
+  this->SendData(size, (unsigned char*)igtlMsg);
+  this->QueryQueueMutex->Lock();
+  node->SetTimeStamp(vtkTimerLog::GetUniversalTime());
+  node->SetQueryStatus(vtkMRMLIGTLQueryNode::STATUS_WAITING);
+  node->SetConnectorNodeID(this->GetID());
+  this->QueryWaitingQueue.push_back(node);
+  this->QueryQueueMutex->Unlock();
 }
 
 //---------------------------------------------------------------------------
