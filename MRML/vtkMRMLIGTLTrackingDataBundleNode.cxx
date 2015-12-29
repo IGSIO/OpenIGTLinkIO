@@ -168,11 +168,7 @@ void vtkMRMLIGTLTrackingDataBundleNode::UpdateTransformNode(const char* name, ig
     {
     vtkmat[i] = igtlmat[i];
     }
-#ifdef TRANSFORM_NODE_MATRIX_COPY_REQUIRED
   node->SetMatrixTransformToParent(mat.GetPointer());
-#else
-  node->SetAndObserveMatrixTransformToParent(mat.GetPointer());
-#endif
 
 }
 
