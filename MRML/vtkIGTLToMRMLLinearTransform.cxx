@@ -161,12 +161,7 @@ int vtkIGTLToMRMLLinearTransform::IGTLToMRML(igtl::MessageBase::Pointer buffer, 
   transform->Element[1][3] = py;
   transform->Element[2][3] = pz;
 
-#ifdef TRANSFORM_NODE_MATRIX_COPY_REQUIRED
   transformNode->SetMatrixTransformToParent(transform.GetPointer());
-#else
-  transformNode->SetAndObserveMatrixTransformToParent(transform.GetPointer());
-#endif
-
 
   //std::cerr << "IGTL matrix = " << std::endl;
   //transform->Print(cerr);
@@ -184,12 +179,8 @@ int vtkIGTLToMRMLLinearTransform::MRMLToIGTL(unsigned long event, vtkMRMLNode* m
     {
     vtkMRMLLinearTransformNode* transformNode =
       vtkMRMLLinearTransformNode::SafeDownCast(mrmlNode);
-#ifdef TRANSFORM_NODE_MATRIX_COPY_REQUIRED
     vtkNew<vtkMatrix4x4> matrix;
     transformNode->GetMatrixTransformToParent(matrix.GetPointer());
-#else
-    vtkMatrix4x4* matrix=transformNode->GetMatrixTransformToParent();
-#endif
 
     //igtl::TransformMessage::Pointer OutTransformMsg;
     if (this->OutTransformMsg.IsNull())

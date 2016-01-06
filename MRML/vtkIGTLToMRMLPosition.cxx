@@ -134,11 +134,7 @@ int vtkIGTLToMRMLPosition::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRML
   transformToParent->Element[3][2] = 0.0;
   transformToParent->Element[3][3] = 1.0;
 
-#ifdef TRANSFORM_NODE_MATRIX_COPY_REQUIRED
   transformNode->SetMatrixTransformToParent(transformToParent.GetPointer());
-#else
-  transformNode->SetAndObserveMatrixTransformToParent(transformToParent.GetPointer());
-#endif
 
   return 1;
 }
@@ -150,12 +146,8 @@ int vtkIGTLToMRMLPosition::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode
     {
     vtkMRMLLinearTransformNode* transformNode =
       vtkMRMLLinearTransformNode::SafeDownCast(mrmlNode);
-#ifdef TRANSFORM_NODE_MATRIX_COPY_REQUIRED
     vtkNew<vtkMatrix4x4> matrix;
     transformNode->GetMatrixTransformToParent(matrix.GetPointer());
-#else
-    vtkMatrix4x4* matrix = transformNode->GetMatrixTransformToParent();
-#endif
 
     //igtl::PositionMessage::Pointer OutPositionMsg;
     if (this->OutPositionMsg.IsNull())
