@@ -19,6 +19,7 @@
 #include "vtkIGTLToMRMLBase.h"
 #include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
 
+
 // OpenIGTLink includes
 #include <igtlImageMessage.h>
 
@@ -29,11 +30,12 @@
 #include <vtkObject.h>
 
 class vtkMRMLVolumeNode;
+class igtlCodecImage;
+class vtkImageData;
 
 class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLImage : public vtkIGTLToMRMLBase
 {
  public:
-
   static vtkIGTLToMRMLImage *New();
   vtkTypeMacro(vtkIGTLToMRMLImage,vtkObject);
 
@@ -44,9 +46,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLImage : public vt
   virtual vtkIntArray* GetNodeEvents();
   virtual vtkMRMLNode* CreateNewNodeWithMessage(vtkMRMLScene* scene, const char* name, igtl::MessageBase::Pointer incomingImageMessage);
 
-  virtual int          IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node);
-  virtual int          MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg);
-
+  virtual int IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node);
+  virtual int MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, int* size, void** igtlMsg);
 
  protected:
   vtkIGTLToMRMLImage();
@@ -54,13 +55,13 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLImage : public vt
 
   void SetDefaultDisplayNode(vtkMRMLVolumeNode *volumeNode, int numberOfComponents);
   void CenterImage(vtkMRMLVolumeNode *volumeNode);
-  int IGTLToVTKScalarType(int igtlType);
 
  protected:
   igtl::ImageMessage::Pointer OutImageMessage;
 
   igtl::GetImageMessage::Pointer GetImageMessage;
 
+  vtkSmartPointer<igtlCodecImage> Codec;
 };
 
 
