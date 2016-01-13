@@ -11,7 +11,7 @@ set(${KIT}_INCLUDE_DIRECTORIES
   )
 
 set(${KIT}_SRCS
-  igtlCodecImage.cxx
+  igtlImageConverter.cxx
   )
 
 set(${KIT}_TARGET_LIBRARIES

@@ -13,6 +13,8 @@
 ==========================================================================*/
 
 // OpenIGTLink includes
+#include "../Converter/igtlImageConverter.h"
+
 #include <igtl_util.h>
 #include <igtlImageMessage.h>
 
@@ -27,25 +29,34 @@
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
 
-#include "igtlCodecImage.h"
 
-//---------------------------------------------------------------------------
-vtkStandardNewMacro(igtlCodecImage);
-//---------------------------------------------------------------------------
-igtlCodecImage::igtlCodecImage()
+namespace igtl
+{
+
+////---------------------------------------------------------------------------
+//vtkStandardNewMacro(ImageConverter);
+////---------------------------------------------------------------------------
+ImageConverter::ImageConverter()
 {
 }
 
 //---------------------------------------------------------------------------
-igtlCodecImage::~igtlCodecImage()
+ImageConverter::~ImageConverter()
 {
 }
 
+////---------------------------------------------------------------------------
+//void ImageConverter::PrintSelf(ostream& os, vtkIndent indent)
+//{
+//  this->vtkObject::PrintSelf(os, indent);
+//}
+
 //---------------------------------------------------------------------------
-void igtlCodecImage::PrintSelf(ostream& os, vtkIndent indent)
+void ImageConverter::PrintSelf(std::ostream &os) const
 {
-  this->vtkObject::PrintSelf(os, indent);
+ this->LightObject::PrintSelf(os);
 }
+
 
 namespace { // unnamed namespace
 
@@ -90,7 +101,7 @@ int swapCopy64(igtlUint64 * dst, igtlUint64 * src, int n)
 } // unnamed namespace
 
 //---------------------------------------------------------------------------
-int igtlCodecImage::IGTLToVTK(igtl::MessageBase::Pointer source,
+int ImageConverter::IGTLToVTK(igtl::MessageBase::Pointer source,
     MessageContent* dest, bool checkCRC)
 {
   // Create a message buffer to receive image data
@@ -124,7 +135,7 @@ int igtlCodecImage::IGTLToVTK(igtl::MessageBase::Pointer source,
 }
 
 //---------------------------------------------------------------------------
-int igtlCodecImage::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, MessageContent* dest)
+int ImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, MessageContent* dest)
 {
   if (!dest->image)
     dest->image = vtkSmartPointer<vtkImageData>::New();
@@ -308,7 +319,7 @@ int igtlCodecImage::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, Messa
 }
 
 //---------------------------------------------------------------------------
-int igtlCodecImage::IGTLToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras)
+int ImageConverter::IGTLToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras)
 {
   // Retrieve the image data
   int   size[3];          // image dimension
@@ -384,7 +395,7 @@ int igtlCodecImage::IGTLToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSm
 }
 
 //---------------------------------------------------------------------------
-int igtlCodecImage::VTKToIGTL(const MessageContent& source, igtl::ImageMessage::Pointer* dest)
+int ImageConverter::VTKToIGTL(const MessageContent& source, igtl::ImageMessage::Pointer* dest)
 {
   if (dest->IsNull())
     *dest = igtl::ImageMessage::New();
@@ -480,7 +491,7 @@ int igtlCodecImage::VTKToIGTL(const MessageContent& source, igtl::ImageMessage::
 }
 
 //---------------------------------------------------------------------------
-int igtlCodecImage::IGTLToVTKScalarType(int igtlType)
+int ImageConverter::IGTLToVTKScalarType(int igtlType)
 {
   switch (igtlType)
     {
@@ -493,9 +504,9 @@ int igtlCodecImage::IGTLToVTKScalarType(int igtlType)
     case igtl::ImageMessage::TYPE_FLOAT32: return VTK_FLOAT;
     case igtl::ImageMessage::TYPE_FLOAT64: return VTK_DOUBLE;
     default:
-      vtkErrorMacro ("Invalid IGTL scalar Type: "<<igtlType);
+      igtlErrorMacro ("Invalid IGTL scalar Type: "<<igtlType);
       return VTK_VOID;
     }
 }
 
-
+}
