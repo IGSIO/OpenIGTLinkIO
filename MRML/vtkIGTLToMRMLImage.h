@@ -24,15 +24,11 @@
 #include <igtlImageMessage.h>
 #include <vtkMRMLNode.h>
 #include <vtkObject.h>
-#include "../Converter/igtlImageConverter.h"
+#include "igtlImageConverter.h"
 
 // VTK includes
 
 class vtkMRMLVolumeNode;
-namespace igtl
-{
-class ImageConverter;
-}
 class vtkImageData;
 
 class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLImage : public vtkIGTLToMRMLBase
@@ -63,7 +59,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLImage : public vt
 
   igtl::GetImageMessage::Pointer GetImageMessage;
 
-  igtl::ImageConverter::Pointer Codec;
+  igtl::ImageConverter::Pointer Converter;
 };
 
 

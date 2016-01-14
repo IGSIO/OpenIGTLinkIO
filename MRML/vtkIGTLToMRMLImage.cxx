@@ -48,7 +48,7 @@ vtkStandardNewMacro(vtkIGTLToMRMLImage);
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLImage::vtkIGTLToMRMLImage()
 {
-   Codec = igtl::ImageConverter::New();
+   Converter = igtl::ImageConverter::New();
 }
 
 //---------------------------------------------------------------------------
@@ -221,7 +221,7 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
   igtl::ImageConverter::MessageContent content;
   content.image = volumeNode->GetImageData(); // reuse existing imagedata if structure (dims, type, components) is identical
 
-  if (Codec->IGTLToVTK(buffer, &content, this->CheckCRC) == 0)
+  if (Converter->IGTLToVTK(buffer, &content, this->CheckCRC) == 0)
     {
     return 0;
     }
@@ -303,7 +303,7 @@ int vtkIGTLToMRMLImage::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, i
     content.deviceName = volumeNode->GetName();
     volumeNode->GetIJKToRASMatrix(content.transform);
 
-    if (Codec->VTKToIGTL(content, &this->OutImageMessage) == 0)
+    if (Converter->VTKToIGTL(content, &this->OutImageMessage) == 0)
       {
       return 0;
       }
