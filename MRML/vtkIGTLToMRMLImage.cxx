@@ -299,6 +299,9 @@ int vtkIGTLToMRMLImage::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, i
 
     igtl::ImageConverter::MessageContent content;
     content.image = volumeNode->GetImageData();
+    content.transform = vtkSmartPointer<vtkMatrix4x4>::New();
+    content.deviceName = volumeNode->GetName();
+    volumeNode->GetIJKToRASMatrix(content.transform);
 
     if (Codec->VTKToIGTL(content, &this->OutImageMessage) == 0)
       {

@@ -118,7 +118,7 @@ int ImageConverter::IGTLToVTK(igtl::MessageBase::Pointer source,
 
   // set volume orientation
   if (!dest->transform)
-    dest->transform = vtkMatrix4x4::New();
+    dest->transform = vtkSmartPointer<vtkMatrix4x4>::New();
   if (this->IGTLToVTKTransform(imgMsg, dest->transform) == 0)
     return 0;
 
@@ -391,6 +391,11 @@ int ImageConverter::VTKToIGTL(const MessageContent& source, igtl::ImageMessage::
   if (dest->IsNull())
     *dest = igtl::ImageMessage::New();
   igtl::ImageMessage::Pointer msg = *dest;
+
+  if (source.transform.Get()==NULL)
+    igtlErrorMacro ("Got NULL input transform");
+  if (source.image.Get()==NULL)
+    igtlErrorMacro ("Got NULL input image");
 
   vtkSmartPointer<vtkImageData> imageData = source.image;
   int   isize[3];          // image dimension

@@ -14,6 +14,9 @@ find_package(VTK 6.1
 include(${VTK_USE_FILE})
 
 set(${KIT}_INCLUDE_DIRECTORIES
+  PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}
   )
 
 set(${KIT}_SRCS
@@ -26,7 +29,7 @@ set(${KIT}_TARGET_LIBRARIES
   )
 
 add_library(${KIT} ${${KIT}_SRCS})
-target_link_libraries(${KIT} ${KIT}_TARGET_LIBRARIES)
-target_include_directories(${KIT} ${KIT}_INCLUDE_DIRECTORIES);
+target_link_libraries(${KIT} ${${KIT}_TARGET_LIBRARIES})
+target_include_directories(${KIT} ${${KIT}_INCLUDE_DIRECTORIES})
 #TODO: Handle EXPORT_DIRECTIVE ${${KIT}_EXPORT_DIRECTIVE}
 
