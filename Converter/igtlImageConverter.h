@@ -60,13 +60,9 @@ public:
   std::string deviceName;
   };
 
-//  static ImageConverter *New();
-//  vtkTypeMacro(ImageConverter,vtkObject);
-
   virtual void PrintSelf(std::ostream& os) const;
 
   virtual const char*  GetIGTLName() { return "IMAGE"; };
-//  virtual const char *GetNameOfClass() const {return "ImageConverter";}
 
   virtual int IGTLToVTK(igtl::MessageBase::Pointer source, MessageContent* dest, bool checkCRC);
   virtual int VTKToIGTL(const MessageContent& source, igtl::ImageMessage::Pointer* dest);

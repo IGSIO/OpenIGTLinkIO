@@ -13,7 +13,7 @@
 ==========================================================================*/
 
 // OpenIGTLink includes
-#include "../Converter/igtlImageConverter.h"
+#include "igtlImageConverter.h"
 
 #include <igtl_util.h>
 #include <igtlImageMessage.h>
@@ -33,9 +33,6 @@
 namespace igtl
 {
 
-////---------------------------------------------------------------------------
-//vtkStandardNewMacro(ImageConverter);
-////---------------------------------------------------------------------------
 ImageConverter::ImageConverter()
 {
 }
@@ -44,12 +41,6 @@ ImageConverter::ImageConverter()
 ImageConverter::~ImageConverter()
 {
 }
-
-////---------------------------------------------------------------------------
-//void ImageConverter::PrintSelf(ostream& os, vtkIndent indent)
-//{
-//  this->vtkObject::PrintSelf(os, indent);
-//}
 
 //---------------------------------------------------------------------------
 void ImageConverter::PrintSelf(std::ostream &os) const
