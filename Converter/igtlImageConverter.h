@@ -26,13 +26,29 @@
 
 class vtkImageData;
 class vtkMatrix4x4;
+#include "igtlLightObject.h"
+
+namespace igtl
+{
 
 /** Conversion between igtl::ImageMessage and vtk classes.
  *
  */
-class OPENIGTLINK_SUPPORT_MODULE_CODEC_EXPORT igtlCodecImage : public vtkObject
+class OPENIGTLINK_SUPPORT_MODULE_CODEC_EXPORT ImageConverter : public LightObject
 {
 public:
+ /** Standard class typedefs. */
+ typedef ImageConverter        Self;
+ typedef LightObject              Superclass;
+ typedef SmartPointer<Self>       Pointer;
+ typedef SmartPointer<const Self> ConstPointer;
+
+ /** Method for creation through the object factory. */
+ igtlNewMacro(Self);
+
+ /** Run-time type information (and related methods). */
+ igtlTypeMacro(ImageConverter, LightObject);
+
   /**
    * This structure contains everything that igtl::ImageMessage is able to contain,
    * in a vtk-friendly format.
@@ -44,10 +60,7 @@ public:
   std::string deviceName;
   };
 
-  static igtlCodecImage *New();
-  vtkTypeMacro(igtlCodecImage,vtkObject);
-
-  void PrintSelf(ostream& os, vtkIndent indent);
+  virtual void PrintSelf(std::ostream& os) const;
 
   virtual const char*  GetIGTLName() { return "IMAGE"; };
 
@@ -55,13 +68,15 @@ public:
   virtual int VTKToIGTL(const MessageContent& source, igtl::ImageMessage::Pointer* dest);
 
 protected:
-  igtlCodecImage();
-  ~igtlCodecImage();
+  ImageConverter();
+  ~ImageConverter();
 
   int IGTLToVTKScalarType(int igtlType);
   int IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, MessageContent *dest);
   int IGTLToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras);
 };
+
+}
 
 
 #endif //__igtlCodecImage_h

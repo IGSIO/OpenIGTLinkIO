@@ -17,9 +17,6 @@
 #include "vtkMRMLIGTLQueryNode.h"
 
 // igtl support includes
-#include <igtlCodecImage.h>
-
-// OpenIGTLink includes
 #include <igtl_util.h>
 #include <igtlImageMessage.h>
 
@@ -42,6 +39,7 @@
 
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
+#include "igtlImageConverter.h"
 
 #include "vtkSlicerOpenIGTLinkIFLogic.h"
 
@@ -50,6 +48,7 @@ vtkStandardNewMacro(vtkIGTLToMRMLImage);
 //---------------------------------------------------------------------------
 vtkIGTLToMRMLImage::vtkIGTLToMRMLImage()
 {
+   Converter = igtl::ImageConverter::New();
 }
 
 //---------------------------------------------------------------------------
@@ -219,13 +218,10 @@ int vtkIGTLToMRMLImage::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNod
     return 0;
     }
 
-  if (!Codec.Get())
-    Codec = vtkSmartPointer<igtlCodecImage>::New();
-
-  igtlCodecImage::MessageContent content;
+  igtl::ImageConverter::MessageContent content;
   content.image = volumeNode->GetImageData(); // reuse existing imagedata if structure (dims, type, components) is identical
 
-  if (Codec->IGTLToVTK(buffer, &content, this->CheckCRC) == 0)
+  if (Converter->IGTLToVTK(buffer, &content, this->CheckCRC) == 0)
     {
     return 0;
     }
@@ -301,13 +297,13 @@ int vtkIGTLToMRMLImage::MRMLToIGTL(unsigned long event, vtkMRMLNode* mrmlNode, i
       return 0;
       }
 
-    if (!Codec.Get())
-      Codec = vtkSmartPointer<igtlCodecImage>::New();
-
-    igtlCodecImage::MessageContent content;
+    igtl::ImageConverter::MessageContent content;
     content.image = volumeNode->GetImageData();
+    content.transform = vtkSmartPointer<vtkMatrix4x4>::New();
+    content.deviceName = volumeNode->GetName();
+    volumeNode->GetIJKToRASMatrix(content.transform);
 
-    if (Codec->VTKToIGTL(content, &this->OutImageMessage) == 0)
+    if (Converter->VTKToIGTL(content, &this->OutImageMessage) == 0)
       {
       return 0;
       }

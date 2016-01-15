@@ -23,7 +23,7 @@ include(${Slicer_USE_FILE})
 #add_definitions(-DOpenIGTLinkIF_LIBRARY_VERSION="${OpenIGTLink_VERSION_MAJOR}-${OpenIGTLink_VERSION_MINOR}-${OpenIGTLink_VERSION_PATCH} for protocol ver. 2")
 
 #-----------------------------------------------------------------------------
-add_subdirectory(Codec)
+add_subdirectory(Converter)
 add_subdirectory(MRML)
 add_subdirectory(Logic)
 

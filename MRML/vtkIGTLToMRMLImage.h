@@ -22,15 +22,13 @@
 
 // OpenIGTLink includes
 #include <igtlImageMessage.h>
-
-// MRML includes
 #include <vtkMRMLNode.h>
+#include <vtkObject.h>
+#include "igtlImageConverter.h"
 
 // VTK includes
-#include <vtkObject.h>
 
 class vtkMRMLVolumeNode;
-class igtlCodecImage;
 class vtkImageData;
 
 class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLImage : public vtkIGTLToMRMLBase
@@ -61,7 +59,7 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLImage : public vt
 
   igtl::GetImageMessage::Pointer GetImageMessage;
 
-  vtkSmartPointer<igtlCodecImage> Codec;
+  igtl::ImageConverter::Pointer Converter;
 };
 
 
