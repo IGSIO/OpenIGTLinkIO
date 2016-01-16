@@ -12,10 +12,10 @@
 
 ==========================================================================*/
 
-#ifndef __igtlCodecImage_h
-#define __igtlCodecImage_h
+#ifndef __igtlImageConverter_h
+#define __igtlImageConverter_h
 
-#include "igtlSupportModuleCodecExport.h"
+#include "igtlSupportModuleConverterExport.h"
 
 // OpenIGTLink includes
 #include <igtlImageMessage.h>
@@ -34,7 +34,7 @@ namespace igtl
 /** Conversion between igtl::ImageMessage and vtk classes.
  *
  */
-class OPENIGTLINK_SUPPORT_MODULE_CODEC_EXPORT ImageConverter : public LightObject
+class OPENIGTLINK_SUPPORT_MODULE_CONVERTER_EXPORT ImageConverter : public LightObject
 {
 public:
  /** Standard class typedefs. */
@@ -79,4 +79,4 @@ protected:
 }
 
 
-#endif //__igtlCodecImage_h
+#endif //__igtlImageConverter_h
