@@ -19,6 +19,7 @@
 
 // OpenIGTLink includes
 #include <igtlPolyDataMessage.h>
+#include "igtlPolyDataConverter.h"
 
 // MRML includes
 #include <vtkMRMLNode.h>
@@ -53,20 +54,12 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLToMRMLPolyData : public
   vtkIGTLToMRMLPolyData();
   ~vtkIGTLToMRMLPolyData();
 
-  int IGTLToVTKScalarType(int igtlType);
-
-  // Utility function for MRMLToIGTL(): Convert vtkCellArray to igtl::PolyDataCellArray
-  int VTKToIGTLCellArray(vtkCellArray* src, igtl::PolyDataCellArray* dest);
-
-  // Utility function for MRMLToIGTL(): Convert i-th vtkDataSetAttributes (vtkCellData and vtkPointData)
-  // to igtl::PolyDataAttribute
-  int VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl::PolyDataAttribute* dest);
-
  protected:
 
   igtl::PolyDataMessage::Pointer OutPolyDataMessage;
   igtl::GetPolyDataMessage::Pointer GetPolyDataMessage;
 
+  igtl::PolyDataConverter::Pointer Converter;
 };
 
 
