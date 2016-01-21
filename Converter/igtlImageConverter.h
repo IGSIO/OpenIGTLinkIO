@@ -15,7 +15,7 @@
 #ifndef __igtlImageConverter_h
 #define __igtlImageConverter_h
 
-#include "igtlSupportModuleConverterExport.h"
+#include "igtlioConverterExport.h"
 
 // OpenIGTLink includes
 #include <igtlImageMessage.h>
@@ -34,7 +34,7 @@ namespace igtl
 /** Conversion between igtl::ImageMessage and vtk classes.
  *
  */
-class OPENIGTLINK_SUPPORT_MODULE_CONVERTER_EXPORT ImageConverter : public LightObject
+class OPENIGTLINKIO_CONVERTER_EXPORT ImageConverter : public LightObject
 {
 public:
  /** Standard class typedefs. */

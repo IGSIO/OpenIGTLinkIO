@@ -15,7 +15,7 @@
 #ifndef __igtlPolyDataConverter_h
 #define __igtlPolyDataConverter_h
 
-#include "igtlSupportModuleConverterExport.h"
+#include "igtlioConverterExport.h"
 
 // OpenIGTLink includes
 #include <igtlPolyDataMessage.h>
@@ -36,7 +36,7 @@ namespace igtl
 /** Conversion between igtl::PolyDataMessage and vtk classes.
  *
  */
-class OPENIGTLINK_SUPPORT_MODULE_CONVERTER_EXPORT PolyDataConverter : public LightObject
+class OPENIGTLINKIO_CONVERTER_EXPORT PolyDataConverter : public LightObject
 {
 public:
   /** Standard class typedefs. */
