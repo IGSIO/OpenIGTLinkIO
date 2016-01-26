@@ -36,13 +36,13 @@ class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIODeviceFactory : public vtkObject
   // TODO: Should we accept prefixed message types as well?
   vtkIGTLIODevicePointer create(std::string device_type, std::string device_name) const;
 
-  // Register a factory for a specific Device.
-  // CHANGED: Registration is done internally.
-  //void RegisterFactory(vtkSmartPointer<vtkIGTLIODevice::Creator> factory);
-
 protected:
   vtkIGTLIODeviceFactory();
   virtual ~vtkIGTLIODeviceFactory();
+
+  // Register a factory for a specific Device Type.
+  template<class CREATOR_TYPE>
+  void registerCreator();
 
   std::map<std::string, vtkIGTLIODeviceCreatorPointer> Creators;
 };

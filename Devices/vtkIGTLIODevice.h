@@ -43,6 +43,7 @@ public:
   vtkAbstractTypeMacro(vtkIGTLIODeviceCreator,vtkObject);
 
 };
+//---------------------------------------------------------------------------
 
 /// A vtkIGTLIODevice represents one device connected over OpenIGTLink.
 ///
@@ -119,7 +120,7 @@ public:
  // prefixed messages are <prefix>_<device_type>.
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const { return std::set<MESSAGE_PREFIX>(); }
 
- // TODO: add ole features from Connector:
+ // TODO: add old features from Connector:
  //       - lock (means dont accept incoming messages),
  //       - gettimestamp (of last incoming message)
 
@@ -145,7 +146,7 @@ public:
    QUERY_STATUS status;
  };
 
- /// Get all current queries
+  /// Get all current queries
   std::vector<QueryType> GetQueries() const;
   /// check for waiting queries that have waited beoynd the timeout for an answer, mark them as expired.
   int CheckQueryExpiration();
@@ -153,22 +154,9 @@ public:
   int PruneCompletedQueries();
   int CancelQuery(int index);
 
-
  public:
 
-//  // IGTL to MRML Converter types (returned values from GetConverterType())
-//  // NOTE: if you want to define a child class that can handle multiple types
-//  // of OpenIGTLink messages, override GetConverterType() method to return
-//  // TYPE_MULTI_IGTL_NAME.
-//  enum {
-//    TYPE_NORMAL,            // supports only single IGTL message type (default)
-//    TYPE_MULTI_IGTL_NAMES,  // supports multiple IGTL message names (device types)
-// };
-
- public:
-
-//  static vtkIGTLIODevice *New();
-  vtkTypeMacro(vtkIGTLIODevice,vtkObject);
+  vtkAbstractTypeMacro(vtkIGTLIODevice,vtkObject);
 
 private:
  std::vector<QueryType> Queries;
@@ -176,79 +164,9 @@ private:
  bool PushOnConnect;
  double QueryTimeOut;
 
-//  void PrintSelf(ostream& os, vtkIndent indent);
-
-//  virtual int          GetConverterType() { return TYPE_NORMAL; };
-
-//  // IGTL Device / MRML Tag names
-//  virtual const char*  GetIGTLName()      { return NULL;};
-//  virtual const char*  GetMRMLName()      { return NULL;};
-
-//  // Following functions are implemented only if exists in OpenIGTLink specification
-//  virtual const char*  GetIGTLStartQueryName() { return NULL; };
-//  virtual const char*  GetIGTLStopQueryName()  { return NULL; };
-//  virtual const char*  GetIGTLGetQueryName()   { return NULL; };
-//  virtual const char*  GetIGTLStatusName()     { return NULL; };
-
-//  // Description:
-//  // GetNodeEvents() returns a list of events, which an IGTLConnector should react to.
-//  // The first element should be an event to export data, although multiple events can be defined.
-//  virtual vtkIntArray* GetNodeEvents()    { return NULL; };
-
-//  // This simpler call exists when the message is not available to provide more information in the function
-//  virtual vtkMRMLNode* CreateNewNode(vtkMRMLScene* vtkNotUsed(scene), const char* vtkNotUsed(name))
-//  { return NULL; };
-//  // This call enables the created node to query the message to determine any necessary properties
-//  virtual vtkMRMLNode* CreateNewNodeWithMessage(vtkMRMLScene* scene, const char* name, igtl::MessageBase::Pointer vtkNotUsed(message))
-//  { return this->CreateNewNode(scene, name); };
-
-//  // for TYPE_MULTI_IGTL_NAMES
-//  int                  GetNumberOfIGTLNames()   { return this->IGTLNames.size(); };
-//  const char*          GetIGTLName(int index)   { return this->IGTLNames[index].c_str(); };
-
-//  // Description:
-//  // Functions to convert OpenIGTLink message to MRML node.
-//  // If mrmlNode is QueryNode, the function will generate query node. (event is not used.)
-//  virtual int          IGTLToMRML(igtl::MessageBase::Pointer buffer,
-//                                  vtkMRMLNode* node);
-
-//  // Description:
-//  // Functions to generate an OpenIGTLink message
-//  // If mrmlNode is QueryNode, the function will generate query node. (event is not used.)
-//  virtual int          MRMLToIGTL(unsigned long vtkNotUsed(event), vtkMRMLNode* vtkNotUsed(mrmlNode),
-//                                  int* vtkNotUsed(size), void** vtkNotUsed(igtlMsg)){ return 0; };
-
-//  // Check query que (called periodically by timer)
-//  // (implemeted only if ncessary)
-//  virtual int CheckQueryQue(double vtkNotUsed(ctime)) { return true; }
-
-//  vtkGetMacro( CheckCRC, int );
-//  vtkSetMacro( CheckCRC, int );
-
-//  // Set/Get pointer to OpenIGTlinkIFLogic
-//  void SetOpenIGTLinkIFLogic(vtkSlicerOpenIGTLinkIFLogic* logic);
-//  vtkSlicerOpenIGTLinkIFLogic* GetOpenIGTLinkIFLogic();
-
-//  // Visualization
-//  // If an MRML node for this converter type can be visualized,
-//  // the following functions must be implemented.
-//  virtual int IsVisible() { return 0; };
-//  virtual void SetVisibility(int vtkNotUsed(sw),
-//                             vtkMRMLScene * vtkNotUsed(scene),
-//                             vtkMRMLNode * vtkNotUsed(node)) {};
-
  protected:
   vtkIGTLIODevice();
   ~vtkIGTLIODevice();
-
- protected:
-
-//  // list of IGTL names (used only when the class supports multiple IGTL names)
-//  std::vector<std::string>  IGTLNames;
-
-//  int CheckCRC;
-
-//  vtkIGTLIODevicePrivate* Private;
 };
 
 

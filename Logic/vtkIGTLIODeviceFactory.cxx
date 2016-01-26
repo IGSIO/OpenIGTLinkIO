@@ -8,11 +8,14 @@
 #include "vtkIGTLIODeviceFactory.h"
 #include <vtkObjectFactory.h>
 
+#include "vtkIGTLIOImageDevice.h"
+
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLIODeviceFactory);
 //---------------------------------------------------------------------------
 vtkIGTLIODeviceFactory::vtkIGTLIODeviceFactory()
 {
+  this->registerCreator<vtkIGTLIOImageDeviceCreator>();
 }
 
 //---------------------------------------------------------------------------
@@ -23,7 +26,6 @@ vtkIGTLIODeviceFactory::~vtkIGTLIODeviceFactory()
 //---------------------------------------------------------------------------
 void vtkIGTLIODeviceFactory::PrintSelf(ostream &os, vtkIndent indent)
 {
-
 }
 
 //---------------------------------------------------------------------------
@@ -36,7 +38,7 @@ vtkIGTLIODeviceCreatorPointer vtkIGTLIODeviceFactory::GetCreator(std::string dev
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIODevicePointer vtkIGTLIODeviceFactory::create(std::string device_type, std::__1::string device_name) const
+vtkIGTLIODevicePointer vtkIGTLIODeviceFactory::create(std::string device_type, std::string device_name) const
 {
   vtkIGTLIODeviceCreatorPointer creator = this->GetCreator(device_type);
   if (!creator)
@@ -44,4 +46,11 @@ vtkIGTLIODevicePointer vtkIGTLIODeviceFactory::create(std::string device_type, s
   return creator->Create(device_name);
 }
 
+//---------------------------------------------------------------------------
+template<class CREATOR_TYPE>
+void vtkIGTLIODeviceFactory::registerCreator()
+{
+  vtkIGTLIODeviceCreatorPointer creator = vtkSmartPointer<CREATOR_TYPE>::New();
+  Creators[creator->GetDeviceType()] = creator;
+}
 

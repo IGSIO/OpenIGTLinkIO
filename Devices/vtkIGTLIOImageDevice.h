@@ -38,7 +38,9 @@ igtl::SmartPointer<T> dynamic_pointer_cast(const igtl::SmartPointer<U>& sp) //no
  T* ptr = dynamic_cast<T*>(sp.GetPointer());
  return igtl::SmartPointer<T>(ptr);
 }
+//---------------------------------------------------------------------------
 
+//---------------------------------------------------------------------------
 class vtkIGTLIOImageDeviceCreator : public vtkIGTLIODeviceCreator
 {
 public:
@@ -49,6 +51,7 @@ public:
   vtkTypeMacro(vtkIGTLIOImageDeviceCreator,vtkObject);
 };
 
+//---------------------------------------------------------------------------
 /// A Device supporting the IMAGE igtl Message.
 class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOImageDevice : public vtkIGTLIODevice
 {

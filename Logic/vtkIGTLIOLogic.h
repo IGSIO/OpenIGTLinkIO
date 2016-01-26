@@ -73,6 +73,11 @@ typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
 /// Notifications:
 /// - new/create/modified connectors and devices
 ///
+/// Requirements:
+///  - Call the PeriodicProcess() method every N ms in order to do the
+///    main thread processing. This should be handled externally by a timer
+///    or similar.
+///
 class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOLogic : public vtkObject
 {
 public:
@@ -80,25 +85,19 @@ public:
     //TODO: harmonize event handling for Logic, Connector, Device.
     ConnectionAddedEvent        = 118960,
     ConnectionRemovedEvent      = 118961,
-
-//    DisconnectedEvent     = 118945,
-//    ActivatedEvent        = 118946,
-//    DeactivatedEvent      = 118947,
-//    ReceiveEvent          = 118948,
-//    NewDeviceEvent        = 118949,
-//    DeviceModifiedEvent   = 118950
   };
- public:
 
  static vtkIGTLIOLogic *New();
  vtkTypeMacro(vtkIGTLIOLogic, vtkObject);
  void PrintSelf(ostream&, vtkIndent);
 
  vtkIGTLIOConnectorPointer CreateConnector();
- //TODO: use this interface or a std::vector-based one?
  int RemoveConnector(int index);
  int GetNumberOfConnectors() const;
  vtkIGTLIOConnectorPointer GetConnector(int index);
+
+ /// Call timer-driven routines for each connector
+ void PeriodicProcess();
 
  //TODO: interface for accessing Devices
 
@@ -109,12 +108,10 @@ protected:
 private:
  std::vector<vtkIGTLIOConnectorPointer> Connectors;
 
-  // Call timer-driven routines for each connector
-  void                      CallConnectorTimerHander(); 
-
 private:
   vtkIGTLIOLogic(const vtkIGTLIOLogic&); // Not implemented
-  void operator=(const vtkIGTLIOLogic&);               // Not implemented
+  void operator=(const vtkIGTLIOLogic&); // Not implemented
+
   int CreateUniqueConnectorID() const;
 };
 

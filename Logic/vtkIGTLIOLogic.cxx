@@ -27,12 +27,12 @@
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLIOLogic);
-
 //---------------------------------------------------------------------------
 vtkIGTLIOLogic::vtkIGTLIOLogic()
 {
 }
 
+//---------------------------------------------------------------------------
 vtkIGTLIOLogic::~vtkIGTLIOLogic()
 {
 }
@@ -43,6 +43,7 @@ void vtkIGTLIOLogic::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "vtkIGTLIOLogic:             " << this->GetClassName() << "\n";
 }
 
+//---------------------------------------------------------------------------
 vtkIGTLIOConnectorPointer vtkIGTLIOLogic::CreateConnector()
 {
   vtkIGTLIOConnectorPointer connector = vtkIGTLIOConnectorPointer::New();
@@ -68,6 +69,7 @@ vtkIGTLIOConnectorPointer vtkIGTLIOLogic::CreateConnector()
 
 //}
 
+//---------------------------------------------------------------------------
 int vtkIGTLIOLogic::CreateUniqueConnectorID() const
 {
   int retval=0;
@@ -78,6 +80,7 @@ int vtkIGTLIOLogic::CreateUniqueConnectorID() const
   return retval;
 }
 
+//---------------------------------------------------------------------------
 int vtkIGTLIOLogic::RemoveConnector(int index)
 {
   Connectors.erase(Connectors.begin()+index);
@@ -85,46 +88,25 @@ int vtkIGTLIOLogic::RemoveConnector(int index)
   return 0;
 }
 
+//---------------------------------------------------------------------------
 int vtkIGTLIOLogic::GetNumberOfConnectors() const
 {
   return Connectors.size();
 }
 
+//---------------------------------------------------------------------------
 vtkIGTLIOConnectorPointer vtkIGTLIOLogic::GetConnector(int index)
 {
   return Connectors[index];
 }
 
 //---------------------------------------------------------------------------
-
-
-//---------------------------------------------------------------------------
-void vtkIGTLIOLogic::CallConnectorTimerHander()
+void vtkIGTLIOLogic::PeriodicProcess()
 {
   for (unsigned i=0; i<Connectors.size(); ++i)
     {
       Connectors[i]->PeriodicProcess();
     }
-
-  //TODO: Create timer and call this stuff, converted to new fw:
-  //  //ConnectorMapType::iterator cmiter;
-  //  std::vector<vtkMRMLNode*> nodes;
-  //  this->GetMRMLScene()->GetNodesByClass("vtkMRMLIGTLConnectorNode", nodes);
-
-  //  std::vector<vtkMRMLNode*>::iterator iter;
-
-  //  //for (cmiter = this->ConnectorMap.begin(); cmiter != this->ConnectorMap.end(); cmiter ++)
-  //  for (iter = nodes.begin(); iter != nodes.end(); iter ++)
-  //    {
-  //    vtkMRMLIGTLConnectorNode* connector = vtkMRMLIGTLConnectorNode::SafeDownCast(*iter);
-  //    if (connector == NULL)
-  //      {
-  //      continue;
-  //      }
-  //    connector->ImportDataFromCircularBuffer();
-  //    connector->ImportEventsFromEventBuffer();
-  //    connector->PushOutgoingMessages();
-  //    }
 }
 
 
