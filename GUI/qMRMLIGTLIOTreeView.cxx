@@ -41,10 +41,9 @@
 #include "qMRMLIGTLIOTreeView.h"
 
 // OpenIGTLinkIF Logic includes
-#include "vtkSlicerOpenIGTLinkIFLogic.h"
-
-// MRML includes
 #include <vtkMRMLNode.h>
+
+#include "../Logic/vtkIGTLIOLogic.h"
 #include "vtkMRMLIGTLConnectorNode.h"
 
 //------------------------------------------------------------------------------

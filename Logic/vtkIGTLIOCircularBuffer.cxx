@@ -5,19 +5,13 @@
   See Doc/copyright/copyright.txt
   or http://www.slicer.org/copyright/copyright.txt for details.
 
-  Program:   3D Slicer
-  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLCircularBuffer.cxx $
-  Date:      $Date: 2009-08-12 21:30:38 -0400 (Wed, 12 Aug 2009) $
-  Version:   $Revision: 10236 $
-
 ==========================================================================*/
 
 // VTK includes
+#include "vtkIGTLIOCircularBuffer.h"
+
 #include <vtkObjectFactory.h>
 #include <vtkMutexLock.h>
-#include <vtkIGTLCircularBuffer.h>
-
-// VTKSYS includes
 #include <vtksys/SystemTools.hxx>
 
 // OpenIGTLink includes
@@ -27,10 +21,10 @@
 #include <string>
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLCircularBuffer);
+vtkStandardNewMacro(vtkIGTLIOCircularBuffer);
 
 //---------------------------------------------------------------------------
-vtkIGTLCircularBuffer::vtkIGTLCircularBuffer()
+vtkIGTLIOCircularBuffer::vtkIGTLIOCircularBuffer()
 {
   this->Mutex = vtkMutexLock::New();
   this->Mutex->Lock();
@@ -52,7 +46,7 @@ vtkIGTLCircularBuffer::vtkIGTLCircularBuffer()
 
 
 //---------------------------------------------------------------------------
-vtkIGTLCircularBuffer::~vtkIGTLCircularBuffer()
+vtkIGTLIOCircularBuffer::~vtkIGTLIOCircularBuffer()
 {
   this->Mutex->Lock();
   this->InUse = -1;
@@ -71,7 +65,7 @@ vtkIGTLCircularBuffer::~vtkIGTLCircularBuffer()
 
 
 //---------------------------------------------------------------------------
-void vtkIGTLCircularBuffer::PrintSelf(ostream& os, vtkIndent indent)
+void vtkIGTLIOCircularBuffer::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkObject::PrintSelf(os, indent);
 }
@@ -88,7 +82,7 @@ void vtkIGTLCircularBuffer::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-int vtkIGTLCircularBuffer::StartPush()
+int vtkIGTLIOCircularBuffer::StartPush()
 {
   this->Mutex->Lock();
   this->InPush = (this->Last + 1) % IGTLCB_CIRC_BUFFER_SIZE;
@@ -102,13 +96,13 @@ int vtkIGTLCircularBuffer::StartPush()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLCircularBuffer::GetPushBuffer()
+igtl::MessageBase::Pointer vtkIGTLIOCircularBuffer::GetPushBuffer()
 {
   return this->Messages[this->InPush];
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLCircularBuffer::EndPush()
+void vtkIGTLIOCircularBuffer::EndPush()
 {
   this->Mutex->Lock();
   this->Last = this->InPush;
@@ -127,7 +121,7 @@ void vtkIGTLCircularBuffer::EndPush()
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-int vtkIGTLCircularBuffer::StartPull()
+int vtkIGTLIOCircularBuffer::StartPull()
 {
   this->Mutex->Lock();
   this->InUse = this->Last;
@@ -138,14 +132,14 @@ int vtkIGTLCircularBuffer::StartPull()
 
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLCircularBuffer::GetPullBuffer()
+igtl::MessageBase::Pointer vtkIGTLIOCircularBuffer::GetPullBuffer()
 {
   return this->Messages[this->InUse];
 }
 
 
 //---------------------------------------------------------------------------
-void vtkIGTLCircularBuffer::EndPull()
+void vtkIGTLIOCircularBuffer::EndPull()
 {
   this->Mutex->Lock();
   this->InUse = -1;

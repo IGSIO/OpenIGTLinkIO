@@ -122,6 +122,21 @@ int ImageConverter::IGTLToVTK(igtl::MessageBase::Pointer source,
   if (this->IGTLToVTKTransform(imgMsg, dest->transform) == 0)
     return 0;
 
+  // get timestamp
+  if (this->IGTLToTimestamp(imgMsg, dest) == 0)
+    return 0;
+
+  return 1;
+}
+
+//---------------------------------------------------------------------------
+int ImageConverter::IGTLToTimestamp(igtl::ImageMessage::Pointer msg, MessageContent* dest)
+{
+  // Save OpenIGTLink time stamp
+  igtl::TimeStamp::Pointer ts = igtl::TimeStamp::New();
+  msg->GetTimeStamp(ts);
+  dest->second = ts->GetSecond();
+  dest->nanosecond = ts->GetNanosecond();
   return 1;
 }
 

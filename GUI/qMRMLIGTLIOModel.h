@@ -21,13 +21,13 @@
 #ifndef __qMRMLIGTLIOModel_h
 #define __qMRMLIGTLIOModel_h
 
+#include "../Logic/vtkIGTLIOLogic.h"
 #include "qMRMLSceneModel.h"
 
 // OpenIGTLinkIF GUI includes
 #include "qSlicerOpenIGTLinkIFModuleExport.h"
 
 // Logic includes
-#include "Logic/vtkSlicerOpenIGTLinkIFLogic.h"
 
 class vtkMRMLNode;
 class qMRMLIGTLIOModelPrivate;

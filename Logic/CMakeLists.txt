@@ -1,28 +1,47 @@
-project(vtkSlicer${MODULE_NAME}ModuleLogic)
+project(igtlioLogic)
 
 set(KIT "${PROJECT_NAME}")
 
-set(${KIT}_EXPORT_DIRECTIVE "VTK_SLICER_OPENIGTLINKIF_MODULE_LOGIC_EXPORT")
+set(${KIT}_EXPORT_DIRECTIVE "OPENIGTLINKIO_LOGIC_EXPORT")
+
+find_package(OpenIGTLink REQUIRED)
+include(${OpenIGTLink_USE_FILE})
+
+find_package(VTK 6.1
+  COMPONENTS
+  vtkIOImage
+  vtkImagingMath
+  REQUIRED
+  NO_MODULE)
+include(${VTK_USE_FILE})
 
 set(${KIT}_INCLUDE_DIRECTORIES
-  ${vtkSlicerOpenIGTLinkIFModuleMRML_SOURCE_DIR}
-  ${vtkSlicerOpenIGTLinkIFModuleMRML_BINARY_DIR}
+  PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}
   )
 
 set(${KIT}_SRCS
-  vtkSlicerOpenIGTLinkIFLogic.cxx
-  vtkSlicerOpenIGTLinkIFLogic.h
+  vtkIGTLIODeviceFactory.cxx
+  vtkIGTLIODeviceFactory.h
+  vtkIGTLIOCircularBuffer.cxx
+  vtkIGTLIOCircularBuffer.h
+  vtkIGTLIOConnector.cxx
+  vtkIGTLIOConnector.h
+  vtkIGTLIOLogic.cxx
+  vtkIGTLIOLogic.h
   )
 
 set(${KIT}_TARGET_LIBRARIES
-  vtkSlicerOpenIGTLinkIFModuleMRML
+  igtlioDevices
+  ${OpenIGTLink_LIBRARIES}
+  ${VTK_LIBRARIES}
   )
 
-#-----------------------------------------------------------------------------
-SlicerMacroBuildModuleLogic(
-  NAME ${KIT}
-  EXPORT_DIRECTIVE ${${KIT}_EXPORT_DIRECTIVE}
-  INCLUDE_DIRECTORIES ${${KIT}_INCLUDE_DIRECTORIES}
-  SRCS ${${KIT}_SRCS}
-  TARGET_LIBRARIES ${${KIT}_TARGET_LIBRARIES}
-  )
+add_library(${KIT} ${${KIT}_SRCS})
+target_link_libraries(${KIT} ${${KIT}_TARGET_LIBRARIES})
+target_include_directories(${KIT} ${${KIT}_INCLUDE_DIRECTORIES})
+
+include( GenerateExportHeader )
+generate_export_header( ${KIT} EXPORT_FILE_NAME ${KIT}Export.h EXPORT_MACRO_NAME ${${KIT}_EXPORT_DIRECTIVE} )
+

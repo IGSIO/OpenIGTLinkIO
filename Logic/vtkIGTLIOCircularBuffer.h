@@ -5,15 +5,10 @@
   See Doc/copyright/copyright.txt
   or http://www.slicer.org/copyright/copyright.txt for details.
 
-  Program:   3D Slicer
-  Module:    $HeadURL: http://svn.slicer.org/Slicer3/trunk/Modules/OpenIGTLinkIF/vtkIGTLCircularBuffer.h $
-  Date:      $Date: 2009-08-12 21:30:38 -0400 (Wed, 12 Aug 2009) $
-  Version:   $Revision: 10236 $
-
 ==========================================================================*/
 
-#ifndef __vtkIGTLCircularBuffer_h
-#define __vtkIGTLCircularBuffer_h
+#ifndef __vtkIGTLIOCircularBuffer_h
+#define __vtkIGTLIOCircularBuffer_h
 
 // VTK includes
 #include <vtkObject.h>
@@ -21,8 +16,8 @@
 // OpenIGTLink includes
 #include <igtlMessageBase.h>
 
-// OpenIGTLinkIF MRML includes
-#include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
+// IGTLIO includes
+#include "igtlioLogicExport.h"
 
 // STD includes
 #include <string>
@@ -31,12 +26,12 @@
 
 class vtkMutexLock;
 
-class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLCircularBuffer : public vtkObject
+class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOCircularBuffer : public vtkObject
 {
  public:
 
-  static vtkIGTLCircularBuffer *New();
-  vtkTypeMacro(vtkIGTLCircularBuffer,vtkObject);
+  static vtkIGTLIOCircularBuffer *New();
+  vtkTypeMacro(vtkIGTLIOCircularBuffer,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
@@ -53,8 +48,8 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLCircularBuffer : public
   int            IsUpdated() { return this->UpdateFlag; };
 
  protected:
-  vtkIGTLCircularBuffer();
-  virtual ~vtkIGTLCircularBuffer();
+  vtkIGTLIOCircularBuffer();
+  virtual ~vtkIGTLIOCircularBuffer();
 
  protected:
 
@@ -73,4 +68,4 @@ class VTK_SLICER_OPENIGTLINKIF_MODULE_MRML_EXPORT vtkIGTLCircularBuffer : public
 
 };
 
-#endif //__vtkIGTLCircularBuffer_h
+#endif //__vtkIGTLIOCircularBuffer_h

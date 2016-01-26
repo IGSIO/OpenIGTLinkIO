@@ -1,12 +1,12 @@
-project(igtlioConverter)
+project(igtlioDevices)
 
 set(KIT "${PROJECT_NAME}")
 
-set(${KIT}_EXPORT_DIRECTIVE "OPENIGTLINKIO_CONVERTER_EXPORT")
+set(${KIT}_EXPORT_DIRECTIVE "OPENIGTLINKIO_DEVICES_EXPORT")
 
 find_package(OpenIGTLink REQUIRED)
 include(${OpenIGTLink_USE_FILE})
-    
+
 find_package(VTK 6.1
   COMPONENTS
   vtkIOImage
@@ -22,17 +22,20 @@ set(${KIT}_INCLUDE_DIRECTORIES
   )
 
 set(${KIT}_SRCS
-  igtlImageConverter.cxx
-  igtlPolyDataConverter.cxx
+  vtkIGTLIODevice.cxx
+  vtkIGTLIODevice.h
+  vtkIGTLIOImageDevice.cxx
+  vtkIGTLIOImageDevice.h
   )
 
 set(${KIT}_TARGET_LIBRARIES
+  igtlioConverter
   ${OpenIGTLink_LIBRARIES}
   ${VTK_LIBRARIES}
   )
 
 add_library(${KIT} ${${KIT}_SRCS})
-target_link_libraries(${KIT} PUBLIC ${${KIT}_TARGET_LIBRARIES})
+target_link_libraries(${KIT} ${${KIT}_TARGET_LIBRARIES})
 target_include_directories(${KIT} ${${KIT}_INCLUDE_DIRECTORIES})
 
 include( GenerateExportHeader )

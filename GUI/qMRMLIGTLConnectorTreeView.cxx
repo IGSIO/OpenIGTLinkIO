@@ -38,10 +38,8 @@
 #include "qMRMLIGTLConnectorTreeView.h"
 
 // OpenIGTLinkIF Logic includes
-#include "vtkSlicerOpenIGTLinkIFLogic.h"
-
-// MRML includes
 #include <vtkMRMLNode.h>
+#include "../Logic/vtkIGTLIOLogic.h"
 
 //------------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF

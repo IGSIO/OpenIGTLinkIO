@@ -47,7 +47,7 @@
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
 
-#include "vtkSlicerOpenIGTLinkIFLogic.h"
+#include "../Logic/vtkIGTLIOLogic.h"
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLToMRMLPolyData);

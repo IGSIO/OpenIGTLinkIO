@@ -58,6 +58,8 @@ public:
   vtkSmartPointer<vtkImageData> image;
   vtkSmartPointer<vtkMatrix4x4> transform; // ijk2ras, From image pixel space to RAS
   std::string deviceName;
+  int           second;
+  int           nanosecond;
   };
 
   virtual void PrintSelf(std::ostream& os) const;
@@ -74,6 +76,7 @@ protected:
   int IGTLToVTKScalarType(int igtlType);
   int IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, MessageContent *dest);
   int IGTLToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras);
+  int IGTLToTimestamp(igtl::ImageMessage::Pointer msg, MessageContent *dest);
 };
 
 }

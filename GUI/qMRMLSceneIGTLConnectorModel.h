@@ -22,13 +22,13 @@
 #define __qMRMLSceneIGTLConnectorModel_h
 
 // qMRMLWidgets includes
+#include "../Logic/vtkIGTLIOLogic.h"
 #include "qMRMLSceneDisplayableModel.h"
 
 // OpenIGTLinkIF GUI includes
 #include "qSlicerOpenIGTLinkIFModuleExport.h"
 
 // Logic includes
-#include "Logic/vtkSlicerOpenIGTLinkIFLogic.h"
 
 //class qMRMLSceneIGTLConnectorModelPrivate;
 class vtkMRMLNode;

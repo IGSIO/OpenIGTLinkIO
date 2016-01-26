@@ -14,9 +14,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
     
 add_subdirectory(Converter)
+add_subdirectory(Devices)
+add_subdirectory(Logic)
 
 # TODO use the namespace feature for all libs
-export(TARGETS igtlioConverter ## .. more libraries?
+export(TARGETS igtlioLogic igtlioDevices igtlioConverter
   FILE "${CMAKE_CURRENT_BINARY_DIR}/OpenIGTLinkIOTargets.cmake"
   )
 configure_file(OpenIGTLinkIOConfig.cmake.in

@@ -10,10 +10,8 @@
 // qMRMLWidgets includes
 #include <qMRMLNodeFactory.h>
 
+#include "Logic/vtkIGTLIOLogic.h"
 // OpenIGTLinkIF Logic includes
-#include "vtkSlicerOpenIGTLinkIFLogic.h"
-
-// OpenIGTLinkIF MRML includes
 #include "vtkMRMLIGTLConnectorNode.h"
 
 //-----------------------------------------------------------------------------

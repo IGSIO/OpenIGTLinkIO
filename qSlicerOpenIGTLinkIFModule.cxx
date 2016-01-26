@@ -20,11 +20,11 @@
 
 // OpenIGTLinkIF MRML includes
 #include "qSlicerOpenIGTLinkIFModule.h"
+
+#include "Logic/vtkIGTLIOLogic.h"
 #include "qSlicerOpenIGTLinkIFModuleWidget.h"
 
 // OpenIGTLinkIF Logic includes
-#include <vtkSlicerOpenIGTLinkIFLogic.h>
-
 #include "vtkMRMLIGTLConnectorNode.h"
 
 
