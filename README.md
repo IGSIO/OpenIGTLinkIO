@@ -1,4 +1,6 @@
-OpenIGTLinkIF
+OpenIGTLinkIFIO
 =============
 
-OpenIGTLink interface module for 3D Slicer 4.x
+OpenIGTLink utility library.
+
+Originally forked from OpenIGTLinkIF.

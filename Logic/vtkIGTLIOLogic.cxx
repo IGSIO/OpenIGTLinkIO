@@ -46,6 +46,8 @@ void vtkIGTLIOLogic::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 vtkIGTLIOConnectorPointer vtkIGTLIOLogic::CreateConnector()
 {
+  vtkDebugMacro("CreateConnector!!");
+  std::cout << "CreateConnector!! !!!!" << std::endl;
   vtkIGTLIOConnectorPointer connector = vtkIGTLIOConnectorPointer::New();
   connector->SetUID(this->CreateUniqueConnectorID());
   std::stringstream ss;
@@ -85,6 +87,7 @@ int vtkIGTLIOLogic::RemoveConnector(int index)
 {
   Connectors.erase(Connectors.begin()+index);
   // TODO: Notify, remove listener
+  this->InvokeEvent(ConnectionAboutToBeRemovedEvent);
   return 0;
 }
 

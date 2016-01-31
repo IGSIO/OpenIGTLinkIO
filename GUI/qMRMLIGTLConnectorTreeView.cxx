@@ -31,7 +31,6 @@
 #include "qMRMLSceneModel.h"
 #include "qMRMLSortFilterProxyModel.h"
 #include "qMRMLSceneTransformModel.h"
-#include "qMRMLSceneIGTLConnectorModel.h"
 #include "qMRMLTreeView.h"
 
 // OpenIGTLinkIF GUI includes
@@ -40,6 +39,7 @@
 // OpenIGTLinkIF Logic includes
 #include <vtkMRMLNode.h>
 #include "../Logic/vtkIGTLIOLogic.h"
+#include "qIGTLIOConnectorModel.h"
 
 //------------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF

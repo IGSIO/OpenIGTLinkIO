@@ -16,6 +16,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 add_subdirectory(Converter)
 add_subdirectory(Devices)
 add_subdirectory(Logic)
+add_subdirectory(GUI) # TODO make optional
+add_subdirectory(Examples) # TODO make optional
 
 # TODO use the namespace feature for all libs
 export(TARGETS igtlioLogic igtlioDevices igtlioConverter

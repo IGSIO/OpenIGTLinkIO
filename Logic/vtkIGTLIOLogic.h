@@ -84,7 +84,7 @@ public:
   enum {
     //TODO: harmonize event handling for Logic, Connector, Device.
     ConnectionAddedEvent        = 118960,
-    ConnectionRemovedEvent      = 118961,
+    ConnectionAboutToBeRemovedEvent      = 118961,
   };
 
  static vtkIGTLIOLogic *New();
