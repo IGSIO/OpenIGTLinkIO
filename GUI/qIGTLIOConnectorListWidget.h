@@ -6,6 +6,9 @@
 // igtlio includes
 #include "igtlioGUIExport.h"
 class qIGTLIOConnectorModel;
+class QVBoxLayout;
+class qIGTLIOConnectorPropertyWidget;
+class QItemSelectionModel;
 
 class QTreeView;
 #include <vtkSmartPointer.h>
@@ -24,14 +27,19 @@ public:
 signals:
 
 private slots:
+  void onCurrentConnectorChanged();
+private slots:
   void onAddConnectorButtonClicked();
   void onRemoveConnectorButtonClicked();
   void onDebugUpdateButtonClicked();
 private:
   vtkIGTLIOLogicPointer Logic;
   qIGTLIOConnectorModel* ConnectorModel;
+  QItemSelectionModel* SelectionModel;
   QTreeView* ConnectorListView;
+  qIGTLIOConnectorPropertyWidget* ConnectorPropertyWidget;
   void selectRow(int row);
+  void addButtonFrame(QVBoxLayout *topLayout);
 };
 
 #endif // QIGTLIOCONNECTORLISTWIDGET_H

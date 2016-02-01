@@ -17,7 +17,6 @@ find_package(VTK 6.1
   NO_MODULE)
 include(${VTK_USE_FILE})
 
-find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 
 set( MOC_HEADER_FILES

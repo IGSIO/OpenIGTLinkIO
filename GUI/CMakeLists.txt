@@ -16,9 +16,17 @@ find_package(VTK 6.1
   NO_MODULE)
 include(${VTK_USE_FILE})
 
+find_package(CTK REQUIRED)
+include(${CTK_USE_FILE})
+
+
 set(EXECUTABLE ${PROJECT_NAME})
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Concurrent REQUIRED)
+find_package(Qt5Xml REQUIRED)
+find_package(Qt5OpenGL REQUIRED)
+find_package(Qt5Sql REQUIRED)
 
 set(${KIT}_SRCS
   qIGTLIOLogicController.cxx
@@ -33,6 +41,8 @@ set(${KIT}_SRCS
 #  qSlicerOpenIGTLinkIFModuleWidget.h
   qIGTLIOConnectorModel.cxx
   qIGTLIOConnectorModel.h
+  qIGTLIOConnectorPropertyWidget.cxx
+  qIGTLIOConnectorPropertyWidget.h
 #  GUI/qMRMLIGTLConnectorTreeView.cxx
 #  GUI/qMRMLIGTLConnectorTreeView.h
 #  GUI/qMRMLIGTLIOModel.cxx
@@ -40,8 +50,6 @@ set(${KIT}_SRCS
 #  GUI/qMRMLIGTLIOModel_p.h
 #  GUI/qMRMLIGTLIOTreeView.cxx
 #  GUI/qMRMLIGTLIOTreeView.h
-#  GUI/qSlicerIGTLConnectorPropertyWidget.cxx
-#  GUI/qSlicerIGTLConnectorPropertyWidget.h
 #  GUI/qSlicerIGTLIONodeSelectorWidget.cxx
 #  GUI/qSlicerIGTLIONodeSelectorWidget.h
   )
@@ -53,6 +61,7 @@ set(${KIT}_MOC_SRCS
 #  qSlicerOpenIGTLinkIFModuleWidget.h
   qIGTLIOConnectorModel.h
   qIGTLIOConnectorListWidget.h
+  qIGTLIOConnectorPropertyWidget.h
 #  GUI/qMRMLIGTLConnectorTreeView.h
 #  GUI/qMRMLIGTLIOModel.h
 #  GUI/qMRMLIGTLIOTreeView.h
@@ -60,7 +69,12 @@ set(${KIT}_MOC_SRCS
 #  GUI/qSlicerIGTLIONodeSelectorWidget.h
   )
   
-  
+set(${KIT}_UI_SRCS
+  ../Resources/UI/qIGTLIOConnectorPropertyWidget.ui
+#  Resources/UI/qSlicerIGTLIONodeSelectorWidget.ui
+#  Resources/UI/qSlicerOpenIGTLinkIFModule.ui
+)
+
 
 set(${KIT}_INCLUDE_DIRECTORIES
   PUBLIC
@@ -72,10 +86,12 @@ set(${KIT}_INCLUDE_DIRECTORIES
 set(${KIT}_TARGET_LIBRARIES
   ${OpenIGTLink_LIBRARIES}
   ${VTK_LIBRARIES}
+  ${CTK_LIBRARIES}
   Qt5::Widgets
   igtlioLogic
   )
 
+qt5_wrap_ui(${KIT}_SRCS ${${KIT}_UI_SRCS})
 qt5_wrap_cpp( ${KIT}_MOC_SRCS ${${KIT}_MOC_SRCS} )
 add_library(${KIT} ${${KIT}_SRCS} ${${KIT}_MOC_SRCS})
 target_link_libraries(${KIT} PUBLIC ${${KIT}_TARGET_LIBRARIES})

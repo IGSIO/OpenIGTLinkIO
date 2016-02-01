@@ -27,6 +27,7 @@
 #include "igtlioLogicExport.h"
 #include "vtkIGTLIODevice.h"
 #include "vtkIGTLIODeviceFactory.h"
+#include "vtkIGTLIOObject.h"
 
 //// MRML includes
 //#include <vtkMRML.h>
@@ -74,7 +75,7 @@ typedef vtkSmartPointer<class vtkMultiThreader> vtkMultiThreaderPointer;
 ///    main thread processing. This should be handled externally by a timer
 ///    or similar.
 ///
-class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOConnector : public vtkObject
+class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOConnector : public vtkIGTLIOObject
 {
 public:
 //added methods:
@@ -175,7 +176,7 @@ public:
   //----------------------------------------------------------------
 
   static vtkIGTLIOConnector *New();
-  vtkTypeMacro(vtkIGTLIOConnector,vtkObject);
+  vtkTypeMacro(vtkIGTLIOConnector,vtkIGTLIOObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 

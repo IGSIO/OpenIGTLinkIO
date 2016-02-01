@@ -6,6 +6,7 @@
 #include <QTreeView>
 #include <qIGTLIOConnectorModel.h>
 #include "vtkIGTLIOLogic.h"
+#include "qIGTLIOConnectorPropertyWidget.h"
 
 //-----------------------------------------------------------------------------
 qIGTLIOConnectorListWidget::qIGTLIOConnectorListWidget()
@@ -16,9 +17,37 @@ qIGTLIOConnectorListWidget::qIGTLIOConnectorListWidget()
   topLayout->setMargin(0);
 
   ConnectorListView = new QTreeView;
+  ConnectorListView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ConnectorListView->setModel(ConnectorModel);
   topLayout->addWidget(ConnectorListView);
 
+  SelectionModel = ConnectorListView->selectionModel();
+
+  this->addButtonFrame(topLayout);
+
+  ConnectorPropertyWidget = new qIGTLIOConnectorPropertyWidget(this);
+  topLayout->addWidget(ConnectorPropertyWidget);
+  connect(SelectionModel, SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
+          this, SLOT(onCurrentConnectorChanged()));
+}
+
+//-----------------------------------------------------------------------------
+void qIGTLIOConnectorListWidget::onCurrentConnectorChanged()
+{
+  int row = SelectionModel->currentIndex().row();
+
+  if (row<0 || row>=Logic->GetNumberOfConnectors())
+    {
+    return;
+    }
+
+  vtkIGTLIOConnectorPointer connector = Logic->GetConnector(row);
+  ConnectorPropertyWidget->setMRMLIGTLConnectorNode(connector);
+}
+
+//-----------------------------------------------------------------------------
+void qIGTLIOConnectorListWidget::addButtonFrame(QVBoxLayout* topLayout)
+{
   QFrame* buttonFrame = new QFrame;
   buttonFrame->setFrameShape(QFrame::NoFrame);
   buttonFrame->setFrameShadow(QFrame::Plain);
@@ -42,7 +71,6 @@ qIGTLIOConnectorListWidget::qIGTLIOConnectorListWidget()
   connect(debugUpdateConnectorButton, SIGNAL(clicked()), this,
           SLOT(onDebugUpdateButtonClicked()));
 }
-
 
 //-----------------------------------------------------------------------------
 void qIGTLIOConnectorListWidget::setLogic(vtkIGTLIOLogicPointer logic)

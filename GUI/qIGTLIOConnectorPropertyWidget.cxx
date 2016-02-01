@@ -3,39 +3,39 @@
 #include <QButtonGroup>
 
 // OpenIGTLinkIF GUI includes
-#include "qSlicerIGTLConnectorPropertyWidget.h"
-#include "ui_qSlicerIGTLConnectorPropertyWidget.h"
+#include "qIGTLIOConnectorPropertyWidget.h"
+#include "ui_qIGTLIOConnectorPropertyWidget.h"
 
 // OpenIGTLinkIF MRML includes
-#include "vtkMRMLIGTLConnectorNode.h"
+#include "vtkIGTLIOConnector.h"
 
 //------------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
-class qSlicerIGTLConnectorPropertyWidgetPrivate : public Ui_qSlicerIGTLConnectorPropertyWidget
+class qIGTLIOConnectorPropertyWidgetPrivate : public Ui_qIGTLIOConnectorPropertyWidget
 {
-  Q_DECLARE_PUBLIC(qSlicerIGTLConnectorPropertyWidget);
+  Q_DECLARE_PUBLIC(qIGTLIOConnectorPropertyWidget);
 protected:
-  qSlicerIGTLConnectorPropertyWidget* const q_ptr;
+  qIGTLIOConnectorPropertyWidget* const q_ptr;
 public:
-  qSlicerIGTLConnectorPropertyWidgetPrivate(qSlicerIGTLConnectorPropertyWidget& object);
+  qIGTLIOConnectorPropertyWidgetPrivate(qIGTLIOConnectorPropertyWidget& object);
   void init();
 
-  vtkMRMLIGTLConnectorNode * IGTLConnectorNode;
+  vtkIGTLIOConnectorPointer IGTLConnectorNode;
 
   QButtonGroup ConnectorTypeButtonGroup;
 };
 
 //------------------------------------------------------------------------------
-qSlicerIGTLConnectorPropertyWidgetPrivate::qSlicerIGTLConnectorPropertyWidgetPrivate(qSlicerIGTLConnectorPropertyWidget& object)
+qIGTLIOConnectorPropertyWidgetPrivate::qIGTLIOConnectorPropertyWidgetPrivate(qIGTLIOConnectorPropertyWidget& object)
   : q_ptr(&object)
 {
   this->IGTLConnectorNode = 0;
 }
 
 //------------------------------------------------------------------------------
-void qSlicerIGTLConnectorPropertyWidgetPrivate::init()
+void qIGTLIOConnectorPropertyWidgetPrivate::init()
 {
-  Q_Q(qSlicerIGTLConnectorPropertyWidget);
+  Q_Q(qIGTLIOConnectorPropertyWidget);
   this->setupUi(q);
   QObject::connect(this->ConnectorNameEdit, SIGNAL(editingFinished()),
                    q, SLOT(updateIGTLConnectorNode()));
@@ -51,38 +51,38 @@ void qSlicerIGTLConnectorPropertyWidgetPrivate::init()
                    q, SLOT(updateIGTLConnectorNode()));
 
   this->ConnectorNotDefinedRadioButton->setVisible(false);
-  this->ConnectorTypeButtonGroup.addButton(this->ConnectorNotDefinedRadioButton, vtkMRMLIGTLConnectorNode::TYPE_NOT_DEFINED);
-  this->ConnectorTypeButtonGroup.addButton(this->ConnectorServerRadioButton, vtkMRMLIGTLConnectorNode::TYPE_SERVER);
-  this->ConnectorTypeButtonGroup.addButton(this->ConnectorClientRadioButton, vtkMRMLIGTLConnectorNode::TYPE_CLIENT);
+  this->ConnectorTypeButtonGroup.addButton(this->ConnectorNotDefinedRadioButton, vtkIGTLIOConnector::TYPE_NOT_DEFINED);
+  this->ConnectorTypeButtonGroup.addButton(this->ConnectorServerRadioButton, vtkIGTLIOConnector::TYPE_SERVER);
+  this->ConnectorTypeButtonGroup.addButton(this->ConnectorClientRadioButton, vtkIGTLIOConnector::TYPE_CLIENT);
 
 }
 
 //------------------------------------------------------------------------------
-qSlicerIGTLConnectorPropertyWidget::qSlicerIGTLConnectorPropertyWidget(QWidget *_parent)
+qIGTLIOConnectorPropertyWidget::qIGTLIOConnectorPropertyWidget(QWidget *_parent)
   : Superclass(_parent)
-  , d_ptr(new qSlicerIGTLConnectorPropertyWidgetPrivate(*this))
+  , d_ptr(new qIGTLIOConnectorPropertyWidgetPrivate(*this))
 {
-  Q_D(qSlicerIGTLConnectorPropertyWidget);
+  Q_D(qIGTLIOConnectorPropertyWidget);
   d->init();
 }
 
 //------------------------------------------------------------------------------
-qSlicerIGTLConnectorPropertyWidget::~qSlicerIGTLConnectorPropertyWidget()
+qIGTLIOConnectorPropertyWidget::~qIGTLIOConnectorPropertyWidget()
 {
 }
 
 //------------------------------------------------------------------------------
-void qSlicerIGTLConnectorPropertyWidget::setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode * connectorNode)
+void qIGTLIOConnectorPropertyWidget::setMRMLIGTLConnectorNode(vtkIGTLIOConnectorPointer connectorNode)
 {
-  Q_D(qSlicerIGTLConnectorPropertyWidget);
+  Q_D(qIGTLIOConnectorPropertyWidget);
   qvtkReconnect(d->IGTLConnectorNode, connectorNode, vtkCommand::ModifiedEvent,
                 this, SLOT(onMRMLNodeModified()));
 
   foreach(int evendId, QList<int>()
-          << vtkMRMLIGTLConnectorNode::ActivatedEvent
-          << vtkMRMLIGTLConnectorNode::ConnectedEvent
-          << vtkMRMLIGTLConnectorNode::DisconnectedEvent
-          << vtkMRMLIGTLConnectorNode::DeactivatedEvent)
+          << vtkIGTLIOConnector::ActivatedEvent
+          << vtkIGTLIOConnector::ConnectedEvent
+          << vtkIGTLIOConnector::DisconnectedEvent
+          << vtkIGTLIOConnector::DeactivatedEvent)
     {
     qvtkReconnect(d->IGTLConnectorNode, connectorNode, evendId,
                   this, SLOT(onMRMLNodeModified()));
@@ -94,23 +94,23 @@ void qSlicerIGTLConnectorPropertyWidget::setMRMLIGTLConnectorNode(vtkMRMLIGTLCon
   this->setEnabled(connectorNode != 0);
 }
 
-//------------------------------------------------------------------------------
-void qSlicerIGTLConnectorPropertyWidget::setMRMLIGTLConnectorNode(vtkMRMLNode* node)
-{
-  this->setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode::SafeDownCast(node));
-}
+////------------------------------------------------------------------------------
+//void qIGTLIOConnectorPropertyWidget::setMRMLIGTLConnectorNode(vtkMRMLNode* node)
+//{
+//  this->setMRMLIGTLConnectorNode(vtkIGTLIOConnector::SafeDownCast(node));
+//}
 
 namespace
 {
 //------------------------------------------------------------------------------
-void setNameEnabled(qSlicerIGTLConnectorPropertyWidgetPrivate * d, bool enabled)
+void setNameEnabled(qIGTLIOConnectorPropertyWidgetPrivate * d, bool enabled)
 {
   d->ConnectorNameEdit->setEnabled(enabled);
   d->ConnectorNameLabel->setEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
-void setTypeEnabled(qSlicerIGTLConnectorPropertyWidgetPrivate * d, bool enabled)
+void setTypeEnabled(qIGTLIOConnectorPropertyWidgetPrivate * d, bool enabled)
 {
   d->ConnectorTypeLabel->setEnabled(enabled);
   d->ConnectorServerRadioButton->setEnabled(enabled);
@@ -118,21 +118,21 @@ void setTypeEnabled(qSlicerIGTLConnectorPropertyWidgetPrivate * d, bool enabled)
 }
 
 //------------------------------------------------------------------------------
-void setStateEnabled(qSlicerIGTLConnectorPropertyWidgetPrivate * d, bool enabled)
+void setStateEnabled(qIGTLIOConnectorPropertyWidgetPrivate * d, bool enabled)
 {
   d->ConnectorStateLabel->setEnabled(enabled);
   d->ConnectorStateCheckBox->setEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
-void setHostnameEnabled(qSlicerIGTLConnectorPropertyWidgetPrivate * d, bool enabled)
+void setHostnameEnabled(qIGTLIOConnectorPropertyWidgetPrivate * d, bool enabled)
 {
   d->ConnectorHostNameEdit->setEnabled(enabled);
   d->ConnectorHostnameLabel->setEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
-void setPortEnabled(qSlicerIGTLConnectorPropertyWidgetPrivate * d, bool enabled)
+void setPortEnabled(qIGTLIOConnectorPropertyWidgetPrivate * d, bool enabled)
 {
   d->ConnectorPortEdit->setEnabled(enabled);
   d->ConnectorPortLabel->setEnabled(enabled);
@@ -140,30 +140,30 @@ void setPortEnabled(qSlicerIGTLConnectorPropertyWidgetPrivate * d, bool enabled)
 }
 
 //------------------------------------------------------------------------------
-void qSlicerIGTLConnectorPropertyWidget::onMRMLNodeModified()
+void qIGTLIOConnectorPropertyWidget::onMRMLNodeModified()
 {
-  Q_D(qSlicerIGTLConnectorPropertyWidget);
+  Q_D(qIGTLIOConnectorPropertyWidget);
   if (!d->IGTLConnectorNode)
     {
     return;
     }
-  d->ConnectorNameEdit->setText(d->IGTLConnectorNode->GetName());
+  d->ConnectorNameEdit->setText(QString::fromStdString(d->IGTLConnectorNode->GetName()));
   d->ConnectorHostNameEdit->setText(d->IGTLConnectorNode->GetServerHostname());
   d->ConnectorPortEdit->setText(QString("%1").arg(d->IGTLConnectorNode->GetServerPort()));
   int type = d->IGTLConnectorNode->GetType();
-  d->ConnectorNotDefinedRadioButton->setChecked(type == vtkMRMLIGTLConnectorNode::TYPE_NOT_DEFINED);
-  d->ConnectorServerRadioButton->setChecked(type == vtkMRMLIGTLConnectorNode::TYPE_SERVER);
-  d->ConnectorClientRadioButton->setChecked(type == vtkMRMLIGTLConnectorNode::TYPE_CLIENT);
+  d->ConnectorNotDefinedRadioButton->setChecked(type == vtkIGTLIOConnector::TYPE_NOT_DEFINED);
+  d->ConnectorServerRadioButton->setChecked(type == vtkIGTLIOConnector::TYPE_SERVER);
+  d->ConnectorClientRadioButton->setChecked(type == vtkIGTLIOConnector::TYPE_CLIENT);
 
-  setStateEnabled(d, type != vtkMRMLIGTLConnectorNode::TYPE_NOT_DEFINED);
+  setStateEnabled(d, type != vtkIGTLIOConnector::TYPE_NOT_DEFINED);
 
-  bool deactivated = d->IGTLConnectorNode->GetState() == vtkMRMLIGTLConnectorNode::STATE_OFF;
+  bool deactivated = d->IGTLConnectorNode->GetState() == vtkIGTLIOConnector::STATE_OFF;
   if (deactivated)
     {
     setNameEnabled(d, true);
     setTypeEnabled(d, true);
-    setHostnameEnabled(d, type == vtkMRMLIGTLConnectorNode::TYPE_CLIENT);
-    setPortEnabled(d, type != vtkMRMLIGTLConnectorNode::TYPE_NOT_DEFINED);
+    setHostnameEnabled(d, type == vtkIGTLIOConnector::TYPE_CLIENT);
+    setPortEnabled(d, type != vtkIGTLIOConnector::TYPE_NOT_DEFINED);
     }
   else
     {
@@ -173,13 +173,13 @@ void qSlicerIGTLConnectorPropertyWidget::onMRMLNodeModified()
     setPortEnabled(d, false);
     }
   d->ConnectorStateCheckBox->setChecked(!deactivated);
-  d->PersistentStateCheckBox->setChecked(d->IGTLConnectorNode->GetPersistent() == vtkMRMLIGTLConnectorNode::PERSISTENT_ON);
+  d->PersistentStateCheckBox->setChecked(d->IGTLConnectorNode->GetPersistent() == vtkIGTLIOConnector::PERSISTENT_ON);
 }
 
 //------------------------------------------------------------------------------
-void qSlicerIGTLConnectorPropertyWidget::startCurrentIGTLConnector(bool value)
+void qIGTLIOConnectorPropertyWidget::startCurrentIGTLConnector(bool value)
 {
-  Q_D(qSlicerIGTLConnectorPropertyWidget);
+  Q_D(qIGTLIOConnectorPropertyWidget);
   Q_ASSERT(d->IGTLConnectorNode);
   if (value)
     {
@@ -192,20 +192,22 @@ void qSlicerIGTLConnectorPropertyWidget::startCurrentIGTLConnector(bool value)
 }
 
 //------------------------------------------------------------------------------
-void qSlicerIGTLConnectorPropertyWidget::updateIGTLConnectorNode()
+void qIGTLIOConnectorPropertyWidget::updateIGTLConnectorNode()
 {
-  Q_D(qSlicerIGTLConnectorPropertyWidget);
+  Q_D(qIGTLIOConnectorPropertyWidget);
 
-  d->IGTLConnectorNode->DisableModifiedEventOn();
+  d->IGTLConnectorNode->SetDisableModifiedEvent(true);
 
-  d->IGTLConnectorNode->SetName(d->ConnectorNameEdit->text().toLatin1());
+  d->IGTLConnectorNode->SetName(d->ConnectorNameEdit->text().toStdString());
   d->IGTLConnectorNode->SetType(d->ConnectorTypeButtonGroup.checkedId());
   d->IGTLConnectorNode->SetServerHostname(d->ConnectorHostNameEdit->text().toStdString());
   d->IGTLConnectorNode->SetServerPort(d->ConnectorPortEdit->text().toInt());
   d->IGTLConnectorNode->SetPersistent(d->PersistentStateCheckBox->isChecked() ?
-                                      vtkMRMLIGTLConnectorNode::PERSISTENT_ON :
-                                      vtkMRMLIGTLConnectorNode::PERSISTENT_OFF);
+                                      vtkIGTLIOConnector::PERSISTENT_ON :
+                                      vtkIGTLIOConnector::PERSISTENT_OFF);
 
-  d->IGTLConnectorNode->DisableModifiedEventOff();
+  d->IGTLConnectorNode->SetDisableModifiedEvent(false);
   d->IGTLConnectorNode->InvokePendingModifiedEvent();
 }
+
+

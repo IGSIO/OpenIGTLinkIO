@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>qSlicerIGTLConnectorPropertyWidget</class>
- <widget class="QWidget" name="qSlicerIGTLConnectorPropertyWidget">
+ <class>qIGTLIOConnectorPropertyWidget</class>
+ <widget class="QWidget" name="qIGTLIOConnectorPropertyWidget">
   <property name="geometry">
    <rect>
     <x>0</x>

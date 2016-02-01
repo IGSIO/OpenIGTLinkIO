@@ -18,8 +18,8 @@
 
 ==============================================================================*/
 
-#ifndef __qSlicerIGTLConnectorPropertyWidget_h
-#define __qSlicerIGTLConnectorPropertyWidget_h
+#ifndef __qIGTLIOConnectorPropertyWidget_h
+#define __qIGTLIOConnectorPropertyWidget_h
 
 // Qt includes
 #include <QWidget>
@@ -27,32 +27,35 @@
 // CTK includes
 #include <ctkVTKObject.h>
 
-// OpenIGTLinkIF GUI includes
-#include "qSlicerOpenIGTLinkIFModuleExport.h"
+// igtlio includes
+#include "igtlioGUIExport.h"
 
-class qSlicerIGTLConnectorPropertyWidgetPrivate;
-class vtkMRMLIGTLConnectorNode;
-class vtkMRMLNode;
+#include <vtkSmartPointer.h>
+typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
+
+class qIGTLIOConnectorPropertyWidgetPrivate;
+//class vtkMRMLIGTLConnectorNode;
+//class vtkMRMLNode;
 class vtkObject;
 
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
-class Q_SLICER_QTMODULES_OPENIGTLINKIF_EXPORT qSlicerIGTLConnectorPropertyWidget : public QWidget
+class OPENIGTLINKIO_GUI_EXPORT qIGTLIOConnectorPropertyWidget : public QWidget
 {
   Q_OBJECT
   QVTK_OBJECT
 public:
   typedef QWidget Superclass;
-  qSlicerIGTLConnectorPropertyWidget(QWidget *parent = 0);
-  virtual ~qSlicerIGTLConnectorPropertyWidget();
+  qIGTLIOConnectorPropertyWidget(QWidget *parent = 0);
+  virtual ~qIGTLIOConnectorPropertyWidget();
 
 public slots:
   /// Set the MRML node of interest
-  void setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode * connectorNode);
+  void setMRMLIGTLConnectorNode(vtkIGTLIOConnectorPointer connectorNode);
 
-  /// Utility function that calls setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode*)
-  /// It's useful to connect to vtkMRMLNode* signals when you are sure of
-  /// the type
-  void setMRMLIGTLConnectorNode(vtkMRMLNode* node);
+//  /// Utility function that calls setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode*)
+//  /// It's useful to connect to vtkMRMLNode* signals when you are sure of
+//  /// the type
+//  void setMRMLIGTLConnectorNode(vtkMRMLNode* node);
 
 protected slots:
   /// Internal function to update the widgets based on the IGTLConnector node
@@ -64,11 +67,11 @@ protected slots:
   void updateIGTLConnectorNode();
 
 protected:
-  QScopedPointer<qSlicerIGTLConnectorPropertyWidgetPrivate> d_ptr;
+  QScopedPointer<qIGTLIOConnectorPropertyWidgetPrivate> d_ptr;
 
 private:
-  Q_DECLARE_PRIVATE(qSlicerIGTLConnectorPropertyWidget);
-  Q_DISABLE_COPY(qSlicerIGTLConnectorPropertyWidget);
+  Q_DECLARE_PRIVATE(qIGTLIOConnectorPropertyWidget);
+  Q_DISABLE_COPY(qIGTLIOConnectorPropertyWidget);
 };
 
 #endif
