@@ -3,6 +3,9 @@
 
 #include <QWidget>
 
+// CTK includes
+#include <ctkVTKObject.h>
+
 // igtlio includes
 #include "igtlioGUIExport.h"
 class qIGTLIOConnectorModel;
@@ -20,6 +23,8 @@ typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIOConnectorListWidget : public QWidget
 {
   Q_OBJECT
+  QVTK_OBJECT
+
 public:
   qIGTLIOConnectorListWidget();
   void setLogic(vtkIGTLIOLogicPointer logic);
@@ -27,6 +32,7 @@ public:
 signals:
 
 private slots:
+  void onConnectionsChanged(vtkObject *caller, void *, unsigned long event, void *);
   void onCurrentConnectorChanged();
 private slots:
   void onAddConnectorButtonClicked();

@@ -51,6 +51,7 @@ public:
 public slots:
   /// Set the MRML node of interest
   void setMRMLIGTLConnectorNode(vtkIGTLIOConnectorPointer connectorNode);
+  vtkIGTLIOConnectorPointer getMRMLIGTLConnectorNode();
 
 //  /// Utility function that calls setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode*)
 //  /// It's useful to connect to vtkMRMLNode* signals when you are sure of

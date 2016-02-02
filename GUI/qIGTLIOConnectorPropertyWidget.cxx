@@ -211,3 +211,9 @@ void qIGTLIOConnectorPropertyWidget::updateIGTLConnectorNode()
 }
 
 
+
+vtkIGTLIOConnectorPointer qIGTLIOConnectorPropertyWidget::getMRMLIGTLConnectorNode()
+{
+  Q_D(qIGTLIOConnectorPropertyWidget);
+  return d->IGTLConnectorNode;
+}

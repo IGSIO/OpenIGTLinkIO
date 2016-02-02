@@ -75,8 +75,28 @@ void qIGTLIOConnectorListWidget::addButtonFrame(QVBoxLayout* topLayout)
 //-----------------------------------------------------------------------------
 void qIGTLIOConnectorListWidget::setLogic(vtkIGTLIOLogicPointer logic)
 {
+  foreach(int evendId, QList<int>()
+          << vtkIGTLIOLogic::ConnectionAddedEvent
+          << vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
+    {
+    qvtkReconnect(this->Logic, logic, evendId,
+                  this, SLOT(onConnectionsChanged(vtkObject*, void*, unsigned long, void*)));
+    }
+
   this->Logic = logic;
   ConnectorModel->setLogic(logic);
+}
+
+//-----------------------------------------------------------------------------
+void qIGTLIOConnectorListWidget::onConnectionsChanged(vtkObject* caller, void* connector, unsigned long event , void* b)
+{
+  // remove removed connector from property widget
+  if (event==vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent && connector!=NULL)
+    {
+      vtkIGTLIOConnector* c = static_cast<vtkIGTLIOConnector*>(connector);
+      if (ConnectorPropertyWidget->getMRMLIGTLConnectorNode().GetPointer() == c)
+        ConnectorPropertyWidget->setMRMLIGTLConnectorNode(vtkIGTLIOConnectorPointer());
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -89,6 +109,11 @@ void qIGTLIOConnectorListWidget::onAddConnectorButtonClicked()
 //-----------------------------------------------------------------------------
 void qIGTLIOConnectorListWidget::selectRow(int row)
 {
+  if (Logic->GetNumberOfConnectors()==0)
+    {
+      return;
+    }
+
   row = std::max(row, 0);
   row = std::min(row, Logic->GetNumberOfConnectors()-1);
   QModelIndex newIndex = ConnectorModel->index(row, 0);

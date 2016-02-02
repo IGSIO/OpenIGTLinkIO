@@ -46,15 +46,12 @@ void vtkIGTLIOLogic::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 vtkIGTLIOConnectorPointer vtkIGTLIOLogic::CreateConnector()
 {
-  vtkDebugMacro("CreateConnector!!");
-  std::cout << "CreateConnector!! !!!!" << std::endl;
   vtkIGTLIOConnectorPointer connector = vtkIGTLIOConnectorPointer::New();
   connector->SetUID(this->CreateUniqueConnectorID());
   std::stringstream ss;
   ss << "IGTLConnector_" << connector->GetUID();
   connector->SetName(ss.str());
   Connectors.push_back(connector);
-  // TODO: Notify add, listen to modified
 
 //  typedef vtkSmartPointer<vtkCallbackCommand> vtkCallbackCommandPointer;
 //  vtkCallbackCommandPointer connectorCallback = vtkCallbackCommandPointer::New();
@@ -84,9 +81,9 @@ int vtkIGTLIOLogic::CreateUniqueConnectorID() const
 //---------------------------------------------------------------------------
 int vtkIGTLIOLogic::RemoveConnector(int index)
 {
-  Connectors.erase(Connectors.begin()+index);
-  // TODO: Notify, remove listener
-  this->InvokeEvent(ConnectionAboutToBeRemovedEvent);
+  std::vector<vtkIGTLIOConnectorPointer>::iterator toRemove = Connectors.begin()+index;
+  this->InvokeEvent(ConnectionAboutToBeRemovedEvent, toRemove->GetPointer());
+  Connectors.erase(toRemove);
   return 0;
 }
 
