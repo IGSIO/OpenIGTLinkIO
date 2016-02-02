@@ -3,6 +3,9 @@
 
 #include <QObject>
 class QTimer;
+// CTK includes
+#include <ctkVTKObject.h>
+
 #include <vtkSmartPointer.h>
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 // igtlio includes
@@ -13,6 +16,8 @@ typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIOLogicController : public QObject
 {
   Q_OBJECT
+  QVTK_OBJECT
+
 public:
   qIGTLIOLogicController();
   void setLogic(vtkIGTLIOLogicPointer logic);
@@ -20,6 +25,8 @@ public:
 signals:
 
 public slots:
+private slots:
+  void onConnectionsChanged();
 private slots:
   void importDataAndEvents();
 private:

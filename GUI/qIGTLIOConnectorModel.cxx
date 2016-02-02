@@ -361,7 +361,7 @@ void qIGTLIOConnectorModel::onConnectionEvent(vtkObject* caller, unsigned long e
 {
   if (event==vtkIGTLIOLogic::ConnectionAddedEvent)
     {
-      std::cout << "on dd connected event" << std::endl;
+      std::cout << "on add connected event" << std::endl;
       this->resetModel();
     }
   if (event==vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)

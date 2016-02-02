@@ -54,7 +54,6 @@ vtkIGTLIOConnectorPointer vtkIGTLIOLogic::CreateConnector()
   ss << "IGTLConnector_" << connector->GetUID();
   connector->SetName(ss.str());
   Connectors.push_back(connector);
-  connector->Start();
   // TODO: Notify add, listen to modified
 
 //  typedef vtkSmartPointer<vtkCallbackCommand> vtkCallbackCommandPointer;

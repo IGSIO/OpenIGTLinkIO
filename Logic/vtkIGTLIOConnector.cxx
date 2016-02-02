@@ -65,7 +65,7 @@ const char *vtkIGTLIOConnector::ConnectorStateStr[vtkIGTLIOConnector::NUM_STATE]
 //----------------------------------------------------------------------------
 vtkIGTLIOConnector::vtkIGTLIOConnector()
 {
-  this->Type   = TYPE_NOT_DEFINED;
+  this->Type   = TYPE_CLIENT;
   this->State  = STATE_OFF;
   this->Persistent = PERSISTENT_OFF;
 
