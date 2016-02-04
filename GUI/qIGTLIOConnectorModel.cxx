@@ -21,37 +21,19 @@
 // Qt includes
 #include <QDebug>
 #include <QMap>
-#include <QMimeData>
 #include <QSharedPointer>
-#include <QStack>
 #include <QStringList>
 #include <QVector>
 
-// OpenIGTLinkIF GUI includes
-#include <qIGTLIOConnectorModel.h>
-
+// IGTLIO includes
+#include "qIGTLIOConnectorModel.h"
 #include "vtkIGTLIOLogic.h"
 #include "vtkIGTLIOConnector.h"
-
-// OpenIGTLinkIF MRML includes
-//#include "vtkMRMLIGTLConnectorNode.h"
-
-// MRML includes
-//#include <vtkMRMLScene.h>
-//#include <vtkMRMLNode.h>
-//#include <vtkMRMLDisplayableHierarchyNode.h>
-//#include <vtkMRMLDisplayableNode.h>
-
-// VTK includes
-#include <vtkVariantArray.h>
-#include "qIGTLIOConnectorModel.h"
-#include <vtkEventQtSlotConnect.h>
 
 //------------------------------------------------------------------------------
 qIGTLIOConnectorModel::qIGTLIOConnectorModel(QObject *vparent)
   :QAbstractItemModel(vparent)
 {
-  this->Connections = vtkSmartPointer<vtkEventQtSlotConnect>::New();
   HeaderLabels = QStringList() << "Name" << "Type" << "Status" << "Hostname" << "Port";
 }
 
@@ -176,199 +158,57 @@ void qIGTLIOConnectorModel::resetModel()
 }
 
 
-//QStandardItem* qIGTLIOConnectorModel::insertNode(vtkMRMLNode* node, QStandardItem* parent, int row)
-//{
-//  QStandardItem* insertedItem = this->Superclass::insertNode(node, parent, row);
-//  if (this->listenNodeModifiedEvent() &&
-//      node->IsA("vtkMRMLIGTLConnectorNode"))
-//    {
-//    qvtkConnect(node, vtkMRMLIGTLConnectorNode::ConnectedEvent,
-//                this, SLOT(onMRMLNodeModified(vtkObject*)));
-//    qvtkConnect(node, vtkMRMLIGTLConnectorNode::DisconnectedEvent,
-//                this, SLOT(onMRMLNodeModified(vtkObject*)));
-//    qvtkConnect(node, vtkMRMLIGTLConnectorNode::ActivatedEvent,
-//                this, SLOT(onMRMLNodeModified(vtkObject*)));
-//    qvtkConnect(node, vtkMRMLIGTLConnectorNode::DeactivatedEvent,
-//                this, SLOT(onMRMLNodeModified(vtkObject*)));
-//    }
-//  return insertedItem;
-//}
-
-////------------------------------------------------------------------------------
-//void qIGTLIOConnectorModel::updateNodeFromItemData(vtkMRMLNode* node, QStandardItem* item)
-//{
-//  //int oldChecked = node->GetSelected();
-//  vtkMRMLIGTLConnectorNode* cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
-//  if (!cnode)
-//    {
-//    return;
-//    }
-//  this->qMRMLSceneDisplayableModel::updateNodeFromItemData(node, item);
-
-//  switch (item->column())
-//    {
-//    case qIGTLIOConnectorModel::NameColumn:
-//      {
-//      cnode->SetName(item->text().toLatin1());
-//      break;
-//      }
-//    case qIGTLIOConnectorModel::TypeColumn:
-//      {
-//      }
-//    case qIGTLIOConnectorModel::StatusColumn:
-//      {
-//      }
-//    case qIGTLIOConnectorModel::HostnameColumn:
-//      {
-//      }
-//    case qIGTLIOConnectorModel::PortColumn:
-//      {
-//      }
-//    default:
-//      break;
-//    }
-//}
-
-////------------------------------------------------------------------------------
-//void qIGTLIOConnectorModel::updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column)
-//{
-//  vtkMRMLIGTLConnectorNode* cnode = vtkMRMLIGTLConnectorNode::SafeDownCast(node);
-//  if (!cnode)
-//    {
-//    return;
-//    }
-//  switch (column)
-//    {
-//    case qIGTLIOConnectorModel::NameColumn:
-//      {
-//      item->setText(cnode->GetName());
-//      break;
-//      }
-//    case qIGTLIOConnectorModel::TypeColumn:
-//      {
-//      Q_ASSERT(cnode->GetType() < vtkMRMLIGTLConnectorNode::NUM_TYPE);
-//      item->setText(QString(vtkMRMLIGTLConnectorNode::ConnectorTypeStr[cnode->GetType()]));
-//      break;
-//      }
-//    case qIGTLIOConnectorModel::StatusColumn:
-//      {
-//      Q_ASSERT(cnode->GetState() < vtkMRMLIGTLConnectorNode::NUM_STATE);
-//      item->setText(QString(vtkMRMLIGTLConnectorNode::ConnectorStateStr[cnode->GetState()]));
-//      break;
-//      }
-//    case qIGTLIOConnectorModel::HostnameColumn:
-//      {
-//      if (cnode->GetType() == vtkMRMLIGTLConnectorNode::TYPE_CLIENT)
-//        {
-//        item->setText(QString(cnode->GetServerHostname()));
-//        }
-//      else
-//        {
-//        item->setText(QString("--"));
-//        }
-//      break;
-//      }
-//    case qIGTLIOConnectorModel::PortColumn:
-//      {
-//      item->setText(QString("%1").arg(cnode->GetServerPort()));
-//      break;
-//      }
-//    default:
-//      break;
-//    }
-//}
-
-////------------------------------------------------------------------------------
-//QFlags<Qt::ItemFlag> qIGTLIOConnectorModel::nodeFlags(vtkMRMLNode* node, int column)const
-//{
-//  QFlags<Qt::ItemFlag> flags = this->qMRMLSceneDisplayableModel::nodeFlags(node, column);
-//  // remove the ItemIsEditable flag from any possible item (typically at column 0)
-//  flags = flags & ~Qt::ItemIsEditable;
-//  // and set it to the right column
-//  switch(column)
-//    {
-//    //case qIGTLIOConnectorModel::TextColumn:
-//    //  flags = flags | Qt::ItemIsEditable;
-//    //  break;
-//    default:
-//      break;
-//    }
-//  return flags;
-//}
-
-////------------------------------------------------------------------------------
-//vtkMRMLNode* qIGTLIOConnectorModel::parentNode(vtkMRMLNode* node)const
-//{
-//  if (node == NULL)
-//    {
-//    return 0;
-//    }
-
-//  // MRML Displayable nodes (inherits from transformable)
-//  vtkMRMLDisplayableNode *displayableNode = vtkMRMLDisplayableNode::SafeDownCast(node);
-//  vtkMRMLDisplayableHierarchyNode * displayableHierarchyNode = NULL;
-//  if (displayableNode &&
-//      displayableNode->GetScene() &&
-//      displayableNode->GetID())
-//    {
-//    // get the displayable hierarchy node associated with this displayable node
-//    displayableHierarchyNode = vtkMRMLDisplayableHierarchyNode::GetDisplayableHierarchyNode(displayableNode->GetScene(), displayableNode->GetID());
-
-//    if (displayableHierarchyNode)
-//      {
-//      if (displayableHierarchyNode->GetHideFromEditors())
-//        {
-//        // this is a hidden hierarchy node, so we do not want to display it
-//        // instead, we will return the parent of the hidden hierarchy node
-//        // to be used as the parent for the displayableNode
-//        return displayableHierarchyNode->GetParentNode();
-//        }
-//      return displayableHierarchyNode;
-//      }
-//    }
-//  if (displayableHierarchyNode == NULL)
-//    {
-//    // the passed in node might have been a hierarchy node instead, try to
-//    // cast it
-//    displayableHierarchyNode = vtkMRMLDisplayableHierarchyNode::SafeDownCast(node);
-//    }
-//  if (displayableHierarchyNode)
-//    {
-//    // return it's parent
-//    return displayableHierarchyNode->GetParentNode();
-//    }
-//  return 0;
-//}
-
-
 //-----------------------------------------------------------------------------
 void qIGTLIOConnectorModel::setLogic(vtkIGTLIOLogicPointer logic)
 {
-  this->Logic = logic;
+  foreach(int evendId, QList<int>()
+          << vtkIGTLIOLogic::ConnectionAddedEvent
+          << vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
+    {
+    qvtkReconnect(this->Logic, logic, evendId,
+                  this, SLOT(onConnectionEvent(vtkObject*, void*, unsigned long, void*)));
+    }
 
-  this->Connections->Connect(Logic,
-                             vtkIGTLIOLogic::ConnectionAddedEvent,
-                             this,
-                             SLOT(onConnectionEvent(vtkObject*, unsigned long, void*, void*)));
-  this->Connections->Connect(Logic,
-                             vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent,
-                             this,
-                             SLOT(onConnectionEvent(vtkObject*, unsigned long, void*, void*)));
+  this->Logic = logic;
 }
 
 //-----------------------------------------------------------------------------
-void qIGTLIOConnectorModel::onConnectionEvent(vtkObject* caller, unsigned long event , void*, void*)
+void qIGTLIOConnectorModel::ReconnectConnector(vtkIGTLIOConnector* oldConnector, vtkIGTLIOConnector* newConnector)
+{
+  foreach(int evendId, QList<int>()
+          << vtkIGTLIOConnector::ConnectedEvent
+          << vtkIGTLIOConnector::DisconnectedEvent
+          << vtkIGTLIOConnector::ActivatedEvent
+          << vtkIGTLIOConnector::DeactivatedEvent)
+    {
+    qvtkReconnect(oldConnector, newConnector, evendId,
+                  this, SLOT(onConnectorEvent(vtkObject*, void*, unsigned long, void*)));
+    }
+}
+
+//-----------------------------------------------------------------------------
+void qIGTLIOConnectorModel::onConnectionEvent(vtkObject* caller, void* connector, unsigned long event , void*)
 {
   if (event==vtkIGTLIOLogic::ConnectionAddedEvent)
     {
       std::cout << "on add connected event" << std::endl;
+      vtkIGTLIOConnector* c = static_cast<vtkIGTLIOConnector*>(connector);
+      ReconnectConnector(NULL, c);
       this->resetModel();
     }
   if (event==vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
     {
       std::cout << "on remove connected event" << std::endl;
+      vtkIGTLIOConnector* c = static_cast<vtkIGTLIOConnector*>(connector);
+      ReconnectConnector(c, NULL);
       this->resetModel();
     }
+}
+
+//-----------------------------------------------------------------------------
+void qIGTLIOConnectorModel::onConnectorEvent(vtkObject* caller, void* connector, unsigned long event , void*)
+{
+  emit dataChanged(QModelIndex(), QModelIndex());
 }
 
 //-----------------------------------------------------------------------------

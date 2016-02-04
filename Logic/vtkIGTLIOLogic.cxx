@@ -58,7 +58,7 @@ vtkIGTLIOConnectorPointer vtkIGTLIOLogic::CreateConnector()
 //  connectorCallback->SetCallback ( vtkIGTLIOLogic::OnConnectorEvent );
 //  connector->AddObserver (vtkIGTLIOConnector::DeviceModifiedEvent, connectorCallback );
 
-  this->InvokeEvent(ConnectionAddedEvent);
+  this->InvokeEvent(ConnectionAddedEvent, connector.GetPointer());
   return connector;
 }
 

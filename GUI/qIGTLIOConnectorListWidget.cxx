@@ -59,8 +59,6 @@ void qIGTLIOConnectorListWidget::addButtonFrame(QVBoxLayout* topLayout)
   buttonLayout->addWidget(addConnectorButton);
   QPushButton* removeConnectorButton = new QPushButton("--");
   buttonLayout->addWidget(removeConnectorButton);
-  QPushButton* debugUpdateConnectorButton = new QPushButton("Update");
-  buttonLayout->addWidget(debugUpdateConnectorButton);
   buttonLayout->addStretch();
 
   //  Add(+) / Remove(-) Connector Buttons
@@ -68,8 +66,6 @@ void qIGTLIOConnectorListWidget::addButtonFrame(QVBoxLayout* topLayout)
           SLOT(onAddConnectorButtonClicked()));
   connect(removeConnectorButton, SIGNAL(clicked()), this,
           SLOT(onRemoveConnectorButtonClicked()));
-  connect(debugUpdateConnectorButton, SIGNAL(clicked()), this,
-          SLOT(onDebugUpdateButtonClicked()));
 }
 
 //-----------------------------------------------------------------------------
@@ -129,10 +125,5 @@ void qIGTLIOConnectorListWidget::onRemoveConnectorButtonClicked()
   int row = ConnectorListView->selectionModel()->currentIndex().row();
   Logic->RemoveConnector(row);
   this->selectRow(row);
-}
-
-void qIGTLIOConnectorListWidget::onDebugUpdateButtonClicked()
-{
-  ConnectorModel->resetModel();
 }
 

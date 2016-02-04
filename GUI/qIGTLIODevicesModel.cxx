@@ -44,7 +44,7 @@ int qIGTLIODevicesModel::columnCount(const QModelIndex& parent) const
 
 void dmsg(QString msg)
 {
-  std::cout << msg.toStdString() << std::endl;
+//  std::cout << msg.toStdString() << std::endl;
 }
 
 //-----------------------------------------------------------------------------

@@ -14,6 +14,10 @@ class vtkEventQtSlotConnect;
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 typedef QSharedPointer<class qIGTLIODevicesModelNode> qIGTLIODevicesModelNodePointer;
 
+///
+/// A model describing all IGTL devices,
+/// organized by connector and direction (IN/OUT).
+///
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIODevicesModel : public QAbstractItemModel
 {
   Q_OBJECT

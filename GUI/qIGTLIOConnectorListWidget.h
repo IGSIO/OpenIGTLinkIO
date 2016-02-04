@@ -37,7 +37,6 @@ private slots:
 private slots:
   void onAddConnectorButtonClicked();
   void onRemoveConnectorButtonClicked();
-  void onDebugUpdateButtonClicked();
 private:
   vtkIGTLIOLogicPointer Logic;
   qIGTLIOConnectorModel* ConnectorModel;

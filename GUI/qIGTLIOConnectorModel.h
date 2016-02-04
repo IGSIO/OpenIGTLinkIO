@@ -23,24 +23,22 @@
 
 #include <QAbstractItemModel>
 
+// CTK includes
+#include <ctkVTKObject.h>
+
 // igtlio includes
 #include "igtlioGUIExport.h"
-
-//// qMRMLWidgets includes
-//#include "../Logic/vtkIGTLIOLogic.h"
-//#include "qMRMLSceneDisplayableModel.h"
-class vtkEventQtSlotConnect;
-// Logic includes
-
-//class qIGTLIOConnectorModelPrivate;
-//class vtkMRMLNode;
 #include "vtkIGTLIOConnector.h"
 #include <vtkSmartPointer.h>
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 
+///
+/// A model describing all connectors and their properties.
+///
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIOConnectorModel : public QAbstractItemModel
 {
   Q_OBJECT
+  QVTK_OBJECT
 
 public:
   qIGTLIOConnectorModel(QObject *parent=0);
@@ -49,12 +47,10 @@ public:
   virtual int columnCount (const QModelIndex& parent = QModelIndex() ) const;
   virtual int rowCount(const QModelIndex& parent = QModelIndex() ) const;
   virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
-//  virtual bool setData(const QModelIndex& index, const QVariant& value, int role);
   virtual Qt::ItemFlags flags(const QModelIndex& index ) const;
   virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
   virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex() ) const;
   virtual QModelIndex parent(const QModelIndex& index ) const;
-
 
   void resetModel();
   void setLogic(vtkIGTLIOLogicPointer logic);
@@ -67,32 +63,17 @@ public:
     PortColumn
   };
 
-//  virtual void updateItemDataFromNode(QStandardItem* item, vtkMRMLNode* node, int column);
-
-//  /// As we reimplement insertNode, we need don't want to hide the other functions.
-//  using qMRMLSceneModel::insertNode;
-//  /// Reimplemented to listen to the vtkMRMLIGTLConnectorNode events for
-//  /// connector state changes.
-//  virtual QStandardItem* insertNode(vtkMRMLNode* node, QStandardItem* parent, int row);
-
-protected:
-
-//  virtual vtkMRMLNode* parentNode(vtkMRMLNode* node)const;
-
-//  virtual void updateNodeFromItemData(vtkMRMLNode* node, QStandardItem* item);
-
-//  virtual QFlags<Qt::ItemFlag> nodeFlags(vtkMRMLNode* node, int column)const;
-
 private slots:
-  void onConnectionEvent(vtkObject *caller, unsigned long, void *, void *);
+  void onConnectorEvent(vtkObject *caller, void *connector, unsigned long event, void *);
+  void onConnectionEvent(vtkObject *caller, void *, unsigned long, void *);
+
 private:
   Q_DISABLE_COPY(qIGTLIOConnectorModel);
-
   vtkIGTLIOConnector* getNodeFromIndex(const QModelIndex& index) const;
+  void ReconnectConnector(vtkIGTLIOConnector *oldConnector, vtkIGTLIOConnector *newConnector);
 
   vtkIGTLIOLogicPointer Logic;
   QStringList HeaderLabels;
-  vtkSmartPointer<vtkEventQtSlotConnect> Connections;
 };
 
 #endif

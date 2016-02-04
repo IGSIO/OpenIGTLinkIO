@@ -64,6 +64,7 @@ qIGTLIOConnectorPropertyWidget::qIGTLIOConnectorPropertyWidget(QWidget *_parent)
 {
   Q_D(qIGTLIOConnectorPropertyWidget);
   d->init();
+  this->setEnabled(false);
 }
 
 //------------------------------------------------------------------------------
