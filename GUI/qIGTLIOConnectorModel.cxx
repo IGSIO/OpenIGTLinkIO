@@ -191,16 +191,16 @@ void qIGTLIOConnectorModel::onConnectionEvent(vtkObject* caller, void* connector
 {
   if (event==vtkIGTLIOLogic::ConnectionAddedEvent)
     {
-      std::cout << "on add connected event" << std::endl;
+//      std::cout << "on add connected event" << std::endl;
       vtkIGTLIOConnector* c = static_cast<vtkIGTLIOConnector*>(connector);
-      ReconnectConnector(NULL, c);
+      this->ReconnectConnector(NULL, c);
       this->resetModel();
     }
   if (event==vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
     {
-      std::cout << "on remove connected event" << std::endl;
+//      std::cout << "on remove connected event" << std::endl;
       vtkIGTLIOConnector* c = static_cast<vtkIGTLIOConnector*>(connector);
-      ReconnectConnector(c, NULL);
+      this->ReconnectConnector(c, NULL);
       this->resetModel();
     }
 }

@@ -169,10 +169,24 @@ int qIGTLIODevicesModelNode::GetSiblingIndex() const
   return -1;
 }
 
-void qIGTLIODevicesModelNode::PrintSelf(std::__1::ostream &os, vtkIndent indent)
+void qIGTLIODevicesModelNode::PrintSelf(std::ostream &os, vtkIndent indent)
 {
   os << indent << type << "\n"
      << indent << "Connector: " << ((connector) ? connector->GetName() : "-" ) << "\n"
      << indent << "Group: " << group << "\n"
      << indent << "Device: " << ((device) ? device->GetDeviceName() : "-" ) << "\n";
+}
+
+qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::FindDeviceNode(vtkIGTLIODevice *device_)
+{
+  if (this->isDevice() && device==device_)
+    return this;
+
+  for (int i=0; i<this->GetNumberOfChildren(); ++i)
+    {
+      qIGTLIODevicesModelNode* hit = this->GetChild(i)->FindDeviceNode(device_);
+      if (hit)
+        return hit;
+    }
+  return NULL;
 }

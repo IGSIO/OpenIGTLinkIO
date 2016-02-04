@@ -40,14 +40,17 @@ public:
   std::string GetName();
   qIGTLIODevicesModelNode* GetChild(int row);
   qIGTLIODevicesModelNode* GetParent();
-  qIGTLIODevicesModelNode* GetNode(vtkIGTLIOConnector* connector=NULL, vtkIGTLIODevice::MESSAGE_DIRECTION group=vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, vtkIGTLIODevice* device=NULL);
 
   int GetNumberOfChildren() const;
   /// get the index of this node among its siblings
   int GetSiblingIndex() const;
   void PrintSelf(ostream& os, vtkIndent indent);
 
+  qIGTLIODevicesModelNode* FindDeviceNode(vtkIGTLIODevice* device_);
+
+
 private:
+  qIGTLIODevicesModelNode* GetNode(vtkIGTLIOConnector* connector=NULL, vtkIGTLIODevice::MESSAGE_DIRECTION group=vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, vtkIGTLIODevice* device=NULL);
   qIGTLIODevicesModelNode(qIGTLIODevicesModelNode* parent_, vtkIGTLIOLogic* logic_, vtkIGTLIOConnector* connector_=NULL, vtkIGTLIODevice::MESSAGE_DIRECTION group_=vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, vtkIGTLIODevice* device_=NULL);
   std::vector<vtkIGTLIODevicePointer> GetDevicesInGroup() const;
   NODE_TYPE type;

@@ -3,10 +3,11 @@
 
 #include <QAbstractItemModel>
 
+// CTK includes
+#include <ctkVTKObject.h>
+
 // igtlio includes
 #include "igtlioGUIExport.h"
-
-class vtkEventQtSlotConnect;
 
 #include "vtkIGTLIOConnector.h"
 #include <vtkSmartPointer.h>
@@ -21,6 +22,7 @@ typedef QSharedPointer<class qIGTLIODevicesModelNode> qIGTLIODevicesModelNodePoi
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIODevicesModel : public QAbstractItemModel
 {
   Q_OBJECT
+  QVTK_OBJECT
 
 public:
   qIGTLIODevicesModel(QObject *parent=0);
@@ -53,22 +55,20 @@ public:
     OUTGOING,
   };
 
-protected:
 private slots:
-  void onConnectionEvent(vtkObject *caller, unsigned long, void *, void *);
+  void onConnectorEvent(vtkObject *caller, void *connector, unsigned long event, void *);
+  void onConnectionEvent(vtkObject *caller, void *connector, unsigned long, void *);
 private:
   Q_DISABLE_COPY(qIGTLIODevicesModel);
 
   qIGTLIODevicesModelNode* getNodeFromIndex(const QModelIndex& index) const;
-//  std::vector<vtkIGTLIODevicePointer> DevicesInGroup(int group) const;
-//  qIGTLIODevicesModelNode* GetNode(vtkIGTLIOConnector* connector=NULL, vtkIGTLIODevice::MESSAGE_DIRECTION group=vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, vtkIGTLIODevice* device=NULL) const;
 
   vtkIGTLIOLogicPointer Logic;
   QStringList HeaderLabels;
-  vtkSmartPointer<vtkEventQtSlotConnect> Connections;
 
   mutable qIGTLIODevicesModelNodePointer RootNode;
-//  mutable std::set<qIGTLIODevicesModelNodePointer> Nodes;
+  void ReconnectConnector(vtkIGTLIOConnector *oldConnector, vtkIGTLIOConnector *newConnector);
+  qIGTLIODevicesModelNode *FindDeviceNode(vtkIGTLIODevice *device, qIGTLIODevicesModelNode *parent);
 };
 
 
