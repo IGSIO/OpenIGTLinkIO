@@ -24,6 +24,7 @@ private:
   vtkIGTLIOLogicPointer Logic;
 
   class qIGTLIOConnectorListWidget* ConnectorListWidget;
+  class qIGTLIODevicesWidget* DevicesWidget;
 
 };
 

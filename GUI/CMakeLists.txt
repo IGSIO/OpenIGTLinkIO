@@ -52,6 +52,10 @@ set(${KIT}_SRCS
 #  GUI/qMRMLIGTLIOTreeView.h
 #  GUI/qSlicerIGTLIONodeSelectorWidget.cxx
 #  GUI/qSlicerIGTLIONodeSelectorWidget.h
+  qIGTLIODevicesModel.h
+  qIGTLIODevicesModel.cxx
+  qIGTLIODevicesWidget.h
+  qIGTLIODevicesWidget.cxx
   )
 
 set(${KIT}_MOC_SRCS
@@ -67,6 +71,8 @@ set(${KIT}_MOC_SRCS
 #  GUI/qMRMLIGTLIOTreeView.h
 #  GUI/qSlicerIGTLConnectorPropertyWidget.h
 #  GUI/qSlicerIGTLIONodeSelectorWidget.h
+  qIGTLIODevicesModel.h
+  qIGTLIODevicesWidget.h
   )
   
 set(${KIT}_UI_SRCS
