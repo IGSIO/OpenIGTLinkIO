@@ -12,6 +12,7 @@ class vtkEventQtSlotConnect;
 #include <vtkSmartPointer.h>
 #include <QSharedPointer>
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+typedef QSharedPointer<class qIGTLIODevicesModelNode> qIGTLIODevicesModelNodePointer;
 
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIODevicesModel : public QAbstractItemModel
 {
@@ -54,17 +55,16 @@ private slots:
 private:
   Q_DISABLE_COPY(qIGTLIODevicesModel);
 
-  typedef QSharedPointer<class qIGTLIODevicesModelNode> qIGTLIODevicesModelNodePointer;
   qIGTLIODevicesModelNode* getNodeFromIndex(const QModelIndex& index) const;
 //  std::vector<vtkIGTLIODevicePointer> DevicesInGroup(int group) const;
-  qIGTLIODevicesModelNode* GetNode(vtkIGTLIOConnector* connector=NULL, vtkIGTLIODevice::MESSAGE_DIRECTION group=vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, vtkIGTLIODevice* device=NULL) const;
+//  qIGTLIODevicesModelNode* GetNode(vtkIGTLIOConnector* connector=NULL, vtkIGTLIODevice::MESSAGE_DIRECTION group=vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, vtkIGTLIODevice* device=NULL) const;
 
   vtkIGTLIOLogicPointer Logic;
   QStringList HeaderLabels;
   vtkSmartPointer<vtkEventQtSlotConnect> Connections;
 
   mutable qIGTLIODevicesModelNodePointer RootNode;
-  mutable std::set<qIGTLIODevicesModelNodePointer> Nodes;
+//  mutable std::set<qIGTLIODevicesModelNodePointer> Nodes;
 };
 
 

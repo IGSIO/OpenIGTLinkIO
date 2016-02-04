@@ -56,6 +56,8 @@ set(${KIT}_SRCS
   qIGTLIODevicesModel.cxx
   qIGTLIODevicesWidget.h
   qIGTLIODevicesWidget.cxx
+  vtkIGTLIONode.h
+  vtkIGTLIONode.cxx
   )
 
 set(${KIT}_MOC_SRCS

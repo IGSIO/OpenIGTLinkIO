@@ -14,170 +14,13 @@
 
 #include "vtkIGTLIOLogic.h"
 #include "vtkIGTLIOConnector.h"
+#include "vtkIGTLIONode.h"
 
 // VTK includes
 #include <vtkVariantArray.h>
 #include "qIGTLIODevicesModel.h"
 #include <vtkEventQtSlotConnect.h>
 
-/// Convenience class for holding each tree item.
-///
-/// There are three levels/types of nodes: connector, group and device.
-///  - connector: only connector field defined
-///  - group: connector and group fields defined
-///  - device: connect, group, device fields defined
-class qIGTLIODevicesModelNode
-{
-public:
-  enum NODE_TYPE {
-    NODE_TYPE_ROOT,
-    NODE_TYPE_CONNECTOR,
-    NODE_TYPE_GROUP,
-    NODE_TYPE_DEVICE,
-  };
-  bool isRoot() const { return type==NODE_TYPE_ROOT; }
-  bool isConnector() const { return type==NODE_TYPE_CONNECTOR; }
-  bool isGroup() const { return type==NODE_TYPE_GROUP; }
-  bool isDevice() const { return type==NODE_TYPE_DEVICE; }
-
-  qIGTLIODevicesModelNode(vtkIGTLIOLogic* logic_, vtkIGTLIOConnector* connector_=NULL, vtkIGTLIODevice::MESSAGE_DIRECTION group_=vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, vtkIGTLIODevice* device_=NULL)
-  {
-    logic = logic_;
-    connector = connector_;
-    group = group_;
-    device = device_;
-
-    if (device!=NULL)
-      {
-        type = NODE_TYPE_DEVICE;
-      }
-    else if (group!=vtkIGTLIODevice::NUM_MESSAGE_DIRECTION)
-      {
-        type = NODE_TYPE_GROUP;
-      }
-    else if (connector!=NULL)
-      {
-        type = NODE_TYPE_CONNECTOR;
-      }
-    else
-      {
-        type = NODE_TYPE_ROOT;
-      }
-  }
-
-  bool operator==(const qIGTLIODevicesModelNode& rhs) const
-  {
-    return type==rhs.type &&
-        logic==rhs.logic &&
-        connector==rhs.connector &&
-        group==rhs.group &&
-        device==rhs.device;
-  }
-
-  std::string GetName()
-  {
-    if (this->isRoot())
-      {
-      return "root";
-      }
-    if (this->isConnector())
-      {
-      return connector->GetName();
-      }
-    if (this->isGroup())
-      {
-        if (group==vtkIGTLIODevice::MESSAGE_DIRECTION_IN)
-          return "IN";
-        if (group==vtkIGTLIODevice::MESSAGE_DIRECTION_OUT)
-          return "OUT";
-        return "???";
-      }
-    if (this->isDevice())
-      {
-      return device->GetDeviceName();
-      }
-    // device
-    return 0;
-  }
-
-  std::vector<vtkIGTLIODevicePointer> GetDevicesInGroup() const
-  {
-    std::vector<vtkIGTLIODevicePointer> retval;
-    for (int i=0; i<connector->GetNumberOfDevices(); ++i)
-      {
-        vtkIGTLIODevicePointer d = connector->GetDevice(i);
-        if (d->GetMessageDirection()==group)
-          retval.push_back(d);
-      }
-    return retval;
-  }
-
-  int GetNumberOfChildren() const
-  {
-    if (this->isRoot())
-      {
-      return logic->GetNumberOfConnectors();
-      }
-    if (this->isConnector())
-      {
-      return vtkIGTLIODevice::NUM_MESSAGE_DIRECTION;
-      }
-    if (this->isGroup())
-      {
-      return this->GetDevicesInGroup().size();
-      }
-    // device
-    return 0;
-  }
-
-  /// get the index of this node among its siblings
-  int GetSiblingIndex() const
-  {
-    if (this->isRoot())
-      {
-      return -1;
-      }
-    if (this->isConnector())
-      {
-        for (int i=0; i<logic->GetNumberOfConnectors(); ++i)
-          {
-            if (logic->GetConnector(i) == connector)
-              return i;
-          }
-      }
-    if (this->isGroup())
-      {
-        return group;
-      }
-    if (this->isDevice())
-      {
-        std::vector<vtkIGTLIODevicePointer> devices = this->GetDevicesInGroup();
-        for (int i=0; i<devices.size(); ++i)
-          {
-            if (devices[i] == device)
-              return i;
-          }
-
-      }
-    // root or error
-    return -1;
-  }
-
-  void PrintSelf(ostream& os, vtkIndent indent)
-  {
-    os << indent << type << "\n"
-       << indent << "Connector: " << ((connector) ? connector->GetName() : "-" ) << "\n"
-       << indent << "Group: " << group << "\n"
-       << indent << "Device: " << ((device) ? device->GetDeviceName() : "-" ) << "\n";
-  }
-
-
-  NODE_TYPE type;
-  vtkIGTLIOLogic* logic;
-  vtkIGTLIOConnector* connector;
-  vtkIGTLIODevice::MESSAGE_DIRECTION group;
-  vtkIGTLIODevice* device;
-};
 
 
 //------------------------------------------------------------------------------
@@ -213,10 +56,10 @@ int qIGTLIODevicesModel::rowCount(const QModelIndex& parent) const
 //  return 1;
   dmsg("rowcount B");
   qIGTLIODevicesModelNode* node = this->getNodeFromIndex(parent);
-  dmsg("rowcount E");
+//  dmsg("rowcount E");
   int r = node->GetNumberOfChildren();
-  std::cout << "children " << r << std::endl;
-  dmsg("rowcount E2");
+//  std::cout << "children " << r << std::endl;
+//  dmsg("rowcount E2");
   return r;
 }
 
@@ -303,38 +146,27 @@ QModelIndex qIGTLIODevicesModel::index(int row, int column, const QModelIndex &p
   dmsg("index b");
   qIGTLIODevicesModelNode* parentNode = this->getNodeFromIndex(parent);
   qIGTLIODevicesModelNode* node = NULL;
-  dmsg("index i1 ");
-  std::cout << "pn " << parentNode << std::endl;
-  std::cout << "row " << row << std::endl;
+//  dmsg("index i1 ");
+//  std::cout << "pn " << parentNode << std::endl;
+//  std::cout << "row " << row << std::endl;
 
   if (!parentNode) // connector
     {
       return QModelIndex();
     }
 
-  dmsg("parent::");
-  parentNode->PrintSelf(std::cout, vtkIndent(1));
-  std::cout << std::endl;
+//  dmsg("parent::");
+//  parentNode->PrintSelf(std::cout, vtkIndent(1));
+//  std::cout << std::endl;
 
-  if (parentNode->isRoot())
-    {
-      node = this->GetNode(Logic->GetConnector(row));
-    }
-  if (parentNode->isConnector())
-    {
-      node = this->GetNode(parentNode->connector, static_cast<vtkIGTLIODevice::MESSAGE_DIRECTION>(row));
-    }
-  if (parentNode->isGroup())
-    {
-      node = this->GetNode(parentNode->connector, parentNode->group, parentNode->GetDevicesInGroup()[row]);
-    }
+  node = parentNode->GetChild(row);
 
-  std::cout << "node:: " << node << std::endl;
-  dmsg("index e1");
+//  std::cout << "node:: " << node << std::endl;
+//  dmsg("index e1");
   if (node)
     {
-      node->PrintSelf(std::cout, vtkIndent(11));
-      std::cout << std::endl;
+//      node->PrintSelf(std::cout, vtkIndent(11));
+//      std::cout << std::endl;
     return this->createIndex(row, column, node);
     }
 
@@ -346,31 +178,15 @@ QModelIndex qIGTLIODevicesModel::parent(const QModelIndex &index) const
 {
   dmsg("parent b");
   qIGTLIODevicesModelNode* node = this->getNodeFromIndex(index);
-  qIGTLIODevicesModelNode* parentNode = NULL;
-
   if (!node)
     {
       return QModelIndex();
     }
 
-  if (node->isConnector())
+  qIGTLIODevicesModelNode* parentNode = node->GetParent();
+  if (parentNode && !parentNode->isRoot())
     {
-      return QModelIndex();
-    }
-
-  if (node->isGroup())
-    {
-      parentNode = this->GetNode(node->connector);
-    }
-  if (node->isDevice())
-    {
-      parentNode = this->GetNode(node->connector, node->group);
-    }
-  dmsg("parent e1");
-
-  if (parentNode)
-    {
-    return this->createIndex(parentNode->GetSiblingIndex(), 0, parentNode);
+      return this->createIndex(parentNode->GetSiblingIndex(), 0, parentNode);
     }
 
   return QModelIndex();
@@ -400,11 +216,7 @@ void qIGTLIODevicesModel::setLogic(vtkIGTLIOLogicPointer logic)
                              this,
                              SLOT(onConnectionEvent(vtkObject*, unsigned long, void*, void*)));
 
-  Nodes.clear();
-  qIGTLIODevicesModelNodePointer rootNode;
-  rootNode.reset(new qIGTLIODevicesModelNode(Logic));
-  Nodes.insert(rootNode);
-  RootNode = rootNode;
+  RootNode = qIGTLIODevicesModelNode::createRoot(Logic);
   dmsg("setLogic e");
 }
 
@@ -431,21 +243,3 @@ qIGTLIODevicesModelNode* qIGTLIODevicesModel::getNodeFromIndex(const QModelIndex
     return RootNode.data();
   return static_cast<qIGTLIODevicesModelNode*>(index.internalPointer());
 }
-
-qIGTLIODevicesModelNode *qIGTLIODevicesModel::GetNode(vtkIGTLIOConnector *connector, vtkIGTLIODevice::MESSAGE_DIRECTION group, vtkIGTLIODevice *device) const
-{
-//  dmsg("GetNode b");
-  qIGTLIODevicesModelNodePointer node;
-  node.reset(new qIGTLIODevicesModelNode(Logic, connector, group, device));
-
-  for (std::set<qIGTLIODevicesModelNodePointer>::iterator i=Nodes.begin(); i!=Nodes.end(); ++i)
-    {
-      if (*i->data() == *node)
-        return i->data();
-    }
-
-  Nodes.insert(node);
-  return node.data();
-}
-
-
