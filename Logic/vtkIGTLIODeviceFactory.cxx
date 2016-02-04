@@ -33,7 +33,9 @@ vtkIGTLIODeviceCreatorPointer vtkIGTLIODeviceFactory::GetCreator(std::string dev
 {
   std::map<std::string, vtkIGTLIODeviceCreatorPointer>::const_iterator iter = Creators.find(device_type);
   if (iter==Creators.end())
+    {
     return vtkIGTLIODeviceCreatorPointer();
+    }
   return iter->second;
 }
 

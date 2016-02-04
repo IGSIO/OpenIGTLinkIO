@@ -85,6 +85,7 @@ vtkIGTLIOConnector::vtkIGTLIOConnector()
 
   this->CheckCRC = 1;
 
+  DeviceFactory = vtkIGTLIODeviceFactoryPointer::New();
 }
 
 //----------------------------------------------------------------------------
@@ -616,9 +617,14 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
 
     igtl::MessageBase::Pointer buffer = circBuffer->GetPullBuffer();
 
+    std::cout << "incoming buffer->GetDeviceType(): " << buffer->GetDeviceType() << std::endl;
+
     vtkSmartPointer<vtkIGTLIODeviceCreator> deviceCreator = DeviceFactory->GetCreator(buffer->GetDeviceType());
     if (!deviceCreator)
+      {
+      vtkErrorMacro(<< "Received unknown device type " << buffer->GetDeviceType() << ", device=" << *nameIter);
       continue;
+      }
 
     // TODO: why is this?
     if (strncmp("OpenIGTLink_MESSAGE_", (*nameIter).c_str(), IGTL_HEADER_NAME_SIZE) == 0)
