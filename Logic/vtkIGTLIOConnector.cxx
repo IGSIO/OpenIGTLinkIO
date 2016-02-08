@@ -777,6 +777,7 @@ int vtkIGTLIOConnector::SendMessage(std::string device_id, vtkIGTLIODevice::MESS
   vtkIGTLIODevicePointer device = this->GetDevice(device_id);
   if (!device)
     {
+      vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id << ", device not found");
       return 1;
     }
 
@@ -785,6 +786,7 @@ int vtkIGTLIOConnector::SendMessage(std::string device_id, vtkIGTLIODevice::MESS
 
   if (!msg)
     {
+      vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id << ", message not available from device");
       return 1;
     }
 

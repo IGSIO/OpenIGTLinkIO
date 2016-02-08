@@ -8,6 +8,7 @@
 #include "vtkIGTLIOLogic.h"
 #include "qIGTLIOConnectorPropertyWidget.h"
 #include "qIGTLIODevicesModel.h"
+#include "qIGTLIODeviceButtonsWidget.h"
 
 //-----------------------------------------------------------------------------
 qIGTLIODevicesWidget::qIGTLIODevicesWidget()
@@ -23,6 +24,12 @@ qIGTLIODevicesWidget::qIGTLIODevicesWidget()
   topLayout->addWidget(DevicesListView);
 
   SelectionModel = DevicesListView->selectionModel();
+  DevicesModel->setSelectionModel(SelectionModel);
+
+
+  ButtonsWidget = new qIGTLIODeviceButtonsWidget();
+  topLayout->addWidget(ButtonsWidget);
+  ButtonsWidget->setModel(DevicesModel);
 }
 
 //-----------------------------------------------------------------------------
@@ -43,6 +50,7 @@ void qIGTLIODevicesWidget::setLogic(vtkIGTLIOLogicPointer logic)
 
   this->Logic = logic;
   DevicesModel->setLogic(logic);
+  ButtonsWidget->setLogic(Logic);
 }
 
 //-----------------------------------------------------------------------------

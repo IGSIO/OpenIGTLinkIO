@@ -12,8 +12,10 @@
 #include "vtkIGTLIOConnector.h"
 #include <vtkSmartPointer.h>
 #include <QSharedPointer>
+#include <QPointer>
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 typedef QSharedPointer<class qIGTLIODevicesModelNode> qIGTLIODevicesModelNodePointer;
+class QItemSelectionModel;
 
 ///
 /// A model describing all IGTL devices,
@@ -31,7 +33,7 @@ public:
   virtual int columnCount (const QModelIndex& parent = QModelIndex() ) const;
   virtual int rowCount(const QModelIndex& parent = QModelIndex() ) const;
   virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
-//  virtual bool setData(const QModelIndex& index, const QVariant& value, int role);
+  virtual bool setData(const QModelIndex& index, const QVariant& value, int role);
   virtual Qt::ItemFlags flags(const QModelIndex& index ) const;
   virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
   virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex() ) const;
@@ -40,6 +42,10 @@ public:
 
   void resetModel();
   void setLogic(vtkIGTLIOLogicPointer logic);
+
+  void setSelectionModel(QItemSelectionModel* selectionModel);
+  QItemSelectionModel* selectionModel();
+//  qIGTLIODevicesModelNode* selectedNode();
 
   enum Columns{
     NameColumn = 0,
@@ -55,16 +61,18 @@ public:
     OUTGOING,
   };
 
+  qIGTLIODevicesModelNode* getNodeFromIndex(const QModelIndex& index) const;
+
 private slots:
   void onConnectorEvent(vtkObject *caller, void *connector, unsigned long event, void *);
   void onConnectionEvent(vtkObject *caller, void *connector, unsigned long, void *);
 private:
   Q_DISABLE_COPY(qIGTLIODevicesModel);
 
-  qIGTLIODevicesModelNode* getNodeFromIndex(const QModelIndex& index) const;
 
   vtkIGTLIOLogicPointer Logic;
   QStringList HeaderLabels;
+  QPointer<QItemSelectionModel> SelectionModel;
 
   mutable qIGTLIODevicesModelNodePointer RootNode;
   void ReconnectConnector(vtkIGTLIOConnector *oldConnector, vtkIGTLIOConnector *newConnector);

@@ -121,6 +121,10 @@ igtl::MessageBase::Pointer vtkIGTLIOImageDevice::GetIGTLMessage(MESSAGE_PREFIX p
    this->GetImageMessage->Pack();
    return dynamic_pointer_cast<igtl::MessageBase>(this->GetImageMessage);
   }
+ if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
+   {
+     return this->GetIGTLMessage();
+   }
 
  return igtl::MessageBase::Pointer();
 }

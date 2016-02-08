@@ -58,6 +58,8 @@ set(${KIT}_SRCS
   qIGTLIODevicesWidget.cxx
   vtkIGTLIONode.h
   vtkIGTLIONode.cxx
+  qIGTLIODeviceButtonsWidget.h
+  qIGTLIODeviceButtonsWidget.cxx
   )
 
 set(${KIT}_MOC_SRCS
@@ -75,6 +77,7 @@ set(${KIT}_MOC_SRCS
 #  GUI/qSlicerIGTLIONodeSelectorWidget.h
   qIGTLIODevicesModel.h
   qIGTLIODevicesWidget.h
+  qIGTLIODeviceButtonsWidget.h
   )
   
 set(${KIT}_UI_SRCS

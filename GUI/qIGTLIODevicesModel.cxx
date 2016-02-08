@@ -8,6 +8,7 @@
 #include <QStack>
 #include <QStringList>
 #include <QVector>
+#include <QItemSelectionModel>
 
 // OpenIGTLinkIF GUI includes
 #include <qIGTLIODevicesModel.h>
@@ -20,8 +21,6 @@
 #include <vtkVariantArray.h>
 #include "qIGTLIODevicesModel.h"
 #include <vtkEventQtSlotConnect.h>
-
-
 
 //------------------------------------------------------------------------------
 qIGTLIODevicesModel::qIGTLIODevicesModel(QObject *vparent)
@@ -52,80 +51,104 @@ int qIGTLIODevicesModel::rowCount(const QModelIndex& parent) const
   if (parent.column() > 0)
     return 0;
 
-//  return 1;
-  dmsg("rowcount B");
   qIGTLIODevicesModelNode* node = this->getNodeFromIndex(parent);
-//  dmsg("rowcount E");
   int r = node->GetNumberOfChildren();
-//  std::cout << "children " << r << std::endl;
-//  dmsg("rowcount E2");
   return r;
 }
 
 //------------------------------------------------------------------------------
 QVariant qIGTLIODevicesModel::data(const QModelIndex &index, int role) const
 {
-  if (role!=Qt::DisplayRole)
+  if (role!=Qt::DisplayRole && role!=Qt::CheckStateRole)
     return QVariant();
 
-//  return QVariant();
-  dmsg("data b");
   qIGTLIODevicesModelNode* node = this->getNodeFromIndex(index);
-  dmsg("data e1");
 
   if (!node)
     {
-    return QVariant();
+      return QVariant();
     }
-  switch (index.column())
+
+  if (role==Qt::CheckStateRole)
     {
-    case qIGTLIODevicesModel::NameColumn:
-      {
-        return QString::fromStdString(node->GetName());
-//      return QString("%1").arg(node->type);
-//      return QString::fromStdString(device->GetDeviceName());
-      break;
-      }
-//    case qIGTLIODevicesModel::TypeColumn:
-//      {
-//      Q_ASSERT(cnode->GetType() < vtkIGTLIOConnector::NUM_TYPE);
-//      return QString::fromStdString(vtkIGTLIOConnector::ConnectorTypeStr[cnode->GetType()]);
-//      break;
-//      }
-//    case qIGTLIODevicesModel::StatusColumn:
-//      {
-//      Q_ASSERT(cnode->GetState() < vtkIGTLIOConnector::NUM_STATE);
-//      return QString::fromStdString(vtkIGTLIOConnector::ConnectorStateStr[cnode->GetState()]);
-//      break;
-//      }
-//    case qIGTLIODevicesModel::HostnameColumn:
-//      {
-//      if (cnode->GetType() == vtkIGTLIOConnector::TYPE_CLIENT)
-//        {
-//        return QString::fromStdString(cnode->GetServerHostname());
-//        }
-//      else
-//        {
-//        return QString("--");
-//        }
-//      break;
-//      }
-//    case qIGTLIODevicesModel::PortColumn:
-//      {
-//      return QString("%1").arg(cnode->GetServerPort());
-//      break;
-//      }
-    default:
-      break;
+      switch (index.column())
+        {
+        case qIGTLIODevicesModel::PushOnConnectColumn:
+          if (node->isDevice())
+            return int(node->device->GetPushOnConnect())*2;
+        break;
+        default:
+          break;
+        }
+    }
+
+  if (role==Qt::DisplayRole)
+    {
+      switch (index.column())
+        {
+        case qIGTLIODevicesModel::NameColumn:
+          {
+            return QString::fromStdString(node->GetName());
+            break;
+          }
+        case qIGTLIODevicesModel::StatusColumn:
+          {
+            if (node->isDevice())
+              return QString::fromStdString(node->device->GetDeviceType());
+            break;
+          }
+        default:
+          break;
+        }
     }
   return QVariant();
 }
 
+//-----------------------------------------------------------------------------
+bool qIGTLIODevicesModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+  if (role!=Qt::CheckStateRole)
+    return false;
+
+  qIGTLIODevicesModelNode* node = this->getNodeFromIndex(index);
+
+  if (!node)
+    {
+      return false;
+    }
+
+  if (role==Qt::CheckStateRole)
+    {
+      switch (index.column())
+        {
+        case qIGTLIODevicesModel::PushOnConnectColumn:
+          if (node->isDevice())
+            {
+            node->device->SetPushOnConnect(value.toBool());
+            return true;
+            }
+        break;
+        default:
+          break;
+        }
+    }
+
+  return false;
+}
 
 //-----------------------------------------------------------------------------
 Qt::ItemFlags qIGTLIODevicesModel::flags(const QModelIndex &index) const
 {
-  return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+  switch (index.column())
+    {
+    case qIGTLIODevicesModel::PushOnConnectColumn:
+      {
+      return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
+      break;
+      }
+    default:
+      return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -142,30 +165,18 @@ QVariant qIGTLIODevicesModel::headerData(int section, Qt::Orientation orientatio
 //-----------------------------------------------------------------------------
 QModelIndex qIGTLIODevicesModel::index(int row, int column, const QModelIndex &parent) const
 {
-  dmsg("index b");
   qIGTLIODevicesModelNode* parentNode = this->getNodeFromIndex(parent);
   qIGTLIODevicesModelNode* node = NULL;
-//  dmsg("index i1 ");
-//  std::cout << "pn " << parentNode << std::endl;
-//  std::cout << "row " << row << std::endl;
 
   if (!parentNode) // connector
     {
       return QModelIndex();
     }
 
-//  dmsg("parent::");
-//  parentNode->PrintSelf(std::cout, vtkIndent(1));
-//  std::cout << std::endl;
-
   node = parentNode->GetChild(row);
 
-//  std::cout << "node:: " << node << std::endl;
-//  dmsg("index e1");
   if (node)
     {
-//      node->PrintSelf(std::cout, vtkIndent(11));
-//      std::cout << std::endl;
     return this->createIndex(row, column, node);
     }
 
@@ -175,7 +186,6 @@ QModelIndex qIGTLIODevicesModel::index(int row, int column, const QModelIndex &p
 //-----------------------------------------------------------------------------
 QModelIndex qIGTLIODevicesModel::parent(const QModelIndex &index) const
 {
-  dmsg("parent b");
   qIGTLIODevicesModelNode* node = this->getNodeFromIndex(index);
   if (!node)
     {
@@ -194,7 +204,6 @@ QModelIndex qIGTLIODevicesModel::parent(const QModelIndex &index) const
 //-----------------------------------------------------------------------------
 void qIGTLIODevicesModel::resetModel()
 {
-  dmsg("resetModel b");
   this->beginResetModel();
   RootNode = qIGTLIODevicesModelNode::createRoot(Logic);
   this->endResetModel();
@@ -203,8 +212,6 @@ void qIGTLIODevicesModel::resetModel()
 //-----------------------------------------------------------------------------
 void qIGTLIODevicesModel::setLogic(vtkIGTLIOLogicPointer logic)
 {
-  dmsg("setLogic b");
-
   foreach(int evendId, QList<int>()
           << vtkIGTLIOLogic::ConnectionAddedEvent
           << vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
@@ -216,8 +223,23 @@ void qIGTLIODevicesModel::setLogic(vtkIGTLIOLogicPointer logic)
   this->Logic = logic;
 
   this->resetModel();
-  dmsg("setLogic e");
 }
+
+void qIGTLIODevicesModel::setSelectionModel(QItemSelectionModel *selectionModel)
+{
+  SelectionModel = selectionModel;
+}
+
+QItemSelectionModel *qIGTLIODevicesModel::selectionModel()
+{
+  return SelectionModel;
+}
+
+//qIGTLIODevicesModelNode *qIGTLIODevicesModel::selectedNode()
+//{
+//  return seleSelectionModel->currentIndex();
+
+//}
 
 //-----------------------------------------------------------------------------
 void qIGTLIODevicesModel::ReconnectConnector(vtkIGTLIOConnector* oldConnector, vtkIGTLIOConnector* newConnector)
@@ -256,20 +278,6 @@ void qIGTLIODevicesModel::onConnectionEvent(vtkObject* caller, void* connector, 
     }
 }
 
-//qIGTLIODevicesModelNode* qIGTLIODevicesModel::FindDeviceNode(vtkIGTLIODevice* device, qIGTLIODevicesModelNode* parent)
-//{
-//  for (int i=0; i<parent->GetNumberOfChildren(); ++i)
-//    {
-//      qIGTLIODevicesModelNode* child = parent->GetChild(i);
-//      if (child->isDevice() && child->device==device)
-//        return child;
-//      qIGTLIODevicesModelNode* grandchild = this->FindDeviceNode(device, child);
-//      if (grandchild)
-//        return grandchild;
-//    }
-//  return NULL;
-//}
-
 //-----------------------------------------------------------------------------
 void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, void* c, unsigned long event , void*)
 {
@@ -277,25 +285,44 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, void* c, unsigned 
     {
       vtkIGTLIODevice* device = static_cast<vtkIGTLIODevice*>(c);
 
-//      qIGTLIODevicesModelNode* node = this->FindDeviceNode(device, RootNode.data());
       qIGTLIODevicesModelNode* node = RootNode->FindDeviceNode(device);
-      std::cout << "null!!!!!!!!!!!! " << node << std::endl;
+      std::cout << "added: " << node->GetName() << std::endl;
       QModelIndex parent = this->createIndex(node->GetParent()->GetSiblingIndex(), 0, node->GetParent());
 
       this->beginInsertRows(parent, node->GetSiblingIndex(), node->GetSiblingIndex());
       this->endInsertRows();
     }
-  else
+  if (event==vtkIGTLIOConnector::RemovedDeviceEvent)
     {
-      this->resetModel();
-      emit dataChanged(QModelIndex(), QModelIndex());
+     vtkIGTLIODevice* device = static_cast<vtkIGTLIODevice*>(c);
+
+     qIGTLIODevicesModelNode* node = RootNode->FindDeviceNode(device);
+     std::cout << "removed: " << node->GetName() << std::endl;
+     QModelIndex parent = this->createIndex(node->GetParent()->GetSiblingIndex(), 0, node->GetParent());
+
+     this->beginRemoveRows(parent, node->GetSiblingIndex(), node->GetSiblingIndex());
+     this->endRemoveRows();
     }
+  if (event==vtkIGTLIOConnector::DeviceModifiedEvent)
+    {
+     vtkIGTLIODevice* device = static_cast<vtkIGTLIODevice*>(c);
+     qIGTLIODevicesModelNode* node = RootNode->FindDeviceNode(device);
+     std::cout << "modified: " << node->GetName() << std::endl;
+     QModelIndex bindex = this->createIndex(node->GetSiblingIndex(), 0, node);
+     QModelIndex eindex = this->createIndex(node->GetSiblingIndex(), this->columnCount(bindex), node);
+
+     emit dataChanged(bindex, eindex);
+    }
+//  else
+//    {
+//      this->resetModel();
+//      emit dataChanged(QModelIndex(), QModelIndex());
+//    }
 }
 
 //-----------------------------------------------------------------------------
 qIGTLIODevicesModelNode* qIGTLIODevicesModel::getNodeFromIndex(const QModelIndex &index) const
 {
-//  dmsg("getNodeFromIndex b");
   if (!index.isValid())
     return RootNode.data();
   return static_cast<qIGTLIODevicesModelNode*>(index.internalPointer());

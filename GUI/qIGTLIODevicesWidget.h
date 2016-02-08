@@ -10,8 +10,9 @@
 #include "igtlioGUIExport.h"
 class qIGTLIODevicesModel;
 class QVBoxLayout;
-class qIGTLIOConnectorPropertyWidget;
+//class qIGTLIOConnectorPropertyWidget;
 class QItemSelectionModel;
+class qIGTLIODeviceButtonsWidget;
 
 class QTreeView;
 #include <vtkSmartPointer.h>
@@ -34,6 +35,7 @@ private:
   vtkIGTLIOLogicPointer Logic;
   qIGTLIODevicesModel* DevicesModel;
   QItemSelectionModel* SelectionModel;
+  qIGTLIODeviceButtonsWidget* ButtonsWidget;
   QTreeView* DevicesListView;
 
 };

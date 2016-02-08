@@ -48,6 +48,8 @@ public:
 
   qIGTLIODevicesModelNode* FindDeviceNode(vtkIGTLIODevice* device_);
 
+  vtkIGTLIODevice* device;
+  vtkIGTLIOConnector* connector;
 
 private:
   qIGTLIODevicesModelNode* GetNode(vtkIGTLIOConnector* connector=NULL, vtkIGTLIODevice::MESSAGE_DIRECTION group=vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, vtkIGTLIODevice* device=NULL);
@@ -55,9 +57,7 @@ private:
   std::vector<vtkIGTLIODevicePointer> GetDevicesInGroup() const;
   NODE_TYPE type;
   vtkIGTLIOLogic* logic;
-  vtkIGTLIOConnector* connector;
   vtkIGTLIODevice::MESSAGE_DIRECTION group;
-  vtkIGTLIODevice* device;
   mutable std::set<qIGTLIODevicesModelNodePointer> Children;
   qIGTLIODevicesModelNode* Parent;
 };
