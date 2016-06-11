@@ -98,8 +98,20 @@ public:
  /// An undefined prefix means sending the normal message.
  int SendMessage(std::string device_id, vtkIGTLIODevice::MESSAGE_PREFIX=vtkIGTLIODevice::MESSAGE_PREFIX_NOT_DEFINED);
 
- vtkGetMacro( DeviceFactory, vtkIGTLIODeviceFactoryPointer );
- vtkSetMacro( DeviceFactory, vtkIGTLIODeviceFactoryPointer );
+ vtkIGTLIODeviceFactoryPointer GetDeviceFactory()
+ {
+   return DeviceFactory;
+ }
+ void SetDeviceFactory(vtkIGTLIODeviceFactoryPointer val)
+ {
+   if (val==DeviceFactory)
+     return;
+    DeviceFactory = val;
+    this->Modified();
+ }
+
+// vtkGetMacro( DeviceFactory, vtkIGTLIODeviceFactoryPointer );
+// vtkSetMacro( DeviceFactory, vtkIGTLIODeviceFactoryPointer );
  //
 
  public:
