@@ -63,10 +63,11 @@ public:
 
   virtual void PrintSelf(std::ostream& os) const;
 
-  virtual const char*  GetIGTLName() { return "POLYDATA"; };
+  virtual const char*  GetIGTLName() { return GetIGTLTypeName(); };
+  static const char* GetIGTLTypeName() { return "POLYDATA"; };
 
-  virtual int IGTLToVTK(igtl::MessageBase::Pointer source, MessageContent* dest, bool checkCRC);
-  virtual int VTKToIGTL(const MessageContent& source, igtl::PolyDataMessage::Pointer* dest);
+  int IGTLToVTK(igtl::MessageBase::Pointer source, MessageContent* dest, bool checkCRC);
+  int VTKToIGTL(const MessageContent& source, igtl::PolyDataMessage::Pointer* dest);
 
 protected:
   PolyDataConverter();

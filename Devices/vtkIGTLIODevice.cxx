@@ -58,6 +58,28 @@
 //  return this->OpenIGTLinkIFLogic;
 //}
 
+//---------------------------------------------------------------------------
+std::string vtkIGTLIODevice::GetDeviceName() const
+{
+  return HeaderData.deviceName;
+}
+
+void vtkIGTLIODevice::SetDeviceName(std::string name)
+{
+  HeaderData.deviceName = name;
+  this->Modified();
+}
+
+double vtkIGTLIODevice::GetTimestamp() const
+{
+  return HeaderData.timestamp;
+}
+
+void vtkIGTLIODevice::SetTimestamp(double val)
+{
+  HeaderData.timestamp = val;
+  this->Modified();
+}
 
 //---------------------------------------------------------------------------
 std::vector<vtkIGTLIODevice::QueryType> vtkIGTLIODevice::GetQueries() const

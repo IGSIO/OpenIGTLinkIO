@@ -29,17 +29,6 @@
 
 class vtkImageData;
 
-/// implements smart pointer conversion for igtl::SmartPointer,
-/// similar to std::dynamic_pointer_cast
-/// TODO: Move this into igtlSmartPointer.h
-template <class T, class U>
-igtl::SmartPointer<T> dynamic_pointer_cast(const igtl::SmartPointer<U>& sp) //noexcept
-{
- T* ptr = dynamic_cast<T*>(sp.GetPointer());
- return igtl::SmartPointer<T>(ptr);
-}
-//---------------------------------------------------------------------------
-
 //---------------------------------------------------------------------------
 class vtkIGTLIOImageDeviceCreator : public vtkIGTLIODeviceCreator
 {
@@ -57,23 +46,20 @@ class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOImageDevice : public vtkIGTLIODevice
 {
 public:
  virtual std::string GetDeviceType() const;
- virtual std::string GetDeviceName() const;
-  /// Set device name.
-  /// Caution: Changing the device name of a device registered in
-  /// a vtkIGTLIOConnector will cause undefined behaviour.
-  virtual void SetDeviceName(std::string name);
  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
  virtual igtl::MessageBase::Pointer GetIGTLMessage();
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
 
- public:
-  static vtkIGTLIOImageDevice *New();
-  vtkTypeMacro(vtkIGTLIOImageDevice,vtkObject);
+  void SetContent(igtl::ImageConverter::ContentData content);
+  igtl::ImageConverter::ContentData GetContent(igtl::ImageConverter::ContentData content);
 
+public:
+  static vtkIGTLIOImageDevice *New();
+  vtkTypeMacro(vtkIGTLIOImageDevice,vtkIGTLIODevice);
   void PrintSelf(ostream& os, vtkIndent indent);
 
- protected:
+protected:
   vtkIGTLIOImageDevice();
   ~vtkIGTLIOImageDevice();
 
@@ -81,7 +67,7 @@ public:
   igtl::ImageMessage::Pointer OutImageMessage;
   igtl::GetImageMessage::Pointer GetImageMessage;
 
-  igtl::ImageConverter::MessageContent Content;
+  igtl::ImageConverter::ContentData Content;
   igtl::ImageConverter::Pointer Converter;
 };
 

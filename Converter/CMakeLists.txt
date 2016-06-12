@@ -22,8 +22,10 @@ set(${KIT}_INCLUDE_DIRECTORIES
   )
 
 set(${KIT}_SRCS
+  igtlBaseConverter.cxx
   igtlImageConverter.cxx
   igtlPolyDataConverter.cxx
+  igtlStatusConverter.cxx
   )
 
 set(${KIT}_TARGET_LIBRARIES

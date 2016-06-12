@@ -26,6 +26,8 @@ set(${KIT}_SRCS
   vtkIGTLIODevice.h
   vtkIGTLIOImageDevice.cxx
   vtkIGTLIOImageDevice.h
+  vtkIGTLIOStatusDevice.cxx
+  vtkIGTLIOStatusDevice.h
   )
 
 set(${KIT}_TARGET_LIBRARIES

@@ -15,9 +15,8 @@
 #ifndef __igtlImageConverter_h
 #define __igtlImageConverter_h
 
-#include "igtlioConverterExport.h"
-
 // OpenIGTLink includes
+#include "igtlLightObject.h"
 #include <igtlImageMessage.h>
 
 // VTK includes
@@ -26,7 +25,8 @@
 
 class vtkImageData;
 class vtkMatrix4x4;
-#include "igtlLightObject.h"
+#include "igtlioConverterExport.h"
+#include "igtlBaseConverter.h"
 
 namespace igtl
 {
@@ -34,7 +34,7 @@ namespace igtl
 /** Conversion between igtl::ImageMessage and vtk classes.
  *
  */
-class OPENIGTLINKIO_CONVERTER_EXPORT ImageConverter : public LightObject
+class OPENIGTLINKIO_CONVERTER_EXPORT ImageConverter : public BaseConverter
 {
 public:
  /** Standard class typedefs. */
@@ -47,36 +47,33 @@ public:
  igtlNewMacro(Self);
 
  /** Run-time type information (and related methods). */
- igtlTypeMacro(ImageConverter, LightObject);
+ igtlTypeMacro(ImageConverter, BaseConverter);
 
   /**
    * This structure contains everything that igtl::ImageMessage is able to contain,
    * in a vtk-friendly format.
    */
-  struct MessageContent
+  struct ContentData
   {
   vtkSmartPointer<vtkImageData> image;
   vtkSmartPointer<vtkMatrix4x4> transform; // ijk2ras, From image pixel space to RAS
-  std::string deviceName;
-  int           second;
-  int           nanosecond;
   };
 
   virtual void PrintSelf(std::ostream& os) const;
 
-  virtual const char*  GetIGTLName() { return "IMAGE"; };
+  virtual const char*  GetIGTLName() { return GetIGTLTypeName(); };
+  static const char* GetIGTLTypeName() { return "IMAGE"; };
 
-  virtual int IGTLToVTK(igtl::MessageBase::Pointer source, MessageContent* dest, bool checkCRC);
-  virtual int VTKToIGTL(const MessageContent& source, igtl::ImageMessage::Pointer* dest);
+  int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
+  int toIGTL(const HeaderData& header, const ContentData& source, igtl::ImageMessage::Pointer* dest);
 
 protected:
   ImageConverter();
   ~ImageConverter();
 
   int IGTLToVTKScalarType(int igtlType);
-  int IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, MessageContent *dest);
+  int IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, ContentData *dest);
   int IGTLToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras);
-  int IGTLToTimestamp(igtl::ImageMessage::Pointer msg, MessageContent *dest);
 };
 
 }

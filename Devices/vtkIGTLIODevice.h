@@ -15,9 +15,6 @@
 #ifndef __vtkIGTLIODevice_h
 #define __vtkIGTLIODevice_h
 
-// igtlio includes
-#include "igtlioDevicesExport.h"
-
 // OpenIGTLink includes
 #include <igtlMessageBase.h>
 
@@ -29,6 +26,10 @@
 #include <vector>
 #include <string>
 #include <set>
+
+// igtlio includes
+#include "igtlioDevicesExport.h"
+#include "igtlBaseConverter.h"
 
 class vtkIGTLIODevice;
 
@@ -91,7 +92,13 @@ public:
 
 public:
  virtual std::string GetDeviceType() const = 0;
- virtual std::string GetDeviceName() const = 0;
+// virtual std::string GetDeviceName() const = 0;
+
+ virtual std::string GetDeviceName() const;
+  /// Set device name.
+  /// Caution: Changing the device name of a device registered in
+  /// a vtkIGTLIOConnector will cause undefined behaviour.
+  virtual void SetDeviceName(std::string name);
 
  vtkSetMacro( PushOnConnect, bool );
  vtkGetMacro( PushOnConnect, bool );
@@ -99,6 +106,9 @@ public:
  vtkGetMacro( MessageDirection, MESSAGE_DIRECTION );
  vtkSetMacro( QueryTimeOut, double );
  vtkGetMacro( QueryTimeOut, double );
+
+ virtual double GetTimestamp() const;
+ virtual void SetTimestamp(double val);
 
  bool MessageDirectionIsOut() const { return MessageDirection==MESSAGE_DIRECTION_OUT; }
  bool MessageDirectionIsIn() const { return MessageDirection==MESSAGE_DIRECTION_IN; }
@@ -158,11 +168,14 @@ public:
 
   vtkAbstractTypeMacro(vtkIGTLIODevice,vtkObject);
 
+  igtl::BaseConverter::HeaderData HeaderData;
+
 private:
  std::vector<QueryType> Queries;
  MESSAGE_DIRECTION MessageDirection;
  bool PushOnConnect;
  double QueryTimeOut;
+
 
  protected:
   vtkIGTLIODevice();
