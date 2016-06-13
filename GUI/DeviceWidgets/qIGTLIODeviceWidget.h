@@ -9,8 +9,11 @@
 #include <vtkSmartPointer.h>
 #include <vtkObject.h>
 
-class qIGTLIODeviceWidget;
+// CTK includes
+#include <ctkVTKObject.h>
+
 class vtkIGTLIODevice;
+class qIGTLIODeviceWidget;
 
 class OPENIGTLINKIO_GUI_EXPORT vtkIGTLIODeviceWidgetCreator : public vtkObject
 {
@@ -26,9 +29,20 @@ public:
 
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIODeviceWidget : public QWidget
 {
+  Q_OBJECT
+  QVTK_OBJECT
 public:
   qIGTLIODeviceWidget(QWidget* parent=NULL);
-  virtual void SetDevice(vtkSmartPointer<vtkIGTLIODevice> device) = 0;
+  virtual void SetDevice(vtkSmartPointer<vtkIGTLIODevice> device);
+
+protected:
+  vtkSmartPointer<vtkIGTLIODevice> Device;
+
+  virtual void setupUi() = 0;
+
+protected slots:
+  virtual void onDeviceModified() = 0;
 };
+
 
 #endif // QIGTLIODEVICEWIDGET_H

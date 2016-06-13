@@ -5,26 +5,17 @@
 
 class QLineEdit;
 
-// CTK includes
-#include <ctkVTKObject.h>
 
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIOGenericDeviceWidget : public qIGTLIODeviceWidget
 {
-  Q_OBJECT
-  QVTK_OBJECT
-
 public:
   qIGTLIOGenericDeviceWidget(QWidget* parent=NULL);
-  virtual void SetDevice(vtkSmartPointer<vtkIGTLIODevice> device);
 
-private:
-  vtkSmartPointer<vtkIGTLIODevice> Device;
-
+protected:
+  virtual void setupUi();
   QLineEdit* DeviceNameEdit;
   QLineEdit* TimestampEdit;
-
-private slots:
-  void onDeviceModified();
+  virtual void onDeviceModified();
 };
 
 

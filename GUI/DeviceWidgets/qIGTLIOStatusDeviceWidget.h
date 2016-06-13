@@ -25,15 +25,11 @@ public:
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIOStatusDeviceWidget : public qIGTLIODeviceWidget
 {
   Q_OBJECT
-  QVTK_OBJECT
 
 public:
   qIGTLIOStatusDeviceWidget(QWidget* parent=NULL);
-  virtual void SetDevice(vtkSmartPointer<vtkIGTLIODevice> device);
 
-private:
-  vtkSmartPointer<vtkIGTLIODevice> Device;
-
+protected:
   QLineEdit* DeviceNameEdit;
   QLineEdit* TimestampEdit;
 
@@ -42,8 +38,10 @@ private:
   QLineEdit* ErrorNameEdit;
   QLineEdit* StatusStringEdit;
 
+  virtual void setupUi();
+  virtual void onDeviceModified();
+
 private slots:
-  void onDeviceModified();
   void AddCaptionedLineEdit(QGridLayout *layout, QLineEdit *edit, QString caption, int line);
 };
 
