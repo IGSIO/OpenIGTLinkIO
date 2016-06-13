@@ -13,6 +13,7 @@ class QVBoxLayout;
 //class qIGTLIOConnectorPropertyWidget;
 class QItemSelectionModel;
 class qIGTLIODeviceButtonsWidget;
+class qIGTLIODevicePropertiesWidget;
 
 class QTreeView;
 #include <vtkSmartPointer.h>
@@ -30,12 +31,13 @@ signals:
 
 private slots:
   void onConnectionsChanged(vtkObject *caller, void *connector, unsigned long event, void *b);
-  void onCurrentConnectorChanged();
+  void onCurrentDeviceChanged(const QModelIndex &current, const QModelIndex &previous);
 private:
   vtkIGTLIOLogicPointer Logic;
   qIGTLIODevicesModel* DevicesModel;
   QItemSelectionModel* SelectionModel;
   qIGTLIODeviceButtonsWidget* ButtonsWidget;
+  qIGTLIODevicePropertiesWidget* DevicePropertiesWidget;
   QTreeView* DevicesListView;
 
 };

@@ -63,31 +63,31 @@ vtkIGTLIOImageDevice::~vtkIGTLIOImageDevice()
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOImageDevice::GetDeviceType() const
 {
- return "IMAGE";
+  return igtl::ImageConverter::GetIGTLTypeName();
 }
 
-//---------------------------------------------------------------------------
-std::string vtkIGTLIOImageDevice::GetDeviceName() const
+void vtkIGTLIOImageDevice::SetContent(igtl::ImageConverter::ContentData content)
 {
-  return Content.deviceName;
+  Content = content;
+  // todo: if changed -> modified
 }
 
-void vtkIGTLIOImageDevice::SetDeviceName(std::string name)
+igtl::ImageConverter::ContentData vtkIGTLIOImageDevice::GetContent(igtl::ImageConverter::ContentData content)
 {
-  Content.deviceName = name;
-  this->Modified();
+  return Content;
 }
+
 
 //---------------------------------------------------------------------------
 int vtkIGTLIOImageDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (Converter->IGTLToVTK(buffer, &Content, checkCRC) == 0)
+ if (Converter->fromIGTL(buffer, &HeaderData, &Content, checkCRC))
    {
    this->Modified();
-   return 0;
+   return 1;
    }
 
- return 1;
+ return 0;
 }
 
 
@@ -100,7 +100,7 @@ igtl::MessageBase::Pointer vtkIGTLIOImageDevice::GetIGTLMessage()
   return 0;
   }
 
- if (Converter->VTKToIGTL(Content, &this->OutImageMessage) == 0)
+ if (!Converter->toIGTL(HeaderData, Content, &this->OutImageMessage))
    {
    return 0;
    }
@@ -117,7 +117,7 @@ igtl::MessageBase::Pointer vtkIGTLIOImageDevice::GetIGTLMessage(MESSAGE_PREFIX p
      {
      this->GetImageMessage = igtl::GetImageMessage::New();
      }
-   this->GetImageMessage->SetDeviceName(Content.deviceName.c_str());
+   this->GetImageMessage->SetDeviceName(HeaderData.deviceName.c_str());
    this->GetImageMessage->Pack();
    return dynamic_pointer_cast<igtl::MessageBase>(this->GetImageMessage);
   }

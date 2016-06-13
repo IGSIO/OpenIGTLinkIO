@@ -30,4 +30,6 @@ cmake -G"generator_name" \
 ```
 Make sure Qt5 is in your path. *TBD: Qt4-support*
 
+CTK must be build with VTK support: -DCTK_LIB_Visualization/VTK/Core:BOOL=ON. Set -DVTK_DIR:PATH=path/to/vtk/build as well.
+
 The library can be included into other systems through the usual cmake framework. *Install not tested.*

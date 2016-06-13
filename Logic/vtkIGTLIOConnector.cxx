@@ -612,32 +612,34 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
   vtkIGTLIOConnector::NameListType::iterator nameIter;
   for (nameIter = nameList.begin(); nameIter != nameList.end(); nameIter ++)
     {
-    vtkIGTLIOCircularBuffer* circBuffer = this->GetCircularBuffer(*nameIter);
+      std::string key = *nameIter;
+    vtkIGTLIOCircularBuffer* circBuffer = this->GetCircularBuffer(key);
     circBuffer->StartPull();
 
     igtl::MessageBase::Pointer buffer = circBuffer->GetPullBuffer();
 
-    std::cout << "incoming buffer->GetDeviceType(): " << buffer->GetDeviceType() << std::endl;
+    std::cout << "incoming message (via buffer): " << buffer->GetDeviceType() << std::endl;
 
     vtkSmartPointer<vtkIGTLIODeviceCreator> deviceCreator = DeviceFactory->GetCreator(buffer->GetDeviceType());
     if (!deviceCreator)
       {
-      vtkErrorMacro(<< "Received unknown device type " << buffer->GetDeviceType() << ", device=" << *nameIter);
+      vtkErrorMacro(<< "Received unknown device type " << buffer->GetDeviceType() << ", device=" << key);
       continue;
       }
 
     // TODO: why is this?
-    if (strncmp("OpenIGTLink_MESSAGE_", (*nameIter).c_str(), IGTL_HEADER_NAME_SIZE) == 0)
+    if (strncmp("OpenIGTLink_MESSAGE_", key.c_str(), IGTL_HEADER_NAME_SIZE) == 0)
       {
-      buffer->SetDeviceName("OpenIGTLink");
+      key = "OpenIGTLink";
+      buffer->SetDeviceName(key);
       }
 
-    vtkIGTLIODevicePointer device = this->GetDevice(*nameIter);
+    vtkIGTLIODevicePointer device = this->GetDevice(key);
 
     if ((device.GetPointer()!=NULL) && (device->GetDeviceType()!=buffer->GetDeviceType()))
       {
         vtkErrorMacro(
-            << "Received an IGTL message of the wrong type, device=" << *nameIter
+            << "Received an IGTL message of the wrong type, device=" << key
             << " has type " << device->GetDeviceType()
             << " got type " << buffer->GetDeviceType()
               );
@@ -646,7 +648,7 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
 
     if (!device && !this->RestrictDeviceName)
       {
-        device = deviceCreator->Create(*nameIter);
+        device = deviceCreator->Create(key);
         device->SetMessageDirection(vtkIGTLIODevice::MESSAGE_DIRECTION_IN);
         this->AddDevice(device);
       // Create device

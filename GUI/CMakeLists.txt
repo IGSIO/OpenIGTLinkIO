@@ -60,6 +60,16 @@ set(${KIT}_SRCS
   vtkIGTLIONode.cxx
   qIGTLIODeviceButtonsWidget.h
   qIGTLIODeviceButtonsWidget.cxx
+  qIGTLIODevicePropertiesWidget.h
+  qIGTLIODevicePropertiesWidget.cxx
+  DeviceWidgets/qIGTLIODeviceWidgetFactory.h
+  DeviceWidgets/qIGTLIODeviceWidgetFactory.cxx
+  DeviceWidgets/qIGTLIODeviceWidget.h
+  DeviceWidgets/qIGTLIODeviceWidget.cxx
+  DeviceWidgets/qIGTLIOGenericDeviceWidget.h
+  DeviceWidgets/qIGTLIOGenericDeviceWidget.cxx
+  DeviceWidgets/qIGTLIOStatusDeviceWidget.h
+  DeviceWidgets/qIGTLIOStatusDeviceWidget.cxx
   )
 
 set(${KIT}_MOC_SRCS
@@ -78,6 +88,11 @@ set(${KIT}_MOC_SRCS
   qIGTLIODevicesModel.h
   qIGTLIODevicesWidget.h
   qIGTLIODeviceButtonsWidget.h
+  qIGTLIODevicePropertiesWidget.h
+  DeviceWidgets/qIGTLIODeviceWidgetFactory.h
+  DeviceWidgets/qIGTLIODeviceWidget.h
+  DeviceWidgets/qIGTLIOGenericDeviceWidget.h
+  DeviceWidgets/qIGTLIOStatusDeviceWidget.h
   )
   
 set(${KIT}_UI_SRCS
@@ -90,6 +105,7 @@ set(${KIT}_UI_SRCS
 set(${KIT}_INCLUDE_DIRECTORIES
   PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/DeviceWidgets
   ${CMAKE_CURRENT_BINARY_DIR}
   )
 

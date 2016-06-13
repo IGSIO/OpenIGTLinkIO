@@ -45,7 +45,7 @@ ImageConverter::~ImageConverter()
 //---------------------------------------------------------------------------
 void ImageConverter::PrintSelf(std::ostream &os) const
 {
- this->LightObject::PrintSelf(os);
+ this->BaseConverter::PrintSelf(os);
 }
 
 
@@ -92,8 +92,10 @@ int swapCopy64(igtlUint64 * dst, igtlUint64 * src, int n)
 } // unnamed namespace
 
 //---------------------------------------------------------------------------
-int ImageConverter::IGTLToVTK(igtl::MessageBase::Pointer source,
-    MessageContent* dest, bool checkCRC)
+int ImageConverter::fromIGTL(igtl::MessageBase::Pointer source,
+                             HeaderData* header,
+                             ContentData* dest,
+                             bool checkCRC)
 {
   // Create a message buffer to receive image data
   igtl::ImageMessage::Pointer imgMsg;
@@ -110,7 +112,9 @@ int ImageConverter::IGTLToVTK(igtl::MessageBase::Pointer source,
     return 0;
     }
 
-  dest->deviceName = imgMsg->GetDeviceName();
+  // get header
+  if (!this->IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(imgMsg), header))
+    return 0;
 
   // get image
   if (this->IGTLToVTKImageData(imgMsg, dest) == 0)
@@ -122,26 +126,12 @@ int ImageConverter::IGTLToVTK(igtl::MessageBase::Pointer source,
   if (this->IGTLToVTKTransform(imgMsg, dest->transform) == 0)
     return 0;
 
-  // get timestamp
-  if (this->IGTLToTimestamp(imgMsg, dest) == 0)
-    return 0;
-
   return 1;
 }
 
-//---------------------------------------------------------------------------
-int ImageConverter::IGTLToTimestamp(igtl::ImageMessage::Pointer msg, MessageContent* dest)
-{
-  // Save OpenIGTLink time stamp
-  igtl::TimeStamp::Pointer ts = igtl::TimeStamp::New();
-  msg->GetTimeStamp(ts);
-  dest->second = ts->GetSecond();
-  dest->nanosecond = ts->GetNanosecond();
-  return 1;
-}
 
 //---------------------------------------------------------------------------
-int ImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, MessageContent* dest)
+int ImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, ContentData *dest)
 {
   if (!dest->image)
     dest->image = vtkSmartPointer<vtkImageData>::New();
@@ -401,11 +391,14 @@ int ImageConverter::IGTLToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSm
 }
 
 //---------------------------------------------------------------------------
-int ImageConverter::VTKToIGTL(const MessageContent& source, igtl::ImageMessage::Pointer* dest)
+int ImageConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::ImageMessage::Pointer* dest)
 {
   if (dest->IsNull())
     *dest = igtl::ImageMessage::New();
   igtl::ImageMessage::Pointer msg = *dest;
+
+  igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
+  this->HeadertoIGTL(header, &basemsg);
 
   if (source.transform.Get()==NULL)
     igtlErrorMacro ("Got NULL input transform");
@@ -440,7 +433,6 @@ int ImageConverter::VTKToIGTL(const MessageContent& source, igtl::ImageMessage::
   msg->SetSpacing((float)spacing[0], (float)spacing[1], (float)spacing[2]);
   msg->SetScalarType(scalarType);
   msg->SetEndian(endian);
-  msg->SetDeviceName(source.deviceName.c_str());
   msg->SetSubVolume(isize, svoffset);
   msg->SetNumComponents(ncomp);
   msg->AllocateScalars();

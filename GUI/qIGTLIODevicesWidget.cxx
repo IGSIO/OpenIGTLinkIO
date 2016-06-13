@@ -9,6 +9,8 @@
 #include "qIGTLIOConnectorPropertyWidget.h"
 #include "qIGTLIODevicesModel.h"
 #include "qIGTLIODeviceButtonsWidget.h"
+#include "qIGTLIODevicePropertiesWidget.h"
+#include "vtkIGTLIONode.h"
 
 //-----------------------------------------------------------------------------
 qIGTLIODevicesWidget::qIGTLIODevicesWidget()
@@ -30,11 +32,26 @@ qIGTLIODevicesWidget::qIGTLIODevicesWidget()
   ButtonsWidget = new qIGTLIODeviceButtonsWidget();
   topLayout->addWidget(ButtonsWidget);
   ButtonsWidget->setModel(DevicesModel);
+
+  DevicePropertiesWidget = new qIGTLIODevicePropertiesWidget();
+  topLayout->addWidget(DevicePropertiesWidget);
+//  DevicePropertiesWidget->setModel(DevicesModel);
+
+
+  SelectionModel = DevicesListView->selectionModel();
+  connect(SelectionModel, SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
+          this, SLOT(onCurrentDeviceChanged(const QModelIndex&, const QModelIndex&)));
+
+
 }
 
 //-----------------------------------------------------------------------------
-void qIGTLIODevicesWidget::onCurrentConnectorChanged()
+void qIGTLIODevicesWidget::onCurrentDeviceChanged(const QModelIndex& current, const QModelIndex& previous)
 {
+  qIGTLIODevicesModelNode* node = DevicesModel->getNodeFromIndex(current);
+  if (node)
+    std::cout << "selected node:" << node->GetName() << std::endl;
+  DevicePropertiesWidget->SetNode(node);
 }
 
 //-----------------------------------------------------------------------------
