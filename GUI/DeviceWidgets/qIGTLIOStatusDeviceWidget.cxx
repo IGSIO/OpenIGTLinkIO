@@ -40,13 +40,8 @@ qIGTLIOStatusDeviceWidget::qIGTLIOStatusDeviceWidget(QWidget* parent) : qIGTLIOD
 
 }
 
-void qIGTLIOStatusDeviceWidget::SetDevice(vtkSmartPointer<vtkIGTLIODevice> device)
+void qIGTLIOStatusDeviceWidget::setupUi()
 {
-  qvtkReconnect(Device, device, vtkCommand::ModifiedEvent,
-                this, SLOT(onDeviceModified()));
-
-  Device = device;
-
   QGridLayout* layout = new QGridLayout(this);
 
   DeviceNameEdit = new QLineEdit;

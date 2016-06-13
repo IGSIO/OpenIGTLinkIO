@@ -9,6 +9,7 @@
 #define vtkIGTLIODEVICEFACTORY_H_
 
 #include <map>
+#include <string>
 
 // VTK includes
 #include <vtkObject.h>
@@ -31,6 +32,7 @@ class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIODeviceFactory : public vtkObject
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkIGTLIODeviceCreatorPointer GetCreator(std::string device_type) const;
+  std::vector<std::string> GetAvailableDeviceTypes() const;
 
   // Create a Device object based on an input device_type
   // TODO: Should we accept prefixed message types as well?

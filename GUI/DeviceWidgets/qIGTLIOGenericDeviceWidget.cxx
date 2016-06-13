@@ -15,13 +15,8 @@ qIGTLIOGenericDeviceWidget::qIGTLIOGenericDeviceWidget(QWidget* parent) : qIGTLI
 
 }
 
-void qIGTLIOGenericDeviceWidget::SetDevice(vtkSmartPointer<vtkIGTLIODevice> device)
+void qIGTLIOGenericDeviceWidget::setupUi()
 {
-  qvtkReconnect(Device, device, vtkCommand::ModifiedEvent,
-                this, SLOT(onDeviceModified()));
-
-  Device = device;
-
   QGridLayout* layout = new QGridLayout(this);
 
   layout->addWidget(new QLabel("device: "), 0, 0);

@@ -27,6 +27,7 @@ set(${KIT}_SRCS
   igtlPolyDataConverter.cxx
   igtlStatusConverter.cxx
   igtlTransformConverter.cxx
+  igtlCommandConverter.cxx
   )
 
 set(${KIT}_TARGET_LIBRARIES

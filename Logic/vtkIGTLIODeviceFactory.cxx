@@ -10,6 +10,7 @@
 
 #include "vtkIGTLIOImageDevice.h"
 #include "vtkIGTLIOStatusDevice.h"
+#include "vtkIGTLIOCommandDevice.h"
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLIODeviceFactory);
@@ -18,6 +19,7 @@ vtkIGTLIODeviceFactory::vtkIGTLIODeviceFactory()
 {
   this->registerCreator<vtkIGTLIOImageDeviceCreator>();
   this->registerCreator<vtkIGTLIOStatusDeviceCreator>();
+  this->registerCreator<vtkIGTLIOCommandDeviceCreator>();
 }
 
 //---------------------------------------------------------------------------
@@ -39,6 +41,18 @@ vtkIGTLIODeviceCreatorPointer vtkIGTLIODeviceFactory::GetCreator(std::string dev
     return vtkIGTLIODeviceCreatorPointer();
     }
   return iter->second;
+}
+
+std::vector<std::string> vtkIGTLIODeviceFactory::GetAvailableDeviceTypes() const
+{
+  std::vector<std::string> retval;
+  for (std::map<std::string, vtkIGTLIODeviceCreatorPointer>::const_iterator iter=Creators.begin();
+       iter!=Creators.end();
+       ++iter)
+    {
+    retval.push_back(iter->first);
+    }
+  return retval;
 }
 
 //---------------------------------------------------------------------------
