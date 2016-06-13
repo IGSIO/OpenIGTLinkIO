@@ -11,7 +11,6 @@ find_package(VTK 6.1
   COMPONENTS
   vtkIOImage
   vtkImagingMath
-  vtkRenderingQt
   REQUIRED
   NO_MODULE)
 include(${VTK_USE_FILE})
@@ -21,12 +20,7 @@ include(${CTK_USE_FILE})
 
 
 set(EXECUTABLE ${PROJECT_NAME})
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Concurrent REQUIRED)
-find_package(Qt5Xml REQUIRED)
-find_package(Qt5OpenGL REQUIRED)
-find_package(Qt5Sql REQUIRED)
+find_package( Qt5 COMPONENTS Widgets Concurrent Xml OpenGL Sql REQUIRED )
 
 set(${KIT}_SRCS
   qIGTLIOLogicController.cxx
