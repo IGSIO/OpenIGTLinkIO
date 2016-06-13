@@ -1,6 +1,5 @@
-
 // OpenIGTLinkIF MRML includes
-#include "vtkIGTLIOStatusDevice.h"
+#include "vtkIGTLIOCommandDevice.h"
 
 // igtl support includes
 #include <igtl_util.h>
@@ -16,46 +15,46 @@
 #include "igtlImageConverter.h"
 
 //---------------------------------------------------------------------------
-vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOStatusDeviceCreator::Create(std::string device_name)
+vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOCommandDeviceCreator::Create(std::string device_name)
 {
- vtkSmartPointer<vtkIGTLIOStatusDevice> retval = vtkSmartPointer<vtkIGTLIOStatusDevice>::New();
+ vtkSmartPointer<vtkIGTLIOCommandDevice> retval = vtkSmartPointer<vtkIGTLIOCommandDevice>::New();
  retval->SetDeviceName(device_name);
  return retval;
 }
 
 //---------------------------------------------------------------------------
-std::string vtkIGTLIOStatusDeviceCreator::GetDeviceType() const
+std::string vtkIGTLIOCommandDeviceCreator::GetDeviceType() const
 {
- return igtl::StatusConverter::GetIGTLTypeName();
+ return igtl::CommandConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOStatusDeviceCreator);
+vtkStandardNewMacro(vtkIGTLIOCommandDeviceCreator);
 
 
 
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOStatusDevice);
+vtkStandardNewMacro(vtkIGTLIOCommandDevice);
 //---------------------------------------------------------------------------
-vtkIGTLIOStatusDevice::vtkIGTLIOStatusDevice()
+vtkIGTLIOCommandDevice::vtkIGTLIOCommandDevice()
 {
-   Converter = igtl::StatusConverter::New();
+   Converter = igtl::CommandConverter::New();
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIOStatusDevice::~vtkIGTLIOStatusDevice()
+vtkIGTLIOCommandDevice::~vtkIGTLIOCommandDevice()
 {
 }
 
 //---------------------------------------------------------------------------
-std::string vtkIGTLIOStatusDevice::GetDeviceType() const
+std::string vtkIGTLIOCommandDevice::GetDeviceType() const
 {
-  return igtl::StatusConverter::GetIGTLTypeName();
+  return igtl::CommandConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOStatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
  if (Converter->fromIGTL(buffer, &HeaderData, &Content, checkCRC))
    {
@@ -67,10 +66,10 @@ int vtkIGTLIOStatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer,
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLIOStatusDevice::GetIGTLMessage()
+igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage()
 {
- // cannot send a non-existent status (?)
- if (Content.errorname.empty())
+ // cannot send a non-existent Command (?)
+ if (Content.name.empty())
   {
   return 0;
   }
@@ -84,18 +83,8 @@ igtl::MessageBase::Pointer vtkIGTLIOStatusDevice::GetIGTLMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLIOStatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
+igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
- if (prefix==MESSAGE_PREFIX_GET)
-  {
-   if (this->GetMessage.IsNull())
-     {
-     this->GetMessage = igtl::GetStatusMessage::New();
-     }
-   this->GetMessage->SetDeviceName(HeaderData.deviceName.c_str());
-   this->GetMessage->Pack();
-   return dynamic_pointer_cast<igtl::MessageBase>(this->GetMessage);
-  }
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
@@ -105,26 +94,25 @@ igtl::MessageBase::Pointer vtkIGTLIOStatusDevice::GetIGTLMessage(MESSAGE_PREFIX 
 }
 
 //---------------------------------------------------------------------------
-std::set<vtkIGTLIODevice::MESSAGE_PREFIX> vtkIGTLIOStatusDevice::GetSupportedMessagePrefixes() const
+std::set<vtkIGTLIODevice::MESSAGE_PREFIX> vtkIGTLIOCommandDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
- retval.insert(MESSAGE_PREFIX_GET);
  return retval;
 }
 
-void vtkIGTLIOStatusDevice::SetContent(igtl::StatusConverter::ContentData content)
+void vtkIGTLIOCommandDevice::SetContent(igtl::CommandConverter::ContentData content)
 {
   Content = content;
   this->Modified();
 }
 
-igtl::StatusConverter::ContentData vtkIGTLIOStatusDevice::GetContent()
+igtl::CommandConverter::ContentData vtkIGTLIOCommandDevice::GetContent()
 {
   return Content;
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOStatusDevice::PrintSelf(ostream& os, vtkIndent indent)
+void vtkIGTLIOCommandDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkIGTLIODevice::PrintSelf(os, indent);
 }

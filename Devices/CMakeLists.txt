@@ -28,6 +28,8 @@ set(${KIT}_SRCS
   vtkIGTLIOImageDevice.h
   vtkIGTLIOStatusDevice.cxx
   vtkIGTLIOStatusDevice.h
+  vtkIGTLIOCommandDevice.cxx
+  vtkIGTLIOCommandDevice.h
   )
 
 set(${KIT}_TARGET_LIBRARIES

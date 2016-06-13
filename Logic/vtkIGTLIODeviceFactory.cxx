@@ -10,6 +10,7 @@
 
 #include "vtkIGTLIOImageDevice.h"
 #include "vtkIGTLIOStatusDevice.h"
+#include "vtkIGTLIOCommandDevice.h"
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLIODeviceFactory);
@@ -18,6 +19,7 @@ vtkIGTLIODeviceFactory::vtkIGTLIODeviceFactory()
 {
   this->registerCreator<vtkIGTLIOImageDeviceCreator>();
   this->registerCreator<vtkIGTLIOStatusDeviceCreator>();
+  this->registerCreator<vtkIGTLIOCommandDeviceCreator>();
 }
 
 //---------------------------------------------------------------------------

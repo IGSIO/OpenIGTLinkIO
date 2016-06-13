@@ -39,8 +39,7 @@ vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOImageDeviceCreator::Create(std::string
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOImageDeviceCreator::GetDeviceType() const
 {
- // TODO: use IGSIO/OpenIGTLink in order to get this string from a method
- return "IMAGE";
+  return igtl::ImageConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
@@ -69,7 +68,7 @@ std::string vtkIGTLIOImageDevice::GetDeviceType() const
 void vtkIGTLIOImageDevice::SetContent(igtl::ImageConverter::ContentData content)
 {
   Content = content;
-  // todo: if changed -> modified
+  this->Modified();
 }
 
 igtl::ImageConverter::ContentData vtkIGTLIOImageDevice::GetContent(igtl::ImageConverter::ContentData content)
