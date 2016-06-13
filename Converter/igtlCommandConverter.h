@@ -1,6 +1,8 @@
 #ifndef IGTLCOMMANDCONVERTER_H
 #define IGTLCOMMANDCONVERTER_H
 
+#include <vector>
+
 #include "igtlioConverterExport.h"
 
 // OpenIGTLink includes
@@ -50,6 +52,8 @@ public:
 
   int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
   int toIGTL(const HeaderData& header, const ContentData& source, igtl::CommandMessage::Pointer* dest);
+
+  std::vector<std::string> GetAvailableCommandNames() const;
 
 protected:
   CommandConverter();

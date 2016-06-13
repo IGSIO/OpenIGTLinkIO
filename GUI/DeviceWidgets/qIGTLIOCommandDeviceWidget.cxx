@@ -48,6 +48,7 @@ void qIGTLIOCommandDeviceWidget::setupUi()
 
   DeviceNameEdit = new QLineEdit;
   TimestampEdit = new QLineEdit;
+  IdEdit = new QLineEdit;
 
   int line=0;
   this->AddCaptionedLineEdit(layout, DeviceNameEdit,   "device: ", line++);
@@ -93,6 +94,13 @@ void qIGTLIOCommandDeviceWidget::onDeviceModified()
     return;
 
   IdEdit->setText(QString::number(device->GetContent().id));
+
+  NameEdit->clear();
+  std::vector<std::string> availableCommandNames = device->GetAvailableCommandNames();
+  for (unsigned i=0; i<availableCommandNames.size(); ++i)
+    {
+    NameEdit->addItem(availableCommandNames[i].c_str());
+    }
 
   NameEdit->setCurrentText(device->GetContent().name.c_str());
   ContentEdit->setText(device->GetContent().content.c_str());

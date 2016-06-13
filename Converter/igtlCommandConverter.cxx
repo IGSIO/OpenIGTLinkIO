@@ -31,6 +31,16 @@ void CommandConverter::PrintSelf(std::ostream &os) const
  this->BaseConverter::PrintSelf(os);
 }
 
+std::vector<std::string> CommandConverter::GetAvailableCommandNames() const
+{
+  std::vector<std::string> retval;
+  retval.push_back("SetDeviceParameters");
+  retval.push_back("GetDeviceParameters");
+  retval.push_back("SubscribeDeviceParameters");
+  retval.push_back("GetCapabilities");
+  return retval;
+}
+
 //---------------------------------------------------------------------------
 int CommandConverter::fromIGTL(igtl::MessageBase::Pointer source,
                              HeaderData* header,

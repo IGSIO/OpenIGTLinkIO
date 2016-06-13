@@ -1,6 +1,8 @@
 #ifndef VTKIGTLIOCOMMANDDEVICE_H
 #define VTKIGTLIOCOMMANDDEVICE_H
 
+#include <vector>
+
 // igtlio includes
 #include "igtlioDevicesExport.h"
 
@@ -40,6 +42,7 @@ public:
 
   void SetContent(igtl::CommandConverter::ContentData content);
   igtl::CommandConverter::ContentData GetContent();
+  std::vector<std::string> GetAvailableCommandNames() const;
 
  public:
   static vtkIGTLIOCommandDevice *New();

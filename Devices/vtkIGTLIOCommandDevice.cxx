@@ -111,6 +111,11 @@ igtl::CommandConverter::ContentData vtkIGTLIOCommandDevice::GetContent()
   return Content;
 }
 
+std::vector<std::string> vtkIGTLIOCommandDevice::GetAvailableCommandNames() const
+{
+  return Converter->GetAvailableCommandNames();
+}
+
 //---------------------------------------------------------------------------
 void vtkIGTLIOCommandDevice::PrintSelf(ostream& os, vtkIndent indent)
 {

@@ -14,6 +14,7 @@ class QVBoxLayout;
 class QItemSelectionModel;
 class qIGTLIODeviceButtonsWidget;
 class qIGTLIODevicePropertiesWidget;
+class qIGTLIODeviceAddWidget;
 
 class QTreeView;
 #include <vtkSmartPointer.h>
@@ -39,6 +40,7 @@ private:
   qIGTLIODeviceButtonsWidget* ButtonsWidget;
   qIGTLIODevicePropertiesWidget* DevicePropertiesWidget;
   QTreeView* DevicesListView;
+  qIGTLIODeviceAddWidget* AddDeviceWidget;
 
 };
 

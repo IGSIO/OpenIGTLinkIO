@@ -43,6 +43,18 @@ vtkIGTLIODeviceCreatorPointer vtkIGTLIODeviceFactory::GetCreator(std::string dev
   return iter->second;
 }
 
+std::vector<std::string> vtkIGTLIODeviceFactory::GetAvailableDeviceTypes() const
+{
+  std::vector<std::string> retval;
+  for (std::map<std::string, vtkIGTLIODeviceCreatorPointer>::const_iterator iter=Creators.begin();
+       iter!=Creators.end();
+       ++iter)
+    {
+    retval.push_back(iter->first);
+    }
+  return retval;
+}
+
 //---------------------------------------------------------------------------
 vtkIGTLIODevicePointer vtkIGTLIODeviceFactory::create(std::string device_type, std::string device_name) const
 {

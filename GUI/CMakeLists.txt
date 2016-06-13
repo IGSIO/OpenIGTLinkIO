@@ -54,6 +54,8 @@ set(${KIT}_SRCS
   vtkIGTLIONode.cxx
   qIGTLIODeviceButtonsWidget.h
   qIGTLIODeviceButtonsWidget.cxx
+  qIGTLIODeviceAddWidget.h
+  qIGTLIODeviceAddWidget.cxx
   qIGTLIODevicePropertiesWidget.h
   qIGTLIODevicePropertiesWidget.cxx
   DeviceWidgets/qIGTLIODeviceWidgetFactory.h
@@ -84,6 +86,7 @@ set(${KIT}_MOC_SRCS
   qIGTLIODevicesModel.h
   qIGTLIODevicesWidget.h
   qIGTLIODeviceButtonsWidget.h
+  qIGTLIODeviceAddWidget.h
   qIGTLIODevicePropertiesWidget.h
   DeviceWidgets/qIGTLIODeviceWidgetFactory.h
   DeviceWidgets/qIGTLIODeviceWidget.h

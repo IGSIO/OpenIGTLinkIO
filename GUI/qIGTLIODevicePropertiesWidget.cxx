@@ -23,7 +23,8 @@ struct WidgetInGroupBoxClass
   void replaceWidget(QWidget* newWidget)
   {
     this->clearLayout();
-    layout->addWidget(newWidget);
+    if (newWidget)
+      layout->addWidget(newWidget);
   }
   void clearLayout()
   {
@@ -45,10 +46,6 @@ qIGTLIODevicePropertiesWidget::qIGTLIODevicePropertiesWidget(QWidget* parent) : 
   QVBoxLayout* layout = new QVBoxLayout(this);
 
   WidgetInGroupBox = new WidgetInGroupBoxClass(layout, "Device");
-
-//  QGroupBox* groupBox = new QGroupBox("Device", this);
-//  layout->addWidget(groupBox);
-//  mLayout = new QVBoxLayout(groupBox);
 }
 
 void qIGTLIODevicePropertiesWidget::SetNode(qIGTLIODevicesModelNode *node)

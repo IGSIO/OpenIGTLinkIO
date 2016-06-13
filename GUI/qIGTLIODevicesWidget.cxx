@@ -11,6 +11,7 @@
 #include "qIGTLIODeviceButtonsWidget.h"
 #include "qIGTLIODevicePropertiesWidget.h"
 #include "vtkIGTLIONode.h"
+#include "qIGTLIODeviceAddWidget.h"
 
 //-----------------------------------------------------------------------------
 qIGTLIODevicesWidget::qIGTLIODevicesWidget()
@@ -35,14 +36,14 @@ qIGTLIODevicesWidget::qIGTLIODevicesWidget()
 
   DevicePropertiesWidget = new qIGTLIODevicePropertiesWidget();
   topLayout->addWidget(DevicePropertiesWidget);
-//  DevicePropertiesWidget->setModel(DevicesModel);
 
+  AddDeviceWidget = new qIGTLIODeviceAddWidget();
+  topLayout->addWidget(AddDeviceWidget);
+  AddDeviceWidget->setModel(DevicesModel);
 
   SelectionModel = DevicesListView->selectionModel();
   connect(SelectionModel, SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
           this, SLOT(onCurrentDeviceChanged(const QModelIndex&, const QModelIndex&)));
-
-
 }
 
 //-----------------------------------------------------------------------------
