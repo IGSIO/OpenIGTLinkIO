@@ -209,3 +209,11 @@ vtkIGTLIODevice::~vtkIGTLIODevice()
 //  return 0;
 //}
 
+void vtkIGTLIODevice::PrintSelf(ostream& os, vtkIndent indent)
+{
+  this->vtkObject::PrintSelf(os, indent);
+
+  os << indent << "DeviceType:\t" << this->GetDeviceType() << "\n";
+  os << indent << "DeviceName:\t" << this->GetDeviceName() << "\n";
+  os << indent << "Timestamp:\t" << std::fixed << setprecision(6) << this->GetTimestamp() << "\n";
+}

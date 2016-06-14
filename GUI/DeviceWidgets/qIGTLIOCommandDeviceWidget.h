@@ -43,6 +43,8 @@ protected:
 
 private slots:
   void AddCaptionedLineEdit(QGridLayout *layout, QLineEdit *edit, QString caption, int line);
+  void onGUIModified();
+  void blockGUI(bool on);
 };
 
 

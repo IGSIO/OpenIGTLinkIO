@@ -110,6 +110,8 @@ public:
  virtual double GetTimestamp() const;
  virtual void SetTimestamp(double val);
 
+ void PrintSelf(ostream& os, vtkIndent indent);
+
  bool MessageDirectionIsOut() const { return MessageDirection==MESSAGE_DIRECTION_OUT; }
  bool MessageDirectionIsIn() const { return MessageDirection==MESSAGE_DIRECTION_IN; }
 

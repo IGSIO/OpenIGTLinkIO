@@ -17,7 +17,7 @@ int main(int argc, char **argv)
   qIGTLIOClientWidget widget;
   widget.setLogic(logic);
 
-  widget.setGeometry(0,0, 559, 811);
+  widget.setGeometry(0,0, 859, 811);
   widget.show();
   widget.activateWindow();
   widget.raise();

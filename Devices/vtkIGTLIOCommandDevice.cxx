@@ -85,7 +85,7 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage()
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
- if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
+  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
    }
@@ -120,5 +120,10 @@ std::vector<std::string> vtkIGTLIOCommandDevice::GetAvailableCommandNames() cons
 void vtkIGTLIOCommandDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkIGTLIODevice::PrintSelf(os, indent);
+
+  os << indent << "CommandID:\t" << Content.id << "\n";
+  os << indent << "CommandName:\t" << Content.name << "\n";
+  os << indent << "CommandContent:\t" << "\n";
+  os << Content.content << "\n";
 }
 

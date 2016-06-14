@@ -10,7 +10,7 @@ qIGTLIOClientWidget::qIGTLIOClientWidget()
   QVBoxLayout* layout = new QVBoxLayout(this);
 
   QSplitter *splitter = new QSplitter(this);
-  splitter->setOrientation(Qt::Vertical);
+//  splitter->setOrientation(Qt::Vertical);
   layout->addWidget(splitter);
 
   ConnectorListWidget = new qIGTLIOConnectorListWidget;

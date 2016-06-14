@@ -47,21 +47,30 @@ void qIGTLIOCommandDeviceWidget::setupUi()
 {
   QGridLayout* layout = new QGridLayout(this);
 
-  DeviceNameEdit = new QLineEdit;
-  TimestampEdit = new QLineEdit;
-  IdEdit = new QLineEdit;
 
   int line=0;
+  DeviceNameEdit = new QLineEdit;
   this->AddCaptionedLineEdit(layout, DeviceNameEdit,   "device: ", line++);
+
+  TimestampEdit = new QLineEdit;
   this->AddCaptionedLineEdit(layout, TimestampEdit,    "timestamp: ", line++);
-  this->AddCaptionedLineEdit(layout, IdEdit,         "code: ", line++);
+//  this->AddCaptionedLineEdit(layout, IdEdit,         "code: ", line++);
+
+  layout->addWidget(new QLabel("code"), line, 0);
+  IdEdit = new QLineEdit;
+  connect(IdEdit, &QLineEdit::editingFinished, this, &qIGTLIOCommandDeviceWidget::onGUIModified);
+  layout->addWidget(IdEdit, line, 1);
+  line++;
 
   NameEdit = new QComboBox;
+  NameEdit->setEditable(true);
+  connect(NameEdit, &QComboBox::editTextChanged, this, &qIGTLIOCommandDeviceWidget::onGUIModified);
   layout->addWidget(new QLabel("Command name"), line, 0);
   layout->addWidget(NameEdit, line, 1);
   line++;
 
   ContentEdit = new QTextEdit;
+  connect(ContentEdit, &QTextEdit::textChanged, this, &qIGTLIOCommandDeviceWidget::onGUIModified);
   layout->addWidget(new QLabel("Contents"), line, 0);
   layout->addWidget(ContentEdit, line, 1);
   line++;
@@ -74,8 +83,31 @@ void qIGTLIOCommandDeviceWidget::AddCaptionedLineEdit(QGridLayout *layout, QLine
   layout->addWidget(edit, line, 1);
 }
 
+void qIGTLIOCommandDeviceWidget::onGUIModified()
+{
+  vtkIGTLIOCommandDevice* device = dynamic_cast<vtkIGTLIOCommandDevice*>(Device.GetPointer());
+  if (!device)
+    return;
+
+  std::cout << "qIGTLIOCommandDeviceWidget::onGUIModified()" << std::endl;
+  igtl::CommandConverter::ContentData content = device->GetContent();
+  content.id = IdEdit->text().toInt();
+  content.name = NameEdit->currentText().toStdString();
+  content.content = ContentEdit->toPlainText().toStdString();
+  device->SetContent(content);
+}
+
+void qIGTLIOCommandDeviceWidget::blockGUI(bool on)
+{
+  IdEdit->blockSignals(on);
+  NameEdit->blockSignals(on);
+  ContentEdit->blockSignals(on);
+}
+
 void qIGTLIOCommandDeviceWidget::onDeviceModified()
 {
+  this->blockGUI(true);
+
   DeviceNameEdit->setText("");
   TimestampEdit->setText("");
   IdEdit->setText("");
@@ -84,7 +116,10 @@ void qIGTLIOCommandDeviceWidget::onDeviceModified()
   DeviceNameEdit->setText(text);
 
   if (!Device)
+    {
+    this->blockGUI(false);
     return;
+    }
 
   QDateTime timestamp = QDateTime::fromMSecsSinceEpoch(Device->GetTimestamp()*1000);
   TimestampEdit->setText(timestamp.toString("hh:mm:ss.zzz"));
@@ -106,5 +141,6 @@ void qIGTLIOCommandDeviceWidget::onDeviceModified()
   NameEdit->setCurrentText(device->GetContent().name.c_str());
   ContentEdit->setText(device->GetContent().content.c_str());
 
+  this->blockGUI(false);
 }
 

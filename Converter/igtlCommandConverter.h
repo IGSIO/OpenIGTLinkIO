@@ -40,6 +40,7 @@ public:
    */
   struct ContentData
   {
+    ContentData() : id(0) {}
     int id;
     std::string name;
     std::string content;

@@ -754,6 +754,7 @@ int vtkIGTLIOConnector::AddDevice(vtkIGTLIODevicePointer device)
     return 0;
     }
 
+  device->SetTimestamp(vtkTimerLog::GetUniversalTime());
   Devices.push_back(device);
   //TODO: listen to device events?
   this->InvokeEvent(vtkIGTLIOConnector::NewDeviceEvent, device);
@@ -810,6 +811,10 @@ int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::ME
       vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id.first << "/" << device_id.second << ", message not available from device");
       return 1;
     }
+
+//  std::cout << "sending message: " << std::endl;
+//  device->Print(std::cout);
+
 
   int r = this->SendData(msg->GetPackSize(), (unsigned char*)msg->GetPackPointer());
   if (r == 0)

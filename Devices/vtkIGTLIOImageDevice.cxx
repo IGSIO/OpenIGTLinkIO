@@ -23,6 +23,7 @@
 #include <vtkImageData.h>
 #include <vtkObjectFactory.h>
 #include <vtkSmartPointer.h>
+#include "vtkMatrix4x4.h"
 
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
@@ -140,5 +141,10 @@ std::set<vtkIGTLIODevice::MESSAGE_PREFIX> vtkIGTLIOImageDevice::GetSupportedMess
 void vtkIGTLIOImageDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkIGTLIODevice::PrintSelf(os, indent);
+
+  os << indent << "CommandID:\t" <<"\n";
+  Content.image->PrintSelf(os, indent.GetNextIndent());
+  os << indent << "CommandName:\t" << "\n";
+  Content.transform->PrintSelf(os, indent.GetNextIndent());
 }
 

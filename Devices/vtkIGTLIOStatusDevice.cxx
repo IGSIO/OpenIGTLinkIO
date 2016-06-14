@@ -127,5 +127,10 @@ igtl::StatusConverter::ContentData vtkIGTLIOStatusDevice::GetContent()
 void vtkIGTLIOStatusDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkIGTLIODevice::PrintSelf(os, indent);
+
+  os << indent << "ErrorCode:\t" << Content.code << "\n";
+  os << indent << "ErrorSubCode:\t" << Content.subcode << "\n";
+  os << indent << "ErrorName:\t" << Content.errorname << "\n";
+  os << indent << "StatusString:\t" << Content.statusstring << "\n";
 }
 
