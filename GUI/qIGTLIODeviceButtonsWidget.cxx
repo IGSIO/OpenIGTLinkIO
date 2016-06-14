@@ -93,7 +93,7 @@ void qIGTLIODeviceButtonsWidget::onActionClicked()
   if (!node || !node->isDevice())
     return;
 
-  node->connector->SendMessage(node->device->GetDeviceName(), prefix);
+  node->connector->SendMessage(CreateDeviceKey(node->device), prefix);
 
-  std::cout << "send message [" << action->text().toStdString() << "] " << node->device->GetDeviceName() << std::endl;
+  std::cout << "send message [" << action->text().toStdString() << "] " << node->device->GetDeviceType() << "/" << node->device->GetDeviceName() << std::endl;
 }

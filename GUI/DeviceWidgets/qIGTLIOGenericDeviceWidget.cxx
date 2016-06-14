@@ -9,6 +9,7 @@
 #include "vtkCommand.h"
 
 #include "vtkIGTLIODevice.h"
+#include "qIGTLIOGuiUtilities.h"
 
 qIGTLIOGenericDeviceWidget::qIGTLIOGenericDeviceWidget(QWidget* parent) : qIGTLIODeviceWidget(parent)
 {
@@ -32,7 +33,7 @@ void qIGTLIOGenericDeviceWidget::setupUi()
 
 void qIGTLIOGenericDeviceWidget::onDeviceModified()
 {
-  QString text = (Device ? QString(Device->GetDeviceName().c_str()) : "none");
+  QString text = (Device ? QString(convertDeviceNameToDisplay(Device->GetDeviceName()).c_str()) : "none");
   DeviceNameEdit->setText(text);
 
   QDateTime timestamp = QDateTime::fromMSecsSinceEpoch(Device->GetTimestamp()*1000);

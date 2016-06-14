@@ -45,6 +45,34 @@
 #include <vector>
 #include <set>
 
+
+///
+/// Uniquely identify a Device by both its name and type.
+/// This enables broadcast Devices (with empty name) of different types
+/// to be stored in the same structures.
+///
+typedef std::pair<std::string, std::string> DeviceKeyType;
+DeviceKeyType CreateDeviceKey(igtl::MessageBase::Pointer message);
+DeviceKeyType CreateDeviceKey(vtkIGTLIODevicePointer device);
+
+
+
+/////
+///// Uniquely identify a Device by both its name and type.
+///// This enables broadcast Devices (with empty name) of different types
+///// to be stored in the same structures.
+/////
+//class OPENIGTLINKIO_LOGIC_EXPORT DeviceKey
+//{
+//  std::string type;
+//  std::string name;
+//};
+//bool operator==(const DeviceKey& lhs, const DeviceKey& rhs)
+//{
+//  return lhs.type==rhs.type
+//}
+
+
 typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
 typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
 typedef vtkSmartPointer<class vtkIGTLIOCircularBuffer> vtkIGTLIOCircularBufferPointer;
@@ -92,11 +120,11 @@ public:
  int RemoveDevice(int index); //TODO: look at OnNodeReferenceRemoved
  /// Get the given Device. This can be used to modify the Device contents.
  vtkIGTLIODevicePointer GetDevice(int index);
- vtkIGTLIODevicePointer GetDevice(std::string device_name);
+ vtkIGTLIODevicePointer GetDevice(DeviceKeyType key);
 
  /// Request the given Device to send a message with the given prefix.
  /// An undefined prefix means sending the normal message.
- int SendMessage(std::string device_id, vtkIGTLIODevice::MESSAGE_PREFIX=vtkIGTLIODevice::MESSAGE_PREFIX_NOT_DEFINED);
+ int SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::MESSAGE_PREFIX=vtkIGTLIODevice::MESSAGE_PREFIX_NOT_DEFINED);
 
  vtkIGTLIODeviceFactoryPointer GetDeviceFactory()
  {
@@ -287,9 +315,9 @@ private:
   // Circular Buffer
   //----------------------------------------------------------------
 
-  typedef std::vector<std::string> NameListType;
+  typedef std::vector<DeviceKeyType> NameListType;
   unsigned int GetUpdatedBuffersList(NameListType& nameList); // TODO: this will be moved to private
-  vtkIGTLIOCircularBufferPointer GetCircularBuffer(std::string& key);     // TODO: Is it OK to use device name as a key?
+  vtkIGTLIOCircularBufferPointer GetCircularBuffer(const DeviceKeyType& key);     // TODO: Is it OK to use device name as a key?
 
   //----------------------------------------------------------------
   // Device Lists
@@ -364,7 +392,7 @@ private:
   //----------------------------------------------------------------
 
 
-  typedef std::map<std::string, vtkIGTLIOCircularBufferPointer> CircularBufferMap;
+  typedef std::map<DeviceKeyType, vtkIGTLIOCircularBufferPointer> CircularBufferMap;
   CircularBufferMap Buffer;
 
   vtkMutexLockPointer CircularBufferMutex;

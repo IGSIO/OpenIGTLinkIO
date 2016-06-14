@@ -24,7 +24,7 @@ qIGTLIODevicesWidget::qIGTLIODevicesWidget()
   DevicesListView = new QTreeView;
   DevicesListView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   DevicesListView->setModel(DevicesModel);
-  topLayout->addWidget(DevicesListView);
+  topLayout->addWidget(DevicesListView, 1);
 
   SelectionModel = DevicesListView->selectionModel();
   DevicesModel->setSelectionModel(SelectionModel);

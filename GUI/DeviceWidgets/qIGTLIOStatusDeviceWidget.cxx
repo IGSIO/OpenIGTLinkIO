@@ -12,7 +12,7 @@
 #include "vtkIGTLIODevice.h"
 #include "igtlStatusConverter.h"
 #include "vtkIGTLIOStatusDevice.h"
-
+#include "qIGTLIOGuiUtilities.h"
 
 //---------------------------------------------------------------------------
 qIGTLIODeviceWidget* vtkIGTLIOStatusDeviceWidgetCreator::Create()
@@ -76,7 +76,7 @@ void qIGTLIOStatusDeviceWidget::onDeviceModified()
   ErrorNameEdit->setText("");
   StatusStringEdit->setText("");
 
-  QString text = (Device ? QString(Device->GetDeviceName().c_str()) : "none");
+  QString text = (Device ? QString(convertDeviceNameToDisplay(Device->GetDeviceName()).c_str()) : "none");
   DeviceNameEdit->setText(text);
 
   if (!Device)

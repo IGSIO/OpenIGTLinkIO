@@ -12,6 +12,7 @@
 #include <QLineEdit>
 #include <QItemSelectionModel>
 #include "vtkIGTLIONode.h"
+#include "qIGTLIOGuiUtilities.h"
 
 qIGTLIODeviceAddWidget::qIGTLIODeviceAddWidget()
 {
@@ -35,7 +36,7 @@ qIGTLIODeviceAddWidget::qIGTLIODeviceAddWidget()
   buttonLayout->addWidget(mSelectDeviceType);
 
   mDeviceName = new QLineEdit;
-  mDeviceName->setText("<broadcast>");
+  mDeviceName->setText(convertDeviceNameToDisplay("").c_str());
   mDeviceName->setToolTip("Enter device name for new device, or empty for a broadcast");
   buttonLayout->addWidget(mDeviceName);
 
@@ -103,10 +104,9 @@ void qIGTLIODeviceAddWidget::onAddDevice()
 
   std::string deviceType = mSelectDeviceType->currentText().toStdString();
   std::string deviceName = mDeviceName->text().toStdString();
-  if (deviceName=="<broadcast>")
-    deviceName = "";
+  deviceName = convertDisplayToDeviceName(deviceName);
 
-  if (!node->connector->GetDevice(deviceName))
+  if (!node->connector->GetDevice(DeviceKeyType(deviceType, deviceName)))
     {
       qIGTLIODevicesModelNode* node = this->getSelectedNode();
       vtkIGTLIODevicePointer device = node->connector->GetDeviceFactory()->create(deviceType, deviceName);

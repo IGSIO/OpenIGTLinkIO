@@ -14,6 +14,7 @@
 #include "vtkIGTLIODevice.h"
 #include "igtlCommandConverter.h"
 #include "vtkIGTLIOCommandDevice.h"
+#include "qIGTLIOGuiUtilities.h"
 
 
 //---------------------------------------------------------------------------
@@ -79,7 +80,7 @@ void qIGTLIOCommandDeviceWidget::onDeviceModified()
   TimestampEdit->setText("");
   IdEdit->setText("");
 
-  QString text = (Device ? QString(Device->GetDeviceName().c_str()) : "none");
+  QString text = (Device ? QString(convertDeviceNameToDisplay(Device->GetDeviceName()).c_str()) : "none");
   DeviceNameEdit->setText(text);
 
   if (!Device)

@@ -43,6 +43,23 @@ Version:   $Revision: 1.2 $
 #include <map>
 #include "vtkIGTLIOCircularBuffer.h"
 
+
+DeviceKeyType CreateDeviceKey(igtl::MessageBase::Pointer message)
+{
+  if (!message)
+    return DeviceKeyType();
+  return DeviceKeyType(message->GetDeviceType(), message->GetDeviceName());
+}
+
+DeviceKeyType CreateDeviceKey(vtkIGTLIODevicePointer device)
+{
+  if (!device)
+    return DeviceKeyType();
+  return DeviceKeyType(device->GetDeviceType(), device->GetDeviceName());
+}
+
+
+
 //------------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLIOConnector);
 
@@ -429,7 +446,8 @@ int vtkIGTLIOConnector::ReceiveController()
       {
       // Check if the node has already been registered.
         //TODO: Cannot call GetDevice in Thread!!!!
-      int registered = this->GetDevice(headerMsg->GetDeviceName()).GetPointer() != NULL;
+        DeviceKeyType key = CreateDeviceKey(headerMsg);
+      int registered = this->GetDevice(key).GetPointer() != NULL;
 //      int registered = 0;
 //      NodeInfoMapType::iterator iter;
 //      for (iter = this->IncomingMRMLNodeInfoMap.begin(); iter != this->IncomingMRMLNodeInfoMap.end(); iter ++)
@@ -467,18 +485,19 @@ int vtkIGTLIOConnector::ReceiveController()
     // Currently, the circular buffer is selected by device name, but
     // it should be selected by device name and device type.
 
-    std::string key = headerMsg->GetDeviceName();
-    if (devName[0] == '\0')
-      {
-      // Special case: No device name:
+//    std::string key = headerMsg->GetDeviceName();
+    DeviceKeyType key = CreateDeviceKey(headerMsg);
+//    if (devName[0] == '\0')
+//      {
+//      // Special case: No device name:
 
-      // The following device name never conflicts with any
-      // device names comming from OpenIGTLink message, since
-      // the number of characters is beyond the limit.
-      std::stringstream ss;
-      ss << "OpenIGTLink_MESSAGE_" << headerMsg->GetDeviceType();
-      key = ss.str();
-      }
+//      // The following device name never conflicts with any
+//      // device names comming from OpenIGTLink message, since
+//      // the number of characters is beyond the limit.
+//      std::stringstream ss;
+//      ss << "OpenIGTLink_MESSAGE_" << headerMsg->GetDeviceType();
+//      key = ss.str();
+//      }
 
     CircularBufferMap::iterator iter = this->Buffer.find(key);
     if (iter == this->Buffer.end()) // First time to refer the device name
@@ -589,7 +608,7 @@ unsigned int vtkIGTLIOConnector::GetUpdatedBuffersList(NameListType& nameList)
 
 
 //----------------------------------------------------------------------------
-vtkIGTLIOCircularBufferPointer vtkIGTLIOConnector::GetCircularBuffer(std::string& key)
+vtkIGTLIOCircularBufferPointer vtkIGTLIOConnector::GetCircularBuffer(const DeviceKeyType &key)
 {
   CircularBufferMap::iterator iter = this->Buffer.find(key);
   if (iter != this->Buffer.end())
@@ -612,7 +631,7 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
   vtkIGTLIOConnector::NameListType::iterator nameIter;
   for (nameIter = nameList.begin(); nameIter != nameList.end(); nameIter ++)
     {
-      std::string key = *nameIter;
+    DeviceKeyType key = *nameIter;
     vtkIGTLIOCircularBuffer* circBuffer = this->GetCircularBuffer(key);
     circBuffer->StartPull();
 
@@ -623,23 +642,23 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
     vtkSmartPointer<vtkIGTLIODeviceCreator> deviceCreator = DeviceFactory->GetCreator(buffer->GetDeviceType());
     if (!deviceCreator)
       {
-      vtkErrorMacro(<< "Received unknown device type " << buffer->GetDeviceType() << ", device=" << key);
+      vtkErrorMacro(<< "Received unknown device type " << buffer->GetDeviceType() << ", device=" << buffer->GetDeviceName());
       continue;
       }
 
-    // TODO: why is this?
-    if (strncmp("OpenIGTLink_MESSAGE_", key.c_str(), IGTL_HEADER_NAME_SIZE) == 0)
-      {
-      key = "OpenIGTLink";
-      buffer->SetDeviceName(key);
-      }
+//    // TODO: why is this?
+//    if (strncmp("OpenIGTLink_MESSAGE_", key.c_str(), IGTL_HEADER_NAME_SIZE) == 0)
+//      {
+//      key = "OpenIGTLink";
+//      buffer->SetDeviceName(key);
+//      }
 
     vtkIGTLIODevicePointer device = this->GetDevice(key);
 
     if ((device.GetPointer()!=NULL) && (device->GetDeviceType()!=buffer->GetDeviceType()))
       {
         vtkErrorMacro(
-            << "Received an IGTL message of the wrong type, device=" << key
+            << "Received an IGTL message of the wrong type, device=" << key.second
             << " has type " << device->GetDeviceType()
             << " got type " << buffer->GetDeviceType()
               );
@@ -648,7 +667,7 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
 
     if (!device && !this->RestrictDeviceName)
       {
-        device = deviceCreator->Create(key);
+        device = deviceCreator->Create(key.first);
         device->SetMessageDirection(vtkIGTLIODevice::MESSAGE_DIRECTION_IN);
         this->AddDevice(device);
       // Create device
@@ -729,7 +748,7 @@ void vtkIGTLIOConnector::PeriodicProcess()
 
 int vtkIGTLIOConnector::AddDevice(vtkIGTLIODevicePointer device)
 {
-  if (this->GetDevice(device->GetDeviceName())!=NULL)
+  if (this->GetDevice(CreateDeviceKey(device))!=NULL)
     {
     vtkErrorMacro("Failed to add igtl device: " << device->GetDeviceName() << " already present");
     return 0;
@@ -764,22 +783,22 @@ vtkIGTLIODevicePointer vtkIGTLIOConnector::GetDevice(int index)
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIODevicePointer vtkIGTLIOConnector::GetDevice(std::string device_name)
+vtkIGTLIODevicePointer vtkIGTLIOConnector::GetDevice(DeviceKeyType key)
 {
   for (unsigned i=0; i<Devices.size(); ++i)
-    if (Devices[i]->GetDeviceName()==device_name)
+    if (CreateDeviceKey(Devices[i])==key)
       return Devices[i];
   return vtkIGTLIODevicePointer();
 }
 
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOConnector::SendMessage(std::string device_id, vtkIGTLIODevice::MESSAGE_PREFIX prefix)
+int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::MESSAGE_PREFIX prefix)
 {
   vtkIGTLIODevicePointer device = this->GetDevice(device_id);
   if (!device)
     {
-      vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id << ", device not found");
+      vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id.first << "/" << device_id.second << ", device not found");
       return 1;
     }
 
@@ -788,14 +807,14 @@ int vtkIGTLIOConnector::SendMessage(std::string device_id, vtkIGTLIODevice::MESS
 
   if (!msg)
     {
-      vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id << ", message not available from device");
+      vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id.first << "/" << device_id.second << ", message not available from device");
       return 1;
     }
 
   int r = this->SendData(msg->GetPackSize(), (unsigned char*)msg->GetPackPointer());
   if (r == 0)
     {
-      vtkDebugMacro("Sending OpenIGTLinkMessage: " << device_id);
+      vtkDebugMacro("Sending OpenIGTLinkMessage: " << device_id.first << "/" << device_id.second);
       return 0;
     }
   return r;
@@ -810,6 +829,6 @@ int vtkIGTLIOConnector::SendMessage(std::string device_id, vtkIGTLIODevice::MESS
 int vtkIGTLIOConnector::PushNode(vtkIGTLIODevicePointer node, int event)
 {
   // TODO: verify that removed event argument is OK
-  return this->SendMessage(node->GetDeviceName(), vtkIGTLIODevice::MESSAGE_PREFIX_NOT_DEFINED);
+  return this->SendMessage(CreateDeviceKey(node), vtkIGTLIODevice::MESSAGE_PREFIX_NOT_DEFINED);
 }
 

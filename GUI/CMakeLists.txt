@@ -23,6 +23,8 @@ set(EXECUTABLE ${PROJECT_NAME})
 find_package( Qt5 COMPONENTS Widgets Concurrent Xml OpenGL Sql REQUIRED )
 
 set(${KIT}_SRCS
+  qIGTLIOGuiUtilities.cxx
+  qIGTLIOGuiUtilities.h
   qIGTLIOLogicController.cxx
   qIGTLIOLogicController.h
   qIGTLIOClientWidget.cxx

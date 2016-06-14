@@ -1,4 +1,5 @@
 #include "vtkIGTLIONode.h"
+#include "qIGTLIOGuiUtilities.h"
 
 qIGTLIODevicesModelNodePointer qIGTLIODevicesModelNode::createRoot(vtkIGTLIOLogic *logic_)
 {
@@ -62,7 +63,7 @@ std::string qIGTLIODevicesModelNode::GetName()
     }
   if (this->isDevice())
     {
-      return device->GetDeviceName();
+      return convertDeviceNameToDisplay(device->GetDeviceName());
     }
   // device
   return 0;
