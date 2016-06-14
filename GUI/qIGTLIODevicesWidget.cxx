@@ -28,6 +28,7 @@ qIGTLIODevicesWidget::qIGTLIODevicesWidget()
 
   SelectionModel = DevicesListView->selectionModel();
   DevicesModel->setSelectionModel(SelectionModel);
+  DevicesListView->setColumnWidth(0, 200);
 
 
   ButtonsWidget = new qIGTLIODeviceButtonsWidget();
@@ -41,7 +42,6 @@ qIGTLIODevicesWidget::qIGTLIODevicesWidget()
   topLayout->addWidget(AddDeviceWidget);
   AddDeviceWidget->setModel(DevicesModel);
 
-  SelectionModel = DevicesListView->selectionModel();
   connect(SelectionModel, SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
           this, SLOT(onCurrentDeviceChanged(const QModelIndex&, const QModelIndex&)));
 }
@@ -74,6 +74,7 @@ void qIGTLIODevicesWidget::setLogic(vtkIGTLIOLogicPointer logic)
 //-----------------------------------------------------------------------------
 void qIGTLIODevicesWidget::onConnectionsChanged(vtkObject* caller, void* connector, unsigned long event , void* b)
 {
+//  std::cout << "onConnectionsChanged " << std::endl;
 }
 
 

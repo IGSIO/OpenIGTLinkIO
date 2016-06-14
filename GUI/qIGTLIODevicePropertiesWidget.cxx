@@ -14,7 +14,7 @@ struct WidgetInGroupBoxClass
     groupBox = new QGroupBox(header);
     parentLayout->addWidget(groupBox);
     layout = new QVBoxLayout(groupBox);
-    layout->setMargin(2);
+    layout->setMargin(0);
   }
 
   QGroupBox* groupBox;
@@ -44,6 +44,7 @@ qIGTLIODevicePropertiesWidget::qIGTLIODevicePropertiesWidget(QWidget* parent) : 
   DeviceWidgetFactory = vtkIGTLIODeviceWidgetFactoryPointer::New();
 
   QVBoxLayout* layout = new QVBoxLayout(this);
+  layout->setMargin(0);
 
   WidgetInGroupBox = new WidgetInGroupBoxClass(layout, "Device");
 }

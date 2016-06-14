@@ -2,11 +2,12 @@
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QPushButton>
+#include <QToolButton>
 #include <QTreeView>
 #include <qIGTLIOConnectorModel.h>
 #include "vtkIGTLIOLogic.h"
 #include "qIGTLIOConnectorPropertyWidget.h"
+#include <QAction>
 
 //-----------------------------------------------------------------------------
 qIGTLIOConnectorListWidget::qIGTLIOConnectorListWidget()
@@ -55,17 +56,35 @@ void qIGTLIOConnectorListWidget::addButtonFrame(QVBoxLayout* topLayout)
   QHBoxLayout* buttonLayout = new QHBoxLayout(buttonFrame);
   buttonLayout->setMargin(0);
 
-  QPushButton* addConnectorButton = new QPushButton("+");
-  buttonLayout->addWidget(addConnectorButton);
-  QPushButton* removeConnectorButton = new QPushButton("--");
-  buttonLayout->addWidget(removeConnectorButton);
-  buttonLayout->addStretch();
+  QAction* addAction = new QAction("+", this);
+  connect(addAction, SIGNAL(triggered()), this, SLOT(onAddConnectorButtonClicked()));
 
-  //  Add(+) / Remove(-) Connector Buttons
-  connect(addConnectorButton, SIGNAL(clicked()), this,
-          SLOT(onAddConnectorButtonClicked()));
-  connect(removeConnectorButton, SIGNAL(clicked()), this,
-          SLOT(onRemoveConnectorButtonClicked()));
+  QAction* removeAction = new QAction("-", this);
+  connect(removeAction, SIGNAL(triggered()), this, SLOT(onRemoveConnectorButtonClicked()));
+
+  QToolButton* addButton = new QToolButton(this);
+  addButton->setDefaultAction(addAction);
+  buttonLayout->addWidget(addButton);
+
+  QToolButton* removeButton = new QToolButton(this);
+  removeButton->setDefaultAction(removeAction);
+  buttonLayout->addWidget(removeButton);
+
+  buttonLayout->addStretch(1);
+
+
+
+//  QPushButton* addConnectorButton = new QPushButton("+");
+//  buttonLayout->addWidget(addConnectorButton);
+//  QPushButton* removeConnectorButton = new QPushButton("--");
+//  buttonLayout->addWidget(removeConnectorButton);
+//  buttonLayout->addStretch();
+
+//  //  Add(+) / Remove(-) Connector Buttons
+//  connect(addConnectorButton, SIGNAL(clicked()), this,
+//          SLOT(onAddConnectorButtonClicked()));
+//  connect(removeConnectorButton, SIGNAL(clicked()), this,
+//          SLOT(onRemoveConnectorButtonClicked()));
 }
 
 //-----------------------------------------------------------------------------

@@ -1,19 +1,23 @@
 #include "qIGTLIOClientWidget.h"
 
 #include <QVBoxLayout>
+#include <QSplitter>
 #include "qIGTLIOConnectorListWidget.h"
 #include "qIGTLIODevicesWidget.h"
 
 qIGTLIOClientWidget::qIGTLIOClientWidget()
 {
   QVBoxLayout* layout = new QVBoxLayout(this);
-//  layout->setMargin(0);
+
+  QSplitter *splitter = new QSplitter(this);
+  splitter->setOrientation(Qt::Vertical);
+  layout->addWidget(splitter);
 
   ConnectorListWidget = new qIGTLIOConnectorListWidget;
-  layout->addWidget(ConnectorListWidget);
+  splitter->addWidget(ConnectorListWidget);
 
   DevicesWidget = new qIGTLIODevicesWidget;
-  layout->addWidget(DevicesWidget);
+  splitter->addWidget(DevicesWidget);
 }
 
 void qIGTLIOClientWidget::setLogic(vtkIGTLIOLogicPointer logic)

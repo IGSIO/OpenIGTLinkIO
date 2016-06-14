@@ -291,6 +291,9 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, void* c, unsigned 
 
       this->beginInsertRows(parent, node->GetSiblingIndex(), node->GetSiblingIndex());
       this->endInsertRows();
+
+      QModelIndex index = this->index(node->GetSiblingIndex(), 0, parent);
+      SelectionModel->setCurrentIndex(index, QItemSelectionModel::SelectCurrent);
     }
   if (event==vtkIGTLIOConnector::RemovedDeviceEvent)
     {
