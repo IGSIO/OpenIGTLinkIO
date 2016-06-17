@@ -56,8 +56,14 @@ int qIGTLIOConnectorModel::rowCount(const QModelIndex& parent) const
 
   // only topnode has children
   if (!parent.isValid())
+  {
+    if (!Logic)
+    {
+        std::cout << "WARNING in: int qIGTLIOConnectorModel::rowCount(const QModelIndex& parent) const: Logic is a NULL object! Returning 0." << std::endl;
+        return 0;
+    }
     return Logic->GetNumberOfConnectors();
-
+  }
   return 0;
 }
 
