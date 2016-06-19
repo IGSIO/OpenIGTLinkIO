@@ -107,7 +107,7 @@ int vtkIGTLIODevice::CheckQueryExpiration()
     {
       double timeout = this->GetQueryTimeOut();
       if ((timeout>0)
-          && (currentTime-Queries[i].status>timeout)
+          && (currentTime-Queries[i].Query->GetTimestamp()>timeout)
           && (Queries[i].status==QUERY_STATUS_WAITING))
         {
         Queries[i].status=QUERY_STATUS_EXPIRED;
@@ -143,12 +143,23 @@ int vtkIGTLIODevice::CancelQuery(int index)
   return 0;
 }
 
+void vtkIGTLIODevice::SetHeader(igtl::BaseConverter::HeaderData header)
+{
+  HeaderData = header;
+  this->Modified();
+}
+
+igtl::BaseConverter::HeaderData vtkIGTLIODevice::GetHeader()
+{
+  return HeaderData;
+}
+
 vtkIGTLIODevice::vtkIGTLIODevice()
 {
   PushOnConnect = false;
   MessageDirection = MESSAGE_DIRECTION_IN;
   QueryTimeOut = 0;
-//  this->CheckCRC = 1;
+  //  this->CheckCRC = 1;
 //  this->Private = new vtkIGTLIODevicePrivate;
 }
 

@@ -152,9 +152,8 @@ public:
  /// One query (GET_, STT_ or STP_-message that requires an answer)
  struct QueryType
  {
-   std::string query_message;
-   std::string response_message;
-   double query_timestamp;
+   vtkSmartPointer<vtkIGTLIODevice> Query;
+   vtkSmartPointer<vtkIGTLIODevice> Response;
    QUERY_STATUS status;
  };
 
@@ -170,10 +169,15 @@ public:
 
   vtkAbstractTypeMacro(vtkIGTLIODevice,vtkObject);
 
+
+protected:
+  void SetHeader(igtl::BaseConverter::HeaderData header);
+  igtl::BaseConverter::HeaderData GetHeader();
+
+  std::vector<QueryType> Queries;
   igtl::BaseConverter::HeaderData HeaderData;
 
 private:
- std::vector<QueryType> Queries;
  MESSAGE_DIRECTION MessageDirection;
  bool PushOnConnect;
  double QueryTimeOut;

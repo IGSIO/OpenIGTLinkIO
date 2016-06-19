@@ -89,7 +89,6 @@ void qIGTLIOCommandDeviceWidget::onGUIModified()
   if (!device)
     return;
 
-  std::cout << "qIGTLIOCommandDeviceWidget::onGUIModified()" << std::endl;
   igtl::CommandConverter::ContentData content = device->GetContent();
   content.id = IdEdit->text().toInt();
   content.name = NameEdit->currentText().toStdString();

@@ -9,6 +9,7 @@
 #include <vtkImageData.h>
 #include <vtkObjectFactory.h>
 #include <vtkSmartPointer.h>
+#include <vtkTimerLog.h>
 
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
@@ -56,11 +57,39 @@ std::string vtkIGTLIOCommandDevice::GetDeviceType() const
 //---------------------------------------------------------------------------
 int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (Converter->fromIGTL(buffer, &HeaderData, &Content, checkCRC))
-   {
-   this->Modified();
-   return 1;
-   }
+  // If we receive a RTS_COMMAND, look in the query queue for anyone waiting for it.
+  //
+  // TODO: If we receive a COMMAND, we are expected to act as a server
+  // and respond to the COMMAND contents.
+
+  if (buffer->GetDeviceType()==std::string(Converter->GetIGTLResponseName()))
+    {
+    vtkSmartPointer<vtkIGTLIOCommandDevice> response = vtkSmartPointer<vtkIGTLIOCommandDevice>::New();
+    if (!Converter->fromIGTL(buffer, &response->HeaderData, &response->Content, checkCRC))
+      return 0;
+
+    // search among the queries for a command with an identical ID:
+    for (unsigned i=0; i<Queries.size(); ++i)
+      {
+      vtkSmartPointer<vtkIGTLIOCommandDevice> query = vtkIGTLIOCommandDevice::SafeDownCast(Queries[i].Query.GetPointer());
+      if (query && query->GetContent().id == response->GetContent().id)
+        {
+        Queries[i].Response = response;
+        this->Modified();
+        std::cout << "stored response: \n";
+        response->Print(std::cout);
+        }
+      }
+
+    return 1;
+    }
+
+
+  if (buffer->GetDeviceType()==std::string(Converter->GetIGTLTypeName()))
+    {
+    vtkErrorMacro ("Client does not handle incoming COMMAND messages\n");
+    return 0;
+    }
 
  return 0;
 }
@@ -74,10 +103,27 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage()
   return 0;
   }
 
+ this->SetTimestamp(vtkTimerLog::GetUniversalTime());
+
  if (!Converter->toIGTL(HeaderData, Content, &this->OutMessage))
    {
    return 0;
    }
+
+
+ // store the current device state as a query
+ QueryType query;
+ vtkSmartPointer<vtkIGTLIOCommandDevice> queryDevice = vtkSmartPointer<vtkIGTLIOCommandDevice>::New();
+ queryDevice->SetContent(this->GetContent());
+ queryDevice->SetHeader(this->GetHeader()); // NOTE: requires timestamp to be current
+ query.Query = queryDevice;
+ query.status = QUERY_STATUS_WAITING;
+ Queries.push_back(query);
+
+ // Store copy of current content/id in query buffer, waiting for reply.
+ // When reply arrives (via ReceiveIGTLMessage), store as a pair in a separate
+ // response-list. Emit signals to notify that responses have been received.
+
 
  return dynamic_pointer_cast<igtl::MessageBase>(this->OutMessage);
 }
@@ -88,6 +134,7 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage(MESSAGE_PREFIX
   if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
+
    }
 
  return igtl::MessageBase::Pointer();

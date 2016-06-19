@@ -50,6 +50,8 @@ public:
 
   virtual const char*  GetIGTLName() { return GetIGTLTypeName(); }
   static const char* GetIGTLTypeName() { return "COMMAND"; }
+  static const char* GetIGTLResponseName() { return "RTS_COMMAND"; }
+
 
   int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
   int toIGTL(const HeaderData& header, const ContentData& source, igtl::CommandMessage::Pointer* dest);

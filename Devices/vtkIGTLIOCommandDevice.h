@@ -56,8 +56,6 @@ public:
 
  protected:
   igtl::CommandMessage::Pointer OutMessage;
-//  igtl::GetCommandMessage::Pointer GetMessage;
-
   igtl::CommandConverter::ContentData Content;
   igtl::CommandConverter::Pointer Converter;
 };
