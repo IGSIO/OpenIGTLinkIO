@@ -23,6 +23,20 @@ add_subdirectory(Examples) # TODO make optional
 export(TARGETS igtlioLogic igtlioDevices igtlioConverter
   FILE "${CMAKE_CURRENT_BINARY_DIR}/OpenIGTLinkIOTargets.cmake"
   )
+
+
+set (OpenIGTLinIO_LIBRARIES igtlioLogic igtlioDevices igtlioConverter)
+set (OpenIGTLinIO_INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    Logic
+    Converter
+    Devices
+)
+set (OpenIGTLinIO_LIBRARY_DIRS
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 configure_file(OpenIGTLinkIOConfig.cmake.in
   OpenIGTLinkIOConfig.cmake
   )
