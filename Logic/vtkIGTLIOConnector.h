@@ -129,7 +129,7 @@ public:
  /// If a Device with an identical device_id already exist, the method will fail.
  int AddDevice(vtkIGTLIODevicePointer device); // TODO look at OnNodeReferenceAdded
  int GetNumberOfDevices() const;
- int RemoveDevice(int index); //TODO: look at OnNodeReferenceRemoved
+ void RemoveDevice(int index); //TODO: look at OnNodeReferenceRemoved
  /// Get the given Device. This can be used to modify the Device contents.
  vtkIGTLIODevicePointer GetDevice(int index);
  vtkIGTLIODevicePointer GetDevice(DeviceKeyType key);
@@ -162,14 +162,14 @@ public:
 
   // Events
   enum {
-    ConnectedEvent        = 118944, // Connector attached
-    DisconnectedEvent     = 118945, // Connector attached
-    ActivatedEvent        = 118946, // Connector attached
-    DeactivatedEvent      = 118947, // Connector attached
-    ReceiveEvent          = 118948, // Connector attached
-    NewDeviceEvent        = 118949, // Device attached
-    DeviceModifiedEvent   = 118950, // Device attached
-    RemovedDeviceEvent    = 118951, // Device attached
+    ConnectedEvent        = 118944,
+    DisconnectedEvent     = 118945,
+    ActivatedEvent        = 118946,
+    DeactivatedEvent      = 118947,
+    ReceiveEvent          = 118948,
+    NewDeviceEvent        = 118949,
+    DeviceModifiedEvent   = 118950, // never used. use vtkCommand::ModifiedEvent from device instead.
+    RemovedDeviceEvent    = 118951,
   };
 
   enum {

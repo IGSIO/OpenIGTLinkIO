@@ -85,6 +85,10 @@ public:
     //TODO: harmonize event handling for Logic, Connector, Device.
     ConnectionAddedEvent        = 118960,
     ConnectionAboutToBeRemovedEvent      = 118961,
+
+    NewDeviceEvent        = 118949,
+//    DeviceModifiedEvent   = 118950, // must listen to each specific device in order to get this one.
+    RemovedDeviceEvent    = 118951,
   };
 
  static vtkIGTLIOLogic *New();
@@ -100,6 +104,10 @@ public:
  void PeriodicProcess();
 
  //TODO: interface for accessing Devices
+ int GetNumberOfDevices() const;
+ void RemoveDevice(int index);
+ vtkIGTLIODevicePointer GetDevice(int index);
+
 
 protected:
  vtkIGTLIOLogic();
@@ -113,6 +121,11 @@ private:
   void operator=(const vtkIGTLIOLogic&); // Not implemented
 
   int CreateUniqueConnectorID() const;
+  std::vector<vtkIGTLIODevicePointer> CreateDeviceList() const;
+
+  vtkSmartPointer<class vtkCallbackCommand> NewDeviceCallback;
+  vtkSmartPointer<class vtkCallbackCommand> RemovedDeviceCallback;
+
 };
 
 #endif // __vtkIGTLIOLogic_h

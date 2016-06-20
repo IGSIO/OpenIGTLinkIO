@@ -782,7 +782,8 @@ int vtkIGTLIOConnector::AddDevice(vtkIGTLIODevicePointer device)
   device->SetTimestamp(vtkTimerLog::GetUniversalTime());
   Devices.push_back(device);
   //TODO: listen to device events?
-  this->InvokeEvent(vtkIGTLIOConnector::NewDeviceEvent, device);
+  std::cout << "vtkIGTLIOConnector::Add device" << std::endl;
+  this->InvokeEvent(vtkIGTLIOConnector::NewDeviceEvent, device.GetPointer());
   return 1;
 }
 
@@ -793,13 +794,12 @@ int vtkIGTLIOConnector::GetNumberOfDevices() const
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOConnector::RemoveDevice(int index)
+void vtkIGTLIOConnector::RemoveDevice(int index)
 {
   //TODO: disconnect listen to device events?
   vtkIGTLIODevicePointer device = Devices[index]; // ensure object lives until event has completed
   Devices.erase(Devices.begin()+index);
-  this->InvokeEvent(vtkIGTLIOConnector::RemovedDeviceEvent, device);
-  return 1;
+  this->InvokeEvent(vtkIGTLIOConnector::RemovedDeviceEvent, device.GetPointer());
 }
 
 //---------------------------------------------------------------------------
@@ -861,5 +861,3 @@ int vtkIGTLIOConnector::PushNode(vtkIGTLIODevicePointer node, int event)
   // TODO: verify that removed event argument is OK
   return this->SendMessage(CreateDeviceKey(node), vtkIGTLIODevice::MESSAGE_PREFIX_NOT_DEFINED);
 }
-
-

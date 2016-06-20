@@ -314,6 +314,8 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, void* c, unsigned 
     }
   if (event==vtkIGTLIOConnector::DeviceModifiedEvent)
     {
+      // TODO: this event is never emittd, and never will. The vtkCommand::ModifiedEvent is emitted
+      // from each device, and each of the must be listened to.
      vtkIGTLIODevice* device = static_cast<vtkIGTLIODevice*>(c);
      qIGTLIODevicesModelNode* node = RootNode->FindDeviceNode(device);
      std::cout << "modified: " << node->GetName() << std::endl;
