@@ -150,15 +150,7 @@ public:
     this->Modified();
  }
 
-// vtkGetMacro( DeviceFactory, vtkIGTLIODeviceFactoryPointer );
-// vtkSetMacro( DeviceFactory, vtkIGTLIODeviceFactoryPointer );
- //
-
  public:
-
-  //----------------------------------------------------------------
-  // Constants Definitions
-  //----------------------------------------------------------------
 
   // Events
   enum {
@@ -213,71 +205,20 @@ public:
     int           nanosecond;
   } NodeInfoType;
 
-//  typedef std::map<int, DeviceInfoType>   DeviceInfoMapType;   // Device list:  index is referred as
-//                                                               // a device id in the connector.
-//  typedef std::set<int>                   DeviceIDSetType;
-//  typedef std::list< vtkSmartPointer<vtkIGTLToMRMLBase> >   MessageConverterListType;
-//  typedef std::vector< vtkSmartPointer<vtkMRMLNode> >       MRMLNodeListType;
-//  typedef std::map<std::string, NodeInfoType>       NodeInfoMapType;
-//  typedef std::map<std::string, vtkSmartPointer <vtkIGTLToMRMLBase> > MessageConverterMapType;
-
  public:
-
-  //----------------------------------------------------------------
-  // Standard methods for MRML nodes
-  //----------------------------------------------------------------
 
   static vtkIGTLIOConnector *New();
   vtkTypeMacro(vtkIGTLIOConnector,vtkIGTLIOObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
-//  virtual vtkMRMLNode* CreateNodeInstance();
-
-//  // Description:
-//  // Set node attributes
-//  virtual void ReadXMLAttributes( const char** atts);
-
-//  // Description:
-//  // Write this node's information to a MRML file in XML format.
-//  virtual void WriteXML(ostream& of, int indent);
-
-//  // Description:
-//  // Copy the node's attributes to this object
-//  virtual void Copy(vtkMRMLNode *node);
-
-//  // Description:
-//  // Get node XML tag name (like Volume, Model)
-//  virtual const char* GetNodeTagName()
-//    {return "IGTLConnector";};
-
-//  // method to propagate events generated in mrml
-//  virtual void ProcessMRMLEvents ( vtkObject *caller, unsigned long event, void *callData );
-
-//  //BTX
-//  virtual void OnNodeReferenceAdded(vtkMRMLNodeReference *reference);
-
-//  virtual void OnNodeReferenceRemoved(vtkMRMLNodeReference *reference);
-
-//  virtual void OnNodeReferenceModified(vtkMRMLNodeReference *reference);
-//  //ETX
-
  protected:
-  //----------------------------------------------------------------
-  // Constructor and destroctor
-  //----------------------------------------------------------------
-
   vtkIGTLIOConnector();
   ~vtkIGTLIOConnector();
   vtkIGTLIOConnector(const vtkIGTLIOConnector&);
   void operator=(const vtkIGTLIOConnector&);
 
-
  public:
-  //----------------------------------------------------------------
-  // Connector configuration
-  //----------------------------------------------------------------
-
   vtkGetMacro( Name, std::string );
   vtkSetMacro( Name, std::string );
   vtkGetMacro( UID, int );
@@ -373,7 +314,6 @@ private:
   //----------------------------------------------------------------
   // Devices
   //----------------------------------------------------------------
-
   std::vector<vtkIGTLIODevicePointer> Devices;
 
   //----------------------------------------------------------------

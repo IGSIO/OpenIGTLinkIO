@@ -473,28 +473,6 @@ int vtkIGTLIOConnector::ReceiveController()
         //TODO: Cannot call GetDevice in Thread!!!!
         DeviceKeyType key = CreateDeviceKey(headerMsg);
       int registered = this->GetDevice(key).GetPointer() != NULL;
-//      int registered = 0;
-//      NodeInfoMapType::iterator iter;
-//      for (iter = this->IncomingMRMLNodeInfoMap.begin(); iter != this->IncomingMRMLNodeInfoMap.end(); iter ++)
-//        {
-//        //vtkMRMLNode* node = (*iter).node;
-//        //vtkMRMLNode* node = (iter->second).node;
-//        vtkMRMLNode* node = this->GetScene()->GetNodeByID((iter->first));
-//        if (node && strcmp(node->GetName(), headerMsg->GetDeviceName()) == 0)
-//          {
-//          // Find converter for this message's device name to find out the MRML node type
-//          vtkIGTLToMRMLBase* converter = GetConverterByIGTLDeviceType(headerMsg->GetDeviceType());
-//          if (converter)
-//            {
-//            const char* mrmlName = converter->GetMRMLName();
-//            if (strcmp(node->GetNodeTagName(), mrmlName) == 0)
-//              {
-//              registered = 1;
-//              break; // for (;;)
-//              }
-//            }
-//          }
-//        }
       if (registered == 0)
         {
         this->Skip(headerMsg->GetBodySizeToRead());
@@ -505,24 +483,7 @@ int vtkIGTLIOConnector::ReceiveController()
 
     //----------------------------------------------------------------
     // Search Circular Buffer
-
-    // TODO:
-    // Currently, the circular buffer is selected by device name, but
-    // it should be selected by device name and device type.
-
-//    std::string key = headerMsg->GetDeviceName();
     DeviceKeyType key = CreateDeviceKey(headerMsg);
-//    if (devName[0] == '\0')
-//      {
-//      // Special case: No device name:
-
-//      // The following device name never conflicts with any
-//      // device names comming from OpenIGTLink message, since
-//      // the number of characters is beyond the limit.
-//      std::stringstream ss;
-//      ss << "OpenIGTLink_MESSAGE_" << headerMsg->GetDeviceType();
-//      key = ss.str();
-//      }
 
     CircularBufferMap::iterator iter = this->Buffer.find(key);
     if (iter == this->Buffer.end()) // First time to refer the device name
@@ -671,13 +632,6 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
       continue;
       }
 
-//    // TODO: why is this?
-//    if (strncmp("OpenIGTLink_MESSAGE_", key.c_str(), IGTL_HEADER_NAME_SIZE) == 0)
-//      {
-//      key = "OpenIGTLink";
-//      buffer->SetDeviceName(key);
-//      }
-
     vtkIGTLIODevicePointer device = this->GetDevice(key);
 
     if ((device.GetPointer()!=NULL) && (device->GetDeviceType()!=buffer->GetDeviceType()))
@@ -692,16 +646,11 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
 
     if (!device && !this->RestrictDeviceName)
       {
-        device = deviceCreator->Create(key.type);
+        device = deviceCreator->Create(key.GetBaseTypeName());
         device->SetMessageDirection(vtkIGTLIODevice::MESSAGE_DIRECTION_IN);
         this->AddDevice(device);
-      // Create device
-        //TODO
       }
 
-    //TODO: what about broadcast replies, or replies to generic
-    //      type devices with no device_name? This was handled
-    //      in some obscure way in the old code.
     device->ReceiveIGTLMessage(buffer, this->CheckCRC);
     device->Modified();
 
@@ -737,14 +686,11 @@ void vtkIGTLIOConnector::ImportEventsFromEventBuffer()
     this->InvokeEvent(eventId);
 
   } while (!emptyQueue);
-
 }
-
 
 //---------------------------------------------------------------------------
 void vtkIGTLIOConnector::PushOutgoingMessages()
 {
-
   int push = 0;
 
   // Read PushOutgoingMessageFlag and reset it.
@@ -782,7 +728,6 @@ int vtkIGTLIOConnector::AddDevice(vtkIGTLIODevicePointer device)
   device->SetTimestamp(vtkTimerLog::GetUniversalTime());
   Devices.push_back(device);
   //TODO: listen to device events?
-  std::cout << "vtkIGTLIOConnector::Add device" << std::endl;
   this->InvokeEvent(vtkIGTLIOConnector::NewDeviceEvent, device.GetPointer());
   return 1;
 }
@@ -816,7 +761,6 @@ vtkIGTLIODevicePointer vtkIGTLIOConnector::GetDevice(DeviceKeyType key)
       return Devices[i];
   return vtkIGTLIODevicePointer();
 }
-
 
 //---------------------------------------------------------------------------
 int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::MESSAGE_PREFIX prefix)

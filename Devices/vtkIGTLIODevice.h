@@ -92,7 +92,6 @@ public:
 
 public:
  virtual std::string GetDeviceType() const = 0;
-// virtual std::string GetDeviceName() const = 0;
 
  virtual std::string GetDeviceName() const;
   /// Set device name.
@@ -136,10 +135,6 @@ public:
  //       - lock (means dont accept incoming messages),
  //       - gettimestamp (of last incoming message)
 
- // TODO: notify listeners when:
- // created, deleted, modified
- // This can be done from the Connector or Logic instead, this would enable all 3 signals at the same level.
-
  /// Query handling:
  /// Each device has a list of queries (GET_, STT_, STP_) that has been sent
  /// and are awaiting reply.
@@ -147,9 +142,14 @@ public:
  /// Device::GetMessage() pushes a query,
  /// Device::ReceiveMessage() processes the reply, and emits events for the receive
  ///   - statechange: waiting, success, expired,...
- //
- //
+ ///
  /// One query (GET_, STT_ or STP_-message that requires an answer)
+ ///
+ /// TODO: Currently implemented for COMMAND message only. The GET_/STT_/STP_ messages
+ /// handle this by simply sending and ignoring failures.
+ /// Either move the query mechanism down to COMMAND or generalize.
+ ///
+ ///
  struct QueryType
  {
    vtkSmartPointer<vtkIGTLIODevice> Query;
