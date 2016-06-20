@@ -2,6 +2,7 @@
 #define QIGTLIODEVICESMODEL_H
 
 #include <QAbstractItemModel>
+#include <QStringList>
 
 // CTK includes
 #include <ctkVTKObject.h>

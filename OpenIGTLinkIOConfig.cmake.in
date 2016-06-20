@@ -1,1 +1,7 @@
 include("${CMAKE_BINARY_DIR}/OpenIGTLinkIOTargets.cmake")
+
+set (OpenIGTLinkIO_FOUND 1)
+
+set (OpenIGTLinkIO_INCLUDE_DIRS "@NOpenIGTLinkIO_INCLUDE_DIRS@")
+set (OpenIGTLinkIO_LIBRARY_DIRS "@OpenIGTLinkIO_LIBRARY_DIRS@")
+set (OpenIGTLinkIO_LIBRARIES "@OpenIGTLinkIO_LIBRARY@")

@@ -20,28 +20,20 @@ include(${VTK_USE_FILE})
 find_package(CTK REQUIRED)
 include(${CTK_USE_FILE})
 
-find_package(Qt5Widgets REQUIRED)
+if( IGTLIO_QT_VERSION VERSION_GREATER "4" )
+    find_package( Qt5 COMPONENTS Widgets REQUIRED )
+    set( igtlclient_qt_libraries Qt5::Widgets )
+else()
+    find_package( Qt4 )
+    include(${QT_USE_FILE})
+    set( igtlclient_qt_libraries Qt4::QtGui )
+endif()
 
-set( MOC_HEADER_FILES
-)
+set( SOURCE_FILES main.cpp )
 
-set( SOURCE_FILES
-    main.cpp
-)
+add_executable( ${EXECUTABLE} ${SOURCE_FILES} )
 
-
-qt5_wrap_cpp( MOC_HEADER_FILES ${MOC_HEADER_FILES} )
-#qt5_add_resources( QT_RESOURCE_FILES resource.qrc )
-
-add_executable(${EXECUTABLE} 
-    ${QT_RESOURCE_FILES} 
-    ${MOC_HEADER_FILES} 
-    ${SOURCE_FILES}
-)
 target_link_libraries(${EXECUTABLE}
     PRIVATE
-    Qt5::Widgets
-    igtlioGUI
-    )
-
-
+    ${igtlclient_qt_libraries}
+    igtlioGUI )

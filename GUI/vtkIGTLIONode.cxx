@@ -3,8 +3,7 @@
 
 qIGTLIODevicesModelNodePointer qIGTLIODevicesModelNode::createRoot(vtkIGTLIOLogic *logic_)
 {
-  qIGTLIODevicesModelNodePointer retval;
-  retval.reset(new qIGTLIODevicesModelNode(NULL, logic_));
+  qIGTLIODevicesModelNodePointer retval(new qIGTLIODevicesModelNode(NULL, logic_));
   return retval;
 }
 
@@ -95,8 +94,7 @@ qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::GetParent()
 qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::GetNode(vtkIGTLIOConnector *connector, vtkIGTLIODevice::MESSAGE_DIRECTION group, vtkIGTLIODevice *device)
 {
   //  dmsg("GetNode b");
-  qIGTLIODevicesModelNodePointer node;
-  node.reset(new qIGTLIODevicesModelNode(this, logic, connector, group, device));
+  qIGTLIODevicesModelNodePointer node(new qIGTLIODevicesModelNode(this, logic, connector, group, device));
 
   for (std::set<qIGTLIODevicesModelNodePointer>::iterator i=Children.begin(); i!=Children.end(); ++i)
     {
