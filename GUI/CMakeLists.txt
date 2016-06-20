@@ -18,9 +18,14 @@ include(${VTK_USE_FILE})
 find_package(CTK REQUIRED)
 include(${CTK_USE_FILE})
 
-
 set(EXECUTABLE ${PROJECT_NAME})
-find_package( Qt5 COMPONENTS Widgets Concurrent Xml OpenGL Sql REQUIRED )
+
+if( IGTLIO_QT_VERSION VERSION_GREATER "4" )
+    find_package( Qt5 COMPONENTS Widgets Concurrent Xml OpenGL Sql REQUIRED )
+else()
+    find_package( Qt4 )
+    include(${QT_USE_FILE})
+endif()
 
 set(${KIT}_SRCS
   qIGTLIOGuiUtilities.cxx
@@ -31,23 +36,10 @@ set(${KIT}_SRCS
   qIGTLIOClientWidget.h
   qIGTLIOConnectorListWidget.cxx
   qIGTLIOConnectorListWidget.h
-#  qSlicerOpenIGTLinkIFModule.cxx
-#  qSlicerOpenIGTLinkIFModule.h
-#  qSlicerOpenIGTLinkIFModuleWidget.cxx
-#  qSlicerOpenIGTLinkIFModuleWidget.h
   qIGTLIOConnectorModel.cxx
   qIGTLIOConnectorModel.h
   qIGTLIOConnectorPropertyWidget.cxx
   qIGTLIOConnectorPropertyWidget.h
-#  GUI/qMRMLIGTLConnectorTreeView.cxx
-#  GUI/qMRMLIGTLConnectorTreeView.h
-#  GUI/qMRMLIGTLIOModel.cxx
-#  GUI/qMRMLIGTLIOModel.h
-#  GUI/qMRMLIGTLIOModel_p.h
-#  GUI/qMRMLIGTLIOTreeView.cxx
-#  GUI/qMRMLIGTLIOTreeView.h
-#  GUI/qSlicerIGTLIONodeSelectorWidget.cxx
-#  GUI/qSlicerIGTLIONodeSelectorWidget.h
   qIGTLIODevicesModel.h
   qIGTLIODevicesModel.cxx
   qIGTLIODevicesWidget.h
@@ -75,16 +67,9 @@ set(${KIT}_SRCS
 set(${KIT}_MOC_SRCS
   qIGTLIOClientWidget.h
   qIGTLIOLogicController.h
-#  qSlicerOpenIGTLinkIFModule.h
-#  qSlicerOpenIGTLinkIFModuleWidget.h
   qIGTLIOConnectorModel.h
   qIGTLIOConnectorListWidget.h
   qIGTLIOConnectorPropertyWidget.h
-#  GUI/qMRMLIGTLConnectorTreeView.h
-#  GUI/qMRMLIGTLIOModel.h
-#  GUI/qMRMLIGTLIOTreeView.h
-#  GUI/qSlicerIGTLConnectorPropertyWidget.h
-#  GUI/qSlicerIGTLIONodeSelectorWidget.h
   qIGTLIODevicesModel.h
   qIGTLIODevicesWidget.h
   qIGTLIODeviceButtonsWidget.h
@@ -99,8 +84,6 @@ set(${KIT}_MOC_SRCS
   
 set(${KIT}_UI_SRCS
   ../Resources/UI/qIGTLIOConnectorPropertyWidget.ui
-#  Resources/UI/qSlicerIGTLIONodeSelectorWidget.ui
-#  Resources/UI/qSlicerOpenIGTLinkIFModule.ui
 )
 
 
@@ -111,17 +94,24 @@ set(${KIT}_INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_BINARY_DIR}
   )
 
+if(IGTLIO_QT_VERSION VERSION_GREATER "4")
+    qt5_wrap_ui(${KIT}_SRCS ${${KIT}_UI_SRCS})
+    qt5_wrap_cpp( ${KIT}_MOC_SRCS ${${KIT}_MOC_SRCS} )
+    set( igtlio_qt_libraries Qt5::Widgets )
+else()
+    QT4_WRAP_CPP( ${KIT}_MOC_SRCS ${${KIT}_MOC_SRCS} )
+    QT4_WRAP_UI( ${KIT}_SRCS ${${KIT}_UI_SRCS} )
+    set( igtlio_qt_libraries Qt4::QtGui )
+endif()
 
 set(${KIT}_TARGET_LIBRARIES
   ${OpenIGTLink_LIBRARIES}
   ${VTK_LIBRARIES}
   ${CTK_LIBRARIES}
-  Qt5::Widgets
+  ${igtlio_qt_libraries}
   igtlioLogic
   )
 
-qt5_wrap_ui(${KIT}_SRCS ${${KIT}_UI_SRCS})
-qt5_wrap_cpp( ${KIT}_MOC_SRCS ${${KIT}_MOC_SRCS} )
 add_library(${KIT} ${${KIT}_SRCS} ${${KIT}_MOC_SRCS})
 target_link_libraries(${KIT} PUBLIC ${${KIT}_TARGET_LIBRARIES})
 target_include_directories(${KIT} ${${KIT}_INCLUDE_DIRECTORIES})

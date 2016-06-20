@@ -10,6 +10,7 @@
 #include "igtlioGUIExport.h"
 class qIGTLIODevicesModel;
 class QVBoxLayout;
+class QModelIndex;
 //class qIGTLIOConnectorPropertyWidget;
 class QItemSelectionModel;
 class qIGTLIODeviceButtonsWidget;

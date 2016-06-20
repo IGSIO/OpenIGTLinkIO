@@ -30,6 +30,8 @@ set(${KIT}_SRCS
   vtkIGTLIOStatusDevice.h
   vtkIGTLIOCommandDevice.cxx
   vtkIGTLIOCommandDevice.h
+  vtkIGTLIOTransformDevice.cxx
+  vtkIGTLIOTransformDevice.h
   )
 
 set(${KIT}_TARGET_LIBRARIES

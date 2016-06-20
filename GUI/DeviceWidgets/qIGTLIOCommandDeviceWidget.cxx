@@ -58,19 +58,19 @@ void qIGTLIOCommandDeviceWidget::setupUi()
 
   layout->addWidget(new QLabel("code"), line, 0);
   IdEdit = new QLineEdit;
-  connect(IdEdit, &QLineEdit::editingFinished, this, &qIGTLIOCommandDeviceWidget::onGUIModified);
+  connect(IdEdit, SIGNAL(editingFinished()), this, SLOT(onGUIModified()) );
   layout->addWidget(IdEdit, line, 1);
   line++;
 
   NameEdit = new QComboBox;
   NameEdit->setEditable(true);
-  connect(NameEdit, &QComboBox::editTextChanged, this, &qIGTLIOCommandDeviceWidget::onGUIModified);
+  connect(NameEdit, SIGNAL(editTextChanged(QString)), this, SLOT(onGUIModified()) );
   layout->addWidget(new QLabel("Command name"), line, 0);
   layout->addWidget(NameEdit, line, 1);
   line++;
 
   ContentEdit = new QTextEdit;
-  connect(ContentEdit, &QTextEdit::textChanged, this, &qIGTLIOCommandDeviceWidget::onGUIModified);
+  connect(ContentEdit, SIGNAL(textChanged()), this, SLOT(onGUIModified()) );
   layout->addWidget(new QLabel("Contents"), line, 0);
   layout->addWidget(ContentEdit, line, 1);
   line++;
@@ -133,12 +133,16 @@ void qIGTLIOCommandDeviceWidget::onDeviceModified()
 
   NameEdit->clear();
   std::vector<std::string> availableCommandNames = device->GetAvailableCommandNames();
+  std::string currentCommand = device->GetContent().name;
+  int currentIndex = -1;
   for (unsigned i=0; i<availableCommandNames.size(); ++i)
     {
+      if( currentCommand == availableCommandNames[i] )
+          currentIndex = i;
     NameEdit->addItem(availableCommandNames[i].c_str());
     }
 
-  NameEdit->setCurrentText(device->GetContent().name.c_str());
+  NameEdit->setCurrentIndex( currentIndex );
   ContentEdit->setText(device->GetContent().content.c_str());
 
   this->blockGUI(false);
