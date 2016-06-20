@@ -28,20 +28,20 @@ add_subdirectory(GUI) # TODO make optional
 add_subdirectory(Examples) # TODO make optional
 
 # TODO use the namespace feature for all libs
-export(TARGETS igtlioLogic igtlioDevices igtlioConverter
+export(TARGETS igtlioLogic igtlioDevices igtlioConverter igtlioGUI
   FILE "${CMAKE_CURRENT_BINARY_DIR}/OpenIGTLinkIOTargets.cmake"
   )
 
 
-set (OpenIGTLinIO_LIBRARIES igtlioLogic igtlioDevices igtlioConverter)
-set (OpenIGTLinIO_INCLUDE_DIRS
+set (OpenIGTLinkIO_LIBRARIES igtlioLogic igtlioDevices igtlioConverter igtlioGUI)
+set (OpenIGTLinkIO_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
     Logic
     Converter
     Devices
 )
-set (OpenIGTLinIO_LIBRARY_DIRS
+set (OpenIGTLinkIO_LIBRARY_DIRS
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
