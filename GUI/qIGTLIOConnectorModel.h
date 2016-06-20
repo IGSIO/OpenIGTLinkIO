@@ -22,6 +22,7 @@
 #define __qIGTLIOConnectorModel_h
 
 #include <QAbstractItemModel>
+#include <QStringList>
 
 // CTK includes
 #include <ctkVTKObject.h>
