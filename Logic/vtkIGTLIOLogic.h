@@ -56,6 +56,7 @@
 
 typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
 typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
+typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 
 
 /// Logic is the manager for the IGTLIO module.

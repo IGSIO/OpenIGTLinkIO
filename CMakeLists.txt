@@ -49,4 +49,8 @@ configure_file(OpenIGTLinkIOConfig.cmake.in
   OpenIGTLinkIOConfig.cmake
   )
 
+include(CTest)
 
+if (BUILD_TESTING)
+  add_subdirectory(Testing)
+endif()
