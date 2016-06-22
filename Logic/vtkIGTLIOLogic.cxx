@@ -12,6 +12,7 @@
 
 ==========================================================================*/
 
+#include <algorithm>
 // IGTLIO includes
 #include "vtkIGTLIOLogic.h"
 #include "vtkIGTLIOConnector.h"
@@ -91,7 +92,7 @@ int vtkIGTLIOLogic::CreateUniqueConnectorID() const
   int retval=0;
   for (int i=0; i<Connectors.size(); ++i)
     {
-      retval = std::max(retval, Connectors[i]->GetUID()+1);
+      retval = std::max<int>(retval, Connectors[i]->GetUID()+1);
     }
   return retval;
 }
