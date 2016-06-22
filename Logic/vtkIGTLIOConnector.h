@@ -63,8 +63,8 @@ public:
   std::string GetBaseTypeName() const;
 };
 //typedef std::pair<std::string, std::string> DeviceKeyType;
-DeviceKeyType CreateDeviceKey(igtl::MessageBase::Pointer message);
-DeviceKeyType CreateDeviceKey(vtkIGTLIODevicePointer device);
+OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(igtl::MessageBase::Pointer message);
+OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(vtkIGTLIODevicePointer device);
 bool operator==(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
 bool operator<(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
 
