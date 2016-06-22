@@ -20,27 +20,39 @@ set_property(CACHE IGTLIO_QT_VERSION PROPERTY STRINGS 4 5)
 if(NOT (IGTLIO_QT_VERSION VERSION_EQUAL "4" OR IGTLIO_QT_VERSION VERSION_EQUAL "5"))
     message(FATAL_ERROR "Expected value for IGTLIO_QT_VERSION is either '4' or '5'")
 endif()
-    
-add_subdirectory(Converter)
-add_subdirectory(Devices)
-add_subdirectory(Logic)
-add_subdirectory(GUI) # TODO make optional
-add_subdirectory(Examples) # TODO make optional
 
-# TODO use the namespace feature for all libs
-export(TARGETS igtlioLogic igtlioDevices igtlioConverter igtlioGUI
-  FILE "${CMAKE_CURRENT_BINARY_DIR}/OpenIGTLinkIOTargets.cmake"
-  )
-
-
-set (OpenIGTLinkIO_LIBRARIES igtlioLogic igtlioDevices igtlioConverter igtlioGUI)
+set (OpenIGTLinkIO_TARGETS igtlioLogic igtlioDevices igtlioConverter ${OpenIGTLinkIO_TARGETS})
 set (OpenIGTLinkIO_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
     Logic
     Converter
     Devices
+    ${OpenIGTLinkIO_INCLUDE_DIRS}
 )
+
+add_subdirectory(Converter)
+add_subdirectory(Devices)
+add_subdirectory(Logic)
+
+option(IGTLIO_USE_GUI "Build IGTLIO with an user interface" ON)
+if (${IGTLIO_USE_GUI})
+  add_subdirectory(GUI)
+  set (OpenIGTLinkIO_TARGETS igtlioGUI ${OpenIGTLinkIO_TARGETS})
+endif()
+
+option(IGTLIO_USE_EXAMPLES "Build IGTLIO examples" ON)
+if (${IGTLIO_USE_EXAMPLES})
+  add_subdirectory(Examples)
+endif ()
+
+# TODO use the namespace feature for all libs
+export(TARGETS ${OpenIGTLinkIO_TARGETS}
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/OpenIGTLinkIOTargets.cmake"
+  )
+
+set (OpenIGTLinkIO_LIBRARIES ${OpenIGTLinkIO_TARGETS})
+
 set (OpenIGTLinkIO_LIBRARY_DIRS
     ${CMAKE_CURRENT_BINARY_DIR}
 )
