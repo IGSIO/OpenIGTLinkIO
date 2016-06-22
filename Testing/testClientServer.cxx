@@ -1,6 +1,4 @@
 #include <string>
-#include <QApplication>
-#include <QMainWindow>
 #include "vtkIGTLIOLogic.h"
 #include "vtkIGTLIOConnector.h"
 #include "vtkTimerLog.h"
