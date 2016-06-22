@@ -30,7 +30,7 @@
 class vtkImageData;
 
 //---------------------------------------------------------------------------
-class vtkIGTLIOImageDeviceCreator : public vtkIGTLIODeviceCreator
+class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOImageDeviceCreator : public vtkIGTLIODeviceCreator
 {
 public:
   virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name);
