@@ -21,7 +21,7 @@ include(${CTK_USE_FILE})
 set(EXECUTABLE ${PROJECT_NAME})
 
 if( IGTLIO_QT_VERSION VERSION_GREATER "4" )
-    find_package( Qt5 COMPONENTS Widgets Concurrent Xml OpenGL Sql REQUIRED )
+    find_package( Qt5 COMPONENTS Widgets Xml OpenGL REQUIRED )
 else()
     find_package( Qt4 )
     include(${QT_USE_FILE})

@@ -54,6 +54,7 @@
 #include "igtlioLogicExport.h"
 #include "vtkIGTLIODevice.h"
 
+typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
 typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
