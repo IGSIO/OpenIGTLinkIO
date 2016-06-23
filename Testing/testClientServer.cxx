@@ -2,6 +2,7 @@
 #include "vtkIGTLIOLogic.h"
 #include "vtkIGTLIOConnector.h"
 #include "vtkTimerLog.h"
+#include <vtksys/SystemTools.hxx>
 
 struct LogicFixture
 {
@@ -43,6 +44,7 @@ int main(int argc, char **argv)
   {
     server.Logic->PeriodicProcess();
     client.Logic->PeriodicProcess();
+    vtksys::SystemTools::Delay(5);
 
     if (client.Connector->GetState() == vtkIGTLIOConnector::STATE_CONNECTED)
     {

@@ -94,9 +94,9 @@ int vtkIGTLIOImageDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, 
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer vtkIGTLIOImageDevice::GetIGTLMessage()
 {
- // cannot send a non-existent image
  if (!Content.image)
   {
+  vtkWarningMacro("Image is NULL, message not generated.")
   return 0;
   }
 
@@ -142,9 +142,9 @@ void vtkIGTLIOImageDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkIGTLIODevice::PrintSelf(os, indent);
 
-  os << indent << "CommandID:\t" <<"\n";
+  os << indent << "Image:\t" <<"\n";
   Content.image->PrintSelf(os, indent.GetNextIndent());
-  os << indent << "CommandName:\t" << "\n";
+  os << indent << "Transform:\t" << "\n";
   Content.transform->PrintSelf(os, indent.GetNextIndent());
 }
 

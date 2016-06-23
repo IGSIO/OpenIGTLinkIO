@@ -91,6 +91,8 @@ public:
     NewDeviceEvent        = 118949,
 //    DeviceModifiedEvent   = 118950, // must listen to each specific device in order to get this one.
     RemovedDeviceEvent    = 118951,
+    CommandQueryReceivedEvent, // one of the connected COMMAND devices got a query
+    CommandResponseReceivedEvent // one of the connected COMMAND devices got a query
   };
 
  static vtkIGTLIOLogic *New();

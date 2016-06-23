@@ -441,11 +441,19 @@ int vtkIGTLIOConnector::ReceiveController()
     // Receive Header
     headerMsg->InitPack();
 
+
+    vtkDebugMacro("Waiting for header of size: " << headerMsg->GetPackSize());
+
     int r = this->Socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+
+    vtkDebugMacro("Received header of size: " << headerMsg->GetPackSize());
+
+
     if (r != headerMsg->GetPackSize())
       {
       //vtkErrorMacro("Irregluar size.");
       //vtkErrorMacro("Irregluar size " << r << " expecting " << headerMsg->GetPackSize() );
+      vtkDebugMacro("ignoring header, breaking. received=" << r);
       break;
       }
 
@@ -480,6 +488,8 @@ int vtkIGTLIOConnector::ReceiveController()
         }
       }
 
+    vtkDebugMacro("completed read header : " << headerMsg->GetDeviceName() << " body size to read: " << headerMsg->GetBodySizeToRead());
+
 
     //----------------------------------------------------------------
     // Search Circular Buffer
@@ -507,7 +517,11 @@ int vtkIGTLIOConnector::ReceiveController()
       buffer->SetMessageHeader(headerMsg);
       buffer->AllocatePack();
 
+      vtkDebugMacro("Waiting to receive body:  size=" << buffer->GetPackBodySize()
+                    << ", GetBodySizeToRead=" << buffer->GetBodySizeToRead()
+                    << ", GetPackSize=" << buffer->GetPackSize());
       int read = this->Socket->Receive(buffer->GetPackBodyPointer(), buffer->GetPackBodySize());
+      vtkDebugMacro("Received body: " << read);
       if (read != buffer->GetPackBodySize())
         {
         vtkErrorMacro ("Only read " << read << " but expected to read "
@@ -781,16 +795,18 @@ int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::ME
       return 1;
     }
 
-//  std::cout << "sending message: " << std::endl;
+  std::cout << "sending message: " << device->GetDeviceName() << " " << msg->GetPackSize() << std::endl;
 //  device->Print(std::cout);
 
 
+//  int r = this->SendData(4158, (unsigned char*)msg->GetPackPointer());
   int r = this->SendData(msg->GetPackSize(), (unsigned char*)msg->GetPackPointer());
   if (r == 0)
     {
-      vtkDebugMacro("Sending OpenIGTLinkMessage: " << device_id.type << "/" << device_id.name);
+      vtkDebugMacro("Sending OpenIGTLinkMessage: " << device_id.type << "/" << device_id.name << " failed.");
       return 0;
     }
+  std::cout << "sent message: " << r << ", " << device->GetDeviceName() << std::endl;
   return r;
 
 //TODO: push the device_id Device to igtl,
