@@ -21,6 +21,7 @@
 // VTK includes
 #include <vtkObject.h>
 #include <vtkSmartPointer.h>
+#include <vtkCommand.h>
 
 // STD includes
 #include <vector>
@@ -37,13 +38,11 @@ typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
 class vtkIGTLIODeviceCreator : public vtkObject
 {
 public:
- // Create an instance of the specific device, with the given device_id
- virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name) = 0;
- // Return the device_type this factory creates devices for.
- virtual std::string GetDeviceType() const = 0;
-
+  // Create an instance of the specific device, with the given device_id
+  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name) = 0;
+  // Return the device_type this factory creates devices for.
+  virtual std::string GetDeviceType() const = 0;
   vtkAbstractTypeMacro(vtkIGTLIODeviceCreator,vtkObject);
-
 };
 //---------------------------------------------------------------------------
 
@@ -79,15 +78,9 @@ public:
    NUM_QUERY_STATUS,
  };
  enum {
-   ConnectedEvent        = 118944,
-   DisconnectedEvent     = 118945,
-   ActivatedEvent        = 118946,
-   DeactivatedEvent      = 118947,
    ReceiveEvent          = 118948,
-   NewDeviceEvent        = 118949,
-   DeviceModifiedEvent   = 118950,
-   RemovedDeviceEvent    = 118951,
    ResponseEvent         = 118952,
+   DeviceModifiedEvent   = vtkCommand::ModifiedEvent
  };
 
 
@@ -167,9 +160,7 @@ public:
   int CancelQuery(int index);
 
  public:
-
   vtkAbstractTypeMacro(vtkIGTLIODevice,vtkObject);
-
 
 protected:
   void SetHeader(igtl::BaseConverter::HeaderData header);
@@ -182,7 +173,6 @@ private:
  MESSAGE_DIRECTION MessageDirection;
  bool PushOnConnect;
  double QueryTimeOut;
-
 
  protected:
   vtkIGTLIODevice();
