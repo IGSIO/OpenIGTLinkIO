@@ -9,6 +9,7 @@ find_package(VTK
   COMPONENTS
   vtkIOImage
   vtkImagingMath
+  vtkImagingCore
   REQUIRED
   NO_MODULE)
 include(${VTK_USE_FILE})
@@ -16,6 +17,8 @@ include(${VTK_USE_FILE})
 set(EXECUTABLE ${PROJECT_NAME})
 
 set(${KIT}_SRCS
+  IGTLIOFixture.cxx
+  IGTLIOFixture.h
   )
 
 set(${KIT}_MOC_SRCS

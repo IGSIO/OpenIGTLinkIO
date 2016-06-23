@@ -7,53 +7,52 @@
 #include "igtlImageConverter.h"
 #include "vtkMatrix4x4.h"
 #include <vtksys/SystemTools.hxx>
+#include "igtlImageConverter.h"
+#include <vtkImageDifference.h>
+#include "IGTLIOFixture.h"
 
-struct LogicFixture
+bool compare(vtkSmartPointer<vtkMatrix4x4> a, vtkSmartPointer<vtkMatrix4x4> b)
 {
-  LogicFixture()
+  for (int x=0; x<4; ++x)
   {
+    for (int y=0; y<4; ++y)
+    {
+      if (fabs(b->Element[x][y] - a->Element[x][y]) > 1E-3)
+        return false;
+    }
   }
+  return true;
+}
 
-  void startClient()
-  {
-    Logic = vtkIGTLIOLogicPointer::New();
-    Connector = Logic->CreateConnector();
-    Connector->SetTypeClient(Connector->GetServerHostname(), Connector->GetServerPort());
-    std::cout << "Starting CLIENT connector " << Connector.GetPointer()  << std::endl;
-    Connector->Start();
-  }
-  void startServer()
-  {
-    Logic = vtkIGTLIOLogicPointer::New();
-    Connector = Logic->CreateConnector();
-    Connector->SetTypeServer(Connector->GetServerPort());
-    std::cout << "Starting SERVER connector " << Connector.GetPointer() << std::endl;
-    Connector->Start();
-  }
 
-  vtkSmartPointer<vtkIGTLIOImageDevice> CreateDummyImageDevice()
-  {
-    vtkSmartPointer<vtkIGTLIOImageDevice> imageDevice;
-    imageDevice = vtkIGTLIOImageDevice::SafeDownCast(vtkIGTLIOImageDeviceCreator::New()->Create("TestDevice_Image"));
-    igtl::ImageConverter::ContentData imageContent;
-    imageContent.image = vtkSmartPointer<vtkImageData>::New();
-    imageContent.image->SetSpacing(1.5, 1.2, 1);
-    imageContent.image->SetExtent(0, 19, 0, 49, 0, 1);
-    imageContent.image->AllocateScalars(VTK_UNSIGNED_CHAR, 2);
-    imageContent.transform = vtkSmartPointer<vtkMatrix4x4>::New();
-    imageContent.transform->Identity();
+bool compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
+{
+  vtkSmartPointer<vtkImageDifference> differenceFilter = vtkSmartPointer<vtkImageDifference>::New();
+  differenceFilter->SetInputData(a);
+  differenceFilter->SetImageData(b);
+  differenceFilter->Update();
+  double imageError = differenceFilter->GetError();
+  if (fabs(imageError) > 1E-3)
+    return false;
+  return true;
+}
 
-  //	int scalarSize = dim[0]*dim[1]*dim[2]*components;
-  //	TYPE* ptr = reinterpret_cast<TYPE*>(data->GetScalarPointer());
-  //	std::fill(ptr, ptr+scalarSize, initValue);
+bool compare(vtkSmartPointer<vtkIGTLIOImageDevice> a, vtkSmartPointer<vtkIGTLIOImageDevice> b)
+{
+  if (a->GetDeviceName() != b->GetDeviceName())
+    return false;
+  if (fabs(a->GetTimestamp()-b->GetTimestamp()) < 1E-3)
+    return false;
+  if (a->GetDeviceType() != b->GetDeviceType())
+    return false;
+  if (!compare(a->GetContent().image, b->GetContent().image))
+    return false;
+  if (!compare(a->GetContent().transform, b->GetContent().transform))
+    return false;
 
-    imageDevice->SetContent(imageContent);
-    return imageDevice;
-  }
+  return true;
+}
 
-  vtkIGTLIOLogicPointer Logic;
-  vtkIGTLIOConnectorPointer Connector;
-};
 
 int main(int argc, char **argv)
 {
@@ -106,13 +105,29 @@ int main(int argc, char **argv)
     client.Logic->PeriodicProcess();
     vtksys::SystemTools::Delay(5);
 
-    if (client.Logic->GetNumberOfDevices() > 0)
+    if (client.Logic->GetNumberOfDevices() != 0)
     {
-      std::cout << "SUCCESS: Found devices in the client." << std::endl;
-      return 0;
+      break;
     }
   }
 
-  std::cout << "ERROR: TIMEOUT receiving image" << std::endl;
-  return 1;
+  if (client.Logic->GetNumberOfDevices() == 0)
+  {
+    std::cout << "FAILURE: No devices received." << std::endl;
+    return 1;
+  }
+
+  vtkSmartPointer<vtkIGTLIOImageDevice> receivedDevice;
+  receivedDevice = vtkIGTLIOImageDevice::SafeDownCast(client.Logic->GetDevice(0));
+  if (!receivedDevice)
+  {
+    std::cout << "FAILURE: Non-image device received." << std::endl;
+    return 1;
+  }
+
+  if (!compare(imageDevice, receivedDevice))
+  {
+    std::cout << "FAILURE: Image differs from the one sent from server." << std::endl;
+    return 1;
+  }
 }

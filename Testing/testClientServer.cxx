@@ -3,31 +3,7 @@
 #include "vtkIGTLIOConnector.h"
 #include "vtkTimerLog.h"
 #include <vtksys/SystemTools.hxx>
-
-struct LogicFixture
-{
-  LogicFixture()
-  {
-  }
-
-  void startClient()
-  {
-    Logic = vtkIGTLIOLogicPointer::New();
-    Connector = Logic->CreateConnector();
-    Connector->SetTypeClient(Connector->GetServerHostname(), Connector->GetServerPort());
-    Connector->Start();
-  }
-  void startServer()
-  {
-    Logic = vtkIGTLIOLogicPointer::New();
-    Connector = Logic->CreateConnector();
-    Connector->SetTypeServer(Connector->GetServerPort());
-    Connector->Start();
-  }
-
-  vtkIGTLIOLogicPointer Logic;
-  vtkIGTLIOConnectorPointer Connector;
-};
+#include "IGTLIOFixture.h"
 
 int main(int argc, char **argv)
 {

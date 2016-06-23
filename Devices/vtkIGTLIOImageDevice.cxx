@@ -72,7 +72,7 @@ void vtkIGTLIOImageDevice::SetContent(igtl::ImageConverter::ContentData content)
   this->Modified();
 }
 
-igtl::ImageConverter::ContentData vtkIGTLIOImageDevice::GetContent(igtl::ImageConverter::ContentData content)
+igtl::ImageConverter::ContentData vtkIGTLIOImageDevice::GetContent()
 {
   return Content;
 }
