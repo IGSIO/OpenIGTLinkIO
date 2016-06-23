@@ -119,7 +119,11 @@ int vtkIGTLIOLogic::GetNumberOfConnectors() const
 //---------------------------------------------------------------------------
 vtkIGTLIOConnectorPointer vtkIGTLIOLogic::GetConnector(int index)
 {
-  return Connectors[index];
+  if (index>=0 && index<Connectors.size())
+    return Connectors[index];
+
+  vtkErrorMacro("index " << index << " out of bounds.");
+  return NULL;
 }
 
 //---------------------------------------------------------------------------
@@ -160,12 +164,11 @@ vtkIGTLIODevicePointer vtkIGTLIOLogic::GetDevice(int index)
   // TODO: optimize by caching the vector if necessary
   std::vector<vtkIGTLIODevicePointer> all = this->CreateDeviceList();
 
-  if (index<0 || index>=all.size())
-    {
-      return vtkIGTLIODevicePointer();
-    }
+  if (index>=0 && index<all.size())
+    return all[index];
 
-  return all[index];
+  vtkErrorMacro("index " << index << " out of bounds.");
+  return NULL;
 }
 
 //---------------------------------------------------------------------------

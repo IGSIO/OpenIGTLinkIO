@@ -61,7 +61,6 @@ int main(int argc, char **argv)
 
   LogicFixture client;
   client.startClient();
-  client.Connector->DebugOn();
 
   double timeout = 2;
   double starttime = vtkTimerLog::GetUniversalTime();

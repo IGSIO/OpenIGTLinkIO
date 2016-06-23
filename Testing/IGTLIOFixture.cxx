@@ -40,8 +40,8 @@ vtkSmartPointer<vtkIGTLIOImageDevice> LogicFixture::CreateDummyImageDevice()
   imageContent.transform->Identity();
 
   int scalarSize = imageContent.image->GetScalarSize();
-  u_char* ptr = reinterpret_cast<u_char*>(imageContent.image->GetScalarPointer());
-  u_char color = 0;
+  unsigned char* ptr = reinterpret_cast<unsigned char*>(imageContent.image->GetScalarPointer());
+  unsigned char color = 0;
   std::fill(ptr, ptr+scalarSize, color++);
 
   imageDevice->SetContent(imageContent);
