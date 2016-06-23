@@ -32,6 +32,7 @@
 #include "igtlBaseConverter.h"
 
 class vtkIGTLIODevice;
+typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
 
 class vtkIGTLIODeviceCreator : public vtkObject
 {
