@@ -5,3 +5,8 @@ set (OpenIGTLinkIO_FOUND 1)
 set (OpenIGTLinkIO_INCLUDE_DIRS "@OpenIGTLinkIO_INCLUDE_DIRS@")
 set (OpenIGTLinkIO_LIBRARY_DIRS "@OpenIGTLinkIO_LIBRARY_DIRS@")
 set (OpenIGTLinkIO_LIBRARIES "@OpenIGTLinkIO_LIBRARIES@")
+
+set( IGTLIO_QT_VERSION "@IGTLIO_QT_VERSION@" )
+if( IGTLIO_QT_VERSION VERSION_EQUAL "5" )
+    find_package( Qt5 COMPONENTS Widgets Concurrent Xml OpenGL Sql REQUIRED )
+endif()
