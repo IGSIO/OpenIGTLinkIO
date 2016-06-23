@@ -80,7 +80,7 @@ public:
  enum {
    ReceiveEvent          = 118948,
    ResponseEvent         = 118952,
-   DeviceModifiedEvent   = vtkCommand::ModifiedEvent
+   ModifiedEvent         = vtkCommand::ModifiedEvent
  };
 
 
