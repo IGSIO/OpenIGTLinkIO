@@ -54,6 +54,7 @@ set(${KIT}_SRCS
   qIGTLIODevicePropertiesWidget.cxx
   DeviceWidgets/qIGTLIODeviceWidgetFactory.h
   DeviceWidgets/qIGTLIODeviceWidgetFactory.cxx
+  DeviceWidgets/qIGTLIODeviceWidgetFactory.h
   DeviceWidgets/qIGTLIODeviceWidget.h
   DeviceWidgets/qIGTLIODeviceWidget.cxx
   DeviceWidgets/qIGTLIOGenericDeviceWidget.h
@@ -75,9 +76,7 @@ set(${KIT}_MOC_SRCS
   qIGTLIODeviceButtonsWidget.h
   qIGTLIODeviceAddWidget.h
   qIGTLIODevicePropertiesWidget.h
-  DeviceWidgets/qIGTLIODeviceWidgetFactory.h
   DeviceWidgets/qIGTLIODeviceWidget.h
-  DeviceWidgets/qIGTLIOGenericDeviceWidget.h
   DeviceWidgets/qIGTLIOStatusDeviceWidget.h
   DeviceWidgets/qIGTLIOCommandDeviceWidget.h
   )

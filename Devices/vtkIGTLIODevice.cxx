@@ -21,42 +21,28 @@
 #include <string>
 
 
-////---------------------------------------------------------------------------
-//vtkStandardNewMacro(vtkIGTLIODevice);
+//---------------------------------------------------------------------------
+vtkIGTLIODevice::vtkIGTLIODevice()
+{
+  PushOnConnect = false;
+  MessageDirection = MESSAGE_DIRECTION_IN;
+  QueryTimeOut = 0;
+}
 
-////---------------------------------------------------------------------------
-//class vtkIGTLIODevicePrivate
-//{
-//public:
-//  vtkIGTLIODevicePrivate();
-//  ~vtkIGTLIODevicePrivate();
+//---------------------------------------------------------------------------
+vtkIGTLIODevice::~vtkIGTLIODevice()
+{
+}
 
-//  void SetOpenIGTLinkIFLogic(vtkSlicerOpenIGTLinkIFLogic* logic);
-//  vtkSlicerOpenIGTLinkIFLogic* GetOpenIGTLinkIFLogic();
+//---------------------------------------------------------------------------
+void vtkIGTLIODevice::PrintSelf(ostream& os, vtkIndent indent)
+{
+  this->vtkObject::PrintSelf(os, indent);
 
-//protected:
-//  vtkSlicerOpenIGTLinkIFLogic* OpenIGTLinkIFLogic;
-//};
-
-//vtkIGTLIODevicePrivate::vtkIGTLIODevicePrivate()
-//{
-//  this->OpenIGTLinkIFLogic = NULL;
-//}
-
-//vtkIGTLIODevicePrivate::~vtkIGTLIODevicePrivate()
-//{
-//}
-
-//void vtkIGTLIODevicePrivate::SetOpenIGTLinkIFLogic(vtkSlicerOpenIGTLinkIFLogic* logic)
-//{
-//  this->OpenIGTLinkIFLogic = logic;
-//}
-
-
-//vtkSlicerOpenIGTLinkIFLogic* vtkIGTLIODevicePrivate::GetOpenIGTLinkIFLogic()
-//{
-//  return this->OpenIGTLinkIFLogic;
-//}
+  os << indent << "DeviceType:\t" << this->GetDeviceType() << "\n";
+  os << indent << "DeviceName:\t" << this->GetDeviceName() << "\n";
+  os << indent << "Timestamp:\t" << std::fixed << setprecision(6) << this->GetTimestamp() << "\n";
+}
 
 //---------------------------------------------------------------------------
 std::string vtkIGTLIODevice::GetDeviceName() const
@@ -64,17 +50,20 @@ std::string vtkIGTLIODevice::GetDeviceName() const
   return HeaderData.deviceName;
 }
 
+//---------------------------------------------------------------------------
 void vtkIGTLIODevice::SetDeviceName(std::string name)
 {
   HeaderData.deviceName = name;
   this->Modified();
 }
 
+//---------------------------------------------------------------------------
 double vtkIGTLIODevice::GetTimestamp() const
 {
   return HeaderData.timestamp;
 }
 
+//---------------------------------------------------------------------------
 void vtkIGTLIODevice::SetTimestamp(double val)
 {
   HeaderData.timestamp = val;
@@ -87,6 +76,7 @@ std::vector<vtkIGTLIODevice::QueryType> vtkIGTLIODevice::GetQueries() const
   return Queries;
 }
 
+//---------------------------------------------------------------------------
 int vtkIGTLIODevice::CheckQueryExpiration()
 {
   double currentTime = vtkTimerLog::GetUniversalTime();
@@ -122,6 +112,7 @@ int vtkIGTLIODevice::CheckQueryExpiration()
   return 0;
 }
 
+//---------------------------------------------------------------------------
 int vtkIGTLIODevice::PruneCompletedQueries()
 {
   std::vector<QueryType> pruned;
@@ -137,94 +128,23 @@ int vtkIGTLIODevice::PruneCompletedQueries()
   return 0;
 }
 
+//---------------------------------------------------------------------------
 int vtkIGTLIODevice::CancelQuery(int index)
 {
   Queries.erase(Queries.begin()+index);
   return 0;
 }
 
+//---------------------------------------------------------------------------
 void vtkIGTLIODevice::SetHeader(igtl::BaseConverter::HeaderData header)
 {
   HeaderData = header;
   this->Modified();
 }
 
+//---------------------------------------------------------------------------
 igtl::BaseConverter::HeaderData vtkIGTLIODevice::GetHeader()
 {
   return HeaderData;
 }
 
-vtkIGTLIODevice::vtkIGTLIODevice()
-{
-  PushOnConnect = false;
-  MessageDirection = MESSAGE_DIRECTION_IN;
-  QueryTimeOut = 0;
-  //  this->CheckCRC = 1;
-//  this->Private = new vtkIGTLIODevicePrivate;
-}
-
-//---------------------------------------------------------------------------
-vtkIGTLIODevice::~vtkIGTLIODevice()
-{
-//  if (this->Private)
-//    {
-//    delete this->Private;
-//    }
-}
-
-////---------------------------------------------------------------------------
-//void vtkIGTLIODevice::PrintSelf(ostream& os, vtkIndent indent)
-//{
-//  this->vtkObject::PrintSelf(os, indent);
-//}
-
-
-////---------------------------------------------------------------------------
-//void vtkIGTLIODevice::SetOpenIGTLinkIFLogic(vtkSlicerOpenIGTLinkIFLogic* logic)
-//{
-//  if (this->Private)
-//    {
-//    this->Private->SetOpenIGTLinkIFLogic(logic);
-//    }
-//}
-
-
-////---------------------------------------------------------------------------
-//vtkSlicerOpenIGTLinkIFLogic* vtkIGTLIODevice::GetOpenIGTLinkIFLogic()
-//{
-//  if (this->Private)
-//    {
-//    return this->Private->GetOpenIGTLinkIFLogic();
-//    }
-//  else
-//    {
-//    return NULL;
-//    }
-//}
-
-////---------------------------------------------------------------------------
-//int vtkIGTLIODevice::IGTLToMRML(igtl::MessageBase::Pointer buffer, vtkMRMLNode* node)
-//{
-//  if(buffer && node)
-//    {
-//      igtlUint32 second;
-//      igtlUint32 nanosecond;
-      
-//      buffer->GetTimeStamp(&second, &nanosecond);
-      
-//      std::stringstream ss;
-//      ss << second << nanosecond;
-      
-//      node->SetAttribute("Timestamp",ss.str().c_str());
-//    }
-//  return 0;
-//}
-
-void vtkIGTLIODevice::PrintSelf(ostream& os, vtkIndent indent)
-{
-  this->vtkObject::PrintSelf(os, indent);
-
-  os << indent << "DeviceType:\t" << this->GetDeviceType() << "\n";
-  os << indent << "DeviceName:\t" << this->GetDeviceName() << "\n";
-  os << indent << "Timestamp:\t" << std::fixed << setprecision(6) << this->GetTimestamp() << "\n";
-}
