@@ -52,7 +52,7 @@ public:
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
 
   void SetContent(igtl::TransformConverter::ContentData content);
-  igtl::TransformConverter::ContentData GetContent(igtl::TransformConverter::ContentData content);
+  igtl::TransformConverter::ContentData GetContent();
 
 public:
   static vtkIGTLIOTransformDevice *New();
