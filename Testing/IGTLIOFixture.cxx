@@ -9,40 +9,37 @@
 void onReceivedEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
 {
   LogicFixture* self = reinterpret_cast<LogicFixture*>(clientdata);
-  std::cout << "-------------------- LogicFixture=" << self << ", onReceivedEventFunc " << eid << std::endl;
-
   self->LastReceivedEvent = eid;
-//  logic->InvokeEvent(vtkIGTLIOLogic::NewDeviceEvent, calldata);
 }
 
 LogicFixture::LogicFixture()
 {
   LastReceivedEvent = -1;
 
+  Logic = vtkIGTLIOLogicPointer::New();
+  Connector = Logic->CreateConnector();
+
   LogicEventCallback = vtkSmartPointer<vtkCallbackCommand>::New();
   LogicEventCallback->SetCallback(onReceivedEventFunc);
   LogicEventCallback->SetClientData(this);
+
+  Logic->AddObserver(vtkIGTLIOLogic::NewDeviceEvent, LogicEventCallback);
+  Logic->AddObserver(vtkIGTLIOLogic::RemovedDeviceEvent, LogicEventCallback);
+  Logic->AddObserver(vtkIGTLIOLogic::CommandQueryReceivedEvent, LogicEventCallback);
+  Logic->AddObserver(vtkIGTLIOLogic::CommandResponseReceivedEvent, LogicEventCallback);
 }
 
 void LogicFixture::startClient()
 {
-  Logic = vtkIGTLIOLogicPointer::New();
-  Connector = Logic->CreateConnector();
   Connector->SetTypeClient(Connector->GetServerHostname(), Connector->GetServerPort());
   std::cout << "Starting CLIENT connector " << Connector.GetPointer()  << std::endl;
-  Logic->AddObserver(vtkIGTLIOLogic::CommandQueryReceivedEvent, LogicEventCallback);
-  Logic->AddObserver(vtkIGTLIOLogic::CommandResponseReceivedEvent, LogicEventCallback);
   Connector->Start();
 }
 
 void LogicFixture::startServer()
 {
-  Logic = vtkIGTLIOLogicPointer::New();
-  Connector = Logic->CreateConnector();
   Connector->SetTypeServer(Connector->GetServerPort());
   std::cout << "Starting SERVER connector " << Connector.GetPointer() << std::endl;
-  Logic->AddObserver(vtkIGTLIOLogic::CommandQueryReceivedEvent, LogicEventCallback);
-  Logic->AddObserver(vtkIGTLIOLogic::CommandResponseReceivedEvent, LogicEventCallback);
   Connector->Start();
 }
 
@@ -85,6 +82,37 @@ vtkSmartPointer<vtkIGTLIOCommandDevice> LogicFixture::CreateDummyCommandDevice()
 
 }
 
+bool LogicFixture::ConvertCommandDeviceToResponse(vtkSmartPointer<vtkIGTLIOCommandDevice> device)
+{
+  if (!device)
+  {
+    std::cout << "FAILURE: Non-command device received." << std::endl;
+    return false;
+  }
+
+  igtl::CommandConverter::ContentData content = device->GetContent();
+  if (content.name != "GetDeviceParameters")
+  {
+    std::cout << "FAILURE: Wrong command received." << std::endl;
+    return false;
+  }
+
+  content.content = ""
+      "<Command>\n"
+      "  <Result>GetDeviceParameters: success</Result>\n"
+      "  <Parameter Name=\"Depth\" Value=\"45\" />\n"
+      "</Command>";
+
+  device->SetContent(content);
+  return true;
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+
 bool ClientServerFixture::ConnectClientToServer()
 {
   Server.startServer();
@@ -104,7 +132,7 @@ bool ClientServerFixture::ConnectClientToServer()
     if (Client.Connector->GetState() == vtkIGTLIOConnector::STATE_CONNECTED)
     {
       std::cout << "SUCCESS: connected to server" << std::endl;
-      break;
+      return true;
     }
     if (Client.Connector->GetState() == vtkIGTLIOConnector::STATE_OFF)
     {
@@ -113,7 +141,8 @@ bool ClientServerFixture::ConnectClientToServer()
     }
   }
 
-  return true;
+  std::cout << "TIMEOUT connecting to server" << std::endl;
+  return false;
 }
 
 bool ClientServerFixture::LoopUntilExpectedNumberOfDevicesReached(LogicFixture logic, int expectedNumberOfDevices)
@@ -142,7 +171,7 @@ bool ClientServerFixture::LoopUntilExpectedNumberOfDevicesReached(LogicFixture l
 
 bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventId)
 {
-//  logic->LastReceivedEvent = -1;
+  logic->LastReceivedEvent = -1;
 
   double timeout = 2;
   double starttime = vtkTimerLog::GetUniversalTime();
@@ -151,9 +180,8 @@ bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventI
   {
     Server.Logic->PeriodicProcess();
     Client.Logic->PeriodicProcess();
-    vtksys::SystemTools::Delay(200);
+    vtksys::SystemTools::Delay(5);
 
-    std::cout << "ClientServerFixture::LoopUntilEventDetected LogicFixture=" << logic  << ", eid=" << logic->LastReceivedEvent << std::endl;
     if (logic->LastReceivedEvent == eventId)
     {
       return true;

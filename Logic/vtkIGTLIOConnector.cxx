@@ -796,7 +796,7 @@ int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::ME
       return 1;
     }
 
-  std::cout << "sending message: " << device->GetDeviceName() << " " << msg->GetPackSize() << std::endl;
+//  std::cout << "sending message: " << device->GetDeviceName() << " " << msg->GetPackSize() << std::endl;
 //  device->Print(std::cout);
 
 
@@ -807,7 +807,6 @@ int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::ME
       vtkDebugMacro("Sending OpenIGTLinkMessage: " << device_id.type << "/" << device_id.name << " failed.");
       return 0;
     }
-  std::cout << "sent message: " << r << ", " << device->GetDeviceName() << std::endl;
   return r;
 
 //TODO: push the device_id Device to igtl,

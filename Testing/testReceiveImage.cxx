@@ -56,73 +56,48 @@ bool compare(vtkSmartPointer<vtkIGTLIOImageDevice> a, vtkSmartPointer<vtkIGTLIOI
 
 int main(int argc, char **argv)
 {
-  LogicFixture server;
-  server.startServer();
+  ClientServerFixture fixture;
 
-  LogicFixture client;
-  client.startClient();
+  if (!fixture.ConnectClientToServer())
+    return 1;
 
-  double timeout = 2;
-  double starttime = vtkTimerLog::GetUniversalTime();
 
-  // Client connects to server.
-  while (vtkTimerLog::GetUniversalTime() - starttime < timeout)
-  {
-    server.Logic->PeriodicProcess();
-    client.Logic->PeriodicProcess();
-    vtksys::SystemTools::Delay(5);
-
-    if (client.Connector->GetState() == vtkIGTLIOConnector::STATE_CONNECTED)
-    {
-      std::cout << "SUCCESS: connected to server" << std::endl;
-      break;
-    }
-    if (client.Connector->GetState() == vtkIGTLIOConnector::STATE_OFF)
-    {
-      std::cout << "FAILURE to connect to server" << std::endl;
-      return 1;
-    }
-  }
-
-  if (client.Logic->GetNumberOfDevices() != 0)
+  if (fixture.Client.Logic->GetNumberOfDevices() != 0)
   {
     std::cout << "ERROR: Client has devices before they have been added or fundamental error!" << std::endl;
     return 1;
   }
 
-  std::cout << "********** CONNECTION DONE *********" << std::endl;
+  std::cout << "*** Connection done" << std::endl;
+  //---------------------------------------------------------------------------
 
-  vtkSmartPointer<vtkIGTLIOImageDevice> imageDevice = server.CreateDummyImageDevice();
-  server.Connector->AddDevice(imageDevice);
-  server.Connector->SendMessage(CreateDeviceKey(imageDevice));
+  vtkSmartPointer<vtkIGTLIOImageDevice> imageDevice = fixture.Server.CreateDummyImageDevice();
+  fixture.Server.Connector->AddDevice(imageDevice);
+  fixture.Server.Connector->SendMessage(CreateDeviceKey(imageDevice));
+  std::cout << "*** Sent message from Server to Client" << std::endl;
+  //---------------------------------------------------------------------------
 
-  starttime = vtkTimerLog::GetUniversalTime();
-  // Client waits for an image to be sent from the server.
-  while (vtkTimerLog::GetUniversalTime() - starttime < timeout)
+  if (!fixture.LoopUntilEventDetected(&fixture.Client, vtkIGTLIOLogic::NewDeviceEvent))
   {
-    server.Logic->PeriodicProcess();
-    client.Logic->PeriodicProcess();
-    vtksys::SystemTools::Delay(5);
-
-    if (client.Logic->GetNumberOfDevices() != 0)
-    {
-      break;
-    }
+    return 1;
   }
 
-  if (client.Logic->GetNumberOfDevices() == 0)
+  if (fixture.Client.Logic->GetNumberOfDevices() == 0)
   {
     std::cout << "FAILURE: No devices received." << std::endl;
     return 1;
   }
 
   vtkSmartPointer<vtkIGTLIOImageDevice> receivedDevice;
-  receivedDevice = vtkIGTLIOImageDevice::SafeDownCast(client.Logic->GetDevice(0));
+  receivedDevice = vtkIGTLIOImageDevice::SafeDownCast(fixture.Client.Logic->GetDevice(0));
   if (!receivedDevice)
   {
     std::cout << "FAILURE: Non-image device received." << std::endl;
     return 1;
   }
+
+  std::cout << "*** Client received IMAGE device." << std::endl;
+  //---------------------------------------------------------------------------
 
   if (!compare(imageDevice, receivedDevice))
   {
