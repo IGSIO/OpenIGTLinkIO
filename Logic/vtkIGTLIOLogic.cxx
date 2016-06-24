@@ -34,7 +34,6 @@ void onNewDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata
   logic->InvokeEvent(vtkIGTLIOLogic::NewDeviceEvent, calldata);
 
   vtkIGTLIODevice* device = reinterpret_cast<vtkIGTLIODevice*>(calldata);
-  std::cout << "onNewDeviceEventFunc device=" << device->GetDeviceType() << ", " << device->GetDeviceName() << std::endl;
   device->AddObserver(vtkIGTLIODevice::CommandQueryReceivedEvent, logic->DeviceEventCallback);
   device->AddObserver(vtkIGTLIODevice::CommandResponseReceivedEvent, logic->DeviceEventCallback);
 }
@@ -46,7 +45,6 @@ void onRemovedDeviceEventFunc(vtkObject* caller, unsigned long eid, void* client
   logic->InvokeEvent(vtkIGTLIOLogic::RemovedDeviceEvent, calldata);
 
   vtkIGTLIODevice* device = reinterpret_cast<vtkIGTLIODevice*>(calldata);
-  std::cout << "onRemovedDeviceEventFunc device=" << device->GetDeviceType() << ", " << device->GetDeviceName() << std::endl;
   device->RemoveObserver(logic->DeviceEventCallback);
 }
 
@@ -58,7 +56,6 @@ void onDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, v
   if ((eid==vtkIGTLIODevice::CommandQueryReceivedEvent) ||
       (eid==vtkIGTLIODevice::CommandResponseReceivedEvent))
   {
-    std::cout << "-------------onDeviceEventFunc event=" << eid << std::endl;
     logic->InvokeEvent(eid, calldata);
   }
 }

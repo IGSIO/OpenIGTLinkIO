@@ -18,12 +18,17 @@ struct LogicFixture
 
   vtkSmartPointer<vtkIGTLIOImageDevice> CreateDummyImageDevice();
   vtkSmartPointer<vtkIGTLIOCommandDevice> CreateDummyCommandDevice();
+  bool ConvertCommandDeviceToResponse(vtkSmartPointer<vtkIGTLIOCommandDevice> deviceKey);
+
 
   vtkIGTLIOLogicPointer Logic;
   vtkIGTLIOConnectorPointer Connector;
 
   vtkSmartPointer<class vtkCallbackCommand> LogicEventCallback;
   int LastReceivedEvent;
+
+private:
+  void setupObservers();
 };
 
 struct ClientServerFixture
