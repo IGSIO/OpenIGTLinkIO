@@ -57,11 +57,8 @@ std::string vtkIGTLIOCommandDevice::GetDeviceType() const
 //---------------------------------------------------------------------------
 int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
-  // If we receive a RTS_COMMAND, look in the query queue for anyone waiting for it.
-  //
-  // TODO: If we receive a COMMAND, we are expected to act as a server
-  // and respond to the COMMAND contents.
-
+  // RTS_COMMAND received:
+  //    - look in the query queue for anyone waiting for it.
   if (buffer->GetDeviceType()==std::string(Converter->GetIGTLResponseName()))
     {
     vtkSmartPointer<vtkIGTLIOCommandDevice> response = vtkSmartPointer<vtkIGTLIOCommandDevice>::New();
@@ -84,11 +81,16 @@ int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer
     return 1;
     }
 
-
+  // COMMAND received
+  //   - store the incoming message, emit event
+  //     No response is created - this is the responsibility of the application.
   if (buffer->GetDeviceType()==std::string(Converter->GetIGTLTypeName()))
     {
-    vtkErrorMacro ("Client does not handle incoming COMMAND messages\n");
-    return 0;
+    if (Converter->fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+      {
+      this->Modified();
+      return 1;
+      }
     }
 
  return 0;
@@ -129,13 +131,40 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage()
 }
 
 //---------------------------------------------------------------------------
+igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLResponseMessage()
+{
+ // cannot send a non-existent Command (?)
+ if (Content.name.empty())
+  {
+  return 0;
+  }
+
+ this->SetTimestamp(vtkTimerLog::GetUniversalTime());
+
+ if (this->ResponseMessage.IsNull())
+   this->ResponseMessage = igtl::RTSCommandMessage::New();
+
+ igtl::CommandMessage::Pointer response = dynamic_pointer_cast<igtl::CommandMessage>(this->ResponseMessage);
+ if (!Converter->toIGTL(HeaderData, Content, &response))
+   {
+   return 0;
+   }
+
+ return dynamic_pointer_cast<igtl::MessageBase>(this->ResponseMessage);
+}
+
+//---------------------------------------------------------------------------
 igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
   if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
-
    }
+  if (prefix==vtkIGTLIODevice::MESSAGE_PREFIX_REPLY)
+   {
+     return this->GetIGTLResponseMessage();
+   }
+
 
  return igtl::MessageBase::Pointer();
 }

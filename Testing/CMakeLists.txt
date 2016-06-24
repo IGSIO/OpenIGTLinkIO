@@ -40,12 +40,13 @@ set(${KIT}_TARGET_LIBRARIES
   igtlioLogic
   )
 
-add_executable(testClientServer testClientServer.cxx ${${KIT}_SRCS} ${${KIT}_MOC_SRCS})
-target_link_libraries(testClientServer PUBLIC ${${KIT}_TARGET_LIBRARIES})
-target_include_directories(testClientServer ${${KIT}_INCLUDE_DIRECTORIES})
-add_test("testClientServer" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/testClientServer)
+macro(add_io_test test_name test_target source_files)
+  add_executable(${test_target} ${source_files} ${${KIT}_SRCS} ${${KIT}_MOC_SRCS})
+  target_link_libraries(${test_target} PUBLIC ${${KIT}_TARGET_LIBRARIES})
+  target_include_directories(${test_target} ${${KIT}_INCLUDE_DIRECTORIES})
+  add_test(${test_name} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${test_target})
+endmacro()
 
-add_executable(testReceiveImage testReceiveImage.cxx ${${KIT}_SRCS} ${${KIT}_MOC_SRCS})
-target_link_libraries(testReceiveImage PUBLIC ${${KIT}_TARGET_LIBRARIES})
-target_include_directories(testReceiveImage ${${KIT}_INCLUDE_DIRECTORIES})
-add_test("testReceiveImage" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/testReceiveImage)
+add_io_test("testClientServer" testClientServer testClientServer.cxx)
+add_io_test("testReceiveImage" testReceiveImage testReceiveImage.cxx)
+add_io_test("testSendReceiveCommand" testSendReceiveCommand testSendReceiveCommand.cxx)

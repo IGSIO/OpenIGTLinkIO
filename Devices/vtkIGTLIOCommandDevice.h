@@ -44,6 +44,8 @@ public:
   igtl::CommandConverter::ContentData GetContent();
   std::vector<std::string> GetAvailableCommandNames() const;
 
+  igtl::MessageBase::Pointer GetIGTLResponseMessage();
+
  public:
   static vtkIGTLIOCommandDevice *New();
   vtkTypeMacro(vtkIGTLIOCommandDevice,vtkIGTLIODevice);
@@ -56,6 +58,7 @@ public:
 
  protected:
   igtl::CommandMessage::Pointer OutMessage;
+  igtl::RTSCommandMessage::Pointer ResponseMessage;
   igtl::CommandConverter::ContentData Content;
   igtl::CommandConverter::Pointer Converter;
 };

@@ -815,6 +815,19 @@ int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::ME
 //  return 0;
 }
 
+vtkIGTLIODeviceFactoryPointer vtkIGTLIOConnector::GetDeviceFactory()
+{
+  return DeviceFactory;
+}
+
+void vtkIGTLIOConnector::SetDeviceFactory(vtkIGTLIODeviceFactoryPointer val)
+{
+  if (val==DeviceFactory)
+    return;
+  DeviceFactory = val;
+  this->Modified();
+}
+
 //---------------------------------------------------------------------------
 int vtkIGTLIOConnector::PushNode(vtkIGTLIODevicePointer node, int event)
 {

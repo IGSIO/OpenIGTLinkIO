@@ -69,20 +69,9 @@ bool operator==(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
 bool operator<(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
 
 
-/////
-///// Uniquely identify a Device by both its name and type.
-///// This enables broadcast Devices (with empty name) of different types
-///// to be stored in the same structures.
-/////
-//class OPENIGTLINKIO_LOGIC_EXPORT DeviceKey
-//{
-//  std::string type;
-//  std::string name;
-//};
-//bool operator==(const DeviceKey& lhs, const DeviceKey& rhs)
-//{
-//  return lhs.type==rhs.type
-//}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 
 typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
@@ -138,17 +127,8 @@ public:
  /// An undefined prefix means sending the normal message.
  int SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::MESSAGE_PREFIX=vtkIGTLIODevice::MESSAGE_PREFIX_NOT_DEFINED);
 
- vtkIGTLIODeviceFactoryPointer GetDeviceFactory()
- {
-   return DeviceFactory;
- }
- void SetDeviceFactory(vtkIGTLIODeviceFactoryPointer val)
- {
-   if (val==DeviceFactory)
-     return;
-    DeviceFactory = val;
-    this->Modified();
- }
+ vtkIGTLIODeviceFactoryPointer GetDeviceFactory();
+ void SetDeviceFactory(vtkIGTLIODeviceFactoryPointer val);
 
  public:
 
@@ -158,7 +138,7 @@ public:
     DisconnectedEvent     = 118945,
     ActivatedEvent        = 118946,
     DeactivatedEvent      = 118947,
-    ReceiveEvent          = 118948,
+//    ReceiveEvent          = 118948,
     NewDeviceEvent        = 118949,
     DeviceModifiedEvent   = 118950, // never used. use vtkCommand::ModifiedEvent from device instead.
     RemovedDeviceEvent    = 118951,
