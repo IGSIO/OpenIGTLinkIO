@@ -25,7 +25,7 @@ qIGTLIODeviceButtonsWidget::qIGTLIODeviceButtonsWidget()
 
   QStringList actionNames = QStringList() << "SEND" << "GET" << "STT" << "STP";
 
-  for (int i=0; i<vtkIGTLIODevice::NUM_MESSAGE_PREFIX; ++i)
+  for (int i=0; i<actionNames.size(); ++i)
     {
       QAction* action = new QAction(actionNames[i], this);
       action->setData(i);
