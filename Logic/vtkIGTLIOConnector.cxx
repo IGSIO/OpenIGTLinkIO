@@ -46,7 +46,7 @@ Version:   $Revision: 1.2 $
 
 std::string DeviceKeyType::GetBaseTypeName() const
 {
-  int pos = type.find("-");
+  int pos = type.find("_");
   if (pos>=0)
     return type.substr(pos+1);
   return type;
@@ -639,7 +639,8 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
 
     std::cout << "incoming message (via buffer): " << buffer->GetDeviceType() << std::endl;
 
-    vtkSmartPointer<vtkIGTLIODeviceCreator> deviceCreator = DeviceFactory->GetCreator(buffer->GetDeviceType());
+    vtkSmartPointer<vtkIGTLIODeviceCreator> deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
+
     if (!deviceCreator)
       {
       vtkErrorMacro(<< "Received unknown device type " << buffer->GetDeviceType() << ", device=" << buffer->GetDeviceName());
@@ -648,7 +649,7 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
 
     vtkIGTLIODevicePointer device = this->GetDevice(key);
 
-    if ((device.GetPointer()!=NULL) && (device->GetDeviceType()!=buffer->GetDeviceType()))
+    if ((device.GetPointer()!=NULL) && !(CreateDeviceKey(device)==CreateDeviceKey(buffer)))
       {
         vtkErrorMacro(
             << "Received an IGTL message of the wrong type, device=" << key.name

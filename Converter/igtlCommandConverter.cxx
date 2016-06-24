@@ -47,9 +47,46 @@ int CommandConverter::fromIGTL(igtl::MessageBase::Pointer source,
                              ContentData* dest,
                              bool checkCRC)
 {
+  std::cout << "CommandConverter::fromIGTL A" << std::endl;
+
   // Create a message buffer to receive  data
   igtl::CommandMessage::Pointer msg;
   msg = igtl::CommandMessage::New();
+  msg->Copy(source); // !! TODO: copy makes performance issue.
+  std::cout << "CommandConverter::fromIGTL B" << std::endl;
+
+  // Deserialize the data
+  // If CheckCRC==0, CRC check is skipped.
+  int c = msg->Unpack(checkCRC);
+  std::cout << "CommandConverter::fromIGTL C" << std::endl;
+
+  if ((c & igtl::MessageHeader::UNPACK_BODY) == 0) // if CRC check fails
+    {
+    // TODO: error handling
+    return 0;
+    }
+
+  // get header
+  if (!this->IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header))
+    return 0;
+
+  dest->id = msg->GetCommandId();
+  dest->name = msg->GetCommandName();
+  dest->content = msg->GetCommandContent();
+
+  return 1;
+}
+
+int CommandConverter::fromIGTLResponse(igtl::MessageBase::Pointer source,
+                             HeaderData* header,
+                             ContentData* dest,
+                             bool checkCRC)
+{
+  //TODO: merge this method with fromIGTL(),
+
+  // Create a message buffer to receive  data
+  igtl::RTSCommandMessage::Pointer msg;
+  msg = igtl::RTSCommandMessage::New();
   msg->Copy(source); // !! TODO: copy makes performance issue.
 
   // Deserialize the data
@@ -72,6 +109,7 @@ int CommandConverter::fromIGTL(igtl::MessageBase::Pointer source,
 
   return 1;
 }
+
 
 //---------------------------------------------------------------------------
 int CommandConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::CommandMessage::Pointer* dest)

@@ -62,7 +62,7 @@ int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer
   if (buffer->GetDeviceType()==std::string(Converter->GetIGTLResponseName()))
     {
     vtkSmartPointer<vtkIGTLIOCommandDevice> response = vtkSmartPointer<vtkIGTLIOCommandDevice>::New();
-    if (!Converter->fromIGTL(buffer, &response->HeaderData, &response->Content, checkCRC))
+    if (!Converter->fromIGTLResponse(buffer, &response->HeaderData, &response->Content, checkCRC))
       return 0;
 
     // search among the queries for a command with an identical ID:
@@ -75,6 +75,7 @@ int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer
         this->Modified();
         std::cout << "stored response: \n";
         response->Print(std::cout);
+        this->InvokeEvent(CommandResponseReceivedEvent);
         }
       }
 
@@ -121,6 +122,8 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage()
  query.Query = queryDevice;
  query.status = QUERY_STATUS_WAITING;
  Queries.push_back(query);
+
+ this->InvokeEvent(CommandQueryReceivedEvent);
 
  // Store copy of current content/id in query buffer, waiting for reply.
  // When reply arrives (via ReceiveIGTLMessage), store as a pair in a separate

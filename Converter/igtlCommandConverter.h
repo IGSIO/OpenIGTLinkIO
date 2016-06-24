@@ -54,6 +54,7 @@ public:
 
 
   int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
+  int fromIGTLResponse(igtl::MessageBase::Pointer source, HeaderData *header, ContentData *dest, bool checkCRC);
   int toIGTL(const HeaderData& header, const ContentData& source, igtl::CommandMessage::Pointer* dest);
 
   std::vector<std::string> GetAvailableCommandNames() const;
@@ -61,6 +62,7 @@ public:
 protected:
   CommandConverter();
   ~CommandConverter();
+private:
 };
 
 }

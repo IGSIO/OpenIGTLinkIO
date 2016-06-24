@@ -81,7 +81,10 @@ public:
  enum {
    ReceiveEvent          = 118948,
    ResponseEvent         = 118952,
-   ModifiedEvent         = vtkCommand::ModifiedEvent
+   ModifiedEvent         = vtkCommand::ModifiedEvent,
+
+   CommandQueryReceivedEvent    = 119001, // COMMAND device got a query
+   CommandResponseReceivedEvent = 119002  // COMMAND device got a response
  };
 
 
