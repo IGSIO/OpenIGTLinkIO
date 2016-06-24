@@ -71,7 +71,7 @@ void vtkIGTLIOTransformDevice::SetContent(igtl::TransformConverter::ContentData 
   this->Modified();
 }
 
-igtl::TransformConverter::ContentData vtkIGTLIOTransformDevice::GetContent(igtl::TransformConverter::ContentData content)
+igtl::TransformConverter::ContentData vtkIGTLIOTransformDevice::GetContent()
 {
   return Content;
 }
