@@ -33,7 +33,7 @@ struct ClientServerFixture
 
   bool ConnectClientToServer();
   bool LoopUntilExpectedNumberOfDevicesReached(LogicFixture logic, int expectedNumberOfDevices);
-  bool LoopUntilEventDetected(LogicFixture logic, int eventId);
+  bool LoopUntilEventDetected(LogicFixture *logic, int eventId);
 
 };
 

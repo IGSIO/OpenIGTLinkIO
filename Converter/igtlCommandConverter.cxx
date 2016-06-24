@@ -47,18 +47,14 @@ int CommandConverter::fromIGTL(igtl::MessageBase::Pointer source,
                              ContentData* dest,
                              bool checkCRC)
 {
-  std::cout << "CommandConverter::fromIGTL A" << std::endl;
-
   // Create a message buffer to receive  data
   igtl::CommandMessage::Pointer msg;
   msg = igtl::CommandMessage::New();
   msg->Copy(source); // !! TODO: copy makes performance issue.
-  std::cout << "CommandConverter::fromIGTL B" << std::endl;
 
   // Deserialize the data
   // If CheckCRC==0, CRC check is skipped.
   int c = msg->Unpack(checkCRC);
-  std::cout << "CommandConverter::fromIGTL C" << std::endl;
 
   if ((c & igtl::MessageHeader::UNPACK_BODY) == 0) // if CRC check fails
     {

@@ -37,8 +37,15 @@ int main(int argc, char **argv)
   fixture.Client.Connector->SendMessage(CreateDeviceKey(commandDevice));
   std::cout << "*** COMMAND sent from Client" << std::endl;
 
-  if (!fixture.LoopUntilExpectedNumberOfDevicesReached(fixture.Server, 1))
+  std::cout << "Client fixture: " << &fixture.Client << std::endl;
+  std::cout << "Server fixture: " << &fixture.Server << std::endl;
+
+  if (!fixture.LoopUntilEventDetected(&fixture.Server, vtkIGTLIOLogic::CommandQueryReceivedEvent))
     return 1;
+//  bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventId)
+
+//  if (!fixture.LoopUntilExpectedNumberOfDevicesReached(fixture.Server, 1))
+//    return 1;
 
   std::cout << "*** COMMAND query received by Server" << std::endl;
 
@@ -69,7 +76,7 @@ int main(int argc, char **argv)
   fixture.Server.Connector->SendMessage(serverDeviceKey, vtkIGTLIODevice::MESSAGE_PREFIX_REPLY);
   std::cout << "*** RTS_COMMAND sent from Server" << std::endl;
 
-  if (!fixture.LoopUntilEventDetected(fixture.Client, vtkIGTLIOLogic::CommandResponseReceivedEvent))
+  if (!fixture.LoopUntilEventDetected(&fixture.Client, vtkIGTLIOLogic::CommandResponseReceivedEvent))
     return 1;
 
   std::cout << "*** COMMAND response received by Client" << std::endl;

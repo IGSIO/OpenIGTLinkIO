@@ -73,8 +73,8 @@ int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer
         {
         Queries[i].Response = response;
         this->Modified();
-        std::cout << "stored response: \n";
-        response->Print(std::cout);
+//        std::cout << "stored response: \n";
+//        response->Print(std::cout);
         this->InvokeEvent(CommandResponseReceivedEvent);
         }
       }
@@ -90,6 +90,7 @@ int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer
     if (Converter->fromIGTL(buffer, &HeaderData, &Content, checkCRC))
       {
       this->Modified();
+      this->InvokeEvent(CommandQueryReceivedEvent);
       return 1;
       }
     }
@@ -122,8 +123,6 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage()
  query.Query = queryDevice;
  query.status = QUERY_STATUS_WAITING;
  Queries.push_back(query);
-
- this->InvokeEvent(CommandQueryReceivedEvent);
 
  // Store copy of current content/id in query buffer, waiting for reply.
  // When reply arrives (via ReceiveIGTLMessage), store as a pair in a separate

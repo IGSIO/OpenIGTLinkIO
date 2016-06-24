@@ -129,6 +129,8 @@ private:
 
   vtkSmartPointer<class vtkCallbackCommand> NewDeviceCallback;
   vtkSmartPointer<class vtkCallbackCommand> RemovedDeviceCallback;
+public:
+  vtkSmartPointer<class vtkCallbackCommand> DeviceEventCallback;
 
 };
 

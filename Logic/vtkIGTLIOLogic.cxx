@@ -32,6 +32,11 @@ void onNewDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata
 {
   vtkIGTLIOLogic* logic = reinterpret_cast<vtkIGTLIOLogic*>(clientdata);
   logic->InvokeEvent(vtkIGTLIOLogic::NewDeviceEvent, calldata);
+
+  vtkIGTLIODevice* device = reinterpret_cast<vtkIGTLIODevice*>(calldata);
+  std::cout << "onNewDeviceEventFunc device=" << device->GetDeviceType() << ", " << device->GetDeviceName() << std::endl;
+  device->AddObserver(vtkIGTLIODevice::CommandQueryReceivedEvent, logic->DeviceEventCallback);
+  device->AddObserver(vtkIGTLIODevice::CommandResponseReceivedEvent, logic->DeviceEventCallback);
 }
 
 //---------------------------------------------------------------------------
@@ -39,6 +44,23 @@ void onRemovedDeviceEventFunc(vtkObject* caller, unsigned long eid, void* client
 {
   vtkIGTLIOLogic* logic = reinterpret_cast<vtkIGTLIOLogic*>(clientdata);
   logic->InvokeEvent(vtkIGTLIOLogic::RemovedDeviceEvent, calldata);
+
+  vtkIGTLIODevice* device = reinterpret_cast<vtkIGTLIODevice*>(calldata);
+  std::cout << "onRemovedDeviceEventFunc device=" << device->GetDeviceType() << ", " << device->GetDeviceName() << std::endl;
+  device->RemoveObserver(logic->DeviceEventCallback);
+}
+
+//---------------------------------------------------------------------------
+void onDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
+{
+  vtkIGTLIOLogic* logic = reinterpret_cast<vtkIGTLIOLogic*>(clientdata);
+
+  if ((eid==vtkIGTLIODevice::CommandQueryReceivedEvent) ||
+      (eid==vtkIGTLIODevice::CommandResponseReceivedEvent))
+  {
+    std::cout << "-------------onDeviceEventFunc event=" << eid << std::endl;
+    logic->InvokeEvent(eid, calldata);
+  }
 }
 
 
@@ -52,9 +74,14 @@ vtkIGTLIOLogic::vtkIGTLIOLogic()
   NewDeviceCallback = vtkSmartPointer<vtkCallbackCommand>::New();
   NewDeviceCallback->SetCallback(onNewDeviceEventFunc);
   NewDeviceCallback->SetClientData(this);
+
   RemovedDeviceCallback = vtkSmartPointer<vtkCallbackCommand>::New();
   RemovedDeviceCallback->SetCallback(onRemovedDeviceEventFunc);
   RemovedDeviceCallback->SetClientData(this);
+
+  DeviceEventCallback = vtkSmartPointer<vtkCallbackCommand>::New();
+  DeviceEventCallback->SetCallback(onDeviceEventFunc);
+  DeviceEventCallback->SetClientData(this);
 }
 
 //---------------------------------------------------------------------------

@@ -9,6 +9,7 @@
 void onReceivedEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
 {
   LogicFixture* self = reinterpret_cast<LogicFixture*>(clientdata);
+  std::cout << "-------------------- LogicFixture=" << self << ", onReceivedEventFunc " << eid << std::endl;
 
   self->LastReceivedEvent = eid;
 //  logic->InvokeEvent(vtkIGTLIOLogic::NewDeviceEvent, calldata);
@@ -139,9 +140,9 @@ bool ClientServerFixture::LoopUntilExpectedNumberOfDevicesReached(LogicFixture l
   return false;
 }
 
-bool ClientServerFixture::LoopUntilEventDetected(LogicFixture logic, int eventId)
+bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventId)
 {
-  logic.LastReceivedEvent = -1;
+//  logic->LastReceivedEvent = -1;
 
   double timeout = 2;
   double starttime = vtkTimerLog::GetUniversalTime();
@@ -150,9 +151,10 @@ bool ClientServerFixture::LoopUntilEventDetected(LogicFixture logic, int eventId
   {
     Server.Logic->PeriodicProcess();
     Client.Logic->PeriodicProcess();
-    vtksys::SystemTools::Delay(5);
+    vtksys::SystemTools::Delay(200);
 
-    if (logic.LastReceivedEvent == eventId)
+    std::cout << "ClientServerFixture::LoopUntilEventDetected LogicFixture=" << logic  << ", eid=" << logic->LastReceivedEvent << std::endl;
+    if (logic->LastReceivedEvent == eventId)
     {
       return true;
     }
