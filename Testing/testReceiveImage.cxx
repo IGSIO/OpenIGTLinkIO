@@ -10,6 +10,8 @@
 #include "igtlImageConverter.h"
 #include <vtkImageDifference.h>
 #include "IGTLIOFixture.h"
+#include "vtkIGTLIOImageDevice.h"
+#include "vtkIGTLIOSession.h"
 
 bool compare(vtkSmartPointer<vtkMatrix4x4> a, vtkSmartPointer<vtkMatrix4x4> b)
 {
@@ -71,9 +73,10 @@ int main(int argc, char **argv)
   std::cout << "*** Connection done" << std::endl;
   //---------------------------------------------------------------------------
 
-  vtkSmartPointer<vtkIGTLIOImageDevice> imageDevice = fixture.Server.CreateDummyImageDevice();
-  fixture.Server.Connector->AddDevice(imageDevice);
-  fixture.Server.Connector->SendMessage(CreateDeviceKey(imageDevice));
+  vtkSmartPointer<vtkIGTLIOImageDevice> imageDevice;
+  imageDevice = fixture.Server.Session->SendImage("TestDevice_Image",
+                                                  fixture.CreateTestImage(),
+                                                  fixture.CreateTestTransform());
   std::cout << "*** Sent message from Server to Client" << std::endl;
   //---------------------------------------------------------------------------
 

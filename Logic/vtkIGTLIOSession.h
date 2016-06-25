@@ -9,6 +9,8 @@
 
 typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
 typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
+typedef vtkSmartPointer<class vtkIGTLIOImageDevice> vtkIGTLIOImageDevicePointer;
+class vtkMatrix4x4;
 
 /// Convenience interface for a single IGTL connection.
 ///
@@ -33,14 +35,28 @@ class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOSession : public vtkObject
 public:
   /// convenience methods:
 
-  /// Send the given command.
-  /// If using BLOCKING, the call blocks until a response appears or timeout.
-  /// If using ASYNCHRONOUS, wait for the CommandResponseReceivedEvent event.
+  ///
+  ///  Send the given command from the given device.
+  /// - If using BLOCKING, the call blocks until a response appears or timeout. Return response.
+  /// - If using ASYNCHRONOUS, wait for the CommandResponseReceivedEvent event. Return device.
+  ///
   vtkIGTLIOCommandDevicePointer SendCommandQuery(std::string device_id,
                                                  std::string command,
                                                  std::string content,
                                                  igtlio::SYNCHRONIZATION_TYPE synchronized = igtlio::BLOCKING,
                                                  double timeout_s = 5);
+  ///
+  ///  Send a command response from the given device. Asynchronous.
+  /// Precondition: The given device has received a query that is not yet responded to.
+  /// Return device.
+  vtkIGTLIOCommandDevicePointer SendCommandResponse(std::string device_id, std::string command,
+                                                    std::string content);
+
+  ///
+  ///  Send the given image from the given device. Asynchronous.
+  vtkIGTLIOImageDevicePointer SendImage(std::string device_id,
+                                        vtkSmartPointer<vtkImageData> image,
+                                        vtkSmartPointer<vtkMatrix4x4> transform);
 
 
   /// TODO: add more convenience methods here.

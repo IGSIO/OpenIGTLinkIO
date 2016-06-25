@@ -8,6 +8,7 @@
 #include "vtkTimerLog.h"
 #include "vtkIGTLIOImageDevice.h"
 #include "vtkIGTLIOCommandDevice.h"
+class vtkImageData;
 
 struct LogicFixture
 {
@@ -16,13 +17,9 @@ struct LogicFixture
   void startClient();
   void startServer();
 
-  vtkSmartPointer<vtkIGTLIOImageDevice> CreateDummyImageDevice();
-  vtkSmartPointer<vtkIGTLIOCommandDevice> CreateDummyCommandDevice();
-  bool ConvertCommandDeviceToResponse(vtkSmartPointer<vtkIGTLIOCommandDevice> deviceKey);
-
-
   vtkIGTLIOLogicPointer Logic;
   vtkIGTLIOConnectorPointer Connector;
+  vtkIGTLIOSessionPointer Session;
 
   vtkSmartPointer<class vtkCallbackCommand> LogicEventCallback;
   int LastReceivedEvent;
@@ -36,6 +33,9 @@ struct ClientServerFixture
   bool ConnectClientToServer();
   bool LoopUntilEventDetected(LogicFixture *logic, int eventId);
 
+public:
+  vtkSmartPointer<vtkMatrix4x4> CreateTestTransform();
+  vtkSmartPointer<vtkImageData> CreateTestImage();
 };
 
 

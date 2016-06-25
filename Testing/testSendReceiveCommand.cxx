@@ -10,6 +10,7 @@
 #include "igtlImageConverter.h"
 #include <vtkImageDifference.h>
 #include "IGTLIOFixture.h"
+#include "vtkIGTLIOSession.h"
 
 bool compareID(vtkSmartPointer<vtkIGTLIOCommandDevice> a, vtkSmartPointer<vtkIGTLIOCommandDevice> b)
 {
@@ -79,30 +80,38 @@ int main(int argc, char **argv)
   std::cout << "*** Connection done" << std::endl;
   //---------------------------------------------------------------------------
 
-  vtkSmartPointer<vtkIGTLIOCommandDevice> clientDevice = fixture.Client.CreateDummyCommandDevice();
-  fixture.Client.Connector->AddDevice(clientDevice);
-  fixture.Client.Connector->SendMessage(CreateDeviceKey(clientDevice));
+  vtkIGTLIOCommandDevicePointer clientDevice;
+  clientDevice = fixture.Client.Session->SendCommandQuery("TestDevice_Command",
+                                                          "GetDeviceParameters",
+                                                          "<Command>\n"
+                                                          "  <Parameter Name=\"Depth\" />\n"
+                                                          "</Command>",
+                                                          igtlio::ASYNCHRONOUS);
   std::cout << "*** COMMAND query sent from Client" << std::endl;
   //---------------------------------------------------------------------------
 
   if (!fixture.LoopUntilEventDetected(&fixture.Server, vtkIGTLIOLogic::CommandQueryReceivedEvent))
     return 1;
-
   std::cout << "*** COMMAND query received by Server" << std::endl;
   //---------------------------------------------------------------------------
 
-  vtkSmartPointer<vtkIGTLIOCommandDevice> serverDevice;
-  serverDevice = vtkIGTLIOCommandDevice::SafeDownCast(fixture.Server.Logic->GetDevice(0));
-  fixture.Server.ConvertCommandDeviceToResponse(serverDevice);
-
-  DeviceKeyType serverDeviceKey = CreateDeviceKey(serverDevice);
-  fixture.Server.Connector->SendMessage(serverDeviceKey, vtkIGTLIODevice::MESSAGE_PREFIX_REPLY);
+  vtkIGTLIOCommandDevicePointer serverDevice;
+  serverDevice = fixture.Server.Session->SendCommandResponse(clientDevice->GetDeviceName(),
+                                                             "GetDeviceParameters",
+                                                             "<Command>\n"
+                                                             "  <Result>GetDeviceParameters: success</Result>\n"
+                                                             "  <Parameter Name=\"Depth\" Value=\"45\" />\n"
+                                                             "</Command>");
+  if (!serverDevice)
+  {
+    std::cout << "FAILURE: Server did not send response." << std::endl;
+    return false;
+  }
   std::cout << "*** RTS_COMMAND response sent from Server" << std::endl;
   //---------------------------------------------------------------------------
 
   if (!fixture.LoopUntilEventDetected(&fixture.Client, vtkIGTLIOLogic::CommandResponseReceivedEvent))
     return 1;
-
   std::cout << "*** RTS_COMMAND response received by Client" << std::endl;
   //---------------------------------------------------------------------------
 
