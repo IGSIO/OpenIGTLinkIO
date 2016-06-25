@@ -661,7 +661,7 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
 
     if (!device && !this->RestrictDeviceName)
       {
-        device = deviceCreator->Create(key.GetBaseTypeName());
+        device = deviceCreator->Create(key.name);
         device->SetMessageDirection(vtkIGTLIODevice::MESSAGE_DIRECTION_IN);
         this->AddDevice(device);
       }
