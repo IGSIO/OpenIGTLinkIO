@@ -145,29 +145,6 @@ bool ClientServerFixture::ConnectClientToServer()
   return false;
 }
 
-bool ClientServerFixture::LoopUntilExpectedNumberOfDevicesReached(LogicFixture logic, int expectedNumberOfDevices)
-{
-  double timeout = 2;
-  double starttime = vtkTimerLog::GetUniversalTime();
-  // Client waits for an image to be sent from the server.
-  while (vtkTimerLog::GetUniversalTime() - starttime < timeout)
-  {
-    Server.Logic->PeriodicProcess();
-    Client.Logic->PeriodicProcess();
-    vtksys::SystemTools::Delay(5);
-
-    if (logic.Logic->GetNumberOfDevices() >= expectedNumberOfDevices)
-    {
-      return true;
-    }
-  }
-
-  std::cout << "FAILURE: Expected " << expectedNumberOfDevices << " devices, "
-            << "got " << logic.Logic->GetNumberOfDevices()
-            << std::endl;
-
-  return false;
-}
 
 bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventId)
 {
