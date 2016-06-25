@@ -17,6 +17,7 @@
 
 class vtkImageData;
 
+typedef vtkSmartPointer<class vtkIGTLIOCommandDevice> vtkIGTLIOCommandDevicePointer;
 
 //---------------------------------------------------------------------------
 class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOCommandDeviceCreator : public vtkIGTLIODeviceCreator
@@ -45,6 +46,8 @@ public:
   std::vector<std::string> GetAvailableCommandNames() const;
 
   igtl::MessageBase::Pointer GetIGTLResponseMessage();
+
+  vtkIGTLIOCommandDevicePointer GetResponseFromCommandID(int id);
 
  public:
   static vtkIGTLIOCommandDevice *New();

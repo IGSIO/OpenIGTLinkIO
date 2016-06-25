@@ -22,6 +22,8 @@ set(${KIT}_INCLUDE_DIRECTORIES
   )
 
 set(${KIT}_SRCS
+  IGTLIOUtilities.h
+  IGTLIOUtilities.cxx
   vtkIGTLIOObject.h
   vtkIGTLIOObject.cxx
   vtkIGTLIODeviceFactory.cxx
@@ -30,6 +32,8 @@ set(${KIT}_SRCS
   vtkIGTLIOCircularBuffer.h
   vtkIGTLIOConnector.cxx
   vtkIGTLIOConnector.h
+  vtkIGTLIOSession.cxx
+  vtkIGTLIOSession.h
   vtkIGTLIOLogic.cxx
   vtkIGTLIOLogic.h
   )

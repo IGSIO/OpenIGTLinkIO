@@ -16,7 +16,7 @@
 // IGTLIO includes
 #include "vtkIGTLIOLogic.h"
 #include "vtkIGTLIOConnector.h"
-
+#include "vtkIGTLIOSession.h"
 
 #include <vtkObjectFactory.h>
 
@@ -148,6 +148,22 @@ vtkIGTLIOConnectorPointer vtkIGTLIOLogic::GetConnector(int index)
 
   vtkErrorMacro("index " << index << " out of bounds.");
   return NULL;
+}
+
+vtkIGTLIOSessionPointer vtkIGTLIOLogic::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+{
+  vtkIGTLIOSessionPointer session = vtkIGTLIOSessionPointer::New();
+  session->SetConnector(this->CreateConnector());
+  session->StartServer(serverPort, sync, timeout_s);
+  return session;
+}
+
+vtkIGTLIOSessionPointer vtkIGTLIOLogic::ConnectToServer(std::string serverHost, int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+{
+  vtkIGTLIOSessionPointer session = vtkIGTLIOSessionPointer::New();
+  session->SetConnector(this->CreateConnector());
+  session->ConnectToServer(serverHost, serverPort, sync, timeout_s);
+  return session;
 }
 
 //---------------------------------------------------------------------------

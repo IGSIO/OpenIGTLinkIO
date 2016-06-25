@@ -205,3 +205,18 @@ void vtkIGTLIOCommandDevice::PrintSelf(ostream& os, vtkIndent indent)
   os << Content.content << "\n";
 }
 
+//---------------------------------------------------------------------------
+vtkIGTLIOCommandDevicePointer vtkIGTLIOCommandDevice::GetResponseFromCommandID(int id)
+{
+  // search among the queries for a command with an identical ID:
+  for (unsigned i=0; i<Queries.size(); ++i)
+  {
+    vtkSmartPointer<vtkIGTLIOCommandDevice> response = vtkIGTLIOCommandDevice::SafeDownCast(Queries[i].Query);
+    if (response && response->GetContent().id == id)
+    {
+      return response;
+    }
+  }
+
+  return vtkSmartPointer<vtkIGTLIOCommandDevice>();
+}

@@ -17,21 +17,6 @@
 #ifndef __vtkIGTLIOLogic_h
 #define __vtkIGTLIOLogic_h
 
-//// OpenIGTLinkIF MRML includes
-//#include "vtkIGTLToMRMLLinearTransform.h"
-//#include "vtkIGTLToMRMLPosition.h"
-//#include "vtkIGTLToMRMLImageMetaList.h"
-//#include "vtkIGTLToMRMLLabelMetaList.h"
-//#include "vtkIGTLToMRMLPoints.h"
-//#include "vtkIGTLToMRMLPolyData.h"
-//#include "vtkIGTLToMRMLTrackingData.h"
-//#include "vtkIGTLToMRMLStatus.h"
-//#include "vtkIGTLToMRMLSensor.h"
-//#include "vtkIGTLToMRMLString.h"
-//#include "vtkIGTLToMRMLTrajectory.h"
-
-//#include "vtkSlicerOpenIGTLinkIFModuleLogicExport.h"
-
 // OpenIGTLink includes
 #include <igtlImageMessage.h>
 #include <igtlTransformMessage.h>
@@ -53,11 +38,13 @@
 // IGTLIO includes
 #include "igtlioLogicExport.h"
 #include "vtkIGTLIODevice.h"
+#include "IGTLIOUtilities.h"
 
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
 typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
 
 
 /// Logic is the manager for the IGTLIO module.
@@ -103,6 +90,14 @@ public:
  int RemoveConnector(int index);
  int GetNumberOfConnectors() const;
  vtkIGTLIOConnectorPointer GetConnector(int index);
+
+ /// Start a server and return a Session representing the connection.
+ /// If sync is BLOCKING, the call blocks until at client has connected to the server.
+ vtkIGTLIOSessionPointer StartServer(int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
+
+ /// Connect to the given server and return Session representing the connection.
+ /// if sync is BLOCKING, the call blocks until the server responds or until timeout.
+ vtkIGTLIOSessionPointer ConnectToServer(std::string serverHost, int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
 
  /// Call timer-driven routines for each connector
  void PeriodicProcess();

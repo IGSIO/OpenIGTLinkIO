@@ -28,6 +28,7 @@
 #include "vtkIGTLIODevice.h"
 #include "vtkIGTLIODeviceFactory.h"
 #include "vtkIGTLIOObject.h"
+#include "IGTLIOUtilities.h"
 
 //// MRML includes
 //#include <vtkMRML.h>
@@ -46,30 +47,6 @@
 #include <set>
 
 
-///
-/// Uniquely identify a Device by both its name and type.
-/// This enables broadcast Devices (with empty name) of different types
-/// to be stored in the same structures.
-///
-struct DeviceKeyType
-{
-  explicit DeviceKeyType() {}
-  explicit DeviceKeyType(const std::string& type_, const std::string& name_) :
-    type(type_), name(name_) {}
-  std::string type;
-  std::string name;
-
-public:
-  std::string GetBaseTypeName() const;
-};
-//typedef std::pair<std::string, std::string> DeviceKeyType;
-OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(igtl::MessageBase::Pointer message);
-OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(vtkIGTLIODevicePointer device);
-bool operator==(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
-bool operator<(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
-
-
-
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -80,6 +57,15 @@ typedef vtkSmartPointer<class vtkIGTLIOCircularBuffer> vtkIGTLIOCircularBufferPo
 
 typedef vtkSmartPointer<class vtkMutexLock> vtkMutexLockPointer;
 typedef vtkSmartPointer<class vtkMultiThreader> vtkMultiThreaderPointer;
+
+enum CONNECTION_ROLE
+{
+  CONNECTION_ROLE_NOT_DEFINED,
+  CONNECTION_ROLE_SERVER,
+  CONNECTION_ROLE_CLIENT,
+  CONNECTION_ROLE_TYPE
+};
+
 
 /// An OpenIGTLink connection over one TCP/IP port.
 ///

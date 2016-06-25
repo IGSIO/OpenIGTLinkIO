@@ -26,9 +26,6 @@ struct LogicFixture
 
   vtkSmartPointer<class vtkCallbackCommand> LogicEventCallback;
   int LastReceivedEvent;
-
-private:
-  void setupObservers();
 };
 
 struct ClientServerFixture
