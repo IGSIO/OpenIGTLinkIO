@@ -29,6 +29,8 @@
 
 class vtkImageData;
 
+typedef vtkSmartPointer<class vtkIGTLIOTransformDevice> vtkIGTLIOTransformDevicePointer;
+
 //---------------------------------------------------------------------------
 class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOTransformDeviceCreator : public vtkIGTLIODeviceCreator
 {
