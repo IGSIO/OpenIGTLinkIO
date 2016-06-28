@@ -15,6 +15,8 @@
 
 class vtkImageData;
 
+typedef vtkSmartPointer<class vtkIGTLIOStatusDevice> vtkIGTLIOStatusDevicePointer;
+
 
 //---------------------------------------------------------------------------
 class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOStatusDeviceCreator : public vtkIGTLIODeviceCreator
