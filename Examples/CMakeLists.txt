@@ -1,1 +1,3 @@
-add_subdirectory(qIgtlClient)
+if (${IGTLIO_USE_GUI})
+  add_subdirectory(qIgtlClient)
+endif()
