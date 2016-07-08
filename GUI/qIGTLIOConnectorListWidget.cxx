@@ -95,7 +95,7 @@ void qIGTLIOConnectorListWidget::setLogic(vtkIGTLIOLogicPointer logic)
           << vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
     {
     qvtkReconnect(this->Logic, logic, evendId,
-                  this, SLOT(onConnectionsChanged(vtkObject*, void*, unsigned long, void*)));
+                  this, SLOT(onConnectionsChanged(vtkObject*, unsigned long, void*, void*)));
     }
 
   this->Logic = logic;
@@ -103,7 +103,7 @@ void qIGTLIOConnectorListWidget::setLogic(vtkIGTLIOLogicPointer logic)
 }
 
 //-----------------------------------------------------------------------------
-void qIGTLIOConnectorListWidget::onConnectionsChanged(vtkObject* caller, void* connector, unsigned long event , void* b)
+void qIGTLIOConnectorListWidget::onConnectionsChanged(vtkObject* caller, unsigned long event, void * clientData,  void* connector)
 {
   // remove removed connector from property widget
   if (event==vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent && connector!=NULL)

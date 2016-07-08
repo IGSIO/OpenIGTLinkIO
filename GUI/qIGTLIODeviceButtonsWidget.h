@@ -3,9 +3,6 @@
 
 #include <QWidget>
 
-// CTK includes
-#include <ctkVTKObject.h>
-
 // igtlio includes
 #include "igtlioGUIExport.h"
 

@@ -7,9 +7,6 @@
 class QLineEdit;
 class QGridLayout;
 
-// CTK includes
-#include <ctkVTKObject.h>
-
 class OPENIGTLINKIO_GUI_EXPORT vtkIGTLIOStatusDeviceWidgetCreator : public vtkIGTLIODeviceWidgetCreator
 {
 public:

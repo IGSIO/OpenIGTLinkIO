@@ -8,9 +8,6 @@ class QGridLayout;
 class QComboBox;
 class QTextEdit;
 
-// CTK includes
-#include <ctkVTKObject.h>
-
 class OPENIGTLINKIO_GUI_EXPORT vtkIGTLIOCommandDeviceWidgetCreator : public vtkIGTLIODeviceWidgetCreator
 {
 public:

@@ -63,7 +63,7 @@ void qIGTLIODevicesWidget::setLogic(vtkIGTLIOLogicPointer logic)
           << vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
     {
     qvtkReconnect(this->Logic, logic, evendId,
-                  this, SLOT(onConnectionsChanged(vtkObject*, void*, unsigned long, void*)));
+                  this, SLOT(onConnectionsChanged(vtkObject*, unsigned long, void*, void*)));
     }
 
   this->Logic = logic;
@@ -72,7 +72,7 @@ void qIGTLIODevicesWidget::setLogic(vtkIGTLIOLogicPointer logic)
 }
 
 //-----------------------------------------------------------------------------
-void qIGTLIODevicesWidget::onConnectionsChanged(vtkObject* caller, void* connector, unsigned long event , void* b)
+void qIGTLIODevicesWidget::onConnectionsChanged(vtkObject* caller, unsigned long event , void* b, void* connector)
 {
 //  std::cout << "onConnectionsChanged " << std::endl;
 }

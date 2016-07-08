@@ -24,8 +24,7 @@
 // Qt includes
 #include <QWidget>
 
-// CTK includes
-#include <ctkVTKObject.h>
+#include "qIGTLIOVtkConnectionMacro.h"
 
 // igtlio includes
 #include "igtlioGUIExport.h"
@@ -42,7 +41,7 @@ class vtkObject;
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIOConnectorPropertyWidget : public QWidget
 {
   Q_OBJECT
-  QVTK_OBJECT
+  IGTLIO_QVTK_OBJECT
 public:
   typedef QWidget Superclass;
   qIGTLIOConnectorPropertyWidget(QWidget *parent = 0);
