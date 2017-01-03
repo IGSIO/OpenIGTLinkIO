@@ -13,6 +13,7 @@ find_package(VTK
   COMPONENTS
   vtkIOImage
   vtkImagingMath
+  vtkGUISupportQt
   REQUIRED
   NO_MODULE)
 include(${VTK_USE_FILE})
