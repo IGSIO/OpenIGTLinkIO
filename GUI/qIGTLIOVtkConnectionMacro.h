@@ -9,8 +9,11 @@ void qvtkReconnect( vtkObject* old_vtk_obj, vtkObject* vtk_obj,             \
                     const char* qt_slot, float priority = 0.0,              \
                     Qt::ConnectionType connectionType = Qt::AutoConnection) \
 { \
-    MyQVTK.connectPtr->Disconnect( old_vtk_obj, vtk_event, qt_obj, qt_slot ); \
-    MyQVTK.connectPtr->Connect( vtk_obj, vtk_event, qt_obj, qt_slot, NULL, priority, connectionType ); \
+    Q_ASSERT( qt_obj ); \
+    if( old_vtk_obj ) \
+        MyQVTK.connectPtr->Disconnect( old_vtk_obj, vtk_event, qt_obj, qt_slot ); \
+    if( vtk_obj ) \
+        MyQVTK.connectPtr->Connect( vtk_obj, vtk_event, qt_obj, qt_slot, NULL, priority, connectionType ); \
 }
 
 
