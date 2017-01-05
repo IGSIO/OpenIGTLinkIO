@@ -9,10 +9,6 @@
 // OpenIGTLinkIF MRML includes
 #include "vtkIGTLIOConnector.h"
 
-// CTK includes
-#include <ctkVTKObject.h>
-
-
 //------------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
 class qIGTLIOConnectorPropertyWidgetPrivate : public Ui_qIGTLIOConnectorPropertyWidget

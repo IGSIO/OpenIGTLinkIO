@@ -24,8 +24,7 @@
 #include <QAbstractItemModel>
 #include <QStringList>
 
-// CTK includes
-#include <ctkVTKObject.h>
+#include "qIGTLIOVtkConnectionMacro.h"
 
 // igtlio includes
 #include "igtlioGUIExport.h"
@@ -39,7 +38,7 @@ typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIOConnectorModel : public QAbstractItemModel
 {
   Q_OBJECT
-  QVTK_OBJECT
+  IGTLIO_QVTK_OBJECT
 
 public:
   qIGTLIOConnectorModel(QObject *parent=0);
@@ -65,8 +64,8 @@ public:
   };
 
 private slots:
-  void onConnectorEvent(vtkObject *caller, void *connector, unsigned long event, void *);
-  void onConnectionEvent(vtkObject *caller, void *, unsigned long, void *);
+  void onConnectorEvent(vtkObject *caller, unsigned long event, void *, void *connector );
+  void onConnectionEvent(vtkObject *caller, unsigned long, void *, void * );
 
 private:
   Q_DISABLE_COPY(qIGTLIOConnectorModel);

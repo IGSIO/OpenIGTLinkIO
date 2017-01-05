@@ -3,8 +3,8 @@
 
 #include <QObject>
 class QTimer;
-// CTK includes
-#include <ctkVTKObject.h>
+
+#include "qIGTLIOVtkConnectionMacro.h"
 
 #include <vtkSmartPointer.h>
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
@@ -16,7 +16,7 @@ typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIOLogicController : public QObject
 {
   Q_OBJECT
-  QVTK_OBJECT
+  IGTLIO_QVTK_OBJECT
 
 public:
   qIGTLIOLogicController();

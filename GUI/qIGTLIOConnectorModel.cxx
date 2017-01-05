@@ -172,7 +172,7 @@ void qIGTLIOConnectorModel::setLogic(vtkIGTLIOLogicPointer logic)
           << vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
     {
     qvtkReconnect(this->Logic, logic, evendId,
-                  this, SLOT(onConnectionEvent(vtkObject*, void*, unsigned long, void*)));
+                  this, SLOT(onConnectionEvent(vtkObject*, unsigned long, void*, void* )));
     }
 
   this->Logic = logic;
@@ -188,12 +188,12 @@ void qIGTLIOConnectorModel::ReconnectConnector(vtkIGTLIOConnector* oldConnector,
           << vtkIGTLIOConnector::DeactivatedEvent)
     {
     qvtkReconnect(oldConnector, newConnector, evendId,
-                  this, SLOT(onConnectorEvent(vtkObject*, void*, unsigned long, void*)));
+                  this, SLOT(onConnectorEvent(vtkObject*, unsigned long, void*, void* )));
     }
 }
 
 //-----------------------------------------------------------------------------
-void qIGTLIOConnectorModel::onConnectionEvent(vtkObject* caller, void* connector, unsigned long event , void*)
+void qIGTLIOConnectorModel::onConnectionEvent(vtkObject* caller, unsigned long event, void * , void* connector )
 {
   if (event==vtkIGTLIOLogic::ConnectionAddedEvent)
     {
@@ -212,7 +212,7 @@ void qIGTLIOConnectorModel::onConnectionEvent(vtkObject* caller, void* connector
 }
 
 //-----------------------------------------------------------------------------
-void qIGTLIOConnectorModel::onConnectorEvent(vtkObject* caller, void* connector, unsigned long event , void*)
+void qIGTLIOConnectorModel::onConnectorEvent(vtkObject* caller, unsigned long event , void*, void* connector )
 {
   emit dataChanged(QModelIndex(), QModelIndex());
 }

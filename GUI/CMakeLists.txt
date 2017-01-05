@@ -11,12 +11,10 @@ find_package(VTK
   COMPONENTS
   vtkIOImage
   vtkImagingMath
+  vtkGUISupportQt
   REQUIRED
   NO_MODULE)
 include(${VTK_USE_FILE})
-
-find_package(CTK REQUIRED)
-include(${CTK_USE_FILE})
 
 set(EXECUTABLE ${PROJECT_NAME})
 
@@ -30,6 +28,7 @@ endif()
 set(${KIT}_SRCS
   qIGTLIOGuiUtilities.cxx
   qIGTLIOGuiUtilities.h
+  qIGTLIOVtkConnectionMacro.h
   qIGTLIOLogicController.cxx
   qIGTLIOLogicController.h
   qIGTLIOClientWidget.cxx
@@ -106,7 +105,6 @@ endif()
 set(${KIT}_TARGET_LIBRARIES
   ${OpenIGTLink_LIBRARIES}
   ${VTK_LIBRARIES}
-  ${CTK_LIBRARIES}
   ${igtlio_qt_libraries}
   igtlioLogic
   )

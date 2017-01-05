@@ -13,12 +13,10 @@ find_package(VTK
   COMPONENTS
   vtkIOImage
   vtkImagingMath
+  vtkGUISupportQt
   REQUIRED
   NO_MODULE)
 include(${VTK_USE_FILE})
-
-find_package(CTK REQUIRED)
-include(${CTK_USE_FILE})
 
 if( IGTLIO_QT_VERSION VERSION_GREATER "4" )
     find_package( Qt5 COMPONENTS Widgets REQUIRED )
