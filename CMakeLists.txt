@@ -34,6 +34,7 @@ set (OpenIGTLinkIO_INCLUDE_DIRS
 add_subdirectory(Converter)
 add_subdirectory(Devices)
 add_subdirectory(Logic)
+add_subdirectory(Tools)
 
 option(IGTLIO_USE_GUI "Build IGTLIO with an user interface" ON)
 if (${IGTLIO_USE_GUI})

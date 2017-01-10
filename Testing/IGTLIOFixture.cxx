@@ -6,16 +6,27 @@
 #include <vtksys/SystemTools.hxx>
 #include "vtkIGTLIOSession.h"
 
+
+bool contains(std::vector<int> input, int value)
+{
+  for(int i=0; i<input.size(); ++i)
+    {
+      if(input.at(i) == value)
+        return true;
+    }
+  return false;
+}
+
 //---------------------------------------------------------------------------
 void onReceivedEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
 {
   LogicFixture* self = reinterpret_cast<LogicFixture*>(clientdata);
-  self->LastReceivedEvent = eid;
+  self->ReceivedEvents.push_back(eid);
 }
 
 LogicFixture::LogicFixture()
 {
-  LastReceivedEvent = -1;
+  //ReceivedEvents = -1;
   Logic = vtkIGTLIOLogicPointer::New();
 
   LogicEventCallback = vtkSmartPointer<vtkCallbackCommand>::New();
@@ -80,7 +91,7 @@ bool ClientServerFixture::ConnectClientToServer()
 
 bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventId)
 {
-  logic->LastReceivedEvent = -1;
+  logic->ReceivedEvents.clear();
 
   double timeout = 2;
   double starttime = vtkTimerLog::GetUniversalTime();
@@ -91,7 +102,7 @@ bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventI
     Client.Logic->PeriodicProcess();
     vtksys::SystemTools::Delay(5);
 
-    if (logic->LastReceivedEvent == eventId)
+    if (contains(logic->ReceivedEvents, eventId))
     {
       return true;
     }

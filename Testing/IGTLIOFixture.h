@@ -8,6 +8,8 @@
 #include "vtkTimerLog.h"
 #include "vtkIGTLIOImageDevice.h"
 #include "vtkIGTLIOCommandDevice.h"
+#include "vtkIGTLIOTranslator.h"
+
 class vtkImageData;
 
 struct LogicFixture
@@ -22,13 +24,14 @@ struct LogicFixture
   vtkIGTLIOSessionPointer Session;
 
   vtkSmartPointer<class vtkCallbackCommand> LogicEventCallback;
-  int LastReceivedEvent;
+  std::vector<int> ReceivedEvents;
 };
 
 struct ClientServerFixture
 {
   LogicFixture Server;
   LogicFixture Client;
+  vtkIGTLIOTranslator Translator;
 
   bool ConnectClientToServer();
   bool LoopUntilEventDetected(LogicFixture *logic, int eventId);

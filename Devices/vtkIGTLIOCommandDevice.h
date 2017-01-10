@@ -46,7 +46,6 @@ public:
   std::vector<std::string> GetAvailableCommandNames() const;
 
   igtl::MessageBase::Pointer GetIGTLResponseMessage();
-
   vtkIGTLIOCommandDevicePointer GetResponseFromCommandID(int id);
 
  public:

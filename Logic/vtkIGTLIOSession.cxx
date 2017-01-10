@@ -8,6 +8,7 @@
 #include "vtkTimerLog.h"
 #include "vtkIGTLIOCommandDevice.h"
 #include "vtkIGTLIOImageDevice.h"
+#include "vtkIGTLIOTransformDevice.h"
 
 
 //---------------------------------------------------------------------------
@@ -197,3 +198,18 @@ bool vtkIGTLIOSession::waitForConnection(double timeout_s)
   return Connector->GetState() == vtkIGTLIOConnector::STATE_CONNECTED;
 }
 
+
+vtkIGTLIOTransformDevicePointer vtkIGTLIOSession::SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform)
+{
+  vtkIGTLIOTransformDevicePointer device;
+  DeviceKeyType key(igtl::TransformConverter::GetIGTLTypeName(), device_id);
+  device = vtkIGTLIOTransformDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
+
+  igtl::TransformConverter::ContentData contentdata = device->GetContent();
+  contentdata.transform = transform;
+  device->SetContent(contentdata);
+
+  Connector->SendMessage(CreateDeviceKey(device));
+
+  return device;
+}

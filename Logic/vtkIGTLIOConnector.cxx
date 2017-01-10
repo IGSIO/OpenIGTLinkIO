@@ -334,7 +334,7 @@ void* vtkIGTLIOConnector::ThreadFunction(void* ptr)
   igtlcon->State = STATE_OFF;
   igtlcon->RequestInvokeEvent(vtkIGTLIOConnector::DeactivatedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
 
-  return NULL;
+  return NULL; //why???
 }
 
 

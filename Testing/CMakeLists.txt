@@ -38,6 +38,7 @@ set(${KIT}_TARGET_LIBRARIES
   ${OpenIGTLink_LIBRARIES}
   ${VTK_LIBRARIES}
   igtlioLogic
+  igtlioTools
   )
 
 macro(add_io_test test_name test_target source_files)
@@ -50,3 +51,4 @@ endmacro()
 add_io_test("testClientServer" testClientServer testClientServer.cxx)
 add_io_test("testReceiveImage" testReceiveImage testReceiveImage.cxx)
 add_io_test("testSendReceiveCommand" testSendReceiveCommand testSendReceiveCommand.cxx)
+add_io_test("testDeduceToolBasedOnName" testDeduceToolBasedOnName testDeduceToolBasedOnName.cxx)
