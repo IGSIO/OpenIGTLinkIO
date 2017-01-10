@@ -5,12 +5,13 @@
 
 #include "igtlioToolsExport.h"
 
-class OPENIGTLINKIO_TOOLS_EXPORT vtkIGTLIOTranslator //: public vtkObject
+class OPENIGTLINKIO_TOOLS_EXPORT vtkIGTLIOTranslator
 {
 public:
-	vtkIGTLIOTranslator();
+    vtkIGTLIOTranslator();
 
-	std::string GetToolFromName(std::string device_name);
+    std::string GetToolNameFromDeviceName(std::string device_name);
+    std::string DetermineTypeBasedOnToolName(std::string tool_name);
 
 };
 

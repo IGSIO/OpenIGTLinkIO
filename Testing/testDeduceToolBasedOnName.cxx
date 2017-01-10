@@ -51,29 +51,44 @@ int main(int argc, char **argv)
     //--------------------------------------------------------------------------
 
   int number_of_devices = 3;
-  for(int i=0; i<number_of_devices; ++i)
+  if (!fixture.LoopUntilEventDetected(&fixture.Client, vtkIGTLIOLogic::NewDeviceEvent, number_of_devices))
   {
-      if (!fixture.LoopUntilEventDetected(&fixture.Server, vtkIGTLIOLogic::NewDeviceEvent))
-      {
-        std::cout << "ERROR: Did not get event number:" << i+1 << std::endl;
-        return 1;
-      }
+    std::cout << "ERROR: Did not get " << number_of_devices << " events" << std::endl;
+    return 1;
   }
+
     //---------------------------------------------------------------------------
 
   std::map<std::string, int> tools;
   for(int i=0; i< fixture.Client.Logic->GetNumberOfDevices(); ++i)
   {
     vtkIGTLIODevicePointer device = fixture.Client.Logic->GetDevice(i);
-    std::string tool_name = fixture.Translator.GetToolFromName(device->GetDeviceName());
+    std::string tool_name = fixture.Translator.GetToolNameFromDeviceName(device->GetDeviceName());
     if(tool_name != usprobe_name && tool_name != pointer_name)
+      {
+        std::cout << "ERROR: tool is not what is expected: " << tool_name << std::endl;
         return 1;
+      }
     else
         tools[tool_name] = 1;
   }
 
   if(tools.size() != 2)
+    {
+      std::cout << "ERROR: Expected 2 tools to be present, found " << tools.size() << std::endl;
       return 1;
+    }
+
+  std::map<std::string, int>::iterator it;
+  for(it=tools.begin() ; it!=tools.end(); ++it)
+    {
+      std::string type = fixture.Translator.DetermineTypeBasedOnToolName(it->first);
+      if(type == "unknown")
+        {
+          std::cout << "Tool with name " << it->first << " is of unknown type." << std::endl;
+        return 1;
+        }
+    }
 
 
   return 0;

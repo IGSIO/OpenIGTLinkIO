@@ -7,21 +7,28 @@
 #include "vtkIGTLIOSession.h"
 
 
-bool contains(std::vector<int> input, int value)
+bool contains(std::vector<int> input, int value, int count)
 {
+  //std::cout << "size: " << input.size() << std::endl;
+  //std::cout << "value " << value << std::endl;
+  int found_times = 0;
   for(int i=0; i<input.size(); ++i)
     {
-      if(input.at(i) == value)
-        return true;
+      std::cout << "i: " << input[i] << std::endl;
+      if(input[i] == value)
+        found_times+=1;
     }
-  return false;
+  //std::cout << "found_times " << found_times << std::endl;
+  return (found_times >= count) ? true : false;
 }
 
 //---------------------------------------------------------------------------
 void onReceivedEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
 {
   LogicFixture* self = reinterpret_cast<LogicFixture*>(clientdata);
+  self->Session->PrintSelf(std::cout, vtkIndent(1));
   self->ReceivedEvents.push_back(eid);
+  std::cout << self << " is adding " << eid << " size is now: " << self->ReceivedEvents.size() << std::endl;
 }
 
 LogicFixture::LogicFixture()
@@ -89,9 +96,9 @@ bool ClientServerFixture::ConnectClientToServer()
   return false;
 }
 
-bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventId)
+bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventId, int count)
 {
-  logic->ReceivedEvents.clear();
+  //logic->ReceivedEvents.clear();
 
   double timeout = 2;
   double starttime = vtkTimerLog::GetUniversalTime();
@@ -101,16 +108,14 @@ bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventI
     Server.Logic->PeriodicProcess();
     Client.Logic->PeriodicProcess();
     vtksys::SystemTools::Delay(5);
-
-    if (contains(logic->ReceivedEvents, eventId))
-    {
-      return true;
-    }
   }
 
-  std::cout << "FAILURE: Expected event: " << eventId << ", "
-            << "got nothing."
-            << std::endl;
+  if (contains(logic->ReceivedEvents, eventId, count))
+  {
+    return true;
+  }
+
+  std::cout << "FAILURE: Expected event: " << eventId << " " << count << "times." << std::endl;
 
   return false;
 }

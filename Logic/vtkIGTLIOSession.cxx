@@ -206,6 +206,7 @@ vtkIGTLIOTransformDevicePointer vtkIGTLIOSession::SendTransform(std::string devi
   device = vtkIGTLIOTransformDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
 
   igtl::TransformConverter::ContentData contentdata = device->GetContent();
+  contentdata.deviceName = device_id;
   contentdata.transform = transform;
   device->SetContent(contentdata);
 

@@ -34,7 +34,7 @@ struct ClientServerFixture
   vtkIGTLIOTranslator Translator;
 
   bool ConnectClientToServer();
-  bool LoopUntilEventDetected(LogicFixture *logic, int eventId);
+  bool LoopUntilEventDetected(LogicFixture *logic, int eventId, int count=1);
 
 public:
   vtkSmartPointer<vtkMatrix4x4> CreateTestTransform();

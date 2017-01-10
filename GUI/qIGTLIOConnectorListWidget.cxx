@@ -90,6 +90,7 @@ void qIGTLIOConnectorListWidget::addButtonFrame(QVBoxLayout* topLayout)
 //-----------------------------------------------------------------------------
 void qIGTLIOConnectorListWidget::setLogic(vtkIGTLIOLogicPointer logic)
 {
+  std::cout << "setLogic " << logic << std::endl;
   foreach(int evendId, QList<int>()
           << vtkIGTLIOLogic::ConnectionAddedEvent
           << vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
@@ -117,6 +118,7 @@ void qIGTLIOConnectorListWidget::onConnectionsChanged(vtkObject* caller, unsigne
 //-----------------------------------------------------------------------------
 void qIGTLIOConnectorListWidget::onAddConnectorButtonClicked()
 {
+  std::cout << "onAddConnectorButtonClicked " << Logic << std::endl;
   Logic->CreateConnector();
   this->selectRow(Logic->GetNumberOfConnectors()-1);
 }
