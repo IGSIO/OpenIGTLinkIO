@@ -142,12 +142,15 @@ QVariant qIGTLIOConnectorModel::headerData(int section, Qt::Orientation orientat
 //-----------------------------------------------------------------------------
 QModelIndex qIGTLIOConnectorModel::index(int row, int column, const QModelIndex &parent) const
 {
-  if (row < Logic->GetNumberOfConnectors())
-    {
-      return createIndex(row, column, Logic->GetConnector(row));
-    }
-
-  return QModelIndex();
+  if (!Logic)
+  {
+    return QModelIndex();
+  }
+  if (row >= Logic->GetNumberOfConnectors())
+  {
+    return QModelIndex();
+  }
+  return createIndex(row, column, Logic->GetConnector(row));
 }
 
 //-----------------------------------------------------------------------------
