@@ -14,7 +14,7 @@ int main(int argc, char** argv)
   qIGTLIOLogicController logicController;
   logicController.setLogic(logic);
 
-  qIGTLIOClientWidget widget(logic);
+  qIGTLIOClientWidget widget();
 
   widget.setGeometry(0, 0, 859, 811);
   widget.show();
