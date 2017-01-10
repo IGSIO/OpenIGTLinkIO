@@ -87,9 +87,9 @@ public:
  void PrintSelf(ostream&, vtkIndent);
 
  vtkIGTLIOConnectorPointer CreateConnector();
- int RemoveConnector(int index);
+ int RemoveConnector(unsigned int index);
  int GetNumberOfConnectors() const;
- vtkIGTLIOConnectorPointer GetConnector(int index);
+ vtkIGTLIOConnectorPointer GetConnector(unsigned int index);
 
  /// Start a server and return a Session representing the connection.
  /// If sync is BLOCKING, the call blocks until at client has connected to the server.
@@ -103,9 +103,9 @@ public:
  void PeriodicProcess();
 
  //TODO: interface for accessing Devices
- int GetNumberOfDevices() const;
- void RemoveDevice(int index);
- vtkIGTLIODevicePointer GetDevice(int index);
+ unsigned int GetNumberOfDevices() const;
+ void RemoveDevice(unsigned int index);
+ vtkIGTLIODevicePointer GetDevice(unsigned int index);
 
 
 protected:

@@ -7,8 +7,9 @@
 #include "qIGTLIODeviceWidgetFactory.h"
 #include "qIGTLIODeviceWidget.h"
 
-struct WidgetInGroupBoxClass
+class WidgetInGroupBoxClass
 {
+public:
   WidgetInGroupBoxClass(QVBoxLayout* parentLayout, QString header)
   {
     groupBox = new QGroupBox(header);
@@ -16,9 +17,6 @@ struct WidgetInGroupBoxClass
     layout = new QVBoxLayout(groupBox);
     layout->setMargin(0);
   }
-
-  QGroupBox* groupBox;
-  QVBoxLayout* layout;
 
   void replaceWidget(QWidget* newWidget)
   {
@@ -36,6 +34,10 @@ struct WidgetInGroupBoxClass
       delete widget;
     }
   }
+
+protected:
+  QGroupBox* groupBox;
+  QVBoxLayout* layout;
 };
 
 

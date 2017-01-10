@@ -5,7 +5,7 @@
 #include "vtkIGTLIOLogic.h"
 #include "qIGTLIOLogicController.h"
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
 
@@ -14,10 +14,9 @@ int main(int argc, char **argv)
   qIGTLIOLogicController logicController;
   logicController.setLogic(logic);
 
-  qIGTLIOClientWidget widget;
-  widget.setLogic(logic);
+  qIGTLIOClientWidget widget(logic);
 
-  widget.setGeometry(0,0, 859, 811);
+  widget.setGeometry(0, 0, 859, 811);
   widget.show();
   widget.activateWindow();
   widget.raise();

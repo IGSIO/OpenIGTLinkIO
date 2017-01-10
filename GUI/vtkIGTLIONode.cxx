@@ -109,7 +109,7 @@ qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::GetNode(vtkIGTLIOConnector *co
 std::vector<vtkIGTLIODevicePointer> qIGTLIODevicesModelNode::GetDevicesInGroup() const
 {
   std::vector<vtkIGTLIODevicePointer> retval;
-  for (int i=0; i<connector->GetNumberOfDevices(); ++i)
+  for (unsigned int i=0; i<connector->GetNumberOfDevices(); ++i)
     {
       vtkIGTLIODevicePointer d = connector->GetDevice(i);
       if (d->GetMessageDirection()==group)
@@ -157,7 +157,7 @@ int qIGTLIODevicesModelNode::GetSiblingIndex() const
   if (this->isDevice())
     {
       std::vector<vtkIGTLIODevicePointer> devices = this->GetDevicesInGroup();
-      for (int i=0; i<devices.size(); ++i)
+      for (unsigned int i=0; i<devices.size(); ++i)
         {
           if (devices[i] == device)
             return i;

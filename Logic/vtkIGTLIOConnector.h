@@ -103,7 +103,7 @@ public:
  /// Add a new Device.
  /// If a Device with an identical device_id already exist, the method will fail.
  int AddDevice(vtkIGTLIODevicePointer device); // TODO look at OnNodeReferenceAdded
- int GetNumberOfDevices() const;
+ unsigned int GetNumberOfDevices() const;
  void RemoveDevice(int index); //TODO: look at OnNodeReferenceRemoved
  /// Get the given Device. This can be used to modify the Device contents.
  vtkIGTLIODevicePointer GetDevice(int index);
@@ -208,8 +208,8 @@ public:
   int SetTypeServer(int port);
   int SetTypeClient(std::string hostname, int port);
 
-  vtkGetMacro( CheckCRC, int );
-  void SetCheckCRC(int c);
+  vtkGetMacro( CheckCRC, bool);
+  void SetCheckCRC(bool c);
 
   //----------------------------------------------------------------
   // Thread Control
@@ -261,7 +261,7 @@ private:
 //  // Description:
 //  // A function to explicitly push node to OpenIGTLink. The function is called either by
 //  // external nodes or MRML event hander in the connector node.
-    int PushNode(vtkIGTLIODevicePointer node, int event=-1);
+  int PushNode(vtkIGTLIODevicePointer node, int event=-1);
 
  protected:
   // Description:
@@ -330,7 +330,7 @@ private:
 
   vtkIGTLIODeviceFactoryPointer DeviceFactory;
 
-  int CheckCRC;
+  bool CheckCRC;
 
 };
 

@@ -219,16 +219,9 @@ int vtkIGTLIOConnector::SetTypeClient(std::string hostname, int port)
 }
 
 //----------------------------------------------------------------------------
-void vtkIGTLIOConnector::SetCheckCRC(int c)
+void vtkIGTLIOConnector::SetCheckCRC(bool c)
 {
-  if (c == 0)
-    {
-    this->CheckCRC = 0;
-    }
-  else
-    {
-    this->CheckCRC = 1;
-    }
+  this->CheckCRC = c;
 }
 
 //---------------------------------------------------------------------------
@@ -672,7 +665,7 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
     circBuffer->EndPull();
     }
 
-  for (int i=0; i<Devices.size(); ++i)
+  for (unsigned int i=0; i<Devices.size(); ++i)
     {
     Devices[i]->CheckQueryExpiration();
     }
@@ -748,7 +741,7 @@ int vtkIGTLIOConnector::AddDevice(vtkIGTLIODevicePointer device)
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOConnector::GetNumberOfDevices() const
+unsigned int vtkIGTLIOConnector::GetNumberOfDevices() const
 {
   return Devices.size();
 }

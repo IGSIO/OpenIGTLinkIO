@@ -117,7 +117,7 @@ int vtkIGTLIODevice::PruneCompletedQueries()
 {
   std::vector<QueryType> pruned;
 
-  for (int i=0; i<Queries.size(); ++i)
+  for (unsigned int i=0; i<Queries.size(); ++i)
     if (Queries[i].status == QUERY_STATUS_WAITING)
       pruned.push_back(Queries[i]);
 

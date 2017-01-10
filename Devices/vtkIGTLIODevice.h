@@ -35,7 +35,7 @@
 class vtkIGTLIODevice;
 typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
 
-class vtkIGTLIODeviceCreator : public vtkObject
+class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIODeviceCreator : public vtkObject
 {
 public:
   // Create an instance of the specific device, with the given device_id

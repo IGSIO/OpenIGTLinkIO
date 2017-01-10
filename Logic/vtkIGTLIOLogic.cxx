@@ -114,7 +114,7 @@ vtkIGTLIOConnectorPointer vtkIGTLIOLogic::CreateConnector()
 int vtkIGTLIOLogic::CreateUniqueConnectorID() const
 {
   int retval=0;
-  for (int i=0; i<Connectors.size(); ++i)
+  for (unsigned int i=0; i<Connectors.size(); ++i)
     {
       retval = std::max<int>(retval, Connectors[i]->GetUID()+1);
     }
@@ -122,7 +122,7 @@ int vtkIGTLIOLogic::CreateUniqueConnectorID() const
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOLogic::RemoveConnector(int index)
+int vtkIGTLIOLogic::RemoveConnector(unsigned int index)
 {
   std::vector<vtkIGTLIOConnectorPointer>::iterator toRemove = Connectors.begin()+index;
 
@@ -141,7 +141,7 @@ int vtkIGTLIOLogic::GetNumberOfConnectors() const
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIOConnectorPointer vtkIGTLIOLogic::GetConnector(int index)
+vtkIGTLIOConnectorPointer vtkIGTLIOLogic::GetConnector(unsigned int index)
 {
   if (index>=0 && index<Connectors.size())
     return Connectors[index];
@@ -176,14 +176,14 @@ void vtkIGTLIOLogic::PeriodicProcess()
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOLogic::GetNumberOfDevices() const
+unsigned int vtkIGTLIOLogic::GetNumberOfDevices() const
 {
   std::vector<vtkIGTLIODevicePointer> all = this->CreateDeviceList();
   return all.size();
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOLogic::RemoveDevice(int index)
+void vtkIGTLIOLogic::RemoveDevice(unsigned int index)
 {
   vtkIGTLIODevicePointer device = this->GetDevice(index);
 
@@ -199,7 +199,7 @@ void vtkIGTLIOLogic::RemoveDevice(int index)
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIODevicePointer vtkIGTLIOLogic::GetDevice(int index)
+vtkIGTLIODevicePointer vtkIGTLIOLogic::GetDevice(unsigned int index)
 {
   // TODO: optimize by caching the vector if necessary
   std::vector<vtkIGTLIODevicePointer> all = this->CreateDeviceList();

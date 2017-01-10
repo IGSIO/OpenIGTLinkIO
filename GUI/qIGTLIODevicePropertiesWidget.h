@@ -9,6 +9,7 @@
 
 class QVBoxLayout;
 class qIGTLIODevicesModelNode;
+class WidgetInGroupBoxClass;
 typedef vtkSmartPointer<class vtkIGTLIODeviceWidgetFactory> vtkIGTLIODeviceWidgetFactoryPointer;
 
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIODevicePropertiesWidget : public QWidget
@@ -19,9 +20,9 @@ public:
   void SetNode(qIGTLIODevicesModelNode* node);
 
 private:
-//  QVBoxLayout* mLayout;
+  // QVBoxLayout* mLayout;
   qIGTLIODevicesModelNode* Node;
-  class WidgetInGroupBoxClass* WidgetInGroupBox;
+  WidgetInGroupBoxClass* WidgetInGroupBox;
   vtkIGTLIODeviceWidgetFactoryPointer DeviceWidgetFactory;
 };
 

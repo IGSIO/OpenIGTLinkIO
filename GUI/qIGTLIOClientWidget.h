@@ -14,7 +14,7 @@ class OPENIGTLINKIO_GUI_EXPORT qIGTLIOClientWidget : public QWidget
 {
   Q_OBJECT
 public:
-  qIGTLIOClientWidget();
+  qIGTLIOClientWidget(vtkIGTLIOLogicPointer logic);
   void setLogic(vtkIGTLIOLogicPointer logic);
 
 signals:
