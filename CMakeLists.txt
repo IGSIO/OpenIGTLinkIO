@@ -9,14 +9,25 @@ endif()
 project(OpenIGTLinkIO)
 ###########################################################
 
-set(BUILD_SHARED_LIBS ON CACHE BOOL "build shared or static libs")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+if(NOT BUILD_SHARED_LIBS)
+  set(BUILD_SHARED_LIBS ON CACHE BOOL "build shared or static libs")
+endif()
+
+if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+endif()
+
+if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+endif()
 
 # Choose version of Qt
-set( IGTLIO_QT_VERSION "5" CACHE STRING "Expected Qt version")
-mark_as_advanced( IGTLIO_QT_VERSION )
+if(NOT IGTLIO_QT_VERSION)
+  set( IGTLIO_QT_VERSION "5" CACHE STRING "Expected Qt version")
+  mark_as_advanced( IGTLIO_QT_VERSION )
+endif()
 set_property(CACHE IGTLIO_QT_VERSION PROPERTY STRINGS 4 5)
+
 if(NOT (IGTLIO_QT_VERSION VERSION_EQUAL "4" OR IGTLIO_QT_VERSION VERSION_EQUAL "5"))
     message(FATAL_ERROR "Expected value for IGTLIO_QT_VERSION is either '4' or '5'")
 endif()
