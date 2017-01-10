@@ -5,10 +5,8 @@
 #include "qIGTLIOConnectorListWidget.h"
 #include "qIGTLIODevicesWidget.h"
 
-qIGTLIOClientWidget::qIGTLIOClientWidget(vtkIGTLIOLogicPointer logic)
+qIGTLIOClientWidget::qIGTLIOClientWidget()
 {
-  setLogic(logic);
-
   QVBoxLayout* layout = new QVBoxLayout(this);
 
   QSplitter* splitter = new QSplitter(this);
