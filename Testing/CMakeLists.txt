@@ -10,6 +10,7 @@ find_package(VTK
   vtkIOImage
   vtkImagingMath
   vtkImagingCore
+  vtkIOXMLParser
   REQUIRED
   NO_MODULE)
 include(${VTK_USE_FILE})
@@ -52,3 +53,5 @@ add_io_test("testClientServer" testClientServer testClientServer.cxx)
 add_io_test("testReceiveImage" testReceiveImage testReceiveImage.cxx)
 add_io_test("testSendReceiveCommand" testSendReceiveCommand testSendReceiveCommand.cxx)
 add_io_test("testDeduceToolBasedOnName" testDeduceToolBasedOnName testDeduceToolBasedOnName.cxx)
+#add_io_test("testGetUSProbeParams" testGetUSProbeParams testGetUSProbeParams.cxx)
+add_io_test("testCommandMessageCodec" testCommandMessageCodec testCommandMessageCodec.cxx)

@@ -9,6 +9,7 @@ include(${OpenIGTLink_USE_FILE})
     
 find_package(VTK
   COMPONENTS
+  vtkIOXMLParser
   #vtkIOImage
   #vtkImagingMath
   REQUIRED
@@ -24,6 +25,8 @@ set(${KIT}_INCLUDE_DIRECTORIES
 set(${KIT}_SRCS
     vtkIGTLIOTranslator.h
     vtkIGTLIOTranslator.cxx
+    vtkIGTLIOCommandMessageCodec.h
+    vtkIGTLIOCommandMessageCodec.cxx
   )
 
 set(${KIT}_TARGET_LIBRARIES
