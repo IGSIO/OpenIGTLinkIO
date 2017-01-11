@@ -143,6 +143,7 @@ void qIGTLIOCommandDeviceWidget::onDeviceModified()
 
   NameEdit->setCurrentIndex( currentIndex );
   ContentEdit->setText(device->GetContent().content.c_str());
+  ContentEdit->moveCursor(QTextCursor::End);
 
   this->blockGUI(false);
 }
