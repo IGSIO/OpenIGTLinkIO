@@ -30,8 +30,8 @@ set(${KIT}_SRCS
   )
 
 set(${KIT}_TARGET_LIBRARIES
-  #${OpenIGTLink_LIBRARIES}
-  #${VTK_LIBRARIES}
+  ${OpenIGTLink_LIBRARIES}
+  ${VTK_LIBRARIES}
   )
 
 add_library(${KIT} ${${KIT}_SRCS})
