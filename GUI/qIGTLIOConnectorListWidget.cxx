@@ -90,7 +90,6 @@ void qIGTLIOConnectorListWidget::addButtonFrame(QVBoxLayout* topLayout)
 //-----------------------------------------------------------------------------
 void qIGTLIOConnectorListWidget::setLogic(vtkIGTLIOLogicPointer logic)
 {
-  std::cout << "setLogic " << logic << std::endl;
   foreach(int evendId, QList<int>()
           << vtkIGTLIOLogic::ConnectionAddedEvent
           << vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)

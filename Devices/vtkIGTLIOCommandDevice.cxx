@@ -73,8 +73,6 @@ int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer
         {
         Queries[i].Response = response;
         this->Modified();
-//        std::cout << "stored response: \n";
-//        response->Print(std::cout);
         this->InvokeEvent(CommandResponseReceivedEvent);
         }
       }

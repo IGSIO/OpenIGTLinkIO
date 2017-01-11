@@ -50,8 +50,6 @@ qIGTLIODevicesWidget::qIGTLIODevicesWidget()
 void qIGTLIODevicesWidget::onCurrentDeviceChanged(const QModelIndex& current, const QModelIndex& previous)
 {
   qIGTLIODevicesModelNode* node = DevicesModel->getNodeFromIndex(current);
-  if (node)
-    std::cout << "selected node:" << node->GetName() << std::endl;
   DevicePropertiesWidget->SetNode(node);
 }
 
@@ -74,7 +72,6 @@ void qIGTLIODevicesWidget::setLogic(vtkIGTLIOLogicPointer logic)
 //-----------------------------------------------------------------------------
 void qIGTLIODevicesWidget::onConnectionsChanged(vtkObject* caller, unsigned long event , void* b, void* connector)
 {
-//  std::cout << "onConnectionsChanged " << std::endl;
 }
 
 

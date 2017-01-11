@@ -85,7 +85,7 @@ int main(int argc, char **argv)
       std::string type = fixture.Translator.DetermineTypeBasedOnToolName(it->first);
       if(type == "unknown")
         {
-          std::cout << "Tool with name " << it->first << " is of unknown type." << std::endl;
+          std::cout << "ERROR: Tool with name " << it->first << " is of unknown type." << std::endl;
         return 1;
         }
     }

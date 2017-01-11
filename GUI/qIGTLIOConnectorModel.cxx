@@ -200,14 +200,12 @@ void qIGTLIOConnectorModel::onConnectionEvent(vtkObject* caller, unsigned long e
 {
   if (event==vtkIGTLIOLogic::ConnectionAddedEvent)
     {
-//      std::cout << "on add connected event" << std::endl;
       vtkIGTLIOConnector* c = static_cast<vtkIGTLIOConnector*>(connector);
       this->ReconnectConnector(NULL, c);
       this->resetModel();
     }
   if (event==vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
     {
-//      std::cout << "on remove connected event" << std::endl;
       vtkIGTLIOConnector* c = static_cast<vtkIGTLIOConnector*>(connector);
       this->ReconnectConnector(c, NULL);
       this->resetModel();

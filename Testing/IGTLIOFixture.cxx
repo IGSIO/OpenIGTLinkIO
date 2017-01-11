@@ -9,8 +9,6 @@
 
 bool contains(std::vector<int> input, int value, int count)
 {
-  //std::cout << "size: " << input.size() << std::endl;
-  //std::cout << "value " << value << std::endl;
   int found_times = 0;
   for(int i=0; i<input.size(); ++i)
     {
@@ -18,7 +16,6 @@ bool contains(std::vector<int> input, int value, int count)
       if(input[i] == value)
         found_times+=1;
     }
-  //std::cout << "found_times " << found_times << std::endl;
   return (found_times >= count) ? true : false;
 }
 
@@ -28,12 +25,10 @@ void onReceivedEventFunc(vtkObject* caller, unsigned long eid, void* clientdata,
   LogicFixture* self = reinterpret_cast<LogicFixture*>(clientdata);
   self->Session->PrintSelf(std::cout, vtkIndent(1));
   self->ReceivedEvents.push_back(eid);
-  std::cout << self << " is adding " << eid << " size is now: " << self->ReceivedEvents.size() << std::endl;
 }
 
 LogicFixture::LogicFixture()
 {
-  //ReceivedEvents = -1;
   Logic = vtkIGTLIOLogicPointer::New();
 
   LogicEventCallback = vtkSmartPointer<vtkCallbackCommand>::New();
@@ -50,14 +45,12 @@ void LogicFixture::startClient()
 {
   Session = Logic->ConnectToServer("localhost", -1, igtlio::ASYNCHRONOUS);
   Connector = Session->GetConnector();
-  std::cout << "Starting CLIENT connector " << Connector.GetPointer()  << std::endl;
 }
 
 void LogicFixture::startServer()
 {
   Session = Logic->StartServer(-1, igtlio::ASYNCHRONOUS);
   Connector = Session->GetConnector();
-  std::cout << "Starting SERVER connector " << Connector.GetPointer() << std::endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -98,7 +91,6 @@ bool ClientServerFixture::ConnectClientToServer()
 
 bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventId, int count)
 {
-  //logic->ReceivedEvents.clear();
 
   double timeout = 2;
   double starttime = vtkTimerLog::GetUniversalTime();

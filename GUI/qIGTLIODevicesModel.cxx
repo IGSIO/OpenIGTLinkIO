@@ -42,7 +42,6 @@ int qIGTLIODevicesModel::columnCount(const QModelIndex& parent) const
 
 void dmsg(QString msg)
 {
-//  std::cout << msg.toStdString() << std::endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -270,14 +269,12 @@ void qIGTLIODevicesModel::onConnectionEvent(vtkObject* caller, unsigned long eve
 {
   if (event==vtkIGTLIOLogic::ConnectionAddedEvent)
     {
-//      std::cout << "on add connected event" << std::endl;
       vtkIGTLIOConnector* c = static_cast<vtkIGTLIOConnector*>(connector);
       this->ReconnectConnector(NULL, c);
       this->resetModel();
     }
   if (event==vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
     {
-//      std::cout << "on remove connected event" << std::endl;
       vtkIGTLIOConnector* c = static_cast<vtkIGTLIOConnector*>(connector);
       this->ReconnectConnector(c, NULL);
       this->resetModel();
@@ -292,7 +289,6 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, unsigned long even
       vtkIGTLIODevice* device = static_cast<vtkIGTLIODevice*>(c);
 
       qIGTLIODevicesModelNode* node = RootNode->FindDeviceNode(device);
-      std::cout << "added: " << node->GetName() << std::endl;
       QModelIndex parent = this->createIndex(node->GetParent()->GetSiblingIndex(), 0, node->GetParent());
 
       this->beginInsertRows(parent, node->GetSiblingIndex(), node->GetSiblingIndex());
@@ -306,7 +302,6 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, unsigned long even
      vtkIGTLIODevice* device = static_cast<vtkIGTLIODevice*>(c);
 
      qIGTLIODevicesModelNode* node = RootNode->FindDeviceNode(device);
-     std::cout << "removed: " << node->GetName() << std::endl;
      QModelIndex parent = this->createIndex(node->GetParent()->GetSiblingIndex(), 0, node->GetParent());
 
      this->beginRemoveRows(parent, node->GetSiblingIndex(), node->GetSiblingIndex());
@@ -318,17 +313,12 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, unsigned long even
       // from each device, and each of the must be listened to.
      vtkIGTLIODevice* device = static_cast<vtkIGTLIODevice*>(c);
      qIGTLIODevicesModelNode* node = RootNode->FindDeviceNode(device);
-     std::cout << "modified: " << node->GetName() << std::endl;
      QModelIndex bindex = this->createIndex(node->GetSiblingIndex(), 0, node);
      QModelIndex eindex = this->createIndex(node->GetSiblingIndex(), this->columnCount(bindex), node);
 
      emit dataChanged(bindex, eindex);
     }
-//  else
-//    {
-//      this->resetModel();
-//      emit dataChanged(QModelIndex(), QModelIndex());
-//    }
+
 }
 
 //-----------------------------------------------------------------------------

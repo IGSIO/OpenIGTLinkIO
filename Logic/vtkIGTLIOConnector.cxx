@@ -593,7 +593,6 @@ unsigned int vtkIGTLIOConnector::GetUpdatedBuffersList(NameListType& nameList)
     {
     if (iter->second != NULL && iter->second->IsUpdated())
       {
-        std::cout << "type " << iter->first.type << " name " << iter->first.name << std::endl;
       nameList.push_back(iter->first);
       }
     }
@@ -630,8 +629,6 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
     circBuffer->StartPull();
 
     igtl::MessageBase::Pointer buffer = circBuffer->GetPullBuffer();
-
-    std::cout << "incoming message (via buffer): " << buffer->GetDeviceType() << " with device name " << buffer->GetDeviceName() << std::endl;
 
     vtkSmartPointer<vtkIGTLIODeviceCreator> deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
 
@@ -790,11 +787,6 @@ int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::ME
       return 1;
     }
 
-//  std::cout << "sending message: " << device->GetDeviceName() << " " << msg->GetPackSize() << std::endl;
-//  device->Print(std::cout);
-
-
-//  int r = this->SendData(4158, (unsigned char*)msg->GetPackPointer());
   int r = this->SendData(msg->GetPackSize(), (unsigned char*)msg->GetPackPointer());
   if (r == 0)
     {
