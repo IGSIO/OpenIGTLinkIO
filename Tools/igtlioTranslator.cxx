@@ -16,17 +16,17 @@ std::string extractStringBeforeCharacter(std::string const& s, char character)
     }
 }
 
-vtkIGTLIOTranslator::vtkIGTLIOTranslator()
+Translator::Translator()
 {
 }
 
-std::string vtkIGTLIOTranslator::GetToolNameFromDeviceName(std::string device_name)
+std::string Translator::GetToolNameFromDeviceName(std::string device_name)
 {
     std::string retval = extractStringBeforeCharacter(device_name, '_');
     return retval;
 }
 
-std::string vtkIGTLIOTranslator::DetermineTypeBasedOnToolName(std::string tool_name)
+std::string Translator::DetermineTypeBasedOnToolName(std::string tool_name)
 {
   if (tool_name.find("probe") != std::string::npos) {
       return "probe";

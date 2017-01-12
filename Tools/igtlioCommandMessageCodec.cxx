@@ -7,25 +7,25 @@
 namespace igtlio
 {
 
-vtkIGTLIOCommandMessageCodec::vtkIGTLIOCommandMessageCodec() : m_isReply( false ), m_result( false )
+CommandMessageCodec::CommandMessageCodec() : m_isReply( false ), m_result( false )
 {
 }
 
-vtkIGTLIOCommandMessageCodec::vtkIGTLIOCommandMessageCodec( bool isReply ) : m_isReply( isReply ), m_result( false )
+CommandMessageCodec::CommandMessageCodec( bool isReply ) : m_isReply( isReply ), m_result( false )
 {
 }
 
-void vtkIGTLIOCommandMessageCodec::SetResult( bool res )
+void CommandMessageCodec::SetResult( bool res )
 {
     m_result = res;
 }
 
-void vtkIGTLIOCommandMessageCodec::SetParameter( std::string paramName, std::string value )
+void CommandMessageCodec::SetParameter( std::string paramName, std::string value )
 {
     m_parameters.push_back( std::pair<std::string,std::string>(paramName, value ) );
 }
 
-std::string vtkIGTLIOCommandMessageCodec::GetContent()
+std::string CommandMessageCodec::GetContent()
 {
     std::stringstream os;
     os << "<Command>" << std::endl;
@@ -42,7 +42,7 @@ std::string vtkIGTLIOCommandMessageCodec::GetContent()
     return os.str();
 }
 
-void vtkIGTLIOCommandMessageCodec::SetContent( std::string content )
+void CommandMessageCodec::SetContent( std::string content )
 {
     vtkXMLDataElement * root = vtkXMLUtilities::ReadElementFromString( content.c_str() );
     for( int i = 0; i < root->GetNumberOfNestedElements(); ++i )
@@ -63,12 +63,12 @@ void vtkIGTLIOCommandMessageCodec::SetContent( std::string content )
     }
 }
 
-bool vtkIGTLIOCommandMessageCodec::GetResult()
+bool CommandMessageCodec::GetResult()
 {
     return m_result;
 }
 
-std::string vtkIGTLIOCommandMessageCodec::GetParameter( std::string paramName )
+std::string CommandMessageCodec::GetParameter( std::string paramName )
 {
     for( int i = 0; i < m_parameters.size(); ++i )
         if( m_parameters[i].first == paramName )

@@ -31,7 +31,7 @@ struct ClientServerFixture
 {
   LogicFixture Server;
   LogicFixture Client;
-  igtlio::vtkIGTLIOTranslator Translator;
+  igtlio::Translator Translator;
 
   bool ConnectClientToServer();
   bool LoopUntilEventDetected(LogicFixture *logic, int eventId, int count=1);

@@ -8,10 +8,10 @@
 namespace igtlio
 {
 
-class OPENIGTLINKIO_TOOLS_EXPORT vtkIGTLIOTranslator
+class OPENIGTLINKIO_TOOLS_EXPORT Translator
 {
 public:
-    vtkIGTLIOTranslator();
+    Translator();
 
     std::string GetToolNameFromDeviceName(std::string device_name);
     std::string DetermineTypeBasedOnToolName(std::string tool_name);

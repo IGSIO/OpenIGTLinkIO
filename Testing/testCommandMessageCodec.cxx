@@ -5,7 +5,7 @@
 int main(int argc, char **argv)
 {
     // Generate initial string with command xml
-    igtlio::vtkIGTLIOCommandMessageCodec initialCodec(true);
+    igtlio::CommandMessageCodec initialCodec(true);
     initialCodec.SetResult( true );
     initialCodec.SetParameter( "Depth", "45" );
     initialCodec.SetParameter( "Gain", "35" );
@@ -14,7 +14,7 @@ int main(int argc, char **argv)
     std::cerr << "Command content: " << std::endl << commandContent << std::endl;
 
     // Try decoding string
-    igtlio::vtkIGTLIOCommandMessageCodec codec;
+    igtlio::CommandMessageCodec codec;
     codec.SetContent( commandContent );
 
     if( !codec.IsReply() )

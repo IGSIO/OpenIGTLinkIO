@@ -7,13 +7,13 @@
 namespace igtlio
 {
 
-class vtkIGTLIOCommandMessageCodec
+class CommandMessageCodec
 {
 
 public:
 
-    vtkIGTLIOCommandMessageCodec();
-    vtkIGTLIOCommandMessageCodec( bool isReply );
+    CommandMessageCodec();
+    CommandMessageCodec( bool isReply );
 
     // Build the content of the command to send
     void SetResult( bool res );
