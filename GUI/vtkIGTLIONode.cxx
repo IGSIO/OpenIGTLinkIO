@@ -1,13 +1,13 @@
 #include "vtkIGTLIONode.h"
 #include "qIGTLIOGuiUtilities.h"
 
-qIGTLIODevicesModelNodePointer qIGTLIODevicesModelNode::createRoot(igtlio::vtkIGTLIOLogic *logic_)
+qIGTLIODevicesModelNodePointer qIGTLIODevicesModelNode::createRoot(igtlio::Logic *logic_)
 {
   qIGTLIODevicesModelNodePointer retval(new qIGTLIODevicesModelNode(NULL, logic_));
   return retval;
 }
 
-qIGTLIODevicesModelNode::qIGTLIODevicesModelNode(qIGTLIODevicesModelNode *parent_, igtlio::vtkIGTLIOLogic *logic_, igtlio::vtkIGTLIOConnector *connector_, igtlio::Device::MESSAGE_DIRECTION group_, igtlio::Device *device_)
+qIGTLIODevicesModelNode::qIGTLIODevicesModelNode(qIGTLIODevicesModelNode *parent_, igtlio::Logic *logic_, igtlio::Connector *connector_, igtlio::Device::MESSAGE_DIRECTION group_, igtlio::Device *device_)
 {
   Parent = parent_;
   logic = logic_;
@@ -91,7 +91,7 @@ qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::GetParent()
   return Parent;
 }
 
-qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::GetNode(igtlio::vtkIGTLIOConnector *connector, igtlio::Device::MESSAGE_DIRECTION group, igtlio::Device *device)
+qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::GetNode(igtlio::Connector *connector, igtlio::Device::MESSAGE_DIRECTION group, igtlio::Device *device)
 {
   //  dmsg("GetNode b");
   qIGTLIODevicesModelNodePointer node(new qIGTLIODevicesModelNode(this, logic, connector, group, device));

@@ -29,12 +29,12 @@ class vtkMutexLock;
 namespace igtlio
 {
 
-class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOCircularBuffer : public vtkObject
+class OPENIGTLINKIO_LOGIC_EXPORT CircularBuffer : public vtkObject
 {
  public:
 
-  static vtkIGTLIOCircularBuffer *New();
-  vtkTypeMacro(vtkIGTLIOCircularBuffer,vtkObject);
+  static CircularBuffer *New();
+  vtkTypeMacro(CircularBuffer,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
@@ -51,8 +51,8 @@ class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOCircularBuffer : public vtkObject
   int            IsUpdated() { return this->UpdateFlag; };
 
  protected:
-  vtkIGTLIOCircularBuffer();
-  virtual ~vtkIGTLIOCircularBuffer();
+  CircularBuffer();
+  virtual ~CircularBuffer();
 
  protected:
 

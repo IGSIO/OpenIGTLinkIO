@@ -88,10 +88,10 @@ bool operator==(const DeviceKeyType &lhs, const DeviceKeyType &rhs)
 
 
 //------------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOConnector);
+vtkStandardNewMacro(Connector);
 
 //----------------------------------------------------------------------------
-const char *vtkIGTLIOConnector::ConnectorTypeStr[vtkIGTLIOConnector::NUM_TYPE] =
+const char *Connector::ConnectorTypeStr[Connector::NUM_TYPE] =
 {
   "?", // TYPE_NOT_DEFINED
   "S", // TYPE_SERVER
@@ -99,7 +99,7 @@ const char *vtkIGTLIOConnector::ConnectorTypeStr[vtkIGTLIOConnector::NUM_TYPE] =
 };
 
 //----------------------------------------------------------------------------
-const char *vtkIGTLIOConnector::ConnectorStateStr[vtkIGTLIOConnector::NUM_STATE] =
+const char *Connector::ConnectorStateStr[Connector::NUM_STATE] =
 {
   "OFF",       // OFF
   "WAIT",      // WAIT_CONNECTION
@@ -107,7 +107,7 @@ const char *vtkIGTLIOConnector::ConnectorStateStr[vtkIGTLIOConnector::NUM_STATE]
 };
 
 //----------------------------------------------------------------------------
-vtkIGTLIOConnector::vtkIGTLIOConnector()
+Connector::Connector()
 {
   this->Type   = TYPE_CLIENT;
   this->State  = STATE_OFF;
@@ -129,16 +129,16 @@ vtkIGTLIOConnector::vtkIGTLIOConnector()
 
   this->CheckCRC = 1;
 
-  DeviceFactory = vtkIGTLIODeviceFactoryPointer::New();
+  DeviceFactory = DeviceFactoryPointer::New();
 }
 
 //----------------------------------------------------------------------------
-vtkIGTLIOConnector::~vtkIGTLIOConnector()
+Connector::~Connector()
 {
   this->Stop();
 }
 
-void vtkIGTLIOConnector::PrintSelf(ostream& os, vtkIndent indent)
+void Connector::PrintSelf(ostream& os, vtkIndent indent)
 {
   Superclass::PrintSelf(os,indent);
 
@@ -174,13 +174,13 @@ void vtkIGTLIOConnector::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-const char* vtkIGTLIOConnector::GetServerHostname()
+const char* Connector::GetServerHostname()
 {
   return this->ServerHostname.c_str();
 }
 
 //----------------------------------------------------------------------------
-void vtkIGTLIOConnector::SetServerHostname(std::string str)
+void Connector::SetServerHostname(std::string str)
 {
   if (this->ServerHostname.compare(str) == 0)
     {
@@ -191,7 +191,7 @@ void vtkIGTLIOConnector::SetServerHostname(std::string str)
 }
 
 //----------------------------------------------------------------------------
-int vtkIGTLIOConnector::SetTypeServer(int port)
+int Connector::SetTypeServer(int port)
 {
   if (this->Type == TYPE_SERVER
       && this->ServerPort == port)
@@ -205,7 +205,7 @@ int vtkIGTLIOConnector::SetTypeServer(int port)
 }
 
 //----------------------------------------------------------------------------
-int vtkIGTLIOConnector::SetTypeClient(std::string hostname, int port)
+int Connector::SetTypeClient(std::string hostname, int port)
 {
   if (this->Type == TYPE_CLIENT
       && this->ServerPort == port
@@ -221,16 +221,16 @@ int vtkIGTLIOConnector::SetTypeClient(std::string hostname, int port)
 }
 
 //----------------------------------------------------------------------------
-void vtkIGTLIOConnector::SetCheckCRC(bool c)
+void Connector::SetCheckCRC(bool c)
 {
   this->CheckCRC = c;
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOConnector::Start()
+int Connector::Start()
 {
   // Check if type is defined.
-  if (this->Type == vtkIGTLIOConnector::TYPE_NOT_DEFINED)
+  if (this->Type == Connector::TYPE_NOT_DEFINED)
     {
       //vtkErrorMacro("Connector type is not defined.");
     return 0;
@@ -244,7 +244,7 @@ int vtkIGTLIOConnector::Start()
     }
 
   this->ServerStopFlag = false;
-  this->ThreadID = this->Thread->SpawnThread((vtkThreadFunctionType) &vtkIGTLIOConnector::ThreadFunction, this);
+  this->ThreadID = this->Thread->SpawnThread((vtkThreadFunctionType) &Connector::ThreadFunction, this);
 
   // Following line is necessary in some Linux environment,
   // since it takes for a while for the thread to update
@@ -252,13 +252,13 @@ int vtkIGTLIOConnector::Start()
   // after calling vtkMRMLIGTLConnectorNode::Start() in ProcessGUIEvent()
   // in vtkOpenIGTLinkIFGUI class.
   this->State = STATE_WAIT_CONNECTION;
-  this->InvokeEvent(vtkIGTLIOConnector::ActivatedEvent);
+  this->InvokeEvent(Connector::ActivatedEvent);
 
   return 1;
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOConnector::Stop()
+int Connector::Stop()
 {
   // Check if thread exists
   if (this->ThreadID >= 0)
@@ -283,11 +283,11 @@ int vtkIGTLIOConnector::Stop()
 
 
 //---------------------------------------------------------------------------
-void* vtkIGTLIOConnector::ThreadFunction(void* ptr)
+void* Connector::ThreadFunction(void* ptr)
 {
   vtkMultiThreader::ThreadInfo* vinfo =
     static_cast<vtkMultiThreader::ThreadInfo*>(ptr);
-  vtkIGTLIOConnector* igtlcon = static_cast<vtkIGTLIOConnector*>(vinfo->UserData);
+  Connector* igtlcon = static_cast<Connector*>(vinfo->UserData);
 
   igtlcon->State = STATE_WAIT_CONNECTION;
 
@@ -313,12 +313,12 @@ void* vtkIGTLIOConnector::ThreadFunction(void* ptr)
       {
       igtlcon->State = STATE_CONNECTED;
       // need to Request the InvokeEvent, because we are not on the main thread now
-      igtlcon->RequestInvokeEvent(vtkIGTLIOConnector::ConnectedEvent);
+      igtlcon->RequestInvokeEvent(Connector::ConnectedEvent);
       //vtkErrorMacro("vtkOpenIGTLinkIFLogic::ThreadFunction(): Client Connected.");
       igtlcon->RequestPushOutgoingMessages();
       igtlcon->ReceiveController();
       igtlcon->State = STATE_WAIT_CONNECTION;
-      igtlcon->RequestInvokeEvent(vtkIGTLIOConnector::DisconnectedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
+      igtlcon->RequestInvokeEvent(Connector::DisconnectedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
       }
     }
 
@@ -334,14 +334,14 @@ void* vtkIGTLIOConnector::ThreadFunction(void* ptr)
 
   igtlcon->ThreadID = -1;
   igtlcon->State = STATE_OFF;
-  igtlcon->RequestInvokeEvent(vtkIGTLIOConnector::DeactivatedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
+  igtlcon->RequestInvokeEvent(Connector::DeactivatedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
 
   return NULL; //why???
 }
 
 
 //----------------------------------------------------------------------------
-void vtkIGTLIOConnector::RequestInvokeEvent(unsigned long eventId)
+void Connector::RequestInvokeEvent(unsigned long eventId)
 {
   this->EventQueueMutex->Lock();
   this->EventQueue.push_back(eventId);
@@ -350,7 +350,7 @@ void vtkIGTLIOConnector::RequestInvokeEvent(unsigned long eventId)
 
 
 //----------------------------------------------------------------------------
-void vtkIGTLIOConnector::RequestPushOutgoingMessages()
+void Connector::RequestPushOutgoingMessages()
 {
   this->PushOutgoingMessageMutex->Lock();
   this->PushOutgoingMessageFlag = 1;
@@ -359,7 +359,7 @@ void vtkIGTLIOConnector::RequestPushOutgoingMessages()
 
 
 //----------------------------------------------------------------------------
-int vtkIGTLIOConnector::WaitForConnection()
+int Connector::WaitForConnection()
 {
   //igtl::ClientSocket::Pointer socket;
 
@@ -413,7 +413,7 @@ int vtkIGTLIOConnector::WaitForConnection()
 
 
 //----------------------------------------------------------------------------
-int vtkIGTLIOConnector::ReceiveController()
+int Connector::ReceiveController()
 {
   //igtl_header header;
   igtl::MessageHeader::Pointer headerMsg;
@@ -494,14 +494,14 @@ int vtkIGTLIOConnector::ReceiveController()
     if (iter == this->Buffer.end()) // First time to refer the device name
       {
       this->CircularBufferMutex->Lock();
-      this->Buffer[key] = vtkIGTLIOCircularBufferPointer::New();
+      this->Buffer[key] = CircularBufferPointer::New();
       this->CircularBufferMutex->Unlock();
       }
 
     //----------------------------------------------------------------
     // Load to the circular buffer
 
-    vtkIGTLIOCircularBufferPointer circBuffer = this->Buffer[key];
+    CircularBufferPointer circBuffer = this->Buffer[key];
 
     if (circBuffer && circBuffer->StartPush() != -1)
       {
@@ -542,7 +542,7 @@ int vtkIGTLIOConnector::ReceiveController()
 
 
 //----------------------------------------------------------------------------
-int vtkIGTLIOConnector::SendData(int size, unsigned char* data)
+int Connector::SendData(int size, unsigned char* data)
 {
 
   if (this->Socket.IsNull())
@@ -562,7 +562,7 @@ int vtkIGTLIOConnector::SendData(int size, unsigned char* data)
 
 
 //----------------------------------------------------------------------------
-int vtkIGTLIOConnector::Skip(int length, int skipFully)
+int Connector::Skip(int length, int skipFully)
 {
   unsigned char dummy[256];
   int block  = 256;
@@ -586,7 +586,7 @@ int vtkIGTLIOConnector::Skip(int length, int skipFully)
 
 
 //----------------------------------------------------------------------------
-unsigned int vtkIGTLIOConnector::GetUpdatedBuffersList(NameListType& nameList)
+unsigned int Connector::GetUpdatedBuffersList(NameListType& nameList)
 {
   nameList.clear();
 
@@ -603,7 +603,7 @@ unsigned int vtkIGTLIOConnector::GetUpdatedBuffersList(NameListType& nameList)
 
 
 //----------------------------------------------------------------------------
-vtkIGTLIOCircularBufferPointer vtkIGTLIOConnector::GetCircularBuffer(const DeviceKeyType &key)
+CircularBufferPointer Connector::GetCircularBuffer(const DeviceKeyType &key)
 {
   CircularBufferMap::iterator iter = this->Buffer.find(key);
   if (iter != this->Buffer.end())
@@ -618,16 +618,16 @@ vtkIGTLIOCircularBufferPointer vtkIGTLIOConnector::GetCircularBuffer(const Devic
 
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
+void Connector::ImportDataFromCircularBuffer()
 {
-  vtkIGTLIOConnector::NameListType nameList;
+  Connector::NameListType nameList;
   this->GetUpdatedBuffersList(nameList);
 
-  vtkIGTLIOConnector::NameListType::iterator nameIter;
+  Connector::NameListType::iterator nameIter;
   for (nameIter = nameList.begin(); nameIter != nameList.end(); nameIter ++)
     {
     DeviceKeyType key = *nameIter;
-    vtkIGTLIOCircularBuffer* circBuffer = this->GetCircularBuffer(key);
+    CircularBuffer* circBuffer = this->GetCircularBuffer(key);
     circBuffer->StartPull();
 
     igtl::MessageBase::Pointer buffer = circBuffer->GetPullBuffer();
@@ -672,7 +672,7 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOConnector::ImportEventsFromEventBuffer()
+void Connector::ImportEventsFromEventBuffer()
 {
   // Invoke all events in the EventQueue
 
@@ -697,7 +697,7 @@ void vtkIGTLIOConnector::ImportEventsFromEventBuffer()
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOConnector::PushOutgoingMessages()
+void Connector::PushOutgoingMessages()
 {
   int push = 0;
 
@@ -718,14 +718,14 @@ void vtkIGTLIOConnector::PushOutgoingMessages()
 }
 
 //----------------------------------------------------------------------------
-void vtkIGTLIOConnector::PeriodicProcess()
+void Connector::PeriodicProcess()
 {
   this->ImportDataFromCircularBuffer();
   this->ImportEventsFromEventBuffer();
   this->PushOutgoingMessages();
 }
 
-int vtkIGTLIOConnector::AddDevice(DevicePointer device)
+int Connector::AddDevice(DevicePointer device)
 {
   if (this->GetDevice(CreateDeviceKey(device))!=NULL)
     {
@@ -736,33 +736,33 @@ int vtkIGTLIOConnector::AddDevice(DevicePointer device)
   device->SetTimestamp(vtkTimerLog::GetUniversalTime());
   Devices.push_back(device);
   //TODO: listen to device events?
-  this->InvokeEvent(vtkIGTLIOConnector::NewDeviceEvent, device.GetPointer());
+  this->InvokeEvent(Connector::NewDeviceEvent, device.GetPointer());
   return 1;
 }
 
 //---------------------------------------------------------------------------
-unsigned int vtkIGTLIOConnector::GetNumberOfDevices() const
+unsigned int Connector::GetNumberOfDevices() const
 {
   return Devices.size();
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOConnector::RemoveDevice(int index)
+void Connector::RemoveDevice(int index)
 {
   //TODO: disconnect listen to device events?
   DevicePointer device = Devices[index]; // ensure object lives until event has completed
   Devices.erase(Devices.begin()+index);
-  this->InvokeEvent(vtkIGTLIOConnector::RemovedDeviceEvent, device.GetPointer());
+  this->InvokeEvent(Connector::RemovedDeviceEvent, device.GetPointer());
 }
 
 //---------------------------------------------------------------------------
-DevicePointer vtkIGTLIOConnector::GetDevice(int index)
+DevicePointer Connector::GetDevice(int index)
 {
   return Devices[index];
 }
 
 //---------------------------------------------------------------------------
-DevicePointer vtkIGTLIOConnector::GetDevice(DeviceKeyType key)
+DevicePointer Connector::GetDevice(DeviceKeyType key)
 {
   for (unsigned i=0; i<Devices.size(); ++i)
     if (CreateDeviceKey(Devices[i])==key)
@@ -771,7 +771,7 @@ DevicePointer vtkIGTLIOConnector::GetDevice(DeviceKeyType key)
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, Device::MESSAGE_PREFIX prefix)
+int Connector::SendMessage(DeviceKeyType device_id, Device::MESSAGE_PREFIX prefix)
 {
   DevicePointer device = this->GetDevice(device_id);
   if (!device)
@@ -803,12 +803,12 @@ int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, Device::MESSAGE_PRE
 //  return 0;
 }
 
-vtkIGTLIODeviceFactoryPointer vtkIGTLIOConnector::GetDeviceFactory()
+DeviceFactoryPointer Connector::GetDeviceFactory()
 {
   return DeviceFactory;
 }
 
-void vtkIGTLIOConnector::SetDeviceFactory(vtkIGTLIODeviceFactoryPointer val)
+void Connector::SetDeviceFactory(DeviceFactoryPointer val)
 {
   if (val==DeviceFactory)
     return;
@@ -817,7 +817,7 @@ void vtkIGTLIOConnector::SetDeviceFactory(vtkIGTLIODeviceFactoryPointer val)
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOConnector::PushNode(DevicePointer node, int event)
+int Connector::PushNode(DevicePointer node, int event)
 {
   // TODO: verify that removed event argument is OK
   return this->SendMessage(CreateDeviceKey(node), Device::MESSAGE_PREFIX_NOT_DEFINED);

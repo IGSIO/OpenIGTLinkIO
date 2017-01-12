@@ -42,7 +42,7 @@ void qIGTLIOConnectorListWidget::onCurrentConnectorChanged()
     return;
     }
 
-  igtlio::vtkIGTLIOConnectorPointer connector = Logic->GetConnector(row);
+  igtlio::ConnectorPointer connector = Logic->GetConnector(row);
   ConnectorPropertyWidget->setMRMLIGTLConnectorNode(connector);
 }
 
@@ -88,11 +88,11 @@ void qIGTLIOConnectorListWidget::addButtonFrame(QVBoxLayout* topLayout)
 }
 
 //-----------------------------------------------------------------------------
-void qIGTLIOConnectorListWidget::setLogic(igtlio::vtkIGTLIOLogicPointer logic)
+void qIGTLIOConnectorListWidget::setLogic(igtlio::LogicPointer logic)
 {
   foreach(int evendId, QList<int>()
-          << igtlio::vtkIGTLIOLogic::ConnectionAddedEvent
-          << igtlio::vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
+          << igtlio::Logic::ConnectionAddedEvent
+          << igtlio::Logic::ConnectionAboutToBeRemovedEvent)
     {
     qvtkReconnect(this->Logic, logic, evendId,
                   this, SLOT(onConnectionsChanged(vtkObject*, unsigned long, void*, void*)));
@@ -106,11 +106,11 @@ void qIGTLIOConnectorListWidget::setLogic(igtlio::vtkIGTLIOLogicPointer logic)
 void qIGTLIOConnectorListWidget::onConnectionsChanged(vtkObject* caller, unsigned long event, void * clientData,  void* connector)
 {
   // remove removed connector from property widget
-  if (event==igtlio::vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent && connector!=NULL)
+  if (event==igtlio::Logic::ConnectionAboutToBeRemovedEvent && connector!=NULL)
     {
-      igtlio::vtkIGTLIOConnector* c = static_cast<igtlio::vtkIGTLIOConnector*>(connector);
+      igtlio::Connector* c = static_cast<igtlio::Connector*>(connector);
       if (ConnectorPropertyWidget->getMRMLIGTLConnectorNode().GetPointer() == c)
-        ConnectorPropertyWidget->setMRMLIGTLConnectorNode(igtlio::vtkIGTLIOConnectorPointer());
+        ConnectorPropertyWidget->setMRMLIGTLConnectorNode(igtlio::ConnectorPointer());
     }
 }
 

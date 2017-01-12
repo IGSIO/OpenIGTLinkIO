@@ -90,7 +90,7 @@ int main(int argc, char **argv)
   std::cout << "*** COMMAND query sent from Client" << std::endl;
   //---------------------------------------------------------------------------
 
-  if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlio::vtkIGTLIOLogic::CommandQueryReceivedEvent))
+  if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlio::Logic::CommandQueryReceivedEvent))
     return 1;
   std::cout << "*** COMMAND query received by Server" << std::endl;
   //---------------------------------------------------------------------------
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
   std::cout << "*** RTS_COMMAND response sent from Server" << std::endl;
   //---------------------------------------------------------------------------
 
-  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::vtkIGTLIOLogic::CommandResponseReceivedEvent))
+  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::CommandResponseReceivedEvent))
     return 1;
   std::cout << "*** RTS_COMMAND response received by Client" << std::endl;
   //---------------------------------------------------------------------------

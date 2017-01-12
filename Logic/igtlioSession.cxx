@@ -31,7 +31,7 @@ vtkIGTLIOSession::vtkIGTLIOSession()
 
 DevicePointer vtkIGTLIOSession::AddDeviceIfNotPresent(DeviceKeyType key)
 {
-  vtkSmartPointer<Device> device = Connector->GetDevice(key);
+  DevicePointer device = Connector->GetDevice(key);
 
   if (!device)
   {
@@ -124,12 +124,12 @@ ImageDevicePointer vtkIGTLIOSession::SendImage(std::string device_id, vtkSmartPo
   return device;
 }
 
-vtkIGTLIOConnectorPointer vtkIGTLIOSession::GetConnector()
+ConnectorPointer vtkIGTLIOSession::GetConnector()
 {
   return Connector;
 }
 
-void vtkIGTLIOSession::SetConnector(vtkIGTLIOConnectorPointer connector)
+void vtkIGTLIOSession::SetConnector(ConnectorPointer connector)
 {
   Connector = connector;
 }
@@ -141,7 +141,7 @@ void vtkIGTLIOSession::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE 
     vtkWarningMacro("No connector, ignoring connect request");
     return;
   }
-  if (Connector->GetState()!=vtkIGTLIOConnector::STATE_OFF)
+  if (Connector->GetState()!=Connector::STATE_OFF)
   {
     vtkWarningMacro("Session is already working, ignoring connect request");
     return;
@@ -166,7 +166,7 @@ void vtkIGTLIOSession::ConnectToServer(std::string serverHost, int serverPort, i
     vtkWarningMacro("No connector, ignoring connect request");
     return;
   }
-  if (Connector->GetState()!=vtkIGTLIOConnector::STATE_OFF)
+  if (Connector->GetState()!=Connector::STATE_OFF)
   {
     vtkWarningMacro("Session is already working, ignoring connect request");
     return;
@@ -192,13 +192,13 @@ bool vtkIGTLIOSession::waitForConnection(double timeout_s)
     Connector->PeriodicProcess();
     vtksys::SystemTools::Delay(5);
 
-    if (Connector->GetState() != vtkIGTLIOConnector::STATE_WAIT_CONNECTION)
+    if (Connector->GetState() != Connector::STATE_WAIT_CONNECTION)
     {
       break;
     }
   }
 
-  return Connector->GetState() == vtkIGTLIOConnector::STATE_CONNECTED;
+  return Connector->GetState() == Connector::STATE_CONNECTED;
 }
 
 

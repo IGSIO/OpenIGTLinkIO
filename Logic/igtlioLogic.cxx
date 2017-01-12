@@ -33,8 +33,8 @@ namespace igtlio
 //---------------------------------------------------------------------------
 void onNewDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
 {
-  vtkIGTLIOLogic* logic = reinterpret_cast<vtkIGTLIOLogic*>(clientdata);
-  logic->InvokeEvent(vtkIGTLIOLogic::NewDeviceEvent, calldata);
+  Logic* logic = reinterpret_cast<Logic*>(clientdata);
+  logic->InvokeEvent(Logic::NewDeviceEvent, calldata);
 
   Device* device = reinterpret_cast<Device*>(calldata);
   device->AddObserver(Device::CommandQueryReceivedEvent, logic->DeviceEventCallback);
@@ -44,8 +44,8 @@ void onNewDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata
 //---------------------------------------------------------------------------
 void onRemovedDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
 {
-  vtkIGTLIOLogic* logic = reinterpret_cast<vtkIGTLIOLogic*>(clientdata);
-  logic->InvokeEvent(vtkIGTLIOLogic::RemovedDeviceEvent, calldata);
+  Logic* logic = reinterpret_cast<Logic*>(clientdata);
+  logic->InvokeEvent(Logic::RemovedDeviceEvent, calldata);
 
   Device* device = reinterpret_cast<Device*>(calldata);
   device->RemoveObserver(logic->DeviceEventCallback);
@@ -54,7 +54,7 @@ void onRemovedDeviceEventFunc(vtkObject* caller, unsigned long eid, void* client
 //---------------------------------------------------------------------------
 void onDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
 {
-  vtkIGTLIOLogic* logic = reinterpret_cast<vtkIGTLIOLogic*>(clientdata);
+  Logic* logic = reinterpret_cast<Logic*>(clientdata);
 
   if ((eid==Device::CommandQueryReceivedEvent) ||
       (eid==Device::CommandResponseReceivedEvent))
@@ -65,11 +65,11 @@ void onDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, v
 
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOLogic);
+vtkStandardNewMacro(Logic);
 
 
 //---------------------------------------------------------------------------
-vtkIGTLIOLogic::vtkIGTLIOLogic()
+Logic::Logic()
 {
   NewDeviceCallback = vtkSmartPointer<vtkCallbackCommand>::New();
   NewDeviceCallback->SetCallback(onNewDeviceEventFunc);
@@ -85,36 +85,36 @@ vtkIGTLIOLogic::vtkIGTLIOLogic()
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIOLogic::~vtkIGTLIOLogic()
+Logic::~Logic()
 {
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOLogic::PrintSelf(ostream& os, vtkIndent indent)
+void Logic::PrintSelf(ostream& os, vtkIndent indent)
 {
   os << indent << "vtkIGTLIOLogic:             " << this->GetClassName() << "\n";
 }
 
 
 //---------------------------------------------------------------------------
-vtkIGTLIOConnectorPointer vtkIGTLIOLogic::CreateConnector()
+ConnectorPointer Logic::CreateConnector()
 {
-  vtkIGTLIOConnectorPointer connector = vtkIGTLIOConnectorPointer::New();
+  ConnectorPointer connector = ConnectorPointer::New();
   connector->SetUID(this->CreateUniqueConnectorID());
   std::stringstream ss;
   ss << "IGTLConnector_" << connector->GetUID();
   connector->SetName(ss.str());
   Connectors.push_back(connector);
 
-  connector->AddObserver(vtkIGTLIOConnector::NewDeviceEvent, NewDeviceCallback);
-  connector->AddObserver(vtkIGTLIOConnector::RemovedDeviceEvent, RemovedDeviceCallback);
+  connector->AddObserver(Connector::NewDeviceEvent, NewDeviceCallback);
+  connector->AddObserver(Connector::RemovedDeviceEvent, RemovedDeviceCallback);
 
   this->InvokeEvent(ConnectionAddedEvent, connector.GetPointer());
   return connector;
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOLogic::CreateUniqueConnectorID() const
+int Logic::CreateUniqueConnectorID() const
 {
   int retval=0;
   for (unsigned int i=0; i<Connectors.size(); ++i)
@@ -125,9 +125,9 @@ int vtkIGTLIOLogic::CreateUniqueConnectorID() const
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOLogic::RemoveConnector(unsigned int index)
+int Logic::RemoveConnector(unsigned int index)
 {
-  std::vector<vtkIGTLIOConnectorPointer>::iterator toRemove = Connectors.begin()+index;
+  std::vector<ConnectorPointer>::iterator toRemove = Connectors.begin()+index;
 
   toRemove->GetPointer()->RemoveObserver(NewDeviceCallback);
   toRemove->GetPointer()->RemoveObserver(RemovedDeviceCallback);
@@ -138,13 +138,13 @@ int vtkIGTLIOLogic::RemoveConnector(unsigned int index)
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOLogic::GetNumberOfConnectors() const
+int Logic::GetNumberOfConnectors() const
 {
   return Connectors.size();
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIOConnectorPointer vtkIGTLIOLogic::GetConnector(unsigned int index)
+ConnectorPointer Logic::GetConnector(unsigned int index)
 {
   if (index>=0 && index<Connectors.size())
     return Connectors[index];
@@ -153,7 +153,7 @@ vtkIGTLIOConnectorPointer vtkIGTLIOLogic::GetConnector(unsigned int index)
   return NULL;
 }
 
-vtkIGTLIOSessionPointer vtkIGTLIOLogic::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+vtkIGTLIOSessionPointer Logic::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
 {
   vtkIGTLIOSessionPointer session = vtkIGTLIOSessionPointer::New();
   session->SetConnector(this->CreateConnector());
@@ -161,7 +161,7 @@ vtkIGTLIOSessionPointer vtkIGTLIOLogic::StartServer(int serverPort, igtlio::SYNC
   return session;
 }
 
-vtkIGTLIOSessionPointer vtkIGTLIOLogic::ConnectToServer(std::string serverHost, int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+vtkIGTLIOSessionPointer Logic::ConnectToServer(std::string serverHost, int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
 {
   vtkIGTLIOSessionPointer session = vtkIGTLIOSessionPointer::New();
   session->SetConnector(this->CreateConnector());
@@ -170,7 +170,7 @@ vtkIGTLIOSessionPointer vtkIGTLIOLogic::ConnectToServer(std::string serverHost, 
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOLogic::PeriodicProcess()
+void Logic::PeriodicProcess()
 {
   for (unsigned i=0; i<Connectors.size(); ++i)
     {
@@ -179,14 +179,14 @@ void vtkIGTLIOLogic::PeriodicProcess()
 }
 
 //---------------------------------------------------------------------------
-unsigned int vtkIGTLIOLogic::GetNumberOfDevices() const
+unsigned int Logic::GetNumberOfDevices() const
 {
   std::vector<DevicePointer> all = this->CreateDeviceList();
   return all.size();
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOLogic::RemoveDevice(unsigned int index)
+void Logic::RemoveDevice(unsigned int index)
 {
   DevicePointer device = this->GetDevice(index);
 
@@ -202,7 +202,7 @@ void vtkIGTLIOLogic::RemoveDevice(unsigned int index)
 }
 
 //---------------------------------------------------------------------------
-DevicePointer vtkIGTLIOLogic::GetDevice(unsigned int index)
+DevicePointer Logic::GetDevice(unsigned int index)
 {
   // TODO: optimize by caching the vector if necessary
   std::vector<DevicePointer> all = this->CreateDeviceList();
@@ -215,7 +215,7 @@ DevicePointer vtkIGTLIOLogic::GetDevice(unsigned int index)
 }
 
 //---------------------------------------------------------------------------
-std::vector<DevicePointer> vtkIGTLIOLogic::CreateDeviceList() const
+std::vector<DevicePointer> Logic::CreateDeviceList() const
 {
   std::set<DevicePointer> all;
 

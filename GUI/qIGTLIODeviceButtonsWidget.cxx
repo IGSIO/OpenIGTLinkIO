@@ -44,7 +44,7 @@ qIGTLIODeviceButtonsWidget::qIGTLIODeviceButtonsWidget()
   this->onCurrentConnectorChanged();
 }
 
-void qIGTLIODeviceButtonsWidget::setLogic(igtlio::vtkIGTLIOLogicPointer logic)
+void qIGTLIODeviceButtonsWidget::setLogic(igtlio::LogicPointer logic)
 {
   Logic = logic;
 }

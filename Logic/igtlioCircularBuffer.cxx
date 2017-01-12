@@ -24,10 +24,10 @@ namespace igtlio
 {
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOCircularBuffer);
+vtkStandardNewMacro(CircularBuffer);
 
 //---------------------------------------------------------------------------
-vtkIGTLIOCircularBuffer::vtkIGTLIOCircularBuffer()
+CircularBuffer::CircularBuffer()
 {
   this->Mutex = vtkMutexLock::New();
   this->Mutex->Lock();
@@ -49,7 +49,7 @@ vtkIGTLIOCircularBuffer::vtkIGTLIOCircularBuffer()
 
 
 //---------------------------------------------------------------------------
-vtkIGTLIOCircularBuffer::~vtkIGTLIOCircularBuffer()
+CircularBuffer::~CircularBuffer()
 {
   this->Mutex->Lock();
   this->InUse = -1;
@@ -68,7 +68,7 @@ vtkIGTLIOCircularBuffer::~vtkIGTLIOCircularBuffer()
 
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOCircularBuffer::PrintSelf(ostream& os, vtkIndent indent)
+void CircularBuffer::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkObject::PrintSelf(os, indent);
 }
@@ -85,7 +85,7 @@ void vtkIGTLIOCircularBuffer::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOCircularBuffer::StartPush()
+int CircularBuffer::StartPush()
 {
   this->Mutex->Lock();
   this->InPush = (this->Last + 1) % IGTLCB_CIRC_BUFFER_SIZE;
@@ -99,13 +99,13 @@ int vtkIGTLIOCircularBuffer::StartPush()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLIOCircularBuffer::GetPushBuffer()
+igtl::MessageBase::Pointer CircularBuffer::GetPushBuffer()
 {
   return this->Messages[this->InPush];
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOCircularBuffer::EndPush()
+void CircularBuffer::EndPush()
 {
   this->Mutex->Lock();
   this->Last = this->InPush;
@@ -124,7 +124,7 @@ void vtkIGTLIOCircularBuffer::EndPush()
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOCircularBuffer::StartPull()
+int CircularBuffer::StartPull()
 {
   this->Mutex->Lock();
   this->InUse = this->Last;
@@ -135,14 +135,14 @@ int vtkIGTLIOCircularBuffer::StartPull()
 
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLIOCircularBuffer::GetPullBuffer()
+igtl::MessageBase::Pointer CircularBuffer::GetPullBuffer()
 {
   return this->Messages[this->InUse];
 }
 
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOCircularBuffer::EndPull()
+void CircularBuffer::EndPull()
 {
   this->Mutex->Lock();
   this->InUse = -1;

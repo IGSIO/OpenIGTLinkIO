@@ -33,7 +33,7 @@
 
 namespace igtlio
 {
-typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+typedef vtkSmartPointer<class Logic> LogicPointer;
 }
 
 ///
@@ -57,7 +57,7 @@ public:
   virtual QModelIndex parent(const QModelIndex& index ) const;
 
   void resetModel();
-  void setLogic(igtlio::vtkIGTLIOLogicPointer logic);
+  void setLogic(igtlio::LogicPointer logic);
 
   enum Columns{
     NameColumn = 0,
@@ -73,10 +73,10 @@ private slots:
 
 private:
   Q_DISABLE_COPY(qIGTLIOConnectorModel);
-  igtlio::vtkIGTLIOConnector* getNodeFromIndex(const QModelIndex& index) const;
-  void ReconnectConnector(igtlio::vtkIGTLIOConnector *oldConnector, igtlio::vtkIGTLIOConnector *newConnector);
+  igtlio::Connector* getNodeFromIndex(const QModelIndex& index) const;
+  void ReconnectConnector(igtlio::Connector *oldConnector, igtlio::Connector *newConnector);
 
-  igtlio::vtkIGTLIOLogicPointer Logic;
+  igtlio::LogicPointer Logic;
   QStringList HeaderLabels;
 };
 

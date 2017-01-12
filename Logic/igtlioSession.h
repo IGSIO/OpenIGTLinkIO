@@ -14,7 +14,7 @@ namespace igtlio
 {
 
 typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
-typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
+typedef vtkSmartPointer<class Connector> ConnectorPointer;
 typedef vtkSmartPointer<class ImageDevice> ImageDevicePointer;
 typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
 
@@ -80,13 +80,13 @@ public:
   void ConnectToServer(std::string serverHost, int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
 
   /// Get the underlying Connector object.
-  vtkIGTLIOConnectorPointer GetConnector();
-  void SetConnector(vtkIGTLIOConnectorPointer connector);
+  ConnectorPointer GetConnector();
+  void SetConnector(ConnectorPointer connector);
 
 private:
   vtkIGTLIOSession();
 
-  vtkIGTLIOConnectorPointer Connector;
+  ConnectorPointer Connector;
 
 //  vtkIGTLIOLogicPointer remoteLogic = vtkIGTLIOLogicPointer::New();
 //   vtkIGTLIOConnector connector = remoteLogic->Connect(serverHost, serverPort, CLIENT, 5.0 /* timeout in sec*/);

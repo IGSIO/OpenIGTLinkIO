@@ -215,11 +215,11 @@ void qIGTLIODevicesModel::resetModel()
 }
 
 //-----------------------------------------------------------------------------
-void qIGTLIODevicesModel::setLogic(igtlio::vtkIGTLIOLogicPointer logic)
+void qIGTLIODevicesModel::setLogic(igtlio::LogicPointer logic)
 {
   foreach(int evendId, QList<int>()
-          << igtlio::vtkIGTLIOLogic::ConnectionAddedEvent
-          << igtlio::vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
+          << igtlio::Logic::ConnectionAddedEvent
+          << igtlio::Logic::ConnectionAboutToBeRemovedEvent)
     {
     qvtkReconnect(this->Logic, logic, evendId,
                   this, SLOT(onConnectionEvent(vtkObject*, unsigned long, void*, void*)));
@@ -247,16 +247,16 @@ QItemSelectionModel *qIGTLIODevicesModel::selectionModel()
 //}
 
 //-----------------------------------------------------------------------------
-void qIGTLIODevicesModel::ReconnectConnector(igtlio::vtkIGTLIOConnector* oldConnector, igtlio::vtkIGTLIOConnector* newConnector)
+void qIGTLIODevicesModel::ReconnectConnector(igtlio::Connector* oldConnector, igtlio::Connector* newConnector)
 {
   foreach(int evendId, QList<int>()
-          << igtlio::vtkIGTLIOConnector::ConnectedEvent
-          << igtlio::vtkIGTLIOConnector::DisconnectedEvent
-          << igtlio::vtkIGTLIOConnector::ActivatedEvent
-          << igtlio::vtkIGTLIOConnector::DeactivatedEvent
-          << igtlio::vtkIGTLIOConnector::NewDeviceEvent
-          << igtlio::vtkIGTLIOConnector::DeviceModifiedEvent
-          << igtlio::vtkIGTLIOConnector::RemovedDeviceEvent
+          << igtlio::Connector::ConnectedEvent
+          << igtlio::Connector::DisconnectedEvent
+          << igtlio::Connector::ActivatedEvent
+          << igtlio::Connector::DeactivatedEvent
+          << igtlio::Connector::NewDeviceEvent
+          << igtlio::Connector::DeviceModifiedEvent
+          << igtlio::Connector::RemovedDeviceEvent
           )
     {
     qvtkReconnect(oldConnector, newConnector, evendId,
@@ -267,15 +267,15 @@ void qIGTLIODevicesModel::ReconnectConnector(igtlio::vtkIGTLIOConnector* oldConn
 //-----------------------------------------------------------------------------
 void qIGTLIODevicesModel::onConnectionEvent(vtkObject* caller, unsigned long event , void*, void* connector)
 {
-  if (event==igtlio::vtkIGTLIOLogic::ConnectionAddedEvent)
+  if (event==igtlio::Logic::ConnectionAddedEvent)
     {
-      igtlio::vtkIGTLIOConnector* c = static_cast<igtlio::vtkIGTLIOConnector*>(connector);
+      igtlio::Connector* c = static_cast<igtlio::Connector*>(connector);
       this->ReconnectConnector(NULL, c);
       this->resetModel();
     }
-  if (event==igtlio::vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
+  if (event==igtlio::Logic::ConnectionAboutToBeRemovedEvent)
     {
-      igtlio::vtkIGTLIOConnector* c = static_cast<igtlio::vtkIGTLIOConnector*>(connector);
+      igtlio::Connector* c = static_cast<igtlio::Connector*>(connector);
       this->ReconnectConnector(c, NULL);
       this->resetModel();
     }
@@ -284,7 +284,7 @@ void qIGTLIODevicesModel::onConnectionEvent(vtkObject* caller, unsigned long eve
 //-----------------------------------------------------------------------------
 void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, unsigned long event , void*, void* c)
 {
-  if (event==igtlio::vtkIGTLIOConnector::NewDeviceEvent)
+  if (event==igtlio::Connector::NewDeviceEvent)
     {
       igtlio::Device* device = static_cast<igtlio::Device*>(c);
 
@@ -297,7 +297,7 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, unsigned long even
       QModelIndex index = this->index(node->GetSiblingIndex(), 0, parent);
       SelectionModel->setCurrentIndex(index, QItemSelectionModel::SelectCurrent);
     }
-  if (event==igtlio::vtkIGTLIOConnector::RemovedDeviceEvent)
+  if (event==igtlio::Connector::RemovedDeviceEvent)
     {
      igtlio::Device* device = static_cast<igtlio::Device*>(c);
 
@@ -307,7 +307,7 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, unsigned long even
      this->beginRemoveRows(parent, node->GetSiblingIndex(), node->GetSiblingIndex());
      this->endRemoveRows();
     }
-  if (event==igtlio::vtkIGTLIOConnector::DeviceModifiedEvent)
+  if (event==igtlio::Connector::DeviceModifiedEvent)
     {
       // TODO: this event is never emittd, and never will. The vtkCommand::ModifiedEvent is emitted
       // from each device, and each of the must be listened to.

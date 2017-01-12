@@ -80,7 +80,7 @@ int main(int argc, char **argv)
   std::cout << "*** Sent message from Server to Client" << std::endl;
   //---------------------------------------------------------------------------
 
-  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::vtkIGTLIOLogic::NewDeviceEvent))
+  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::NewDeviceEvent))
   {
     return 1;
   }

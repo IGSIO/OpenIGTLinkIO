@@ -32,7 +32,7 @@
 #include <vtkSmartPointer.h>
 namespace igtlio
 {
-typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
+typedef vtkSmartPointer<class Connector> ConnectorPointer;
 }
 
 class qIGTLIOConnectorPropertyWidgetPrivate;
@@ -52,8 +52,8 @@ public:
 
 public slots:
   /// Set the MRML node of interest
-  void setMRMLIGTLConnectorNode(igtlio::vtkIGTLIOConnectorPointer connectorNode);
-  igtlio::vtkIGTLIOConnectorPointer getMRMLIGTLConnectorNode();
+  void setMRMLIGTLConnectorNode(igtlio::ConnectorPointer connectorNode);
+  igtlio::ConnectorPointer getMRMLIGTLConnectorNode();
 
 //  /// Utility function that calls setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode*)
 //  /// It's useful to connect to vtkMRMLNode* signals when you are sure of

@@ -23,13 +23,13 @@ namespace igtlio
 {
 
 typedef vtkSmartPointer<class DeviceCreator> vtkIGTLIODeviceCreatorPointer;
-typedef vtkSmartPointer<class vtkIGTLIODeviceFactory> vtkIGTLIODeviceFactoryPointer;
+typedef vtkSmartPointer<class DeviceFactory> DeviceFactoryPointer;
 
-class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIODeviceFactory : public vtkObject
+class OPENIGTLINKIO_LOGIC_EXPORT DeviceFactory : public vtkObject
 {
  public:
-  static vtkIGTLIODeviceFactory *New();
-  vtkTypeMacro(vtkIGTLIODeviceFactory,vtkObject);
+  static DeviceFactory *New();
+  vtkTypeMacro(DeviceFactory,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
@@ -41,8 +41,8 @@ class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIODeviceFactory : public vtkObject
   DevicePointer create(std::string device_type, std::string device_name) const;
 
 protected:
-  vtkIGTLIODeviceFactory();
-  virtual ~vtkIGTLIODeviceFactory();
+  DeviceFactory();
+  virtual ~DeviceFactory();
 
   // Register a factory for a specific Device Type.
   template<class CREATOR_TYPE>

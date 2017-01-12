@@ -43,9 +43,9 @@
 namespace igtlio
 {
 
-typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+typedef vtkSmartPointer<class Logic> LogicPointer;
 
-typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
+typedef vtkSmartPointer<class Connector> ConnectorPointer;
 typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
 
 
@@ -69,7 +69,7 @@ typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
 ///    main thread processing. This should be handled externally by a timer
 ///    or similar.
 ///
-class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOLogic : public vtkObject
+class OPENIGTLINKIO_LOGIC_EXPORT Logic : public vtkObject
 {
 public:
   enum {
@@ -84,14 +84,14 @@ public:
     CommandResponseReceivedEvent = Device::CommandResponseReceivedEvent // one of the connected COMMAND devices got a response
   };
 
- static vtkIGTLIOLogic *New();
- vtkTypeMacro(vtkIGTLIOLogic, vtkObject);
+ static Logic *New();
+ vtkTypeMacro(Logic, vtkObject);
  void PrintSelf(ostream&, vtkIndent);
 
- vtkIGTLIOConnectorPointer CreateConnector();
+ ConnectorPointer CreateConnector();
  int RemoveConnector(unsigned int index);
  int GetNumberOfConnectors() const;
- vtkIGTLIOConnectorPointer GetConnector(unsigned int index);
+ ConnectorPointer GetConnector(unsigned int index);
 
  /// Start a server and return a Session representing the connection.
  /// If sync is BLOCKING, the call blocks until at client has connected to the server.
@@ -111,15 +111,15 @@ public:
 
 
 protected:
- vtkIGTLIOLogic();
- virtual ~vtkIGTLIOLogic();
+ Logic();
+ virtual ~Logic();
 
 private:
- std::vector<vtkIGTLIOConnectorPointer> Connectors;
+ std::vector<ConnectorPointer> Connectors;
 
 private:
-  vtkIGTLIOLogic(const vtkIGTLIOLogic&); // Not implemented
-  void operator=(const vtkIGTLIOLogic&); // Not implemented
+  Logic(const Logic&); // Not implemented
+  void operator=(const Logic&); // Not implemented
 
   int CreateUniqueConnectorID() const;
   std::vector<DevicePointer> CreateDeviceList() const;

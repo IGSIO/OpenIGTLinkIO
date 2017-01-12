@@ -35,7 +35,7 @@ public:
   bool isGroup() const { return type==NODE_TYPE_GROUP; }
   bool isDevice() const { return type==NODE_TYPE_DEVICE; }
 
-  static qIGTLIODevicesModelNodePointer createRoot(igtlio::vtkIGTLIOLogic* logic_);
+  static qIGTLIODevicesModelNodePointer createRoot(igtlio::Logic* logic_);
   bool operator==(const qIGTLIODevicesModelNode& rhs) const;
   std::string GetName();
   qIGTLIODevicesModelNode* GetChild(int row);
@@ -49,14 +49,14 @@ public:
   qIGTLIODevicesModelNode* FindDeviceNode(igtlio::Device* device_);
 
   igtlio::Device* device;
-  igtlio::vtkIGTLIOConnector* connector;
+  igtlio::Connector* connector;
 
 private:
-  qIGTLIODevicesModelNode* GetNode(igtlio::vtkIGTLIOConnector* connector=NULL, igtlio::Device::MESSAGE_DIRECTION group=igtlio::Device::NUM_MESSAGE_DIRECTION, igtlio::Device* device=NULL);
-  qIGTLIODevicesModelNode(qIGTLIODevicesModelNode* parent_, igtlio::vtkIGTLIOLogic* logic_, igtlio::vtkIGTLIOConnector* connector_=NULL, igtlio::Device::MESSAGE_DIRECTION group_=igtlio::Device::NUM_MESSAGE_DIRECTION, igtlio::Device* device_=NULL);
+  qIGTLIODevicesModelNode* GetNode(igtlio::Connector* connector=NULL, igtlio::Device::MESSAGE_DIRECTION group=igtlio::Device::NUM_MESSAGE_DIRECTION, igtlio::Device* device=NULL);
+  qIGTLIODevicesModelNode(qIGTLIODevicesModelNode* parent_, igtlio::Logic* logic_, igtlio::Connector* connector_=NULL, igtlio::Device::MESSAGE_DIRECTION group_=igtlio::Device::NUM_MESSAGE_DIRECTION, igtlio::Device* device_=NULL);
   std::vector<igtlio::DevicePointer> GetDevicesInGroup() const;
   NODE_TYPE type;
-  igtlio::vtkIGTLIOLogic* logic;
+  igtlio::Logic* logic;
   igtlio::Device::MESSAGE_DIRECTION group;
   mutable std::set<qIGTLIODevicesModelNodePointer> Children;
   qIGTLIODevicesModelNode* Parent;

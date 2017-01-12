@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     //--------------------------------------------------------------------------
 
   int number_of_devices = 3;
-  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::vtkIGTLIOLogic::NewDeviceEvent, number_of_devices))
+  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::NewDeviceEvent, number_of_devices))
   {
     std::cout << "ERROR: Did not get " << number_of_devices << " events" << std::endl;
     return 1;

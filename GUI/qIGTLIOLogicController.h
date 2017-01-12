@@ -9,7 +9,7 @@ class QTimer;
 #include <vtkSmartPointer.h>
 namespace igtlio
 {
-typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+typedef vtkSmartPointer<class Logic> LogicPointer;
 }
 // igtlio includes
 #include "igtlioGUIExport.h"
@@ -23,7 +23,7 @@ class OPENIGTLINKIO_GUI_EXPORT qIGTLIOLogicController : public QObject
 
 public:
   qIGTLIOLogicController();
-  void setLogic(igtlio::vtkIGTLIOLogicPointer logic);
+  void setLogic(igtlio::LogicPointer logic);
 
 signals:
 
@@ -34,7 +34,7 @@ private slots:
   void importDataAndEvents();
 private:
   QTimer* ImportDataAndEventsTimer;
-  igtlio::vtkIGTLIOLogicPointer Logic;
+  igtlio::LogicPointer Logic;
 
 };
 

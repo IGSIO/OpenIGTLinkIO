@@ -19,8 +19,8 @@ struct LogicFixture
   void startClient();
   void startServer();
 
-  igtlio::vtkIGTLIOLogicPointer Logic;
-  igtlio::vtkIGTLIOConnectorPointer Connector;
+  igtlio::LogicPointer Logic;
+  igtlio::ConnectorPointer Connector;
   igtlio::vtkIGTLIOSessionPointer Session;
 
   vtkSmartPointer<class vtkCallbackCommand> LogicEventCallback;

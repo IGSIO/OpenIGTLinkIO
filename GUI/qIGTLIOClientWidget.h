@@ -9,7 +9,7 @@
 #include <vtkSmartPointer.h>
 namespace igtlio
 {
-typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+typedef vtkSmartPointer<class Logic> LogicPointer;
 }
 
 
@@ -18,13 +18,13 @@ class OPENIGTLINKIO_GUI_EXPORT qIGTLIOClientWidget : public QWidget
   Q_OBJECT
 public:
   qIGTLIOClientWidget();
-  void setLogic(igtlio::vtkIGTLIOLogicPointer logic);
+  void setLogic(igtlio::LogicPointer logic);
 
 signals:
 
 public slots:
 private:
-  igtlio::vtkIGTLIOLogicPointer Logic;
+  igtlio::LogicPointer Logic;
 
   class qIGTLIOConnectorListWidget* ConnectorListWidget;
   class qIGTLIODevicesWidget* DevicesWidget;

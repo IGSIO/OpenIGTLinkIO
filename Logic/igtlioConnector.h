@@ -51,8 +51,8 @@ typedef vtkSmartPointer<class vtkMultiThreader> vtkMultiThreaderPointer;
 
 namespace igtlio
 {
-typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
-typedef vtkSmartPointer<class vtkIGTLIOCircularBuffer> vtkIGTLIOCircularBufferPointer;
+typedef vtkSmartPointer<class Connector> ConnectorPointer;
+typedef vtkSmartPointer<class CircularBuffer> CircularBufferPointer;
 
 
 enum CONNECTION_ROLE
@@ -87,7 +87,7 @@ enum CONNECTION_ROLE
 ///    main thread processing. This should be handled externally by a timer
 ///    or similar.
 ///
-class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOConnector : public vtkIGTLIOObject
+class OPENIGTLINKIO_LOGIC_EXPORT Connector : public vtkIGTLIOObject
 {
 public:
 //added methods:
@@ -110,8 +110,8 @@ public:
  /// An undefined prefix means sending the normal message.
  int SendMessage(DeviceKeyType device_id, Device::MESSAGE_PREFIX=Device::MESSAGE_PREFIX_NOT_DEFINED);
 
- vtkIGTLIODeviceFactoryPointer GetDeviceFactory();
- void SetDeviceFactory(vtkIGTLIODeviceFactoryPointer val);
+ DeviceFactoryPointer GetDeviceFactory();
+ void SetDeviceFactory(DeviceFactoryPointer val);
 
  public:
 
@@ -134,7 +134,7 @@ public:
     NUM_TYPE
   };
 
-  static const char* ConnectorTypeStr[vtkIGTLIOConnector::NUM_TYPE];
+  static const char* ConnectorTypeStr[Connector::NUM_TYPE];
 
   enum {
     STATE_OFF,
@@ -143,7 +143,7 @@ public:
     NUM_STATE
   };
 
-  static const char* ConnectorStateStr[vtkIGTLIOConnector::NUM_STATE];
+  static const char* ConnectorStateStr[Connector::NUM_STATE];
   
   enum {
     IO_UNSPECIFIED = 0x00,
@@ -170,16 +170,16 @@ public:
 
  public:
 
-  static vtkIGTLIOConnector *New();
-  vtkTypeMacro(vtkIGTLIOConnector,vtkIGTLIOObject);
+  static Connector *New();
+  vtkTypeMacro(Connector,vtkIGTLIOObject);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
  protected:
-  vtkIGTLIOConnector();
-  ~vtkIGTLIOConnector();
-  vtkIGTLIOConnector(const vtkIGTLIOConnector&);
-  void operator=(const vtkIGTLIOConnector&);
+  Connector();
+  ~Connector();
+  Connector(const Connector&);
+  void operator=(const Connector&);
 
  public:
   vtkGetMacro( Name, std::string );
@@ -233,7 +233,7 @@ private:
 
   typedef std::vector<DeviceKeyType> NameListType;
   unsigned int GetUpdatedBuffersList(NameListType& nameList); // TODO: this will be moved to private
-  vtkIGTLIOCircularBufferPointer GetCircularBuffer(const DeviceKeyType& key);     // TODO: Is it OK to use device name as a key?
+  CircularBufferPointer GetCircularBuffer(const DeviceKeyType& key);     // TODO: Is it OK to use device name as a key?
 
   //----------------------------------------------------------------
   // Device Lists
@@ -307,7 +307,7 @@ private:
   //----------------------------------------------------------------
 
 
-  typedef std::map<DeviceKeyType, vtkIGTLIOCircularBufferPointer> CircularBufferMap;
+  typedef std::map<DeviceKeyType, CircularBufferPointer> CircularBufferMap;
   CircularBufferMap Buffer;
 
   vtkMutexLockPointer CircularBufferMutex;
@@ -325,7 +325,7 @@ private:
   int PushOutgoingMessageFlag;
   vtkMutexLockPointer PushOutgoingMessageMutex;
 
-  vtkIGTLIODeviceFactoryPointer DeviceFactory;
+  DeviceFactoryPointer DeviceFactory;
 
   bool CheckCRC;
 

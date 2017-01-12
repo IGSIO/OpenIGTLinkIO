@@ -16,7 +16,7 @@ class QLineEdit;
 #include <vtkSmartPointer.h>
 namespace igtlio
 {
-typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+typedef vtkSmartPointer<class Logic> LogicPointer;
 }
 
 ///
@@ -27,7 +27,7 @@ class OPENIGTLINKIO_GUI_EXPORT qIGTLIODeviceAddWidget : public QWidget
   Q_OBJECT
 public:
   qIGTLIODeviceAddWidget();
-  void setLogic(igtlio::vtkIGTLIOLogicPointer logic);
+  void setLogic(igtlio::LogicPointer logic);
   void setModel(qIGTLIODevicesModel* model);
 
 private slots:
@@ -35,7 +35,7 @@ private slots:
   void onAddDevice();
 
 private:
-  igtlio::vtkIGTLIOLogicPointer Logic;
+  igtlio::LogicPointer Logic;
   QPointer<qIGTLIODevicesModel> DevicesModel;
 //  QList<QAction*> Actions;
 
