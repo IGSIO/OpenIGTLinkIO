@@ -39,7 +39,7 @@ vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOTransformDeviceCreator::Create(std::st
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOTransformDeviceCreator::GetDeviceType() const
 {
-  return igtl::TransformConverter::GetIGTLTypeName();
+  return igtlio::TransformConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
@@ -51,7 +51,6 @@ vtkStandardNewMacro(vtkIGTLIOTransformDevice);
 //---------------------------------------------------------------------------
 vtkIGTLIOTransformDevice::vtkIGTLIOTransformDevice()
 {
-   Converter = igtl::TransformConverter::New();
 }
 
 //---------------------------------------------------------------------------
@@ -62,16 +61,16 @@ vtkIGTLIOTransformDevice::~vtkIGTLIOTransformDevice()
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOTransformDevice::GetDeviceType() const
 {
-  return igtl::TransformConverter::GetIGTLTypeName();
+  return igtlio::TransformConverter::GetIGTLTypeName();
 }
 
-void vtkIGTLIOTransformDevice::SetContent(igtl::TransformConverter::ContentData content)
+void vtkIGTLIOTransformDevice::SetContent(igtlio::TransformConverter::ContentData content)
 {
   Content = content;
   this->Modified();
 }
 
-igtl::TransformConverter::ContentData vtkIGTLIOTransformDevice::GetContent()
+igtlio::TransformConverter::ContentData vtkIGTLIOTransformDevice::GetContent()
 {
   return Content;
 }
@@ -80,7 +79,7 @@ igtl::TransformConverter::ContentData vtkIGTLIOTransformDevice::GetContent()
 //---------------------------------------------------------------------------
 int vtkIGTLIOTransformDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (Converter->fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+ if (igtlio::TransformConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
    {
    this->Modified();
    return 1;
@@ -99,7 +98,7 @@ igtl::MessageBase::Pointer vtkIGTLIOTransformDevice::GetIGTLMessage()
   return 0;
   }
 
- if (!Converter->toIGTL(HeaderData, Content, &this->OutTransformMessage))
+ if (!igtlio::TransformConverter::toIGTL(HeaderData, Content, &this->OutTransformMessage))
    {
    return 0;
    }

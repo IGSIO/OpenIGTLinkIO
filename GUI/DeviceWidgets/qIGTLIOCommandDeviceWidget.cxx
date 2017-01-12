@@ -26,7 +26,7 @@ qIGTLIODeviceWidget* vtkIGTLIOCommandDeviceWidgetCreator::Create()
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOCommandDeviceWidgetCreator::GetDeviceType() const
 {
- return igtl::CommandConverter::GetIGTLTypeName();
+ return igtlio::CommandConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
@@ -89,7 +89,7 @@ void qIGTLIOCommandDeviceWidget::onGUIModified()
   if (!device)
     return;
 
-  igtl::CommandConverter::ContentData content = device->GetContent();
+  igtlio::CommandConverter::ContentData content = device->GetContent();
   content.id = IdEdit->text().toInt();
   content.name = NameEdit->currentText().toStdString();
   content.content = ContentEdit->toPlainText().toStdString();

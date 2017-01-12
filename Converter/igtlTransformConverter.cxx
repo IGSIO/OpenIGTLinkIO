@@ -17,23 +17,8 @@
 // VTK includes
 #include <vtkMatrix4x4.h>
 
-namespace igtl
+namespace igtlio
 {
-
-TransformConverter::TransformConverter()
-{
-}
-
-//---------------------------------------------------------------------------
-TransformConverter::~TransformConverter()
-{
-}
-
-//---------------------------------------------------------------------------
-void TransformConverter::PrintSelf(std::ostream &os) const
-{
- this->BaseConverter::PrintSelf(os);
-}
 
 //---------------------------------------------------------------------------
 int TransformConverter::fromIGTL(igtl::MessageBase::Pointer source,
@@ -106,7 +91,6 @@ int TransformConverter::fromIGTL(igtl::MessageBase::Pointer source,
 
 }
 
-
 //---------------------------------------------------------------------------
 int TransformConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::TransformMessage::Pointer* dest)
 {
@@ -115,10 +99,10 @@ int TransformConverter::toIGTL(const HeaderData& header, const ContentData& sour
   igtl::TransformMessage::Pointer msg = *dest;
 
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
-  this->HeadertoIGTL(header, &basemsg);
+  HeadertoIGTL(header, &basemsg);
 
   if (source.transform.Get()==NULL)
-    igtlErrorMacro ("Got NULL input transform");
+    std::cerr << "Got NULL input transform" << std::endl;
 
   vtkSmartPointer<vtkMatrix4x4> matrix = source.transform;
   igtl::Matrix4x4 igtlmatrix;
@@ -147,4 +131,4 @@ int TransformConverter::toIGTL(const HeaderData& header, const ContentData& sour
   return 1;
 }
 
-} //namespace igtl
+} //namespace igtlio

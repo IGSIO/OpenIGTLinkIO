@@ -29,26 +29,6 @@
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
 
-
-namespace igtl
-{
-
-ImageConverter::ImageConverter()
-{
-}
-
-//---------------------------------------------------------------------------
-ImageConverter::~ImageConverter()
-{
-}
-
-//---------------------------------------------------------------------------
-void ImageConverter::PrintSelf(std::ostream &os) const
-{
- this->BaseConverter::PrintSelf(os);
-}
-
-
 namespace { // unnamed namespace
 
 //---------------------------------------------------------------------------
@@ -91,6 +71,10 @@ int swapCopy64(igtlUint64 * dst, igtlUint64 * src, int n)
 }
 } // unnamed namespace
 
+
+namespace igtlio
+{
+
 //---------------------------------------------------------------------------
 int ImageConverter::fromIGTL(igtl::MessageBase::Pointer source,
                              HeaderData* header,
@@ -113,17 +97,17 @@ int ImageConverter::fromIGTL(igtl::MessageBase::Pointer source,
     }
 
   // get header
-  if (!this->IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(imgMsg), header))
+  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(imgMsg), header))
     return 0;
 
   // get image
-  if (this->IGTLToVTKImageData(imgMsg, dest) == 0)
+  if (IGTLToVTKImageData(imgMsg, dest) == 0)
     return 0;
 
   // set volume orientation
   if (!dest->transform)
     dest->transform = vtkSmartPointer<vtkMatrix4x4>::New();
-  if (this->IGTLToVTKTransform(imgMsg, dest->transform) == 0)
+  if (IGTLToVTKTransform(imgMsg, dest->transform) == 0)
     return 0;
 
   return 1;
@@ -398,12 +382,12 @@ int ImageConverter::toIGTL(const HeaderData& header, const ContentData& source, 
   igtl::ImageMessage::Pointer msg = *dest;
 
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
-  this->HeadertoIGTL(header, &basemsg);
+  HeadertoIGTL(header, &basemsg);
 
   if (source.transform.Get()==NULL)
-    igtlErrorMacro ("Got NULL input transform");
+    std::cerr << "Got NULL input transform" << std::endl;
   if (source.image.Get()==NULL)
-    igtlErrorMacro ("Got NULL input image");
+    std::cerr << "Got NULL input image" << std::endl;
 
   vtkSmartPointer<vtkImageData> imageData = source.image;
   int   isize[3];          // image dimension
@@ -507,9 +491,9 @@ int ImageConverter::IGTLToVTKScalarType(int igtlType)
     case igtl::ImageMessage::TYPE_FLOAT32: return VTK_FLOAT;
     case igtl::ImageMessage::TYPE_FLOAT64: return VTK_DOUBLE;
     default:
-      igtlErrorMacro ("Invalid IGTL scalar Type: "<<igtlType);
+      std::cerr << "Invalid IGTL scalar Type: "<<igtlType << std::endl;
       return VTK_VOID;
     }
 }
 
-}
+} //namespace igtlio

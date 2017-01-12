@@ -53,8 +53,8 @@ public:
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
 
-  void SetContent(igtl::TransformConverter::ContentData content);
-  igtl::TransformConverter::ContentData GetContent();
+  void SetContent(igtlio::TransformConverter::ContentData content);
+  igtlio::TransformConverter::ContentData GetContent();
 
 public:
   static vtkIGTLIOTransformDevice *New();
@@ -69,8 +69,7 @@ protected:
   igtl::TransformMessage::Pointer OutTransformMessage;
   igtl::GetTransformMessage::Pointer GetTransformMessage;
 
-  igtl::TransformConverter::ContentData Content;
-  igtl::TransformConverter::Pointer Converter;
+  igtlio::TransformConverter::ContentData Content;
 };
 
 

@@ -28,29 +28,15 @@ class vtkPolyData;
 class vtkCellArray;
 class vtkDataSetAttributes;
 
-#include "igtlLightObject.h"
-
-namespace igtl
+namespace igtlio
 {
 
 /** Conversion between igtl::PolyDataMessage and vtk classes.
  *
  */
-class OPENIGTLINKIO_CONVERTER_EXPORT PolyDataConverter : public LightObject
+class OPENIGTLINKIO_CONVERTER_EXPORT PolyDataConverter //TODO : public BaseConverter?
 {
 public:
-  /** Standard class typedefs. */
-  typedef PolyDataConverter        Self;
-  typedef LightObject              Superclass;
-  typedef SmartPointer<Self>       Pointer;
-  typedef SmartPointer<const Self> ConstPointer;
-
-  /** Method for creation through the object factory. */
-  igtlNewMacro(Self);
-
-  /** Run-time type information (and related methods). */
-  igtlTypeMacro(PolyDataConverter, LightObject);
-
   /**
    * This structure contains everything that igtl::PolyMessage is able to contain,
    * in a vtk-friendly format.
@@ -61,33 +47,28 @@ public:
     std::string deviceName;
   };
 
-  virtual void PrintSelf(std::ostream& os) const;
-
-  virtual const char*  GetIGTLName() { return GetIGTLTypeName(); };
+  static const char*  GetIGTLName() { return GetIGTLTypeName(); };
   static const char* GetIGTLTypeName() { return "POLYDATA"; };
 
-  int IGTLToVTK(igtl::MessageBase::Pointer source, MessageContent* dest, bool checkCRC);
-  int VTKToIGTL(const MessageContent& source, igtl::PolyDataMessage::Pointer* dest);
+  static int IGTLToVTK(igtl::MessageBase::Pointer source, MessageContent* dest, bool checkCRC);
+  static int VTKToIGTL(const MessageContent& source, igtl::PolyDataMessage::Pointer* dest);
 
 protected:
-  PolyDataConverter();
-  ~PolyDataConverter();
-
-private:
   // Extract vtkPolyData from existing polyDataMsg, insert into existing poly.
-  int IGTLToVTKPolyData(PolyDataMessage::Pointer polyDataMsg, vtkSmartPointer<vtkPolyData> poly);
+  static int IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyDataMsg, vtkSmartPointer<vtkPolyData> poly);
+
   // Insert an existing vtkPolyData into a cleared PolyDataMessage.
-  int VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, PolyDataMessage::Pointer outMessage);
+  static int VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, igtl::PolyDataMessage::Pointer outMessage);
 
   // Utility function for MRMLToIGTL(): Convert vtkCellArray to igtl::PolyDataCellArray
-  int VTKToIGTLCellArray(vtkCellArray* src, igtl::PolyDataCellArray* dest);
+  static int VTKToIGTLCellArray(vtkCellArray* src, igtl::PolyDataCellArray* dest);
 
   // Utility function for MRMLToIGTL(): Convert i-th vtkDataSetAttributes (vtkCellData and vtkPointData)
   // to igtl::PolyDataAttribute
-  int VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl::PolyDataAttribute* dest);
+  static int VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl::PolyDataAttribute* dest);
 };
 
-}
+} // namespace igtlio
 
 
 #endif //__igtlPolyDataConverter_h

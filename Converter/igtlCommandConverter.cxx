@@ -13,25 +13,10 @@
 #include <vtksys/SystemTools.hxx>
 
 
-namespace igtl
+namespace igtlio
 {
 
-CommandConverter::CommandConverter()
-{
-}
-
-//---------------------------------------------------------------------------
-CommandConverter::~CommandConverter()
-{
-}
-
-//---------------------------------------------------------------------------
-void CommandConverter::PrintSelf(std::ostream &os) const
-{
- this->BaseConverter::PrintSelf(os);
-}
-
-std::vector<std::string> CommandConverter::GetAvailableCommandNames() const
+std::vector<std::string> CommandConverter::GetAvailableCommandNames()
 {
   std::vector<std::string> retval;
   retval.push_back("SetDeviceParameters");
@@ -63,7 +48,7 @@ int CommandConverter::fromIGTL(igtl::MessageBase::Pointer source,
     }
 
   // get header
-  if (!this->IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header))
+  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header))
     return 0;
 
   dest->id = msg->GetCommandId();
@@ -96,7 +81,7 @@ int CommandConverter::fromIGTLResponse(igtl::MessageBase::Pointer source,
     }
 
   // get header
-  if (!this->IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header))
+  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header))
     return 0;
 
   dest->id = msg->GetCommandId();
@@ -115,7 +100,7 @@ int CommandConverter::toIGTL(const HeaderData& header, const ContentData& source
   igtl::CommandMessage::Pointer msg = *dest;
 
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
-  this->HeadertoIGTL(header, &basemsg);
+  HeadertoIGTL(header, &basemsg);
 
   msg->SetCommandId(source.id);
   msg->SetCommandName(source.name);
@@ -126,6 +111,5 @@ int CommandConverter::toIGTL(const HeaderData& header, const ContentData& source
   return 1;
 }
 
-
-}
+} // namespace igtlio
 

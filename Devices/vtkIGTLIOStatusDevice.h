@@ -40,8 +40,8 @@ public:
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
 
-  void SetContent(igtl::StatusConverter::ContentData content);
-  igtl::StatusConverter::ContentData GetContent();
+  void SetContent(igtlio::StatusConverter::ContentData content);
+  igtlio::StatusConverter::ContentData GetContent();
 
  public:
   static vtkIGTLIOStatusDevice *New();
@@ -57,8 +57,7 @@ public:
   igtl::StatusMessage::Pointer OutMessage;
   igtl::GetStatusMessage::Pointer GetMessage;
 
-  igtl::StatusConverter::ContentData Content;
-  igtl::StatusConverter::Pointer Converter;
+  igtlio::StatusConverter::ContentData Content;
 };
 
 

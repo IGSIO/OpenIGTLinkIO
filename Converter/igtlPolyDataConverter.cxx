@@ -44,39 +44,24 @@
 #include <vtksys/SystemTools.hxx>
 
 
-namespace igtl
+namespace igtlio
 {
-
-PolyDataConverter::PolyDataConverter()
-{
-}
 
 //---------------------------------------------------------------------------
-PolyDataConverter::~PolyDataConverter()
-{
-}
-
-//---------------------------------------------------------------------------
-void PolyDataConverter::PrintSelf(std::ostream &os) const
-{
- this->LightObject::PrintSelf(os);
-}
-
-//---------------------------------------------------------------------------
-int PolyDataConverter::IGTLToVTK(MessageBase::Pointer source, PolyDataConverter::MessageContent *dest, bool checkCRC)
+int PolyDataConverter::IGTLToVTK(igtl::MessageBase::Pointer source, PolyDataConverter::MessageContent *dest, bool checkCRC)
 {
  // Create a message buffer to receive image data
- PolyDataMessage::Pointer polyDataMsg;
- polyDataMsg = PolyDataMessage::New();
+ igtl::PolyDataMessage::Pointer polyDataMsg;
+ polyDataMsg = igtl::PolyDataMessage::New();
  polyDataMsg->Copy(source); // !! TODO: copy makes performance issue.
 
  // Deserialize the data
  // If CheckCRC==0, CRC check is skipped.
  int c = polyDataMsg->Unpack(checkCRC);
 
- if ((c & MessageHeader::UNPACK_BODY) == 0) // if CRC check fails
+ if ((c & igtl::MessageHeader::UNPACK_BODY) == 0) // if CRC check fails
    {
-   igtlErrorMacro("Unable to create vtkPolyData from incoming POLYDATA message. Failed to unpack the message");
+   std::cerr << "Unable to create vtkPolyData from incoming POLYDATA message. Failed to unpack the message" << std::endl;
    return 0;
    }
 
@@ -87,7 +72,7 @@ int PolyDataConverter::IGTLToVTK(MessageBase::Pointer source, PolyDataConverter:
    // TODO: Error handling
    }
 
- if (!this->IGTLToVTKPolyData(polyDataMsg, poly))
+ if (!IGTLToVTKPolyData(polyDataMsg, poly))
   return 0;
 
  dest->polydata = poly;
@@ -97,7 +82,7 @@ int PolyDataConverter::IGTLToVTK(MessageBase::Pointer source, PolyDataConverter:
 }
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::IGTLToVTKPolyData(PolyDataMessage::Pointer polyDataMsg, vtkSmartPointer<vtkPolyData> poly)
+int PolyDataConverter::IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyDataMsg, vtkSmartPointer<vtkPolyData> poly)
 {
  // Points
  igtl::PolyDataPointArray::Pointer pointsArray = polyDataMsg->GetPoints();
@@ -283,7 +268,7 @@ int PolyDataConverter::IGTLToVTKPolyData(PolyDataMessage::Pointer polyDataMsg, v
 }
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::VTKToIGTL(const PolyDataConverter::MessageContent &source, PolyDataMessage::Pointer *dest)
+int PolyDataConverter::VTKToIGTL(const PolyDataConverter::MessageContent &source, igtl::PolyDataMessage::Pointer *dest)
 {
    if (source.polydata.GetPointer() == NULL)
      {
@@ -301,12 +286,12 @@ int PolyDataConverter::VTKToIGTL(const PolyDataConverter::MessageContent &source
      {
      (*dest)->Clear();
      }
-   PolyDataMessage::Pointer outMessage = *dest;
+   igtl::PolyDataMessage::Pointer outMessage = *dest;
 
    // Set message name -- use the same name as the MRML node
    outMessage->SetDeviceName(source.deviceName.c_str());
 
-   if (!this->VTKPolyDataToIGTL(source.polydata, outMessage))
+   if (!VTKPolyDataToIGTL(source.polydata, outMessage))
      return 0;
 
    // Pack the message
@@ -316,7 +301,7 @@ int PolyDataConverter::VTKToIGTL(const PolyDataConverter::MessageContent &source
 }
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, PolyDataMessage::Pointer outMessage)
+int PolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, igtl::PolyDataMessage::Pointer outMessage)
 {
    // Points
    vtkSmartPointer<vtkPoints> points = poly->GetPoints();
@@ -342,7 +327,7 @@ int PolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, Poly
    if (vertCells.GetPointer() != NULL)
      {
      igtl::PolyDataCellArray::Pointer verticesArray = igtl::PolyDataCellArray::New();
-     if (this->VTKToIGTLCellArray(vertCells, verticesArray) > 0)
+     if (VTKToIGTLCellArray(vertCells, verticesArray) > 0)
        {
        outMessage->SetVertices(verticesArray);
        }
@@ -353,7 +338,7 @@ int PolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, Poly
    if (lineCells.GetPointer() != NULL)
      {
      igtl::PolyDataCellArray::Pointer linesArray = igtl::PolyDataCellArray::New();
-     if (this->VTKToIGTLCellArray(lineCells, linesArray) > 0)
+     if (VTKToIGTLCellArray(lineCells, linesArray) > 0)
        {
        outMessage->SetLines(linesArray);
        }
@@ -364,7 +349,7 @@ int PolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, Poly
    if (polygonCells.GetPointer() != NULL)
      {
      igtl::PolyDataCellArray::Pointer polygonsArray = igtl::PolyDataCellArray::New();
-     if (this->VTKToIGTLCellArray(polygonCells, polygonsArray) > 0)
+     if (VTKToIGTLCellArray(polygonCells, polygonsArray) > 0)
        {
        outMessage->SetPolygons(polygonsArray);
        }
@@ -375,7 +360,7 @@ int PolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, Poly
    if (triangleStripCells.GetPointer() != NULL)
      {
      igtl::PolyDataCellArray::Pointer triangleStripsArray = igtl::PolyDataCellArray::New();
-     if (this->VTKToIGTLCellArray(triangleStripCells, triangleStripsArray) > 0)
+     if (VTKToIGTLCellArray(triangleStripCells, triangleStripsArray) > 0)
        {
        outMessage->SetTriangleStrips(triangleStripsArray);
        }
@@ -389,7 +374,7 @@ int PolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, Poly
      for (int i = 0; i < nPointAttributes; i ++)
        {
        igtl::PolyDataAttribute::Pointer attribute = igtl::PolyDataAttribute::New();
-       if (this->VTKToIGTLAttribute(pdata, i, attribute) > 0)
+       if (VTKToIGTLAttribute(pdata, i, attribute) > 0)
          {
          outMessage->AddAttribute(attribute);
          }
@@ -405,7 +390,7 @@ int PolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, Poly
      for (int i = 0; i < nCellAttributes; i ++)
        {
        igtl::PolyDataAttribute::Pointer attribute = igtl::PolyDataAttribute::New();
-       if (this->VTKToIGTLAttribute(cdata, i, attribute) > 0)
+       if (VTKToIGTLAttribute(cdata, i, attribute) > 0)
          {
          outMessage->AddAttribute(attribute);
          }
@@ -515,4 +500,4 @@ int PolyDataConverter::VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl
 
 }
 
-}
+} // namespace igtlio

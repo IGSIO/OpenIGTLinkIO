@@ -26,7 +26,7 @@ vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOStatusDeviceCreator::Create(std::strin
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOStatusDeviceCreator::GetDeviceType() const
 {
- return igtl::StatusConverter::GetIGTLTypeName();
+ return igtlio::StatusConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
@@ -40,7 +40,6 @@ vtkStandardNewMacro(vtkIGTLIOStatusDevice);
 //---------------------------------------------------------------------------
 vtkIGTLIOStatusDevice::vtkIGTLIOStatusDevice()
 {
-   Converter = igtl::StatusConverter::New();
 }
 
 //---------------------------------------------------------------------------
@@ -51,13 +50,13 @@ vtkIGTLIOStatusDevice::~vtkIGTLIOStatusDevice()
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOStatusDevice::GetDeviceType() const
 {
-  return igtl::StatusConverter::GetIGTLTypeName();
+  return igtlio::StatusConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
 int vtkIGTLIOStatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (Converter->fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+ if (igtlio::StatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
    {
    this->Modified();
    return 1;
@@ -75,7 +74,7 @@ igtl::MessageBase::Pointer vtkIGTLIOStatusDevice::GetIGTLMessage()
   return 0;
   }
 
- if (!Converter->toIGTL(HeaderData, Content, &this->OutMessage))
+ if (!igtlio::StatusConverter::toIGTL(HeaderData, Content, &this->OutMessage))
    {
    return 0;
    }
@@ -112,13 +111,13 @@ std::set<vtkIGTLIODevice::MESSAGE_PREFIX> vtkIGTLIOStatusDevice::GetSupportedMes
  return retval;
 }
 
-void vtkIGTLIOStatusDevice::SetContent(igtl::StatusConverter::ContentData content)
+void vtkIGTLIOStatusDevice::SetContent(igtlio::StatusConverter::ContentData content)
 {
   Content = content;
   this->Modified();
 }
 
-igtl::StatusConverter::ContentData vtkIGTLIOStatusDevice::GetContent()
+igtlio::StatusConverter::ContentData vtkIGTLIOStatusDevice::GetContent()
 {
   return Content;
 }

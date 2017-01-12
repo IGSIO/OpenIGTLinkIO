@@ -22,7 +22,7 @@ class vtkMatrix4x4;
 #include "igtlioConverterExport.h"
 #include "igtlBaseConverter.h"
 
-namespace igtl
+namespace igtlio
 {
 
 /** Conversion between igtl::TransformMessage and vtk classes.
@@ -31,18 +31,6 @@ namespace igtl
 class OPENIGTLINKIO_CONVERTER_EXPORT TransformConverter : public BaseConverter
 {
 public:
- /** Standard class typedefs. */
- typedef TransformConverter       Self;
- typedef BaseConverter            Superclass;
- typedef SmartPointer<Self>       Pointer;
- typedef SmartPointer<const Self> ConstPointer;
-
- /** Method for creation through the object factory. */
- igtlNewMacro(Self);
-
- /** Run-time type information (and related methods). */
- igtlTypeMacro(TransformConverter, BaseConverter);
-
   /**
    * This structure contains everything that igtl::ImageMessage is able to contain,
    * in a vtk-friendly format.
@@ -53,20 +41,15 @@ public:
   std::string deviceName;
   };
 
-  virtual void PrintSelf(std::ostream& os) const;
-
-  virtual const char*  GetIGTLName() { return GetIGTLTypeName(); };
+  static const char*  GetIGTLName() { return GetIGTLTypeName(); };
   static const char* GetIGTLTypeName() { return "TRANSFORM"; };
 
-  int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
-  int toIGTL(const HeaderData& header, const ContentData& source, igtl::TransformMessage::Pointer* dest);
+  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
+  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::TransformMessage::Pointer* dest);
 
-protected:
-  TransformConverter();
-  ~TransformConverter();
 };
 
-}
+} //namespace igtlio
 
 
 #endif //__igtlTransformConverter_h

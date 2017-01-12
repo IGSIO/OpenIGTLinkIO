@@ -47,10 +47,10 @@ vtkIGTLIOCommandDevicePointer vtkIGTLIOSession::SendCommandQuery(std::string dev
                                                                  double timeout_s)
 {
   vtkSmartPointer<vtkIGTLIOCommandDevice> device;
-  DeviceKeyType key(igtl::CommandConverter::GetIGTLTypeName(), device_id);
+  DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
   device = vtkIGTLIOCommandDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
 
-  igtl::CommandConverter::ContentData contentdata = device->GetContent();
+  igtlio::CommandConverter::ContentData contentdata = device->GetContent();
   contentdata.id +=1;
   contentdata.name = command;
   contentdata.content = content;
@@ -86,10 +86,10 @@ vtkIGTLIOCommandDevicePointer vtkIGTLIOSession::SendCommandQuery(std::string dev
 
 vtkIGTLIOCommandDevicePointer vtkIGTLIOSession::SendCommandResponse(std::string device_id, std::string command, std::string content)
 {
-  DeviceKeyType key(igtl::CommandConverter::GetIGTLTypeName(), device_id);
+  DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
   vtkIGTLIOCommandDevicePointer device = vtkIGTLIOCommandDevice::SafeDownCast(Connector->GetDevice(key));
 
-  igtl::CommandConverter::ContentData contentdata = device->GetContent();
+  igtlio::CommandConverter::ContentData contentdata = device->GetContent();
 
   if (command != contentdata.name)
   {
@@ -108,10 +108,10 @@ vtkIGTLIOCommandDevicePointer vtkIGTLIOSession::SendCommandResponse(std::string 
 vtkIGTLIOImageDevicePointer vtkIGTLIOSession::SendImage(std::string device_id, vtkSmartPointer<vtkImageData> image, vtkSmartPointer<vtkMatrix4x4> transform)
 {
   vtkSmartPointer<vtkIGTLIOImageDevice> device;
-  DeviceKeyType key(igtl::ImageConverter::GetIGTLTypeName(), device_id);
+  DeviceKeyType key(igtlio::ImageConverter::GetIGTLTypeName(), device_id);
   device = vtkIGTLIOImageDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
 
-  igtl::ImageConverter::ContentData contentdata = device->GetContent();
+  igtlio::ImageConverter::ContentData contentdata = device->GetContent();
   contentdata.image = image;
   contentdata.transform = transform;
   device->SetContent(contentdata);
@@ -202,10 +202,10 @@ bool vtkIGTLIOSession::waitForConnection(double timeout_s)
 vtkIGTLIOTransformDevicePointer vtkIGTLIOSession::SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform)
 {
   vtkIGTLIOTransformDevicePointer device;
-  DeviceKeyType key(igtl::TransformConverter::GetIGTLTypeName(), device_id);
+  DeviceKeyType key(igtlio::TransformConverter::GetIGTLTypeName(), device_id);
   device = vtkIGTLIOTransformDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
 
-  igtl::TransformConverter::ContentData contentdata = device->GetContent();
+  igtlio::TransformConverter::ContentData contentdata = device->GetContent();
   contentdata.deviceName = device_id;
   contentdata.transform = transform;
   device->SetContent(contentdata);

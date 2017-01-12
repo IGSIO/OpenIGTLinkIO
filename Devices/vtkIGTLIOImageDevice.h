@@ -53,8 +53,8 @@ public:
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
 
-  void SetContent(igtl::ImageConverter::ContentData content);
-  igtl::ImageConverter::ContentData GetContent();
+  void SetContent(igtlio::ImageConverter::ContentData content);
+  igtlio::ImageConverter::ContentData GetContent();
 
 public:
   static vtkIGTLIOImageDevice *New();
@@ -69,8 +69,7 @@ protected:
   igtl::ImageMessage::Pointer OutImageMessage;
   igtl::GetImageMessage::Pointer GetImageMessage;
 
-  igtl::ImageConverter::ContentData Content;
-  igtl::ImageConverter::Pointer Converter;
+  igtlio::ImageConverter::ContentData Content;
 };
 
 

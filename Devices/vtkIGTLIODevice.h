@@ -97,7 +97,7 @@ public:
   /// a vtkIGTLIOConnector will cause undefined behaviour.
   virtual void SetDeviceName(std::string name);
 
-  igtl::BaseConverter::HeaderData GetHeader();
+  igtlio::BaseConverter::HeaderData GetHeader();
 
  vtkSetMacro( PushOnConnect, bool );
  vtkGetMacro( PushOnConnect, bool );
@@ -169,10 +169,10 @@ public:
   vtkAbstractTypeMacro(vtkIGTLIODevice,vtkObject);
 
 protected:
-  void SetHeader(igtl::BaseConverter::HeaderData header);
+  void SetHeader(igtlio::BaseConverter::HeaderData header);
 
   std::vector<QueryType> Queries;
-  igtl::BaseConverter::HeaderData HeaderData;
+  igtlio::BaseConverter::HeaderData HeaderData;
 
 private:
  MESSAGE_DIRECTION MessageDirection;

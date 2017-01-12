@@ -136,14 +136,14 @@ int vtkIGTLIODevice::CancelQuery(int index)
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIODevice::SetHeader(igtl::BaseConverter::HeaderData header)
+void vtkIGTLIODevice::SetHeader(igtlio::BaseConverter::HeaderData header)
 {
   HeaderData = header;
   this->Modified();
 }
 
 //---------------------------------------------------------------------------
-igtl::BaseConverter::HeaderData vtkIGTLIODevice::GetHeader()
+igtlio::BaseConverter::HeaderData vtkIGTLIODevice::GetHeader()
 {
   return HeaderData;
 }

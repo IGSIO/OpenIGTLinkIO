@@ -1,20 +1,20 @@
 #include "igtlBaseConverter.h"
 
 
-namespace igtl
+namespace igtlio
 {
 
 //---------------------------------------------------------------------------
-int BaseConverter::IGTLtoHeader(MessageBase::Pointer source, BaseConverter::HeaderData *header)
+int BaseConverter::IGTLtoHeader(igtl::MessageBase::Pointer source, BaseConverter::HeaderData *header)
 {
   header->deviceName = source->GetDeviceName();
   // get timestamp
-  if (this->IGTLToTimestamp(source, header) == 0)
+  if (IGTLToTimestamp(source, header) == 0)
     return 0;
   return 1;
 }
 
-int BaseConverter::HeadertoIGTL(const BaseConverter::HeaderData &header, MessageBase::Pointer *dest)
+int BaseConverter::HeadertoIGTL(const BaseConverter::HeaderData &header, igtl::MessageBase::Pointer *dest)
 {
   (*dest)->SetDeviceName(header.deviceName.c_str());
   return 1;
@@ -29,4 +29,4 @@ int BaseConverter::HeadertoIGTL(const BaseConverter::HeaderData &header, Message
   return 1;
 }
 
-}
+} // namespace igtlio

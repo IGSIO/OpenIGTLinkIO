@@ -13,23 +13,8 @@
 #include <vtksys/SystemTools.hxx>
 
 
-namespace igtl
+namespace igtlio
 {
-
-StatusConverter::StatusConverter()
-{
-}
-
-//---------------------------------------------------------------------------
-StatusConverter::~StatusConverter()
-{
-}
-
-//---------------------------------------------------------------------------
-void StatusConverter::PrintSelf(std::ostream &os) const
-{
- this->BaseConverter::PrintSelf(os);
-}
 
 //---------------------------------------------------------------------------
 int StatusConverter::fromIGTL(igtl::MessageBase::Pointer source,
@@ -53,7 +38,7 @@ int StatusConverter::fromIGTL(igtl::MessageBase::Pointer source,
     }
 
   // get header
-  if (!this->IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header))
+  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header))
     return 0;
 
   dest->code = msg->GetCode();
@@ -72,7 +57,7 @@ int StatusConverter::toIGTL(const HeaderData& header, const ContentData& source,
   igtl::StatusMessage::Pointer msg = *dest;
 
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
-  this->HeadertoIGTL(header, &basemsg);
+  HeadertoIGTL(header, &basemsg);
 
   msg->SetCode(source.code);
   msg->SetSubCode(source.code);
@@ -85,5 +70,5 @@ int StatusConverter::toIGTL(const HeaderData& header, const ContentData& source,
 }
 
 
-}
+} // namespace igtlio
 

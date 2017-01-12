@@ -23,7 +23,7 @@ qIGTLIODeviceWidget* vtkIGTLIOStatusDeviceWidgetCreator::Create()
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOStatusDeviceWidgetCreator::GetDeviceType() const
 {
- return igtl::StatusConverter::GetIGTLTypeName();
+ return igtlio::StatusConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------

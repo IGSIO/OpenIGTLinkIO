@@ -40,7 +40,7 @@ vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOImageDeviceCreator::Create(std::string
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOImageDeviceCreator::GetDeviceType() const
 {
-  return igtl::ImageConverter::GetIGTLTypeName();
+  return igtlio::ImageConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
@@ -52,7 +52,6 @@ vtkStandardNewMacro(vtkIGTLIOImageDevice);
 //---------------------------------------------------------------------------
 vtkIGTLIOImageDevice::vtkIGTLIOImageDevice()
 {
-   Converter = igtl::ImageConverter::New();
 }
 
 //---------------------------------------------------------------------------
@@ -63,16 +62,16 @@ vtkIGTLIOImageDevice::~vtkIGTLIOImageDevice()
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOImageDevice::GetDeviceType() const
 {
-  return igtl::ImageConverter::GetIGTLTypeName();
+  return igtlio::ImageConverter::GetIGTLTypeName();
 }
 
-void vtkIGTLIOImageDevice::SetContent(igtl::ImageConverter::ContentData content)
+void vtkIGTLIOImageDevice::SetContent(igtlio::ImageConverter::ContentData content)
 {
   Content = content;
   this->Modified();
 }
 
-igtl::ImageConverter::ContentData vtkIGTLIOImageDevice::GetContent()
+igtlio::ImageConverter::ContentData vtkIGTLIOImageDevice::GetContent()
 {
   return Content;
 }
@@ -81,7 +80,7 @@ igtl::ImageConverter::ContentData vtkIGTLIOImageDevice::GetContent()
 //---------------------------------------------------------------------------
 int vtkIGTLIOImageDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (Converter->fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+ if (igtlio::ImageConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
    {
    this->Modified();
    return 1;
@@ -100,7 +99,7 @@ igtl::MessageBase::Pointer vtkIGTLIOImageDevice::GetIGTLMessage()
   return 0;
   }
 
- if (!Converter->toIGTL(HeaderData, Content, &this->OutImageMessage))
+ if (!igtlio::ImageConverter::toIGTL(HeaderData, Content, &this->OutImageMessage))
    {
    return 0;
    }

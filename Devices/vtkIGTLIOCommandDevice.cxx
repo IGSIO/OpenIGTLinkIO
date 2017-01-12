@@ -26,7 +26,7 @@ vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOCommandDeviceCreator::Create(std::stri
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOCommandDeviceCreator::GetDeviceType() const
 {
- return igtl::CommandConverter::GetIGTLTypeName();
+ return igtlio::CommandConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
@@ -40,7 +40,6 @@ vtkStandardNewMacro(vtkIGTLIOCommandDevice);
 //---------------------------------------------------------------------------
 vtkIGTLIOCommandDevice::vtkIGTLIOCommandDevice()
 {
-   Converter = igtl::CommandConverter::New();
 }
 
 //---------------------------------------------------------------------------
@@ -51,7 +50,7 @@ vtkIGTLIOCommandDevice::~vtkIGTLIOCommandDevice()
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOCommandDevice::GetDeviceType() const
 {
-  return igtl::CommandConverter::GetIGTLTypeName();
+  return igtlio::CommandConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
@@ -59,10 +58,10 @@ int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer
 {
   // RTS_COMMAND received:
   //    - look in the query queue for anyone waiting for it.
-  if (buffer->GetDeviceType()==std::string(Converter->GetIGTLResponseName()))
+  if (buffer->GetDeviceType()==std::string(igtlio::CommandConverter::GetIGTLResponseName()))
     {
     vtkSmartPointer<vtkIGTLIOCommandDevice> response = vtkSmartPointer<vtkIGTLIOCommandDevice>::New();
-    if (!Converter->fromIGTLResponse(buffer, &response->HeaderData, &response->Content, checkCRC))
+    if (!igtlio::CommandConverter::fromIGTLResponse(buffer, &response->HeaderData, &response->Content, checkCRC))
       return 0;
 
     // search among the queries for a command with an identical ID:
@@ -83,9 +82,9 @@ int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer
   // COMMAND received
   //   - store the incoming message, emit event
   //     No response is created - this is the responsibility of the application.
-  if (buffer->GetDeviceType()==std::string(Converter->GetIGTLTypeName()))
+  if (buffer->GetDeviceType()==std::string(igtlio::CommandConverter::GetIGTLTypeName()))
     {
-    if (Converter->fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+    if (igtlio::CommandConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
       {
       this->Modified();
       this->InvokeEvent(CommandQueryReceivedEvent);
@@ -107,7 +106,7 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage()
 
  this->SetTimestamp(vtkTimerLog::GetUniversalTime());
 
- if (!Converter->toIGTL(HeaderData, Content, &this->OutMessage))
+ if (!igtlio::CommandConverter::toIGTL(HeaderData, Content, &this->OutMessage))
    {
    return 0;
    }
@@ -145,7 +144,7 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLResponseMessage()
    this->ResponseMessage = igtl::RTSCommandMessage::New();
 
  igtl::CommandMessage::Pointer response = dynamic_pointer_cast<igtl::CommandMessage>(this->ResponseMessage);
- if (!Converter->toIGTL(HeaderData, Content, &response))
+ if (!igtlio::CommandConverter::toIGTL(HeaderData, Content, &response))
    {
    return 0;
    }
@@ -176,20 +175,20 @@ std::set<vtkIGTLIODevice::MESSAGE_PREFIX> vtkIGTLIOCommandDevice::GetSupportedMe
  return retval;
 }
 
-void vtkIGTLIOCommandDevice::SetContent(igtl::CommandConverter::ContentData content)
+void vtkIGTLIOCommandDevice::SetContent(igtlio::CommandConverter::ContentData content)
 {
   Content = content;
   this->Modified();
 }
 
-igtl::CommandConverter::ContentData vtkIGTLIOCommandDevice::GetContent()
+igtlio::CommandConverter::ContentData vtkIGTLIOCommandDevice::GetContent()
 {
   return Content;
 }
 
 std::vector<std::string> vtkIGTLIOCommandDevice::GetAvailableCommandNames() const
 {
-  return Converter->GetAvailableCommandNames();
+  return igtlio::CommandConverter::GetAvailableCommandNames();
 }
 
 //---------------------------------------------------------------------------

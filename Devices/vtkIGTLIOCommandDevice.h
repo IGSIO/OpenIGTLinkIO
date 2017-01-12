@@ -41,8 +41,8 @@ public:
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
 
-  void SetContent(igtl::CommandConverter::ContentData content);
-  igtl::CommandConverter::ContentData GetContent();
+  void SetContent(igtlio::CommandConverter::ContentData content);
+  igtlio::CommandConverter::ContentData GetContent();
   std::vector<std::string> GetAvailableCommandNames() const;
 
   igtl::MessageBase::Pointer GetIGTLResponseMessage();
@@ -61,8 +61,7 @@ public:
  protected:
   igtl::CommandMessage::Pointer OutMessage;
   igtl::RTSCommandMessage::Pointer ResponseMessage;
-  igtl::CommandConverter::ContentData Content;
-  igtl::CommandConverter::Pointer Converter;
+  igtlio::CommandConverter::ContentData Content;
 };
 
 
