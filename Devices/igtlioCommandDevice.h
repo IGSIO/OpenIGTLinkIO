@@ -1,19 +1,9 @@
 #ifndef IGTLIOCOMMANDDEVICE_H
 #define IGTLIOCOMMANDDEVICE_H
 
-#include <vector>
-
-// igtlio includes
 #include "igtlioDevicesExport.h"
-
 #include "igtlioCommandConverter.h"
 #include "igtlioDevice.h"
-
-// OpenIGTLink includes
-#include <igtlCommandMessage.h>
-
-// VTK includes
-#include <vtkObject.h>
 
 namespace igtlio
 {

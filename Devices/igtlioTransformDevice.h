@@ -15,17 +15,10 @@
 #ifndef IGTLIOTRANSFORMDEVICE_H
 #define IGTLIOTRANSFORMDEVICE_H
 
-// igtlio includes
 #include "igtlioDevicesExport.h"
 
 #include "igtlioTransformConverter.h"
 #include "igtlioDevice.h"
-
-// OpenIGTLink includes
-#include <igtlImageMessage.h>
-
-// VTK includes
-#include <vtkObject.h>
 
 class vtkImageData;
 

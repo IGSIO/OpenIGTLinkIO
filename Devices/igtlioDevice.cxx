@@ -9,16 +9,8 @@
 
 #include "igtlioDevice.h"
 
-// OpenIGTLink includes
-#include <igtlMessageBase.h>
-
-// VTK includes
-#include <vtkObjectFactory.h>
-#include <vtksys/SystemTools.hxx>
 #include <vtkTimerLog.h>
 
-// STD includes
-#include <string>
 
 namespace igtlio
 {

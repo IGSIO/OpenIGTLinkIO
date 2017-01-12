@@ -1,17 +1,10 @@
 #ifndef IGTLIOSTATUSDEVICE_H
 #define IGTLIOSTATUSDEVICE_H
 
-// igtlio includes
 #include "igtlioDevicesExport.h"
 
 #include "igtlioStatusConverter.h"
 #include "igtlioDevice.h"
-
-// OpenIGTLink includes
-#include <igtlStatusMessage.h>
-
-// VTK includes
-#include <vtkObject.h>
 
 namespace igtlio
 {

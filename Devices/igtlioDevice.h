@@ -15,20 +15,9 @@
 #ifndef IGTLIODEVICE_H
 #define IGTLIODEVICE_H
 
-// OpenIGTLink includes
-#include <igtlMessageBase.h>
-
-// VTK includes
-#include <vtkObject.h>
-#include <vtkSmartPointer.h>
 #include <vtkCommand.h>
-
-// STD includes
-#include <vector>
-#include <string>
 #include <set>
 
-// igtlio includes
 #include "igtlioDevicesExport.h"
 #include "igtlioBaseConverter.h"
 

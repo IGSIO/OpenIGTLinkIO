@@ -12,22 +12,11 @@
 
 ==========================================================================*/
 
-// OpenIGTLinkIF MRML includes
 #include "igtlioImageDevice.h"
 
-// igtl support includes
-#include <igtl_util.h>
-#include <igtlImageMessage.h>
-
-// VTK includes
 #include <vtkImageData.h>
 #include <vtkObjectFactory.h>
-#include <vtkSmartPointer.h>
 #include "vtkMatrix4x4.h"
-
-// VTKSYS includes
-#include <vtksys/SystemTools.hxx>
-#include "igtlioImageConverter.h"
 
 namespace igtlio
 {
