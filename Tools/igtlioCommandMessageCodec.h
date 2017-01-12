@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <utility>
+#include <string>
 
 namespace igtlio
 {
@@ -23,6 +24,8 @@ public:
     // Parse the content of a command received
     void SetContent( std::string content );
     int GetNumberOfParameters() { return m_parameters.size(); }
+    std::string GetParameterName( int index ) { return m_parameters[index].first; }
+    std::string GetParameterValue( int index ) { return m_parameters[index].second; }
     bool IsReply() { return m_isReply; }
     bool GetResult();
     std::string GetParameter( std::string paramName );
