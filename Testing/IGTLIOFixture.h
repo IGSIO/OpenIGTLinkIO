@@ -8,7 +8,7 @@
 #include "vtkTimerLog.h"
 #include "igtlioImageDevice.h"
 #include "igtlioCommandDevice.h"
-#include "vtkIGTLIOTranslator.h"
+#include "igtlioTranslator.h"
 
 class vtkImageData;
 

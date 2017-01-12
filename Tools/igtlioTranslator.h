@@ -1,5 +1,5 @@
-#ifndef VTKIGTLIOTRANSLATOR_H
-#define VTKIGTLIOTRANSLATOR_H
+#ifndef IGTLIOTRANSLATOR_H
+#define IGTLIOTRANSLATOR_H
 
 #include "vtkObject.h"
 
@@ -20,4 +20,4 @@ public:
 
 } //namespace igtlio
 
-#endif // VTKIGTLIOTRANSLATOR_H
+#endif // IGTLIOTRANSLATOR_H

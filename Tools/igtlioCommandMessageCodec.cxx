@@ -1,4 +1,4 @@
-#include "vtkIGTLIOCommandMessageCodec.h"
+#include "igtlioCommandMessageCodec.h"
 #include "vtkXMLUtilities.h"
 #include "vtkXMLDataElement.h"
 #include <sstream>

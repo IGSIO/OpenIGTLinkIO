@@ -1,4 +1,4 @@
-#include "vtkIGTLIOTranslator.h"
+#include "igtlioTranslator.h"
 
 namespace igtlio
 {

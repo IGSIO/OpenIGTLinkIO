@@ -1,5 +1,5 @@
-#ifndef __vtkIGTLIOCommandMessageCodec_h_
-#define __vtkIGTLIOCommandMessageCodec_h_
+#ifndef IGTLIOCOMMANDMESSAGECODEC_H
+#define IGTLIOCOMMANDMESSAGECODEC_H
 
 #include <vector>
 #include <utility>
