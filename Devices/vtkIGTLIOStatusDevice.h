@@ -13,23 +13,12 @@
 // VTK includes
 #include <vtkObject.h>
 
-class vtkImageData;
+namespace igtlio
+{
 
+class vtkImageData;
 typedef vtkSmartPointer<class vtkIGTLIOStatusDevice> vtkIGTLIOStatusDevicePointer;
 
-
-//---------------------------------------------------------------------------
-class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOStatusDeviceCreator : public vtkIGTLIODeviceCreator
-{
-public:
-  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name);
-  virtual std::string GetDeviceType() const;
-
-  static vtkIGTLIOStatusDeviceCreator *New();
-  vtkTypeMacro(vtkIGTLIOStatusDeviceCreator,vtkObject);
-};
-
-//---------------------------------------------------------------------------
 /// A Device supporting the STATUS igtl Message.
 class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOStatusDevice : public vtkIGTLIODevice
 {
@@ -59,6 +48,20 @@ public:
 
   igtlio::StatusConverter::ContentData Content;
 };
+
+
+//---------------------------------------------------------------------------
+class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOStatusDeviceCreator : public vtkIGTLIODeviceCreator
+{
+public:
+  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name);
+  virtual std::string GetDeviceType() const;
+
+  static vtkIGTLIOStatusDeviceCreator *New();
+  vtkTypeMacro(vtkIGTLIOStatusDeviceCreator,vtkObject);
+};
+
+} // namespace igtlio
 
 
 #endif // VTKIGTLIOSTATUSDEVICE_H

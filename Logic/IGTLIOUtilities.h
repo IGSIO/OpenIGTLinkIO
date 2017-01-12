@@ -6,10 +6,9 @@
 #include "igtlMessageBase.h"
 #include "vtkSmartPointer.h"
 
-typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
-
 namespace igtlio
 {
+typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
 
 enum OPENIGTLINKIO_LOGIC_EXPORT SYNCHRONIZATION_TYPE
 {
@@ -17,7 +16,6 @@ enum OPENIGTLINKIO_LOGIC_EXPORT SYNCHRONIZATION_TYPE
   ASYNCHRONOUS
 };
 
-} // namespace igtlio
 
 
 ///
@@ -41,6 +39,8 @@ OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(igtl::MessageBase::Poin
 OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(vtkIGTLIODevicePointer device);
 bool operator==(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
 bool operator<(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
+
+} // namespace igtlio
 
 
 

@@ -1,5 +1,8 @@
 #include "vtkIGTLIOTranslator.h"
 
+namespace igtlio
+{
+
 std::string extractStringBeforeCharacter(std::string const& s, char character)
 {
     std::string::size_type pos = s.find(character);
@@ -33,4 +36,6 @@ std::string vtkIGTLIOTranslator::DetermineTypeBasedOnToolName(std::string tool_n
   }
   return "unknown";
 }
+
+} // namespace igtlio
 

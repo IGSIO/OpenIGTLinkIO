@@ -30,7 +30,11 @@
 #include "igtlioGUIExport.h"
 #include "vtkIGTLIOConnector.h"
 #include <vtkSmartPointer.h>
+
+namespace igtlio
+{
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+}
 
 ///
 /// A model describing all connectors and their properties.
@@ -53,7 +57,7 @@ public:
   virtual QModelIndex parent(const QModelIndex& index ) const;
 
   void resetModel();
-  void setLogic(vtkIGTLIOLogicPointer logic);
+  void setLogic(igtlio::vtkIGTLIOLogicPointer logic);
 
   enum Columns{
     NameColumn = 0,
@@ -69,10 +73,10 @@ private slots:
 
 private:
   Q_DISABLE_COPY(qIGTLIOConnectorModel);
-  vtkIGTLIOConnector* getNodeFromIndex(const QModelIndex& index) const;
-  void ReconnectConnector(vtkIGTLIOConnector *oldConnector, vtkIGTLIOConnector *newConnector);
+  igtlio::vtkIGTLIOConnector* getNodeFromIndex(const QModelIndex& index) const;
+  void ReconnectConnector(igtlio::vtkIGTLIOConnector *oldConnector, igtlio::vtkIGTLIOConnector *newConnector);
 
-  vtkIGTLIOLogicPointer Logic;
+  igtlio::vtkIGTLIOLogicPointer Logic;
   QStringList HeaderLabels;
 };
 

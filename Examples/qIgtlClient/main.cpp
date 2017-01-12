@@ -10,7 +10,7 @@ int main(int argc, char** argv)
   QApplication app(argc, argv);
 
 
-  vtkIGTLIOLogicPointer logic = vtkIGTLIOLogicPointer::New();
+  igtlio::vtkIGTLIOLogicPointer logic = igtlio::vtkIGTLIOLogicPointer::New();
   qIGTLIOLogicController logicController;
   logicController.setLogic(logic);
 

@@ -30,11 +30,13 @@
 #include "igtlioGUIExport.h"
 
 #include <vtkSmartPointer.h>
+namespace igtlio
+{
 typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
+}
 
 class qIGTLIOConnectorPropertyWidgetPrivate;
-//class vtkMRMLIGTLConnectorNode;
-//class vtkMRMLNode;
+
 class vtkObject;
 
 /// \ingroup Slicer_QtModules_OpenIGTLinkIF
@@ -42,6 +44,7 @@ class OPENIGTLINKIO_GUI_EXPORT qIGTLIOConnectorPropertyWidget : public QWidget
 {
   Q_OBJECT
   IGTLIO_QVTK_OBJECT
+
 public:
   typedef QWidget Superclass;
   qIGTLIOConnectorPropertyWidget(QWidget *parent = 0);
@@ -49,8 +52,8 @@ public:
 
 public slots:
   /// Set the MRML node of interest
-  void setMRMLIGTLConnectorNode(vtkIGTLIOConnectorPointer connectorNode);
-  vtkIGTLIOConnectorPointer getMRMLIGTLConnectorNode();
+  void setMRMLIGTLConnectorNode(igtlio::vtkIGTLIOConnectorPointer connectorNode);
+  igtlio::vtkIGTLIOConnectorPointer getMRMLIGTLConnectorNode();
 
 //  /// Utility function that calls setMRMLIGTLConnectorNode(vtkMRMLIGTLConnectorNode*)
 //  /// It's useful to connect to vtkMRMLNode* signals when you are sure of

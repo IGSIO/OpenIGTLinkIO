@@ -19,9 +19,9 @@ struct LogicFixture
   void startClient();
   void startServer();
 
-  vtkIGTLIOLogicPointer Logic;
-  vtkIGTLIOConnectorPointer Connector;
-  vtkIGTLIOSessionPointer Session;
+  igtlio::vtkIGTLIOLogicPointer Logic;
+  igtlio::vtkIGTLIOConnectorPointer Connector;
+  igtlio::vtkIGTLIOSessionPointer Session;
 
   vtkSmartPointer<class vtkCallbackCommand> LogicEventCallback;
   std::vector<int> ReceivedEvents;
@@ -31,7 +31,7 @@ struct ClientServerFixture
 {
   LogicFixture Server;
   LogicFixture Client;
-  vtkIGTLIOTranslator Translator;
+  igtlio::vtkIGTLIOTranslator Translator;
 
   bool ConnectClientToServer();
   bool LoopUntilEventDetected(LogicFixture *logic, int eventId, int count=1);

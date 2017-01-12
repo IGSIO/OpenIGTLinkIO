@@ -32,26 +32,26 @@ int main(int argc, char **argv)
   std::string usprobe_image_stream_name = usprobe_name+"_image";
   std::string usprobe_transform_stream_name = usprobe_name+"_transform";
 
-  vtkSmartPointer<vtkIGTLIOImageDevice> imageDevice;
+  igtlio::vtkIGTLIOImageDevicePointer imageDevice;
   imageDevice = fixture.Server.Session->SendImage(usprobe_image_stream_name,
                                                   fixture.CreateTestImage(),
                                                   fixture.CreateTestTransform());
 
-  vtkSmartPointer<vtkIGTLIOTransformDevice> usprobe_transformDevice;
+  igtlio::vtkIGTLIOTransformDevicePointer usprobe_transformDevice;
   usprobe_transformDevice = fixture.Server.Session->SendTransform(usprobe_transform_stream_name,
                                                   fixture.CreateTestTransform());
 
   std::string pointer_name = "pointer";
   std::string pointer_transform_stream_name = pointer_name+"_transform";
 
-  vtkSmartPointer<vtkIGTLIOTransformDevice> transformDevice;
+  igtlio::vtkIGTLIOTransformDevicePointer transformDevice;
   transformDevice = fixture.Server.Session->SendTransform(pointer_transform_stream_name,
                                                   fixture.CreateTestTransform());
 
     //--------------------------------------------------------------------------
 
   int number_of_devices = 3;
-  if (!fixture.LoopUntilEventDetected(&fixture.Client, vtkIGTLIOLogic::NewDeviceEvent, number_of_devices))
+  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::vtkIGTLIOLogic::NewDeviceEvent, number_of_devices))
   {
     std::cout << "ERROR: Did not get " << number_of_devices << " events" << std::endl;
     return 1;
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
   std::map<std::string, int> tools;
   for(int i=0; i< fixture.Client.Logic->GetNumberOfDevices(); ++i)
   {
-    vtkIGTLIODevicePointer device = fixture.Client.Logic->GetDevice(i);
+    igtlio::vtkIGTLIODevicePointer device = fixture.Client.Logic->GetDevice(i);
     std::string tool_name = fixture.Translator.GetToolNameFromDeviceName(device->GetDeviceName());
     if(tool_name != usprobe_name && tool_name != pointer_name)
       {

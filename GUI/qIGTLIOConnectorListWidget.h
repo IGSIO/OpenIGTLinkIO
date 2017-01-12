@@ -14,7 +14,10 @@ class QItemSelectionModel;
 
 class QTreeView;
 #include <vtkSmartPointer.h>
+namespace igtlio
+{
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+}
 
 ///
 /// A Widget showing all connections, and a GUI to add/remove/modify them.
@@ -26,7 +29,7 @@ class OPENIGTLINKIO_GUI_EXPORT qIGTLIOConnectorListWidget : public QWidget
 
 public:
   qIGTLIOConnectorListWidget();
-  void setLogic(vtkIGTLIOLogicPointer logic);
+  void setLogic(igtlio::vtkIGTLIOLogicPointer logic);
 
 signals:
 
@@ -37,7 +40,7 @@ private slots:
   void onAddConnectorButtonClicked();
   void onRemoveConnectorButtonClicked();
 private:
-  vtkIGTLIOLogicPointer Logic;
+  igtlio::vtkIGTLIOLogicPointer Logic;
   qIGTLIOConnectorModel* ConnectorModel;
   QItemSelectionModel* SelectionModel;
   QTreeView* ConnectorListView;

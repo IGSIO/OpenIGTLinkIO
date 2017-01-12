@@ -15,22 +15,12 @@
 // VTK includes
 #include <vtkObject.h>
 
-class vtkImageData;
+//class vtkImageData;
 
+namespace igtlio
+{
 typedef vtkSmartPointer<class vtkIGTLIOCommandDevice> vtkIGTLIOCommandDevicePointer;
 
-//---------------------------------------------------------------------------
-class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOCommandDeviceCreator : public vtkIGTLIODeviceCreator
-{
-public:
-  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name);
-  virtual std::string GetDeviceType() const;
-
-  static vtkIGTLIOCommandDeviceCreator *New();
-  vtkTypeMacro(vtkIGTLIOCommandDeviceCreator,vtkObject);
-};
-
-//---------------------------------------------------------------------------
 /// A Device supporting the COMMAND igtl Message.
 class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOCommandDevice : public vtkIGTLIODevice
 {
@@ -64,5 +54,18 @@ public:
   igtlio::CommandConverter::ContentData Content;
 };
 
+//---------------------------------------------------------------------------
+
+class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOCommandDeviceCreator : public vtkIGTLIODeviceCreator
+{
+public:
+  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name);
+  virtual std::string GetDeviceType() const;
+
+  static vtkIGTLIOCommandDeviceCreator *New();
+  vtkTypeMacro(vtkIGTLIOCommandDeviceCreator,vtkObject);
+};
+
+} // namespace igtlio
 
 #endif // VTKIGTLIOCOMMANDDEVICE_H

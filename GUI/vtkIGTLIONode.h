@@ -35,7 +35,7 @@ public:
   bool isGroup() const { return type==NODE_TYPE_GROUP; }
   bool isDevice() const { return type==NODE_TYPE_DEVICE; }
 
-  static qIGTLIODevicesModelNodePointer createRoot(vtkIGTLIOLogic* logic_);
+  static qIGTLIODevicesModelNodePointer createRoot(igtlio::vtkIGTLIOLogic* logic_);
   bool operator==(const qIGTLIODevicesModelNode& rhs) const;
   std::string GetName();
   qIGTLIODevicesModelNode* GetChild(int row);
@@ -46,18 +46,18 @@ public:
   int GetSiblingIndex() const;
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  qIGTLIODevicesModelNode* FindDeviceNode(vtkIGTLIODevice* device_);
+  qIGTLIODevicesModelNode* FindDeviceNode(igtlio::vtkIGTLIODevice* device_);
 
-  vtkIGTLIODevice* device;
-  vtkIGTLIOConnector* connector;
+  igtlio::vtkIGTLIODevice* device;
+  igtlio::vtkIGTLIOConnector* connector;
 
 private:
-  qIGTLIODevicesModelNode* GetNode(vtkIGTLIOConnector* connector=NULL, vtkIGTLIODevice::MESSAGE_DIRECTION group=vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, vtkIGTLIODevice* device=NULL);
-  qIGTLIODevicesModelNode(qIGTLIODevicesModelNode* parent_, vtkIGTLIOLogic* logic_, vtkIGTLIOConnector* connector_=NULL, vtkIGTLIODevice::MESSAGE_DIRECTION group_=vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, vtkIGTLIODevice* device_=NULL);
-  std::vector<vtkIGTLIODevicePointer> GetDevicesInGroup() const;
+  qIGTLIODevicesModelNode* GetNode(igtlio::vtkIGTLIOConnector* connector=NULL, igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION group=igtlio::vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, igtlio::vtkIGTLIODevice* device=NULL);
+  qIGTLIODevicesModelNode(qIGTLIODevicesModelNode* parent_, igtlio::vtkIGTLIOLogic* logic_, igtlio::vtkIGTLIOConnector* connector_=NULL, igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION group_=igtlio::vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, igtlio::vtkIGTLIODevice* device_=NULL);
+  std::vector<igtlio::vtkIGTLIODevicePointer> GetDevicesInGroup() const;
   NODE_TYPE type;
-  vtkIGTLIOLogic* logic;
-  vtkIGTLIODevice::MESSAGE_DIRECTION group;
+  igtlio::vtkIGTLIOLogic* logic;
+  igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION group;
   mutable std::set<qIGTLIODevicesModelNodePointer> Children;
   qIGTLIODevicesModelNode* Parent;
 };

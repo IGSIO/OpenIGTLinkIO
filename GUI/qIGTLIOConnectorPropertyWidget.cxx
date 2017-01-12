@@ -10,7 +10,6 @@
 #include "vtkIGTLIOConnector.h"
 
 //------------------------------------------------------------------------------
-/// \ingroup Slicer_QtModules_OpenIGTLinkIF
 class qIGTLIOConnectorPropertyWidgetPrivate : public Ui_qIGTLIOConnectorPropertyWidget
 {
   Q_DECLARE_PUBLIC(qIGTLIOConnectorPropertyWidget);
@@ -20,7 +19,7 @@ public:
   qIGTLIOConnectorPropertyWidgetPrivate(qIGTLIOConnectorPropertyWidget& object);
   void init();
 
-  vtkIGTLIOConnectorPointer IGTLConnectorNode;
+  igtlio::vtkIGTLIOConnectorPointer IGTLConnectorNode;
 
   QButtonGroup ConnectorTypeButtonGroup;
 };
@@ -51,9 +50,9 @@ void qIGTLIOConnectorPropertyWidgetPrivate::init()
                    q, SLOT(updateIGTLConnectorNode()));
 
   this->ConnectorNotDefinedRadioButton->setVisible(false);
-  this->ConnectorTypeButtonGroup.addButton(this->ConnectorNotDefinedRadioButton, vtkIGTLIOConnector::TYPE_NOT_DEFINED);
-  this->ConnectorTypeButtonGroup.addButton(this->ConnectorServerRadioButton, vtkIGTLIOConnector::TYPE_SERVER);
-  this->ConnectorTypeButtonGroup.addButton(this->ConnectorClientRadioButton, vtkIGTLIOConnector::TYPE_CLIENT);
+  this->ConnectorTypeButtonGroup.addButton(this->ConnectorNotDefinedRadioButton, igtlio::vtkIGTLIOConnector::TYPE_NOT_DEFINED);
+  this->ConnectorTypeButtonGroup.addButton(this->ConnectorServerRadioButton, igtlio::vtkIGTLIOConnector::TYPE_SERVER);
+  this->ConnectorTypeButtonGroup.addButton(this->ConnectorClientRadioButton, igtlio::vtkIGTLIOConnector::TYPE_CLIENT);
 
 }
 
@@ -73,17 +72,17 @@ qIGTLIOConnectorPropertyWidget::~qIGTLIOConnectorPropertyWidget()
 }
 
 //------------------------------------------------------------------------------
-void qIGTLIOConnectorPropertyWidget::setMRMLIGTLConnectorNode(vtkIGTLIOConnectorPointer connectorNode)
+void qIGTLIOConnectorPropertyWidget::setMRMLIGTLConnectorNode(igtlio::vtkIGTLIOConnectorPointer connectorNode)
 {
   Q_D(qIGTLIOConnectorPropertyWidget);
   qvtkReconnect(d->IGTLConnectorNode, connectorNode, vtkCommand::ModifiedEvent,
                 this, SLOT(onMRMLNodeModified()));
 
   foreach(int evendId, QList<int>()
-          << vtkIGTLIOConnector::ActivatedEvent
-          << vtkIGTLIOConnector::ConnectedEvent
-          << vtkIGTLIOConnector::DisconnectedEvent
-          << vtkIGTLIOConnector::DeactivatedEvent)
+          << igtlio::vtkIGTLIOConnector::ActivatedEvent
+          << igtlio::vtkIGTLIOConnector::ConnectedEvent
+          << igtlio::vtkIGTLIOConnector::DisconnectedEvent
+          << igtlio::vtkIGTLIOConnector::DeactivatedEvent)
     {
     qvtkReconnect(d->IGTLConnectorNode, connectorNode, evendId,
                   this, SLOT(onMRMLNodeModified()));
@@ -152,19 +151,19 @@ void qIGTLIOConnectorPropertyWidget::onMRMLNodeModified()
   d->ConnectorHostNameEdit->setText(d->IGTLConnectorNode->GetServerHostname());
   d->ConnectorPortEdit->setText(QString("%1").arg(d->IGTLConnectorNode->GetServerPort()));
   int type = d->IGTLConnectorNode->GetType();
-  d->ConnectorNotDefinedRadioButton->setChecked(type == vtkIGTLIOConnector::TYPE_NOT_DEFINED);
-  d->ConnectorServerRadioButton->setChecked(type == vtkIGTLIOConnector::TYPE_SERVER);
-  d->ConnectorClientRadioButton->setChecked(type == vtkIGTLIOConnector::TYPE_CLIENT);
+  d->ConnectorNotDefinedRadioButton->setChecked(type == igtlio::vtkIGTLIOConnector::TYPE_NOT_DEFINED);
+  d->ConnectorServerRadioButton->setChecked(type == igtlio::vtkIGTLIOConnector::TYPE_SERVER);
+  d->ConnectorClientRadioButton->setChecked(type == igtlio::vtkIGTLIOConnector::TYPE_CLIENT);
 
-  setStateEnabled(d, type != vtkIGTLIOConnector::TYPE_NOT_DEFINED);
+  setStateEnabled(d, type != igtlio::vtkIGTLIOConnector::TYPE_NOT_DEFINED);
 
-  bool deactivated = d->IGTLConnectorNode->GetState() == vtkIGTLIOConnector::STATE_OFF;
+  bool deactivated = d->IGTLConnectorNode->GetState() == igtlio::vtkIGTLIOConnector::STATE_OFF;
   if (deactivated)
     {
     setNameEnabled(d, true);
     setTypeEnabled(d, true);
-    setHostnameEnabled(d, type == vtkIGTLIOConnector::TYPE_CLIENT);
-    setPortEnabled(d, type != vtkIGTLIOConnector::TYPE_NOT_DEFINED);
+    setHostnameEnabled(d, type == igtlio::vtkIGTLIOConnector::TYPE_CLIENT);
+    setPortEnabled(d, type != igtlio::vtkIGTLIOConnector::TYPE_NOT_DEFINED);
     }
   else
     {
@@ -174,7 +173,7 @@ void qIGTLIOConnectorPropertyWidget::onMRMLNodeModified()
     setPortEnabled(d, false);
     }
   d->ConnectorStateCheckBox->setChecked(!deactivated);
-  d->PersistentStateCheckBox->setChecked(d->IGTLConnectorNode->GetPersistent() == vtkIGTLIOConnector::PERSISTENT_ON);
+  d->PersistentStateCheckBox->setChecked(d->IGTLConnectorNode->GetPersistent() == igtlio::vtkIGTLIOConnector::PERSISTENT_ON);
 }
 
 //------------------------------------------------------------------------------
@@ -204,8 +203,8 @@ void qIGTLIOConnectorPropertyWidget::updateIGTLConnectorNode()
   d->IGTLConnectorNode->SetServerHostname(d->ConnectorHostNameEdit->text().toStdString());
   d->IGTLConnectorNode->SetServerPort(d->ConnectorPortEdit->text().toInt());
   d->IGTLConnectorNode->SetPersistent(d->PersistentStateCheckBox->isChecked() ?
-                                      vtkIGTLIOConnector::PERSISTENT_ON :
-                                      vtkIGTLIOConnector::PERSISTENT_OFF);
+                                      igtlio::vtkIGTLIOConnector::PERSISTENT_ON :
+                                      igtlio::vtkIGTLIOConnector::PERSISTENT_OFF);
 
   d->IGTLConnectorNode->SetDisableModifiedEvent(false);
   d->IGTLConnectorNode->InvokePendingModifiedEvent();
@@ -213,7 +212,7 @@ void qIGTLIOConnectorPropertyWidget::updateIGTLConnectorNode()
 
 
 
-vtkIGTLIOConnectorPointer qIGTLIOConnectorPropertyWidget::getMRMLIGTLConnectorNode()
+igtlio::vtkIGTLIOConnectorPointer qIGTLIOConnectorPropertyWidget::getMRMLIGTLConnectorNode()
 {
   Q_D(qIGTLIOConnectorPropertyWidget);
   return d->IGTLConnectorNode;

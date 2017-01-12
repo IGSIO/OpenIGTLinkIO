@@ -1,5 +1,8 @@
 #include "vtkIGTLIOObject.h"
 
+namespace igtlio
+{
+
 vtkIGTLIOObject::vtkIGTLIOObject()
 {
     this->DisableModifiedEvent = false;
@@ -41,4 +44,6 @@ int vtkIGTLIOObject::InvokePendingModifiedEvent ()
     }
   return ModifiedEventPending;
 }
+
+} // namespace igtlio
 

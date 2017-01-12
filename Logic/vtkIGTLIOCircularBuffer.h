@@ -26,6 +26,9 @@
 
 class vtkMutexLock;
 
+namespace igtlio
+{
+
 class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOCircularBuffer : public vtkObject
 {
  public:
@@ -67,5 +70,7 @@ class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOCircularBuffer : public vtkObject
   igtl::MessageBase::Pointer Messages[IGTLCB_CIRC_BUFFER_SIZE];
 
 };
+
+} // namespace igtlio
 
 #endif //__vtkIGTLIOCircularBuffer_h

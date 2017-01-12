@@ -20,7 +20,8 @@
 // STD includes
 #include <string>
 
-
+namespace igtlio
+{
 //---------------------------------------------------------------------------
 vtkIGTLIODevice::vtkIGTLIODevice()
 {
@@ -147,4 +148,6 @@ igtlio::BaseConverter::HeaderData vtkIGTLIODevice::GetHeader()
 {
   return HeaderData;
 }
+
+} //namespace igtlio
 

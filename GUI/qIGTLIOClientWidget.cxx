@@ -20,7 +20,7 @@ qIGTLIOClientWidget::qIGTLIOClientWidget()
   splitter->addWidget(DevicesWidget);
 }
 
-void qIGTLIOClientWidget::setLogic(vtkIGTLIOLogicPointer logic)
+void qIGTLIOClientWidget::setLogic(igtlio::vtkIGTLIOLogicPointer logic)
 {
   this->Logic = logic;
   ConnectorListWidget->setLogic(Logic);

@@ -32,19 +32,10 @@
 #include "igtlioDevicesExport.h"
 #include "igtlBaseConverter.h"
 
-class vtkIGTLIODevice;
-typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
 
-class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIODeviceCreator : public vtkObject
+namespace igtlio
 {
-public:
-  // Create an instance of the specific device, with the given device_id
-  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name) = 0;
-  // Return the device_type this factory creates devices for.
-  virtual std::string GetDeviceType() const = 0;
-  vtkAbstractTypeMacro(vtkIGTLIODeviceCreator,vtkObject);
-};
-//---------------------------------------------------------------------------
+typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
 
 /// A vtkIGTLIODevice represents one device connected over OpenIGTLink.
 ///
@@ -166,7 +157,7 @@ public:
   int CancelQuery(int index);
 
  public:
-  vtkAbstractTypeMacro(vtkIGTLIODevice,vtkObject);
+  vtkAbstractTypeMacro(igtlio::vtkIGTLIODevice,vtkObject);
 
 protected:
   void SetHeader(igtlio::BaseConverter::HeaderData header);
@@ -183,6 +174,20 @@ private:
   vtkIGTLIODevice();
   ~vtkIGTLIODevice();
 };
+
+//---------------------------------------------------------------------------
+
+class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIODeviceCreator : public vtkObject
+{
+public:
+  // Create an instance of the specific device, with the given device_id
+  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name) = 0;
+  // Return the device_type this factory creates devices for.
+  virtual std::string GetDeviceType() const = 0;
+  vtkAbstractTypeMacro(vtkIGTLIODeviceCreator,vtkObject);
+};
+
+} // namespace igtlio
 
 
 #endif //__vtkIGTLIODevice_h

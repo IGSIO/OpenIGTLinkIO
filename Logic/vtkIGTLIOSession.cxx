@@ -11,6 +11,9 @@
 #include "vtkIGTLIOTransformDevice.h"
 
 
+namespace igtlio
+{
+
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLIOSession);
 
@@ -214,3 +217,5 @@ vtkIGTLIOTransformDevicePointer vtkIGTLIOSession::SendTransform(std::string devi
 
   return device;
 }
+
+} //namespace igtlio

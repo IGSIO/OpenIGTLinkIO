@@ -55,7 +55,7 @@ void qIGTLIODevicePropertiesWidget::SetNode(qIGTLIODevicesModelNode *node)
 {
   Node = node;
 
-  vtkIGTLIODevice* device = Node->device;
+  igtlio::vtkIGTLIODevice* device = Node->device;
 
   qIGTLIODeviceWidget* widget = NULL;
 

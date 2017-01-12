@@ -28,6 +28,9 @@
 #include <vtksys/SystemTools.hxx>
 #include "igtlTransformConverter.h"
 
+namespace igtlio
+{
+
 //---------------------------------------------------------------------------
 vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOTransformDeviceCreator::Create(std::string device_name)
 {
@@ -147,3 +150,4 @@ void vtkIGTLIOTransformDevice::PrintSelf(ostream& os, vtkIndent indent)
   //Content.transform->PrintSelf(os, indent.GetNextIndent());
 }
 
+} // namespace igtlio

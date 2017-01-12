@@ -86,7 +86,7 @@ void qIGTLIOStatusDeviceWidget::onDeviceModified()
   //mTimestampEdit->setText(timestamp.toString(Qt::ISODate));
   TimestampEdit->setText(timestamp.toString("hh:mm:ss.zzz"));
 
-  vtkIGTLIOStatusDevice* device = dynamic_cast<vtkIGTLIOStatusDevice*>(Device.GetPointer());
+  igtlio::vtkIGTLIOStatusDevice* device = dynamic_cast<igtlio::vtkIGTLIOStatusDevice*>(Device.GetPointer());
 
   if (!device)
     return;

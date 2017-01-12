@@ -7,11 +7,16 @@
 
 #include "igtlioLogicExport.h"
 
+class vtkMatrix4x4;
+class vtkImageData;
+
+namespace igtlio
+{
+
 typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
 typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
 typedef vtkSmartPointer<class vtkIGTLIOImageDevice> vtkIGTLIOImageDevicePointer;
 typedef vtkSmartPointer<class vtkIGTLIOTransformDevice> vtkIGTLIOTransformDevicePointer;
-class vtkMatrix4x4;
 
 /// Convenience interface for a single IGTL connection.
 ///
@@ -104,5 +109,7 @@ private:
   bool waitForConnection(double timeout_s);
   vtkIGTLIODevicePointer AddDeviceIfNotPresent(DeviceKeyType key);
 };
+
+} // namespace igtlio
 
 #endif // VTKIGTLIOSESSION_H

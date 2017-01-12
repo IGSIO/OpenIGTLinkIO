@@ -19,7 +19,9 @@
 #include "igtlioLogicExport.h"
 #include "vtkIGTLIODevice.h"
 
-typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
+namespace igtlio
+{
+
 typedef vtkSmartPointer<class vtkIGTLIODeviceCreator> vtkIGTLIODeviceCreatorPointer;
 typedef vtkSmartPointer<class vtkIGTLIODeviceFactory> vtkIGTLIODeviceFactoryPointer;
 
@@ -48,5 +50,7 @@ protected:
 
   std::map<std::string, vtkIGTLIODeviceCreatorPointer> Creators;
 };
+
+} // namespace igtlio
 
 #endif /* vtkIGTLIODEVICEFACTORY_H_ */

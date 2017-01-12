@@ -13,7 +13,12 @@
 #include <vtkSmartPointer.h>
 #include <QSharedPointer>
 #include <QPointer>
+
+namespace  igtlio
+{
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+}
+
 typedef QSharedPointer<class qIGTLIODevicesModelNode> qIGTLIODevicesModelNodePointer;
 class QItemSelectionModel;
 
@@ -41,7 +46,7 @@ public:
 
 
   void resetModel();
-  void setLogic(vtkIGTLIOLogicPointer logic);
+  void setLogic(igtlio::vtkIGTLIOLogicPointer logic);
 
   void setSelectionModel(QItemSelectionModel* selectionModel);
   QItemSelectionModel* selectionModel();
@@ -70,13 +75,13 @@ private:
   Q_DISABLE_COPY(qIGTLIODevicesModel);
 
 
-  vtkIGTLIOLogicPointer Logic;
+  igtlio::vtkIGTLIOLogicPointer Logic;
   QStringList HeaderLabels;
   QPointer<QItemSelectionModel> SelectionModel;
 
   mutable qIGTLIODevicesModelNodePointer RootNode;
-  void ReconnectConnector(vtkIGTLIOConnector *oldConnector, vtkIGTLIOConnector *newConnector);
-  qIGTLIODevicesModelNode *FindDeviceNode(vtkIGTLIODevice *device, qIGTLIODevicesModelNode *parent);
+  void ReconnectConnector(igtlio::vtkIGTLIOConnector *oldConnector, igtlio::vtkIGTLIOConnector *newConnector);
+  qIGTLIODevicesModelNode *FindDeviceNode(igtlio::vtkIGTLIODevice *device, qIGTLIODevicesModelNode *parent);
 };
 
 

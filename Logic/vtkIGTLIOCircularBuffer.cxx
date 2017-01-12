@@ -20,6 +20,9 @@
 // STD includes
 #include <string>
 
+namespace igtlio
+{
+
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLIOCircularBuffer);
 
@@ -145,3 +148,5 @@ void vtkIGTLIOCircularBuffer::EndPull()
   this->InUse = -1;
   this->Mutex->Unlock();
 }
+
+} // namespace igtlio

@@ -43,6 +43,8 @@ Version:   $Revision: 1.2 $
 #include <map>
 #include "vtkIGTLIOCircularBuffer.h"
 
+namespace igtlio
+{
 
 std::string DeviceKeyType::GetBaseTypeName() const
 {
@@ -820,3 +822,5 @@ int vtkIGTLIOConnector::PushNode(vtkIGTLIODevicePointer node, int event)
   // TODO: verify that removed event argument is OK
   return this->SendMessage(CreateDeviceKey(node), vtkIGTLIODevice::MESSAGE_PREFIX_NOT_DEFINED);
 }
+
+} // namespace igtlio

@@ -13,6 +13,9 @@
 #include "vtkIGTLIOCommandDevice.h"
 #include "vtkIGTLIOTransformDevice.h"
 
+namespace igtlio
+{
+
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLIODeviceFactory);
 //---------------------------------------------------------------------------
@@ -21,7 +24,7 @@ vtkIGTLIODeviceFactory::vtkIGTLIODeviceFactory()
   this->registerCreator<vtkIGTLIOImageDeviceCreator>();
   this->registerCreator<vtkIGTLIOStatusDeviceCreator>();
   this->registerCreator<vtkIGTLIOCommandDeviceCreator>();
-  this->registerCreator<vtkIGTLIOTransformDeviceCreator>();
+  this->registerCreator<igtlio::vtkIGTLIOTransformDeviceCreator>();
 }
 
 //---------------------------------------------------------------------------
@@ -73,4 +76,6 @@ void vtkIGTLIODeviceFactory::registerCreator()
   vtkIGTLIODeviceCreatorPointer creator = vtkSmartPointer<CREATOR_TYPE>::New();
   Creators[creator->GetDeviceType()] = creator;
 }
+
+} // namespace igtlio
 

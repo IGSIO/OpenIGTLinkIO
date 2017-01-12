@@ -39,7 +39,7 @@ bool compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
   return true;
 }
 
-bool compare(vtkSmartPointer<vtkIGTLIOImageDevice> a, vtkSmartPointer<vtkIGTLIOImageDevice> b)
+bool compare(igtlio::vtkIGTLIOImageDevicePointer a, igtlio::vtkIGTLIOImageDevicePointer b)
 {
   if (a->GetDeviceName() != b->GetDeviceName())
     return false;
@@ -73,14 +73,14 @@ int main(int argc, char **argv)
   std::cout << "*** Connection done" << std::endl;
   //---------------------------------------------------------------------------
 
-  vtkSmartPointer<vtkIGTLIOImageDevice> imageDevice;
+  igtlio::vtkIGTLIOImageDevicePointer imageDevice;
   imageDevice = fixture.Server.Session->SendImage("TestDevice_Image",
                                                   fixture.CreateTestImage(),
                                                   fixture.CreateTestTransform());
   std::cout << "*** Sent message from Server to Client" << std::endl;
   //---------------------------------------------------------------------------
 
-  if (!fixture.LoopUntilEventDetected(&fixture.Client, vtkIGTLIOLogic::NewDeviceEvent))
+  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::vtkIGTLIOLogic::NewDeviceEvent))
   {
     return 1;
   }
@@ -91,8 +91,8 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  vtkSmartPointer<vtkIGTLIOImageDevice> receivedDevice;
-  receivedDevice = vtkIGTLIOImageDevice::SafeDownCast(fixture.Client.Logic->GetDevice(0));
+  igtlio::vtkIGTLIOImageDevicePointer receivedDevice;
+  receivedDevice = igtlio::vtkIGTLIOImageDevice::SafeDownCast(fixture.Client.Logic->GetDevice(0));
   if (!receivedDevice)
   {
     std::cout << "FAILURE: Non-image device received." << std::endl;

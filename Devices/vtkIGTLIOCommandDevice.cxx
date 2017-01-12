@@ -15,6 +15,9 @@
 #include <vtksys/SystemTools.hxx>
 #include "igtlImageConverter.h"
 
+namespace  igtlio
+{
+
 //---------------------------------------------------------------------------
 vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOCommandDeviceCreator::Create(std::string device_name)
 {
@@ -217,3 +220,5 @@ vtkIGTLIOCommandDevicePointer vtkIGTLIOCommandDevice::GetResponseFromCommandID(i
 
   return vtkSmartPointer<vtkIGTLIOCommandDevice>();
 }
+
+} // namespace igtlio

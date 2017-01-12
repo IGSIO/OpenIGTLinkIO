@@ -29,20 +29,10 @@
 
 class vtkImageData;
 
+namespace igtlio {
+
 typedef vtkSmartPointer<class vtkIGTLIOTransformDevice> vtkIGTLIOTransformDevicePointer;
 
-//---------------------------------------------------------------------------
-class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOTransformDeviceCreator : public vtkIGTLIODeviceCreator
-{
-public:
-  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name);
-  virtual std::string GetDeviceType() const;
-
-  static vtkIGTLIOTransformDeviceCreator *New();
-  vtkTypeMacro(vtkIGTLIOTransformDeviceCreator,vtkObject);
-};
-
-//---------------------------------------------------------------------------
 /// A Device supporting the IMAGE igtl Message.
 class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOTransformDevice : public vtkIGTLIODevice
 {
@@ -71,6 +61,19 @@ protected:
 
   igtlio::TransformConverter::ContentData Content;
 };
+
+//---------------------------------------------------------------------------
+class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOTransformDeviceCreator : public vtkIGTLIODeviceCreator
+{
+public:
+  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name);
+  virtual std::string GetDeviceType() const;
+
+  static vtkIGTLIOTransformDeviceCreator *New();
+  vtkTypeMacro(vtkIGTLIOTransformDeviceCreator,vtkObject);
+};
+
+}
 
 
 #endif //__vtkIGTLIOTransformDevice_h

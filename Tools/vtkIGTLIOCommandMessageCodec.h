@@ -4,6 +4,9 @@
 #include <vector>
 #include <utility>
 
+namespace igtlio
+{
+
 class vtkIGTLIOCommandMessageCodec
 {
 
@@ -31,5 +34,7 @@ protected:
     bool m_result;
     ParamContainer m_parameters;
 };
+
+} // namespace igtlio
 
 #endif

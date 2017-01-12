@@ -54,11 +54,11 @@ void qIGTLIODevicesWidget::onCurrentDeviceChanged(const QModelIndex& current, co
 }
 
 //-----------------------------------------------------------------------------
-void qIGTLIODevicesWidget::setLogic(vtkIGTLIOLogicPointer logic)
+void qIGTLIODevicesWidget::setLogic(igtlio::vtkIGTLIOLogicPointer logic)
 {
   foreach(int evendId, QList<int>()
-          << vtkIGTLIOLogic::ConnectionAddedEvent
-          << vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
+          << igtlio::vtkIGTLIOLogic::ConnectionAddedEvent
+          << igtlio::vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
     {
     qvtkReconnect(this->Logic, logic, evendId,
                   this, SLOT(onConnectionsChanged(vtkObject*, unsigned long, void*, void*)));

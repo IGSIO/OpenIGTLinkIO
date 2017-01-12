@@ -15,6 +15,9 @@
 #include <vtksys/SystemTools.hxx>
 #include "igtlImageConverter.h"
 
+namespace igtlio
+{
+
 //---------------------------------------------------------------------------
 vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOStatusDeviceCreator::Create(std::string device_name)
 {
@@ -133,3 +136,4 @@ void vtkIGTLIOStatusDevice::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "StatusString:\t" << Content.statusstring << "\n";
 }
 
+} //namespace igtlio

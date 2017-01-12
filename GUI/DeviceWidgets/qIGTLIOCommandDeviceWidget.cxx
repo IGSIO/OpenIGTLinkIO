@@ -85,7 +85,7 @@ void qIGTLIOCommandDeviceWidget::AddCaptionedLineEdit(QGridLayout *layout, QLine
 
 void qIGTLIOCommandDeviceWidget::onGUIModified()
 {
-  vtkIGTLIOCommandDevice* device = dynamic_cast<vtkIGTLIOCommandDevice*>(Device.GetPointer());
+  igtlio::vtkIGTLIOCommandDevice* device = dynamic_cast<igtlio::vtkIGTLIOCommandDevice*>(Device.GetPointer());
   if (!device)
     return;
 
@@ -123,7 +123,7 @@ void qIGTLIOCommandDeviceWidget::onDeviceModified()
   QDateTime timestamp = QDateTime::fromMSecsSinceEpoch(Device->GetTimestamp()*1000);
   TimestampEdit->setText(timestamp.toString("hh:mm:ss.zzz"));
 
-  vtkIGTLIOCommandDevice* device = dynamic_cast<vtkIGTLIOCommandDevice*>(Device.GetPointer());
+  igtlio::vtkIGTLIOCommandDevice* device = dynamic_cast<igtlio::vtkIGTLIOCommandDevice*>(Device.GetPointer());
 
   if (!device)
     return;

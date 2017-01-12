@@ -40,10 +40,12 @@
 #include "vtkIGTLIODevice.h"
 #include "IGTLIOUtilities.h"
 
+namespace igtlio
+{
+
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+
 typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
-typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
-typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
 typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
 
 
@@ -124,9 +126,11 @@ private:
 
   vtkSmartPointer<class vtkCallbackCommand> NewDeviceCallback;
   vtkSmartPointer<class vtkCallbackCommand> RemovedDeviceCallback;
+
 public:
   vtkSmartPointer<class vtkCallbackCommand> DeviceEventCallback;
 
 };
+} // namespace igtlio
 
 #endif // __vtkIGTLIOLogic_h

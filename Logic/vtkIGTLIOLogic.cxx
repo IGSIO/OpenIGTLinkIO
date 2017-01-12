@@ -27,6 +27,9 @@
 #include <vtkTransform.h>
 
 
+namespace igtlio
+{
+
 //---------------------------------------------------------------------------
 void onNewDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
 {
@@ -227,4 +230,5 @@ std::vector<vtkIGTLIODevicePointer> vtkIGTLIOLogic::CreateDeviceList() const
   return std::vector<vtkIGTLIODevicePointer>(all.begin(), all.end());
 }
 
+} // namespace igtlio
 

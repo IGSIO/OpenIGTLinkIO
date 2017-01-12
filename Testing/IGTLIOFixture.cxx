@@ -29,16 +29,16 @@ void onReceivedEventFunc(vtkObject* caller, unsigned long eid, void* clientdata,
 
 LogicFixture::LogicFixture()
 {
-  Logic = vtkIGTLIOLogicPointer::New();
+  Logic = igtlio::vtkIGTLIOLogicPointer::New();
 
   LogicEventCallback = vtkSmartPointer<vtkCallbackCommand>::New();
   LogicEventCallback->SetCallback(onReceivedEventFunc);
   LogicEventCallback->SetClientData(this);
 
-  Logic->AddObserver(vtkIGTLIOLogic::NewDeviceEvent, LogicEventCallback);
-  Logic->AddObserver(vtkIGTLIOLogic::RemovedDeviceEvent, LogicEventCallback);
-  Logic->AddObserver(vtkIGTLIOLogic::CommandQueryReceivedEvent, LogicEventCallback);
-  Logic->AddObserver(vtkIGTLIOLogic::CommandResponseReceivedEvent, LogicEventCallback);
+  Logic->AddObserver(igtlio::vtkIGTLIOLogic::NewDeviceEvent, LogicEventCallback);
+  Logic->AddObserver(igtlio::vtkIGTLIOLogic::RemovedDeviceEvent, LogicEventCallback);
+  Logic->AddObserver(igtlio::vtkIGTLIOLogic::CommandQueryReceivedEvent, LogicEventCallback);
+  Logic->AddObserver(igtlio::vtkIGTLIOLogic::CommandResponseReceivedEvent, LogicEventCallback);
 }
 
 void LogicFixture::startClient()
@@ -73,12 +73,12 @@ bool ClientServerFixture::ConnectClientToServer()
     Client.Logic->PeriodicProcess();
     vtksys::SystemTools::Delay(5);
 
-    if (Client.Connector->GetState() == vtkIGTLIOConnector::STATE_CONNECTED)
+    if (Client.Connector->GetState() == igtlio::vtkIGTLIOConnector::STATE_CONNECTED)
     {
       std::cout << "SUCCESS: connected to server" << std::endl;
       return true;
     }
-    if (Client.Connector->GetState() == vtkIGTLIOConnector::STATE_OFF)
+    if (Client.Connector->GetState() == igtlio::vtkIGTLIOConnector::STATE_OFF)
     {
       std::cout << "FAILURE to connect to server" << std::endl;
       return false;

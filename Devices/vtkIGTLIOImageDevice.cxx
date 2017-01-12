@@ -29,6 +29,9 @@
 #include <vtksys/SystemTools.hxx>
 #include "igtlImageConverter.h"
 
+namespace igtlio
+{
+
 //---------------------------------------------------------------------------
 vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOImageDeviceCreator::Create(std::string device_name)
 {
@@ -146,4 +149,5 @@ void vtkIGTLIOImageDevice::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Transform:\t" << "\n";
   Content.transform->PrintSelf(os, indent.GetNextIndent());
 }
+} // namespace igtlio
 

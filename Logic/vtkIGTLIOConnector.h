@@ -46,17 +46,14 @@
 #include <vector>
 #include <set>
 
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
-
-typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
-typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
-typedef vtkSmartPointer<class vtkIGTLIOCircularBuffer> vtkIGTLIOCircularBufferPointer;
-
 typedef vtkSmartPointer<class vtkMutexLock> vtkMutexLockPointer;
 typedef vtkSmartPointer<class vtkMultiThreader> vtkMultiThreaderPointer;
+
+namespace igtlio
+{
+typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
+typedef vtkSmartPointer<class vtkIGTLIOCircularBuffer> vtkIGTLIOCircularBufferPointer;
+
 
 enum CONNECTION_ROLE
 {
@@ -333,6 +330,8 @@ private:
   bool CheckCRC;
 
 };
+
+} // namespace  igtlio
 
 #endif
 

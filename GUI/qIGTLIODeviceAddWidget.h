@@ -14,7 +14,10 @@ class QLineEdit;
 
 #include <QPointer>
 #include <vtkSmartPointer.h>
+namespace igtlio
+{
 typedef vtkSmartPointer<class vtkIGTLIOLogic> vtkIGTLIOLogicPointer;
+}
 
 ///
 /// Widget for adding Devices manually.
@@ -24,7 +27,7 @@ class OPENIGTLINKIO_GUI_EXPORT qIGTLIODeviceAddWidget : public QWidget
   Q_OBJECT
 public:
   qIGTLIODeviceAddWidget();
-  void setLogic(vtkIGTLIOLogicPointer logic);
+  void setLogic(igtlio::vtkIGTLIOLogicPointer logic);
   void setModel(qIGTLIODevicesModel* model);
 
 private slots:
@@ -32,7 +35,7 @@ private slots:
   void onAddDevice();
 
 private:
-  vtkIGTLIOLogicPointer Logic;
+  igtlio::vtkIGTLIOLogicPointer Logic;
   QPointer<qIGTLIODevicesModel> DevicesModel;
 //  QList<QAction*> Actions;
 

@@ -45,7 +45,7 @@ qIGTLIODeviceAddWidget::qIGTLIODeviceAddWidget()
   this->onCurrentConnectorChanged();
 }
 
-void qIGTLIODeviceAddWidget::setLogic(vtkIGTLIOLogicPointer logic)
+void qIGTLIODeviceAddWidget::setLogic(igtlio::vtkIGTLIOLogicPointer logic)
 {
   Logic = logic;
 }
@@ -106,11 +106,11 @@ void qIGTLIODeviceAddWidget::onAddDevice()
   std::string deviceName = mDeviceName->text().toStdString();
   deviceName = convertDisplayToDeviceName(deviceName);
 
-  if (!node->connector->GetDevice(DeviceKeyType(deviceType, deviceName)))
+  if (!node->connector->GetDevice(igtlio::DeviceKeyType(deviceType, deviceName)))
     {
       qIGTLIODevicesModelNode* node = this->getSelectedNode();
-      vtkIGTLIODevicePointer device = node->connector->GetDeviceFactory()->create(deviceType, deviceName);
-      device->SetMessageDirection(vtkIGTLIODevice::MESSAGE_DIRECTION_OUT);
+      igtlio::vtkIGTLIODevicePointer device = node->connector->GetDeviceFactory()->create(deviceType, deviceName);
+      device->SetMessageDirection(igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION_OUT);
       node->connector->AddDevice(device);
     }
 

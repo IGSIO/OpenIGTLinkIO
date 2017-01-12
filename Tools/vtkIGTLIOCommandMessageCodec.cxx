@@ -3,6 +3,10 @@
 #include "vtkXMLDataElement.h"
 #include <sstream>
 
+
+namespace igtlio
+{
+
 vtkIGTLIOCommandMessageCodec::vtkIGTLIOCommandMessageCodec() : m_isReply( false ), m_result( false )
 {
 }
@@ -71,3 +75,5 @@ std::string vtkIGTLIOCommandMessageCodec::GetParameter( std::string paramName )
             return m_parameters[i].second;
     return std::string();
 }
+
+} //namespace igtlio

@@ -10,11 +10,11 @@ qIGTLIOLogicController::qIGTLIOLogicController()
           this, SLOT(importDataAndEvents()));
 }
 
-void qIGTLIOLogicController::setLogic(vtkIGTLIOLogicPointer logic)
+void qIGTLIOLogicController::setLogic(igtlio::vtkIGTLIOLogicPointer logic)
 {  
   foreach(int evendId, QList<int>()
-          << vtkIGTLIOLogic::ConnectionAddedEvent
-          << vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
+          << igtlio::vtkIGTLIOLogic::ConnectionAddedEvent
+          << igtlio::vtkIGTLIOLogic::ConnectionAboutToBeRemovedEvent)
     {
     qvtkReconnect(this->Logic, logic, evendId,
                   this, SLOT(onConnectionsChanged()));
