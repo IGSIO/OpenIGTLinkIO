@@ -1,4 +1,4 @@
-#include "vtkIGTLIOObject.h"
+#include "igtlioObject.h"
 
 namespace igtlio
 {

@@ -6,8 +6,8 @@
   or http://www.slicer.org/copyright/copyright.txt for details.
 
 =========================================================================auto=*/
-#ifndef __vtkIGTLIOObject_h
-#define __vtkIGTLIOObject_h
+#ifndef IGTLIOOBJECT_H
+#define IGTLIOOBJECT_H
 
 #include "vtkObject.h"
 

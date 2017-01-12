@@ -13,8 +13,8 @@
 // OpenIGTLinkIF GUI includes
 #include <qIGTLIODevicesModel.h>
 
-#include "vtkIGTLIOLogic.h"
-#include "vtkIGTLIOConnector.h"
+#include "igtlioLogic.h"
+#include "igtlioConnector.h"
 #include "vtkIGTLIONode.h"
 
 // VTK includes

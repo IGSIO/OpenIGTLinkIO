@@ -1,9 +1,9 @@
-#include "vtkIGTLIOSession.h"
+#include "igtlioSession.h"
 
 #include <vtkObjectFactory.h>
 #include <vtkNew.h>
 
-#include "vtkIGTLIOConnector.h"
+#include "igtlioConnector.h"
 #include <vtksys/SystemTools.hxx>
 #include "vtkTimerLog.h"
 #include "igtlioCommandDevice.h"

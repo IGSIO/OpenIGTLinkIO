@@ -5,7 +5,7 @@
  *      Author: cas
  */
 
-#include "vtkIGTLIODeviceFactory.h"
+#include "igtlioDeviceFactory.h"
 #include <vtkObjectFactory.h>
 
 #include "igtlioImageDevice.h"

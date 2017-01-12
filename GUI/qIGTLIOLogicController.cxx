@@ -1,6 +1,6 @@
 #include "qIGTLIOLogicController.h"
 #include <QTimer>
-#include <vtkIGTLIOLogic.h>
+#include "igtlioLogic.h"
 
 qIGTLIOLogicController::qIGTLIOLogicController()
 {

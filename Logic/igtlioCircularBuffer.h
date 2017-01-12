@@ -7,8 +7,8 @@
 
 ==========================================================================*/
 
-#ifndef __vtkIGTLIOCircularBuffer_h
-#define __vtkIGTLIOCircularBuffer_h
+#ifndef IGTLIOCIRCULARBUFFER_H
+#define IGTLIOCIRCULARBUFFER_H
 
 // VTK includes
 #include <vtkObject.h>
@@ -73,4 +73,4 @@ class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOCircularBuffer : public vtkObject
 
 } // namespace igtlio
 
-#endif //__vtkIGTLIOCircularBuffer_h
+#endif //IGTLIOCIRCULARBUFFER_H

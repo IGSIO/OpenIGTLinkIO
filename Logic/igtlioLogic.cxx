@@ -14,9 +14,9 @@
 
 #include <algorithm>
 // IGTLIO includes
-#include "vtkIGTLIOLogic.h"
-#include "vtkIGTLIOConnector.h"
-#include "vtkIGTLIOSession.h"
+#include "igtlioLogic.h"
+#include "igtlioConnector.h"
+#include "igtlioSession.h"
 
 #include <vtkObjectFactory.h>
 

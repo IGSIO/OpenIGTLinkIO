@@ -5,7 +5,7 @@
 #include <QToolButton>
 #include <QTreeView>
 #include <qIGTLIOConnectorModel.h>
-#include "vtkIGTLIOLogic.h"
+#include "igtlioLogic.h"
 #include "qIGTLIOConnectorPropertyWidget.h"
 #include <QAction>
 

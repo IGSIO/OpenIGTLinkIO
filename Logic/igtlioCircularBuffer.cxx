@@ -8,7 +8,7 @@
 ==========================================================================*/
 
 // VTK includes
-#include "vtkIGTLIOCircularBuffer.h"
+#include "igtlioCircularBuffer.h"
 
 #include <vtkObjectFactory.h>
 #include <vtkMutexLock.h>

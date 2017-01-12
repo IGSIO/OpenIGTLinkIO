@@ -1,6 +1,6 @@
 #include "qIGTLIODeviceButtonsWidget.h"
 
-#include "vtkIGTLIOLogic.h"
+#include "igtlioLogic.h"
 #include "qIGTLIODevicesModel.h"
 
 #include <QVBoxLayout>

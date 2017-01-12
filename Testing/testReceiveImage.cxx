@@ -1,6 +1,6 @@
 #include <string>
-#include "vtkIGTLIOLogic.h"
-#include "vtkIGTLIOConnector.h"
+#include "igtlioLogic.h"
+#include "igtlioConnector.h"
 #include "vtkTimerLog.h"
 #include "igtlioImageDevice.h"
 #include "vtkImageData.h"
@@ -11,7 +11,7 @@
 #include <vtkImageDifference.h>
 #include "IGTLIOFixture.h"
 #include "igtlioImageDevice.h"
-#include "vtkIGTLIOSession.h"
+#include "igtlioSession.h"
 
 bool compare(vtkSmartPointer<vtkMatrix4x4> a, vtkSmartPointer<vtkMatrix4x4> b)
 {

@@ -4,7 +4,7 @@
 #include "igtlioImageConverter.h"
 #include "vtkMatrix4x4.h"
 #include <vtksys/SystemTools.hxx>
-#include "vtkIGTLIOSession.h"
+#include "igtlioSession.h"
 
 
 bool contains(std::vector<int> input, int value, int count)

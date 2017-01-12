@@ -7,7 +7,7 @@
 #include "ui_qIGTLIOConnectorPropertyWidget.h"
 
 // OpenIGTLinkIF MRML includes
-#include "vtkIGTLIOConnector.h"
+#include "igtlioConnector.h"
 
 //------------------------------------------------------------------------------
 class qIGTLIOConnectorPropertyWidgetPrivate : public Ui_qIGTLIOConnectorPropertyWidget

@@ -1,6 +1,6 @@
 #include <string>
-#include "vtkIGTLIOLogic.h"
-#include "vtkIGTLIOConnector.h"
+#include "igtlioLogic.h"
+#include "igtlioConnector.h"
 #include "vtkTimerLog.h"
 #include <vtksys/SystemTools.hxx>
 #include "IGTLIOFixture.h"

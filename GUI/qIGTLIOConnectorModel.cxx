@@ -27,8 +27,8 @@
 
 // IGTLIO includes
 #include "qIGTLIOConnectorModel.h"
-#include "vtkIGTLIOLogic.h"
-#include "vtkIGTLIOConnector.h"
+#include "igtlioLogic.h"
+#include "igtlioConnector.h"
 
 //------------------------------------------------------------------------------
 qIGTLIOConnectorModel::qIGTLIOConnectorModel(QObject *vparent)

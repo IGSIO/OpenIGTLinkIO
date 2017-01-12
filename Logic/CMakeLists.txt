@@ -22,20 +22,20 @@ set(${KIT}_INCLUDE_DIRECTORIES
   )
 
 set(${KIT}_SRCS
-  IGTLIOUtilities.h
-  IGTLIOUtilities.cxx
-  vtkIGTLIOObject.h
-  vtkIGTLIOObject.cxx
-  vtkIGTLIODeviceFactory.cxx
-  vtkIGTLIODeviceFactory.h
-  vtkIGTLIOCircularBuffer.cxx
-  vtkIGTLIOCircularBuffer.h
-  vtkIGTLIOConnector.cxx
-  vtkIGTLIOConnector.h
-  vtkIGTLIOSession.cxx
-  vtkIGTLIOSession.h
-  vtkIGTLIOLogic.cxx
-  vtkIGTLIOLogic.h
+  igtlioUtilities.h
+  igtlioUtilities.cxx
+  igtlioObject.h
+  igtlioObject.cxx
+  igtlioDeviceFactory.cxx
+  igtlioDeviceFactory.h
+  igtlioCircularBuffer.cxx
+  igtlioCircularBuffer.h
+  igtlioConnector.cxx
+  igtlioConnector.h
+  igtlioSession.cxx
+  igtlioSession.h
+  igtlioLogic.cxx
+  igtlioLogic.h
   )
 
 set(${KIT}_TARGET_LIBRARIES

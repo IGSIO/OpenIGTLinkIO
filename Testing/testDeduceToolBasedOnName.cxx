@@ -1,5 +1,5 @@
 #include "IGTLIOFixture.h"
-#include "vtkIGTLIOSession.h"
+#include "igtlioSession.h"
 #include "igtlioTransformDevice.h"
 
 ///

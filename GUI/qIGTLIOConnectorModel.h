@@ -28,7 +28,7 @@
 
 // igtlio includes
 #include "igtlioGUIExport.h"
-#include "vtkIGTLIOConnector.h"
+#include "igtlioConnector.h"
 #include <vtkSmartPointer.h>
 
 namespace igtlio

@@ -3,8 +3,8 @@
 
 
 #include <string>
-#include "vtkIGTLIOLogic.h"
-#include "vtkIGTLIOConnector.h"
+#include "igtlioLogic.h"
+#include "igtlioConnector.h"
 #include "vtkTimerLog.h"
 #include "igtlioImageDevice.h"
 #include "igtlioCommandDevice.h"

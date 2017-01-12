@@ -13,7 +13,7 @@ Version:   $Revision: 1.2 $
 =========================================================================auto=*/
 
 // OpenIGTLinkIF MRML includes
-#include "vtkIGTLIOConnector.h"
+#include "igtlioConnector.h"
 
 #include <igtl_header.h>
 #include <igtlServerSocket.h>
@@ -41,7 +41,7 @@ Version:   $Revision: 1.2 $
 #include <iostream>
 #include <sstream>
 #include <map>
-#include "vtkIGTLIOCircularBuffer.h"
+#include "igtlioCircularBuffer.h"
 
 namespace igtlio
 {

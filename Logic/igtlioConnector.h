@@ -11,8 +11,8 @@
   Version:   $Revision: 1.3 $
 
 =========================================================================auto=*/
-#ifndef __vtkIGTLIOConnector_h
-#define __vtkIGTLIOConnector_h
+#ifndef IGTLIOCONNECTOR_H
+#define IGTLIOCONNECTOR_H
 
 //// OpenIGTLinkIF MRML includes
 //#include "vtkIGTLToMRMLBase.h"
@@ -26,9 +26,9 @@
 // IGTLIO includes
 #include "igtlioLogicExport.h"
 #include "igtlioDevice.h"
-#include "vtkIGTLIODeviceFactory.h"
-#include "vtkIGTLIOObject.h"
-#include "IGTLIOUtilities.h"
+#include "igtlioDeviceFactory.h"
+#include "igtlioObject.h"
+#include "igtlioUtilities.h"
 
 //// MRML includes
 //#include <vtkMRML.h>

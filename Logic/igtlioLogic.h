@@ -14,8 +14,8 @@
 
 /// This class manages the logic associated with tracking device for IGT.
 
-#ifndef __vtkIGTLIOLogic_h
-#define __vtkIGTLIOLogic_h
+#ifndef IGTLIOLOGIC_H
+#define IGTLIOLOGIC_H
 
 // OpenIGTLink includes
 #include <igtlImageMessage.h>
@@ -38,7 +38,7 @@
 // IGTLIO includes
 #include "igtlioLogicExport.h"
 #include "igtlioDevice.h"
-#include "IGTLIOUtilities.h"
+#include "igtlioUtilities.h"
 
 namespace igtlio
 {
@@ -133,4 +133,4 @@ public:
 };
 } // namespace igtlio
 
-#endif // __vtkIGTLIOLogic_h
+#endif // IGTLIOLOGIC_H

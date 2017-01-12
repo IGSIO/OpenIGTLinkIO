@@ -4,8 +4,8 @@
 // igtlio includes
 #include "igtlioGUIExport.h"
 
-#include "vtkIGTLIOLogic.h"
-#include "vtkIGTLIOConnector.h"
+#include "igtlioLogic.h"
+#include "igtlioConnector.h"
 
 #include <QSharedPointer>
 

@@ -1,4 +1,4 @@
-#include "IGTLIOUtilities.h"
+#include "igtlioUtilities.h"
 
 namespace igtlio
 {

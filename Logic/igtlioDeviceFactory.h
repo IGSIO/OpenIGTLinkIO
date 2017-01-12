@@ -5,8 +5,8 @@
  *      Author: cas
  */
 
-#ifndef vtkIGTLIODEVICEFACTORY_H_
-#define vtkIGTLIODEVICEFACTORY_H_
+#ifndef IGTLIODEVICEFACTORY_H_
+#define IGTLIODEVICEFACTORY_H_
 
 #include <map>
 #include <string>
@@ -53,4 +53,4 @@ protected:
 
 } // namespace igtlio
 
-#endif /* vtkIGTLIODEVICEFACTORY_H_ */
+#endif /* IGTLIODEVICEFACTORY_H_ */

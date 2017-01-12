@@ -2,7 +2,7 @@
 #include <QApplication>
 #include <QMainWindow>
 #include "qIGTLIOClientWidget.h"
-#include "vtkIGTLIOLogic.h"
+#include "igtlioLogic.h"
 #include "qIGTLIOLogicController.h"
 
 int main(int argc, char** argv)

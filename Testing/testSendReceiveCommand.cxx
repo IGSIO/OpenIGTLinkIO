@@ -1,6 +1,6 @@
 #include <string>
-#include "vtkIGTLIOLogic.h"
-#include "vtkIGTLIOConnector.h"
+#include "igtlioLogic.h"
+#include "igtlioConnector.h"
 #include "vtkTimerLog.h"
 #include "igtlioImageDevice.h"
 #include "vtkImageData.h"
@@ -10,7 +10,7 @@
 #include "igtlioImageConverter.h"
 #include <vtkImageDifference.h>
 #include "IGTLIOFixture.h"
-#include "vtkIGTLIOSession.h"
+#include "igtlioSession.h"
 
 bool compareID(igtlio::CommandDevicePointer a, igtlio::CommandDevicePointer b)
 {

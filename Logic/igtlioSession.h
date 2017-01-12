@@ -1,7 +1,7 @@
-#ifndef VTKIGTLIOSESSION_H
-#define VTKIGTLIOSESSION_H
+#ifndef IGTLIOSESSION_H
+#define IGTLIOSESSION_H
 
-#include "IGTLIOUtilities.h"
+#include "igtlioUtilities.h"
 #include "igtlioDevice.h"
 #include "igtlioCommandDevice.h"
 
@@ -112,4 +112,4 @@ private:
 
 } // namespace igtlio
 
-#endif // VTKIGTLIOSESSION_H
+#endif // IGTLIOSESSION_H
