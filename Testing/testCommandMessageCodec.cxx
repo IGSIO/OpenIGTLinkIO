@@ -7,8 +7,8 @@ int main(int argc, char **argv)
     // Generate initial string with command xml
     igtlio::CommandMessageCodec initialCodec(true);
     initialCodec.SetResult( true );
-    initialCodec.SetParameter( "Depth", "45" );
-    initialCodec.SetParameter( "Gain", "35" );
+    initialCodec.AddParameter( "Depth", "45" );
+    initialCodec.AddParameter( "Gain", "35" );
     std::string commandContent = initialCodec.GetContent();
 
     std::cerr << "Command content: " << std::endl << commandContent << std::endl;
