@@ -26,7 +26,7 @@
 
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
-#include "igtlTransformConverter.h"
+#include "igtlioTransformConverter.h"
 
 namespace igtlio
 {

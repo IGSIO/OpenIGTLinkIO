@@ -30,7 +30,7 @@
 
 // igtlio includes
 #include "igtlioDevicesExport.h"
-#include "igtlBaseConverter.h"
+#include "igtlioBaseConverter.h"
 
 
 namespace igtlio

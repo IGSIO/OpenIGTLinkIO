@@ -22,12 +22,12 @@ set(${KIT}_INCLUDE_DIRECTORIES
   )
 
 set(${KIT}_SRCS
-  igtlBaseConverter.cxx
-  igtlImageConverter.cxx
-  igtlPolyDataConverter.cxx
-  igtlStatusConverter.cxx
-  igtlTransformConverter.cxx
-  igtlCommandConverter.cxx
+  igtlioBaseConverter.cxx
+  igtlioImageConverter.cxx
+  igtlioPolyDataConverter.cxx
+  igtlioStatusConverter.cxx
+  igtlioTransformConverter.cxx
+  igtlioCommandConverter.cxx
   )
 
 set(${KIT}_TARGET_LIBRARIES

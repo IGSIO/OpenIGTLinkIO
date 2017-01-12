@@ -4,10 +4,10 @@
 #include "vtkTimerLog.h"
 #include "igtlioImageDevice.h"
 #include "vtkImageData.h"
-#include "igtlImageConverter.h"
+#include "igtlioImageConverter.h"
 #include "vtkMatrix4x4.h"
 #include <vtksys/SystemTools.hxx>
-#include "igtlImageConverter.h"
+#include "igtlioImageConverter.h"
 #include <vtkImageDifference.h>
 #include "IGTLIOFixture.h"
 #include "igtlioImageDevice.h"

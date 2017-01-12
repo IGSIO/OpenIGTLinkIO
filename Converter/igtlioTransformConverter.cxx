@@ -12,7 +12,7 @@
 
 ==========================================================================*/
 
-#include "igtlTransformConverter.h"
+#include "igtlioTransformConverter.h"
 
 // VTK includes
 #include <vtkMatrix4x4.h>

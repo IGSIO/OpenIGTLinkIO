@@ -12,8 +12,8 @@
 
 ==========================================================================*/
 
-#ifndef __igtlPolyDataConverter_h
-#define __igtlPolyDataConverter_h
+#ifndef IGTLIOPOLYDATACONVERTER_H
+#define IGTLIOPOLYDATACONVERTER_H
 
 #include "igtlioConverterExport.h"
 
@@ -71,4 +71,4 @@ protected:
 } // namespace igtlio
 
 
-#endif //__igtlPolyDataConverter_h
+#endif //IGTLIOPOLYDATACONVERTER_H

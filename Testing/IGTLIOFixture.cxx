@@ -1,7 +1,7 @@
 #include "IGTLIOFixture.h"
 
 #include "vtkImageData.h"
-#include "igtlImageConverter.h"
+#include "igtlioImageConverter.h"
 #include "vtkMatrix4x4.h"
 #include <vtksys/SystemTools.hxx>
 #include "vtkIGTLIOSession.h"

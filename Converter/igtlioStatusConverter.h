@@ -1,5 +1,5 @@
-#ifndef IGTLSTATUSCONVERTER_H
-#define IGTLSTATUSCONVERTER_H
+#ifndef IGTLIOSTATUSCONVERTER_H
+#define IGTLIOSTATUSCONVERTER_H
 
 #include "igtlioConverterExport.h"
 
@@ -10,7 +10,7 @@
 #include <vtkObject.h>
 #include <vtkSmartPointer.h>
 
-#include "igtlBaseConverter.h"
+#include "igtlioBaseConverter.h"
 
 namespace igtlio
 {
@@ -42,4 +42,4 @@ public:
 
 } // namespace igtlio
 
-#endif // IGTLSTATUSCONVERTER_H
+#endif // IGTLIOSTATUSCONVERTER_H

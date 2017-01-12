@@ -13,7 +13,7 @@
 ==========================================================================*/
 
 // OpenIGTLink includes
-#include "igtlPolyDataConverter.h"
+#include "igtlioPolyDataConverter.h"
 
 #include <igtl_util.h>
 #include <igtlPolyDataMessage.h>

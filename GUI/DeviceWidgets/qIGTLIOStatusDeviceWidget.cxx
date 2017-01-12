@@ -10,7 +10,7 @@
 #include <vtkObjectFactory.h>
 
 #include "igtlioDevice.h"
-#include "igtlStatusConverter.h"
+#include "igtlioStatusConverter.h"
 #include "igtlioStatusDevice.h"
 #include "qIGTLIOGuiUtilities.h"
 

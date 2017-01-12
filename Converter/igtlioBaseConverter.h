@@ -1,5 +1,5 @@
-#ifndef IGTLBASECONVERTER_H
-#define IGTLBASECONVERTER_H
+#ifndef IGTLIOBASECONVERTER_H
+#define IGTLIOBASECONVERTER_H
 
 #include "igtlioConverterExport.h"
 
@@ -49,4 +49,4 @@ public:
 
 } // namespace igtlio
 
-#endif // IGTLBASECONVERTER_H
+#endif // IGTLIOBASECONVERTER_H

@@ -27,7 +27,7 @@
 
 // VTKSYS includes
 #include <vtksys/SystemTools.hxx>
-#include "igtlImageConverter.h"
+#include "igtlioImageConverter.h"
 
 namespace igtlio
 {

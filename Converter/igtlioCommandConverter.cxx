@@ -1,4 +1,4 @@
-#include "igtlCommandConverter.h"
+#include "igtlioCommandConverter.h"
 
 // OpenIGTLink includes
 #include <igtl_util.h>

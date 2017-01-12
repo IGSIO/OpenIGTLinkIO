@@ -12,7 +12,7 @@
 #include <vtkObjectFactory.h>
 
 #include "igtlioDevice.h"
-#include "igtlCommandConverter.h"
+#include "igtlioCommandConverter.h"
 #include "igtlioCommandDevice.h"
 #include "qIGTLIOGuiUtilities.h"
 

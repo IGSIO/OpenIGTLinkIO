@@ -6,7 +6,7 @@
 // igtlio includes
 #include "igtlioDevicesExport.h"
 
-#include "igtlCommandConverter.h"
+#include "igtlioCommandConverter.h"
 #include "igtlioDevice.h"
 
 // OpenIGTLink includes

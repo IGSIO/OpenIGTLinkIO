@@ -18,7 +18,7 @@
 // igtlio includes
 #include "igtlioDevicesExport.h"
 
-#include "igtlTransformConverter.h"
+#include "igtlioTransformConverter.h"
 #include "igtlioDevice.h"
 
 // OpenIGTLink includes

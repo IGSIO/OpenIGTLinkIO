@@ -12,8 +12,8 @@
 
 ==========================================================================*/
 
-#ifndef __igtlImageConverter_h
-#define __igtlImageConverter_h
+#ifndef IGTLIOIMAGECONVERTER_H
+#define IGTLIOIMAGECONVERTER_H
 
 // OpenIGTLink includes
 #include "igtlLightObject.h"
@@ -26,7 +26,7 @@
 class vtkImageData;
 class vtkMatrix4x4;
 #include "igtlioConverterExport.h"
-#include "igtlBaseConverter.h"
+#include "igtlioBaseConverter.h"
 
 namespace igtlio
 {
@@ -63,4 +63,4 @@ protected:
 } //namespace igtlio
 
 
-#endif //__igtlImageConverter_h
+#endif //IGTLIOIMAGECONVERTER_H

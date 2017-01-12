@@ -13,7 +13,7 @@
 ==========================================================================*/
 
 // OpenIGTLink includes
-#include "igtlImageConverter.h"
+#include "igtlioImageConverter.h"
 
 #include <igtl_util.h>
 #include <igtlImageMessage.h>

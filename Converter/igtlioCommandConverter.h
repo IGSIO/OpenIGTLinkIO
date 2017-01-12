@@ -1,5 +1,5 @@
-#ifndef IGTLCOMMANDCONVERTER_H
-#define IGTLCOMMANDCONVERTER_H
+#ifndef IGTLIOCOMMANDCONVERTER_H
+#define IGTLIOCOMMANDCONVERTER_H
 
 #include <vector>
 
@@ -12,7 +12,7 @@
 #include <vtkObject.h>
 #include <vtkSmartPointer.h>
 
-#include "igtlBaseConverter.h"
+#include "igtlioBaseConverter.h"
 
 namespace igtlio
 {
@@ -49,4 +49,4 @@ public:
 
 } // namespace igtlio
 
-#endif // IGTLCOMMANDCONVERTER_H
+#endif // IGTLIOCOMMANDCONVERTER_H

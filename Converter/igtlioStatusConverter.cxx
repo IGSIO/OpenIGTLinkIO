@@ -1,5 +1,5 @@
 // OpenIGTLink includes
-#include "igtlStatusConverter.h"
+#include "igtlioStatusConverter.h"
 
 #include <igtl_util.h>
 #include <igtlStatusMessage.h>
