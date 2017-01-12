@@ -15,18 +15,14 @@
 #ifndef IGTLIOIMAGECONVERTER_H
 #define IGTLIOIMAGECONVERTER_H
 
-// OpenIGTLink includes
-#include "igtlLightObject.h"
+#include "igtlioConverterExport.h"
+
 #include <igtlImageMessage.h>
 
-// VTK includes
-#include <vtkObject.h>
-#include <vtkSmartPointer.h>
+#include "igtlioBaseConverter.h"
 
 class vtkImageData;
 class vtkMatrix4x4;
-#include "igtlioConverterExport.h"
-#include "igtlioBaseConverter.h"
 
 namespace igtlio
 {
@@ -47,8 +43,8 @@ public:
   vtkSmartPointer<vtkMatrix4x4> transform; // ijk2ras, From image pixel space to RAS
   };
 
-  static const char*  GetIGTLName() { return GetIGTLTypeName(); };
-  static const char* GetIGTLTypeName() { return "IMAGE"; };
+  static const char*  GetIGTLName() { return GetIGTLTypeName(); }
+  static const char* GetIGTLTypeName() { return "IMAGE"; }
 
   static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
   static int toIGTL(const HeaderData& header, const ContentData& source, igtl::ImageMessage::Pointer* dest);

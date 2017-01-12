@@ -3,12 +3,12 @@
 
 #include "igtlioConverterExport.h"
 
-// OpenIGTLink includes
 #include <igtlMessageBase.h>
-
-// VTK includes
 #include <vtkObject.h>
 #include <vtkSmartPointer.h>
+
+
+//---------------------------------------------------------------------------
 
 // TODO: Move this into igtlSmartPointer.h
 /// implements smart pointer conversion for igtl::SmartPointer,

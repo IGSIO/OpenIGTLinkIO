@@ -14,7 +14,6 @@
 
 #include "igtlioTransformConverter.h"
 
-// VTK includes
 #include <vtkMatrix4x4.h>
 
 namespace igtlio

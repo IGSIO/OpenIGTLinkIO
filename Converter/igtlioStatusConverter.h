@@ -3,13 +3,7 @@
 
 #include "igtlioConverterExport.h"
 
-// OpenIGTLink includes
 #include <igtlStatusMessage.h>
-
-// VTK includes
-#include <vtkObject.h>
-#include <vtkSmartPointer.h>
-
 #include "igtlioBaseConverter.h"
 
 namespace igtlio

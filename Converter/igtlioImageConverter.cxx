@@ -12,24 +12,16 @@
 
 ==========================================================================*/
 
-// OpenIGTLink includes
 #include "igtlioImageConverter.h"
 
 #include <igtl_util.h>
 #include <igtlImageMessage.h>
 
-// VTK includes
-#include <vtkVersion.h>
 #include <vtkImageData.h>
-#include <vtkIntArray.h>
 #include <vtkMatrix4x4.h>
-#include <vtkObjectFactory.h>
-#include <vtkSmartPointer.h>
 
-// VTKSYS includes
-#include <vtksys/SystemTools.hxx>
-
-namespace { // unnamed namespace
+namespace // unnamed namespace
+{
 
 //---------------------------------------------------------------------------
 // Stream copy + byte swap

@@ -17,12 +17,8 @@
 
 #include "igtlioConverterExport.h"
 
-// OpenIGTLink includes
 #include <igtlPolyDataMessage.h>
-
-// VTK includes
-#include <vtkObject.h>
-#include <vtkSmartPointer.h>
+#include "igtlioBaseConverter.h"
 
 class vtkPolyData;
 class vtkCellArray;
@@ -34,7 +30,7 @@ namespace igtlio
 /** Conversion between igtl::PolyDataMessage and vtk classes.
  *
  */
-class OPENIGTLINKIO_CONVERTER_EXPORT PolyDataConverter //TODO : public BaseConverter?
+class OPENIGTLINKIO_CONVERTER_EXPORT PolyDataConverter : public BaseConverter
 {
 public:
   /**
@@ -47,8 +43,8 @@ public:
     std::string deviceName;
   };
 
-  static const char*  GetIGTLName() { return GetIGTLTypeName(); };
-  static const char* GetIGTLTypeName() { return "POLYDATA"; };
+  static const char*  GetIGTLName() { return GetIGTLTypeName(); }
+  static const char* GetIGTLTypeName() { return "POLYDATA"; }
 
   static int IGTLToVTK(igtl::MessageBase::Pointer source, MessageContent* dest, bool checkCRC);
   static int VTKToIGTL(const MessageContent& source, igtl::PolyDataMessage::Pointer* dest);

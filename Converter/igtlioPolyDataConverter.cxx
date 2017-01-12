@@ -12,36 +12,17 @@
 
 ==========================================================================*/
 
-// OpenIGTLink includes
 #include "igtlioPolyDataConverter.h"
 
-#include <igtl_util.h>
-#include <igtlPolyDataMessage.h>
-
-// VTK includes
-#include <vtkVersion.h>
 #include <vtkPolyData.h>
-#include <vtkIntArray.h>
-#include <vtkObjectFactory.h>
-#include <vtkSmartPointer.h>
-
-#include <vtkPolyData.h>
-#include <vtkIntArray.h>
-#include <vtkMatrix4x4.h>
-#include <vtkObjectFactory.h>
-#include <vtkSmartPointer.h>
 #include <vtkVertex.h>
 #include <vtkCellArray.h>
 #include <vtkPolyLine.h>
 #include <vtkPolygon.h>
 #include <vtkTriangleStrip.h>
 #include <vtkFloatArray.h>
-#include <vtkDataSetAttributes.h>
 #include <vtkPointData.h>
 #include <vtkCellData.h>
-
-// VTKSYS includes
-#include <vtksys/SystemTools.hxx>
 
 
 namespace igtlio

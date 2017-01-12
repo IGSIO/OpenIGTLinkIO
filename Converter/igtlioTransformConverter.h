@@ -15,12 +15,13 @@
 #ifndef IGTLIOTRANSFORMCONVERTER_H
 #define IGTLIOTRANSFORMCONVERTER_H
 
-// OpenIGTLink includes
+#include "igtlioConverterExport.h"
+
 #include <igtlTransformMessage.h>
 
-class vtkMatrix4x4;
-#include "igtlioConverterExport.h"
 #include "igtlioBaseConverter.h"
+
+class vtkMatrix4x4;
 
 namespace igtlio
 {

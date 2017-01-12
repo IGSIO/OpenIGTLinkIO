@@ -2,16 +2,9 @@
 #define IGTLIOCOMMANDCONVERTER_H
 
 #include <vector>
-
-#include "igtlioConverterExport.h"
-
-// OpenIGTLink includes
 #include <igtlCommandMessage.h>
 
-// VTK includes
-#include <vtkObject.h>
-#include <vtkSmartPointer.h>
-
+#include "igtlioConverterExport.h"
 #include "igtlioBaseConverter.h"
 
 namespace igtlio

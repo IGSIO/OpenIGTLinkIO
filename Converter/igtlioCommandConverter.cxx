@@ -1,17 +1,5 @@
 #include "igtlioCommandConverter.h"
 
-// OpenIGTLink includes
-#include <igtl_util.h>
-#include <igtlCommandMessage.h>
-
-// VTK includes
-#include <vtkVersion.h>
-#include <vtkObjectFactory.h>
-#include <vtkSmartPointer.h>
-
-// VTKSYS includes
-#include <vtksys/SystemTools.hxx>
-
 
 namespace igtlio
 {
