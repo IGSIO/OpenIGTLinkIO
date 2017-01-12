@@ -94,19 +94,20 @@ bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventI
 
   double timeout = 2;
   double starttime = vtkTimerLog::GetUniversalTime();
+
   // Client waits for an image to be sent from the server.
   while (vtkTimerLog::GetUniversalTime() - starttime < timeout)
   {
     Server.Logic->PeriodicProcess();
     Client.Logic->PeriodicProcess();
     vtksys::SystemTools::Delay(5);
-  }
 
-  if (contains(logic->ReceivedEvents, eventId, count))
-  {
-    return true;
-  }
+    if (contains(logic->ReceivedEvents, eventId, count))
+    {
+      return true;
+    }
 
+  }
   std::cout << "FAILURE: Expected event: " << eventId << " " << count << "times." << std::endl;
 
   return false;
