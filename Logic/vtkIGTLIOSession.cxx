@@ -6,9 +6,9 @@
 #include "vtkIGTLIOConnector.h"
 #include <vtksys/SystemTools.hxx>
 #include "vtkTimerLog.h"
-#include "vtkIGTLIOCommandDevice.h"
-#include "vtkIGTLIOImageDevice.h"
-#include "vtkIGTLIOTransformDevice.h"
+#include "igtlioCommandDevice.h"
+#include "igtlioImageDevice.h"
+#include "igtlioTransformDevice.h"
 
 
 namespace igtlio
@@ -29,9 +29,9 @@ vtkIGTLIOSession::vtkIGTLIOSession()
 {
 }
 
-vtkIGTLIODevicePointer vtkIGTLIOSession::AddDeviceIfNotPresent(DeviceKeyType key)
+DevicePointer vtkIGTLIOSession::AddDeviceIfNotPresent(DeviceKeyType key)
 {
-  vtkSmartPointer<vtkIGTLIODevice> device = Connector->GetDevice(key);
+  vtkSmartPointer<Device> device = Connector->GetDevice(key);
 
   if (!device)
   {
@@ -43,15 +43,15 @@ vtkIGTLIODevicePointer vtkIGTLIOSession::AddDeviceIfNotPresent(DeviceKeyType key
 }
 
 
-vtkIGTLIOCommandDevicePointer vtkIGTLIOSession::SendCommandQuery(std::string device_id,
+CommandDevicePointer vtkIGTLIOSession::SendCommandQuery(std::string device_id,
                                                                  std::string command,
                                                                  std::string content,
                                                                  igtlio::SYNCHRONIZATION_TYPE synchronized,
                                                                  double timeout_s)
 {
-  vtkSmartPointer<vtkIGTLIOCommandDevice> device;
+  vtkSmartPointer<CommandDevice> device;
   DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
-  device = vtkIGTLIOCommandDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
+  device = CommandDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
 
   igtlio::CommandConverter::ContentData contentdata = device->GetContent();
   contentdata.id +=1;
@@ -71,7 +71,7 @@ vtkIGTLIOCommandDevicePointer vtkIGTLIOSession::SendCommandQuery(std::string dev
       Connector->PeriodicProcess();
       vtksys::SystemTools::Delay(5);
 
-      vtkIGTLIOCommandDevicePointer response = device->GetResponseFromCommandID(contentdata.id);
+      CommandDevicePointer response = device->GetResponseFromCommandID(contentdata.id);
 
       if (response)
       {
@@ -84,35 +84,35 @@ vtkIGTLIOCommandDevicePointer vtkIGTLIOSession::SendCommandQuery(std::string dev
     return device;
   }
 
-  return vtkSmartPointer<vtkIGTLIOCommandDevice>();
+  return vtkSmartPointer<CommandDevice>();
 }
 
-vtkIGTLIOCommandDevicePointer vtkIGTLIOSession::SendCommandResponse(std::string device_id, std::string command, std::string content)
+CommandDevicePointer vtkIGTLIOSession::SendCommandResponse(std::string device_id, std::string command, std::string content)
 {
   DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
-  vtkIGTLIOCommandDevicePointer device = vtkIGTLIOCommandDevice::SafeDownCast(Connector->GetDevice(key));
+  CommandDevicePointer device = CommandDevice::SafeDownCast(Connector->GetDevice(key));
 
   igtlio::CommandConverter::ContentData contentdata = device->GetContent();
 
   if (command != contentdata.name)
   {
     vtkErrorMacro("Requested command response " << command << " does not match the existing query: " << contentdata.name);
-    return vtkIGTLIOCommandDevicePointer();
+    return CommandDevicePointer();
   }
 
   contentdata.name = command;
   contentdata.content = content;
   device->SetContent(contentdata);
 
-  Connector->SendMessage(CreateDeviceKey(device), vtkIGTLIODevice::MESSAGE_PREFIX_REPLY);
+  Connector->SendMessage(CreateDeviceKey(device), Device::MESSAGE_PREFIX_REPLY);
   return device;
 }
 
-vtkIGTLIOImageDevicePointer vtkIGTLIOSession::SendImage(std::string device_id, vtkSmartPointer<vtkImageData> image, vtkSmartPointer<vtkMatrix4x4> transform)
+ImageDevicePointer vtkIGTLIOSession::SendImage(std::string device_id, vtkSmartPointer<vtkImageData> image, vtkSmartPointer<vtkMatrix4x4> transform)
 {
-  vtkSmartPointer<vtkIGTLIOImageDevice> device;
+  ImageDevicePointer device;
   DeviceKeyType key(igtlio::ImageConverter::GetIGTLTypeName(), device_id);
-  device = vtkIGTLIOImageDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
+  device = ImageDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
 
   igtlio::ImageConverter::ContentData contentdata = device->GetContent();
   contentdata.image = image;
@@ -202,11 +202,11 @@ bool vtkIGTLIOSession::waitForConnection(double timeout_s)
 }
 
 
-vtkIGTLIOTransformDevicePointer vtkIGTLIOSession::SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform)
+TransformDevicePointer vtkIGTLIOSession::SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform)
 {
-  vtkIGTLIOTransformDevicePointer device;
+  TransformDevicePointer device;
   DeviceKeyType key(igtlio::TransformConverter::GetIGTLTypeName(), device_id);
-  device = vtkIGTLIOTransformDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
+  device = TransformDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
 
   igtlio::TransformConverter::ContentData contentdata = device->GetContent();
   contentdata.deviceName = device_id;

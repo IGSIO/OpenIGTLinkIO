@@ -7,7 +7,7 @@
 
 ==========================================================================*/
 
-#include "vtkIGTLIODevice.h"
+#include "igtlioDevice.h"
 
 // OpenIGTLink includes
 #include <igtlMessageBase.h>
@@ -23,7 +23,7 @@
 namespace igtlio
 {
 //---------------------------------------------------------------------------
-vtkIGTLIODevice::vtkIGTLIODevice()
+Device::Device()
 {
   PushOnConnect = false;
   MessageDirection = MESSAGE_DIRECTION_IN;
@@ -31,12 +31,12 @@ vtkIGTLIODevice::vtkIGTLIODevice()
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIODevice::~vtkIGTLIODevice()
+Device::~Device()
 {
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIODevice::PrintSelf(ostream& os, vtkIndent indent)
+void Device::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkObject::PrintSelf(os, indent);
 
@@ -46,39 +46,39 @@ void vtkIGTLIODevice::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-std::string vtkIGTLIODevice::GetDeviceName() const
+std::string Device::GetDeviceName() const
 {
   return HeaderData.deviceName;
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIODevice::SetDeviceName(std::string name)
+void Device::SetDeviceName(std::string name)
 {
   HeaderData.deviceName = name;
   this->Modified();
 }
 
 //---------------------------------------------------------------------------
-double vtkIGTLIODevice::GetTimestamp() const
+double Device::GetTimestamp() const
 {
   return HeaderData.timestamp;
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIODevice::SetTimestamp(double val)
+void Device::SetTimestamp(double val)
 {
   HeaderData.timestamp = val;
   this->Modified();
 }
 
 //---------------------------------------------------------------------------
-std::vector<vtkIGTLIODevice::QueryType> vtkIGTLIODevice::GetQueries() const
+std::vector<Device::QueryType> Device::GetQueries() const
 {
   return Queries;
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIODevice::CheckQueryExpiration()
+int Device::CheckQueryExpiration()
 {
   double currentTime = vtkTimerLog::GetUniversalTime();
 //  if (this->QueryWaitingQueue.size() > 0)
@@ -114,7 +114,7 @@ int vtkIGTLIODevice::CheckQueryExpiration()
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIODevice::PruneCompletedQueries()
+int Device::PruneCompletedQueries()
 {
   std::vector<QueryType> pruned;
 
@@ -130,21 +130,21 @@ int vtkIGTLIODevice::PruneCompletedQueries()
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIODevice::CancelQuery(int index)
+int Device::CancelQuery(int index)
 {
   Queries.erase(Queries.begin()+index);
   return 0;
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIODevice::SetHeader(igtlio::BaseConverter::HeaderData header)
+void Device::SetHeader(BaseConverter::HeaderData header)
 {
   HeaderData = header;
   this->Modified();
 }
 
 //---------------------------------------------------------------------------
-igtlio::BaseConverter::HeaderData vtkIGTLIODevice::GetHeader()
+BaseConverter::HeaderData Device::GetHeader()
 {
   return HeaderData;
 }

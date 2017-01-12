@@ -6,8 +6,8 @@
 #include "vtkIGTLIOLogic.h"
 #include "vtkIGTLIOConnector.h"
 #include "vtkTimerLog.h"
-#include "vtkIGTLIOImageDevice.h"
-#include "vtkIGTLIOCommandDevice.h"
+#include "igtlioImageDevice.h"
+#include "igtlioCommandDevice.h"
 #include "vtkIGTLIOTranslator.h"
 
 class vtkImageData;

@@ -36,9 +36,9 @@ void onNewDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata
   vtkIGTLIOLogic* logic = reinterpret_cast<vtkIGTLIOLogic*>(clientdata);
   logic->InvokeEvent(vtkIGTLIOLogic::NewDeviceEvent, calldata);
 
-  vtkIGTLIODevice* device = reinterpret_cast<vtkIGTLIODevice*>(calldata);
-  device->AddObserver(vtkIGTLIODevice::CommandQueryReceivedEvent, logic->DeviceEventCallback);
-  device->AddObserver(vtkIGTLIODevice::CommandResponseReceivedEvent, logic->DeviceEventCallback);
+  Device* device = reinterpret_cast<Device*>(calldata);
+  device->AddObserver(Device::CommandQueryReceivedEvent, logic->DeviceEventCallback);
+  device->AddObserver(Device::CommandResponseReceivedEvent, logic->DeviceEventCallback);
 }
 
 //---------------------------------------------------------------------------
@@ -47,7 +47,7 @@ void onRemovedDeviceEventFunc(vtkObject* caller, unsigned long eid, void* client
   vtkIGTLIOLogic* logic = reinterpret_cast<vtkIGTLIOLogic*>(clientdata);
   logic->InvokeEvent(vtkIGTLIOLogic::RemovedDeviceEvent, calldata);
 
-  vtkIGTLIODevice* device = reinterpret_cast<vtkIGTLIODevice*>(calldata);
+  Device* device = reinterpret_cast<Device*>(calldata);
   device->RemoveObserver(logic->DeviceEventCallback);
 }
 
@@ -56,8 +56,8 @@ void onDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, v
 {
   vtkIGTLIOLogic* logic = reinterpret_cast<vtkIGTLIOLogic*>(clientdata);
 
-  if ((eid==vtkIGTLIODevice::CommandQueryReceivedEvent) ||
-      (eid==vtkIGTLIODevice::CommandResponseReceivedEvent))
+  if ((eid==Device::CommandQueryReceivedEvent) ||
+      (eid==Device::CommandResponseReceivedEvent))
   {
     logic->InvokeEvent(eid, calldata);
   }
@@ -181,20 +181,20 @@ void vtkIGTLIOLogic::PeriodicProcess()
 //---------------------------------------------------------------------------
 unsigned int vtkIGTLIOLogic::GetNumberOfDevices() const
 {
-  std::vector<vtkIGTLIODevicePointer> all = this->CreateDeviceList();
+  std::vector<DevicePointer> all = this->CreateDeviceList();
   return all.size();
 }
 
 //---------------------------------------------------------------------------
 void vtkIGTLIOLogic::RemoveDevice(unsigned int index)
 {
-  vtkIGTLIODevicePointer device = this->GetDevice(index);
+  DevicePointer device = this->GetDevice(index);
 
   for (unsigned i=0; i<Connectors.size(); ++i)
     {
       for (unsigned j=0; j<Connectors[i]->GetNumberOfDevices(); ++j)
         {
-          vtkIGTLIODevicePointer local = Connectors[i]->GetDevice(j);
+          DevicePointer local = Connectors[i]->GetDevice(j);
           if (device==local)
             Connectors[i]->RemoveDevice(j);
         }
@@ -202,10 +202,10 @@ void vtkIGTLIOLogic::RemoveDevice(unsigned int index)
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIODevicePointer vtkIGTLIOLogic::GetDevice(unsigned int index)
+DevicePointer vtkIGTLIOLogic::GetDevice(unsigned int index)
 {
   // TODO: optimize by caching the vector if necessary
-  std::vector<vtkIGTLIODevicePointer> all = this->CreateDeviceList();
+  std::vector<DevicePointer> all = this->CreateDeviceList();
 
   if (index>=0 && index<all.size())
     return all[index];
@@ -215,9 +215,9 @@ vtkIGTLIODevicePointer vtkIGTLIOLogic::GetDevice(unsigned int index)
 }
 
 //---------------------------------------------------------------------------
-std::vector<vtkIGTLIODevicePointer> vtkIGTLIOLogic::CreateDeviceList() const
+std::vector<DevicePointer> vtkIGTLIOLogic::CreateDeviceList() const
 {
-  std::set<vtkIGTLIODevicePointer> all;
+  std::set<DevicePointer> all;
 
   for (unsigned i=0; i<Connectors.size(); ++i)
     {
@@ -227,7 +227,7 @@ std::vector<vtkIGTLIODevicePointer> vtkIGTLIOLogic::CreateDeviceList() const
         }
     }
 
-  return std::vector<vtkIGTLIODevicePointer>(all.begin(), all.end());
+  return std::vector<DevicePointer>(all.begin(), all.end());
 }
 
 } // namespace igtlio

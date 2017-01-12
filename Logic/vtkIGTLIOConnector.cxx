@@ -61,7 +61,7 @@ DeviceKeyType CreateDeviceKey(igtl::MessageBase::Pointer message)
   return DeviceKeyType(message->GetDeviceType(), message->GetDeviceName());
 }
 
-DeviceKeyType CreateDeviceKey(vtkIGTLIODevicePointer device)
+DeviceKeyType CreateDeviceKey(DevicePointer device)
 {
   if (!device)
     return DeviceKeyType();
@@ -632,7 +632,7 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
 
     igtl::MessageBase::Pointer buffer = circBuffer->GetPullBuffer();
 
-    vtkSmartPointer<vtkIGTLIODeviceCreator> deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
+    vtkSmartPointer<DeviceCreator> deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
 
     if (!deviceCreator)
       {
@@ -640,7 +640,7 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
       continue;
       }
 
-    vtkIGTLIODevicePointer device = this->GetDevice(key);
+    DevicePointer device = this->GetDevice(key);
 
     if ((device.GetPointer()!=NULL) && !(CreateDeviceKey(device)==CreateDeviceKey(buffer)))
       {
@@ -655,7 +655,7 @@ void vtkIGTLIOConnector::ImportDataFromCircularBuffer()
     if (!device && !this->RestrictDeviceName)
       {
         device = deviceCreator->Create(key.name);
-        device->SetMessageDirection(vtkIGTLIODevice::MESSAGE_DIRECTION_IN);
+        device->SetMessageDirection(Device::MESSAGE_DIRECTION_IN);
         this->AddDevice(device);
       }
 
@@ -725,7 +725,7 @@ void vtkIGTLIOConnector::PeriodicProcess()
   this->PushOutgoingMessages();
 }
 
-int vtkIGTLIOConnector::AddDevice(vtkIGTLIODevicePointer device)
+int vtkIGTLIOConnector::AddDevice(DevicePointer device)
 {
   if (this->GetDevice(CreateDeviceKey(device))!=NULL)
     {
@@ -750,30 +750,30 @@ unsigned int vtkIGTLIOConnector::GetNumberOfDevices() const
 void vtkIGTLIOConnector::RemoveDevice(int index)
 {
   //TODO: disconnect listen to device events?
-  vtkIGTLIODevicePointer device = Devices[index]; // ensure object lives until event has completed
+  DevicePointer device = Devices[index]; // ensure object lives until event has completed
   Devices.erase(Devices.begin()+index);
   this->InvokeEvent(vtkIGTLIOConnector::RemovedDeviceEvent, device.GetPointer());
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIODevicePointer vtkIGTLIOConnector::GetDevice(int index)
+DevicePointer vtkIGTLIOConnector::GetDevice(int index)
 {
   return Devices[index];
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIODevicePointer vtkIGTLIOConnector::GetDevice(DeviceKeyType key)
+DevicePointer vtkIGTLIOConnector::GetDevice(DeviceKeyType key)
 {
   for (unsigned i=0; i<Devices.size(); ++i)
     if (CreateDeviceKey(Devices[i])==key)
       return Devices[i];
-  return vtkIGTLIODevicePointer();
+  return DevicePointer();
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::MESSAGE_PREFIX prefix)
+int vtkIGTLIOConnector::SendMessage(DeviceKeyType device_id, Device::MESSAGE_PREFIX prefix)
 {
-  vtkIGTLIODevicePointer device = this->GetDevice(device_id);
+  DevicePointer device = this->GetDevice(device_id);
   if (!device)
     {
       vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id.type << "/" << device_id.name<< ", device not found");
@@ -817,10 +817,10 @@ void vtkIGTLIOConnector::SetDeviceFactory(vtkIGTLIODeviceFactoryPointer val)
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOConnector::PushNode(vtkIGTLIODevicePointer node, int event)
+int vtkIGTLIOConnector::PushNode(DevicePointer node, int event)
 {
   // TODO: verify that removed event argument is OK
-  return this->SendMessage(CreateDeviceKey(node), vtkIGTLIODevice::MESSAGE_PREFIX_NOT_DEFINED);
+  return this->SendMessage(CreateDeviceKey(node), Device::MESSAGE_PREFIX_NOT_DEFINED);
 }
 
 } // namespace igtlio

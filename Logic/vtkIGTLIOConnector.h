@@ -25,7 +25,7 @@
 
 // IGTLIO includes
 #include "igtlioLogicExport.h"
-#include "vtkIGTLIODevice.h"
+#include "igtlioDevice.h"
 #include "vtkIGTLIODeviceFactory.h"
 #include "vtkIGTLIOObject.h"
 #include "IGTLIOUtilities.h"
@@ -99,16 +99,16 @@ public:
 
  /// Add a new Device.
  /// If a Device with an identical device_id already exist, the method will fail.
- int AddDevice(vtkIGTLIODevicePointer device); // TODO look at OnNodeReferenceAdded
+ int AddDevice(DevicePointer device); // TODO look at OnNodeReferenceAdded
  unsigned int GetNumberOfDevices() const;
  void RemoveDevice(int index); //TODO: look at OnNodeReferenceRemoved
  /// Get the given Device. This can be used to modify the Device contents.
- vtkIGTLIODevicePointer GetDevice(int index);
- vtkIGTLIODevicePointer GetDevice(DeviceKeyType key);
+ DevicePointer GetDevice(int index);
+ DevicePointer GetDevice(DeviceKeyType key);
 
  /// Request the given Device to send a message with the given prefix.
  /// An undefined prefix means sending the normal message.
- int SendMessage(DeviceKeyType device_id, vtkIGTLIODevice::MESSAGE_PREFIX=vtkIGTLIODevice::MESSAGE_PREFIX_NOT_DEFINED);
+ int SendMessage(DeviceKeyType device_id, Device::MESSAGE_PREFIX=Device::MESSAGE_PREFIX_NOT_DEFINED);
 
  vtkIGTLIODeviceFactoryPointer GetDeviceFactory();
  void SetDeviceFactory(vtkIGTLIODeviceFactoryPointer val);
@@ -258,7 +258,7 @@ private:
 //  // Description:
 //  // A function to explicitly push node to OpenIGTLink. The function is called either by
 //  // external nodes or MRML event hander in the connector node.
-  int PushNode(vtkIGTLIODevicePointer node, int event=-1);
+  int PushNode(DevicePointer node, int event=-1);
 
  protected:
   // Description:
@@ -277,7 +277,7 @@ private:
   //----------------------------------------------------------------
   // Devices
   //----------------------------------------------------------------
-  std::vector<vtkIGTLIODevicePointer> Devices;
+  std::vector<DevicePointer> Devices;
 
   //----------------------------------------------------------------
   // Connector configuration

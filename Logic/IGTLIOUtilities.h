@@ -8,15 +8,13 @@
 
 namespace igtlio
 {
-typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
+typedef vtkSmartPointer<class Device> DevicePointer;
 
 enum OPENIGTLINKIO_LOGIC_EXPORT SYNCHRONIZATION_TYPE
 {
   BLOCKING,
   ASYNCHRONOUS
 };
-
-
 
 ///
 /// Uniquely identify a Device by both its name and type.
@@ -36,7 +34,7 @@ public:
 };
 //typedef std::pair<std::string, std::string> DeviceKeyType;
 OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(igtl::MessageBase::Pointer message);
-OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(vtkIGTLIODevicePointer device);
+OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(DevicePointer device);
 bool operator==(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
 bool operator<(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
 

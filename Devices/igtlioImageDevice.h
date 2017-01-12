@@ -12,14 +12,14 @@
 
 ==========================================================================*/
 
-#ifndef __vtkIGTLIOTransformDevice_h
-#define __vtkIGTLIOTransformDevice_h
+#ifndef IGTLIOIMAGEDEVICE_H
+#define IGTLIOIMAGEDEVICE_H
 
 // igtlio includes
 #include "igtlioDevicesExport.h"
 
-#include "igtlTransformConverter.h"
-#include "vtkIGTLIODevice.h"
+#include "igtlImageConverter.h"
+#include "igtlioDevice.h"
 
 // OpenIGTLink includes
 #include <igtlImageMessage.h>
@@ -29,12 +29,13 @@
 
 class vtkImageData;
 
-namespace igtlio {
+namespace igtlio
+{
 
-typedef vtkSmartPointer<class vtkIGTLIOTransformDevice> vtkIGTLIOTransformDevicePointer;
+typedef vtkSmartPointer<class ImageDevice> ImageDevicePointer;
 
 /// A Device supporting the IMAGE igtl Message.
-class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOTransformDevice : public vtkIGTLIODevice
+class OPENIGTLINKIO_DEVICES_EXPORT ImageDevice : public Device
 {
 public:
  virtual std::string GetDeviceType() const;
@@ -43,37 +44,36 @@ public:
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
 
-  void SetContent(igtlio::TransformConverter::ContentData content);
-  igtlio::TransformConverter::ContentData GetContent();
+  void SetContent(ImageConverter::ContentData content);
+  ImageConverter::ContentData GetContent();
 
 public:
-  static vtkIGTLIOTransformDevice *New();
-  vtkTypeMacro(vtkIGTLIOTransformDevice,vtkIGTLIODevice);
+  static ImageDevice *New();
+  vtkTypeMacro(ImageDevice,Device);
   void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
-  vtkIGTLIOTransformDevice();
-  ~vtkIGTLIOTransformDevice();
+  ImageDevice();
+  ~ImageDevice();
 
  protected:
-  igtl::TransformMessage::Pointer OutTransformMessage;
-  igtl::GetTransformMessage::Pointer GetTransformMessage;
+  igtl::ImageMessage::Pointer OutImageMessage;
+  igtl::GetImageMessage::Pointer GetImageMessage;
 
-  igtlio::TransformConverter::ContentData Content;
+  ImageConverter::ContentData Content;
 };
 
 //---------------------------------------------------------------------------
-class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOTransformDeviceCreator : public vtkIGTLIODeviceCreator
+class OPENIGTLINKIO_DEVICES_EXPORT ImageDeviceCreator : public DeviceCreator
 {
 public:
-  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name);
+  virtual DevicePointer Create(std::string device_name);
   virtual std::string GetDeviceType() const;
 
-  static vtkIGTLIOTransformDeviceCreator *New();
-  vtkTypeMacro(vtkIGTLIOTransformDeviceCreator,vtkObject);
+  static ImageDeviceCreator *New();
+  vtkTypeMacro(ImageDeviceCreator,vtkObject);
 };
 
-}
+} //namespace igtlio
 
-
-#endif //__vtkIGTLIOTransformDevice_h
+#endif //IGTLIOIMAGEDEVICE_H

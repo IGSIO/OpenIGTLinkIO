@@ -2,7 +2,7 @@
 #include "vtkIGTLIOLogic.h"
 #include "vtkIGTLIOConnector.h"
 #include "vtkTimerLog.h"
-#include "vtkIGTLIOImageDevice.h"
+#include "igtlioImageDevice.h"
 #include "vtkImageData.h"
 #include "igtlImageConverter.h"
 #include "vtkMatrix4x4.h"
@@ -10,7 +10,7 @@
 #include "igtlImageConverter.h"
 #include <vtkImageDifference.h>
 #include "IGTLIOFixture.h"
-#include "vtkIGTLIOImageDevice.h"
+#include "igtlioImageDevice.h"
 #include "vtkIGTLIOSession.h"
 
 bool compare(vtkSmartPointer<vtkMatrix4x4> a, vtkSmartPointer<vtkMatrix4x4> b)
@@ -39,7 +39,7 @@ bool compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
   return true;
 }
 
-bool compare(igtlio::vtkIGTLIOImageDevicePointer a, igtlio::vtkIGTLIOImageDevicePointer b)
+bool compare(igtlio::ImageDevicePointer a, igtlio::ImageDevicePointer b)
 {
   if (a->GetDeviceName() != b->GetDeviceName())
     return false;
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
   std::cout << "*** Connection done" << std::endl;
   //---------------------------------------------------------------------------
 
-  igtlio::vtkIGTLIOImageDevicePointer imageDevice;
+  igtlio::ImageDevicePointer imageDevice;
   imageDevice = fixture.Server.Session->SendImage("TestDevice_Image",
                                                   fixture.CreateTestImage(),
                                                   fixture.CreateTestTransform());
@@ -91,8 +91,8 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  igtlio::vtkIGTLIOImageDevicePointer receivedDevice;
-  receivedDevice = igtlio::vtkIGTLIOImageDevice::SafeDownCast(fixture.Client.Logic->GetDevice(0));
+  igtlio::ImageDevicePointer receivedDevice;
+  receivedDevice = igtlio::ImageDevice::SafeDownCast(fixture.Client.Logic->GetDevice(0));
   if (!receivedDevice)
   {
     std::cout << "FAILURE: Non-image device received." << std::endl;

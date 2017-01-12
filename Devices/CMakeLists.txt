@@ -22,16 +22,16 @@ set(${KIT}_INCLUDE_DIRECTORIES
   )
 
 set(${KIT}_SRCS
-  vtkIGTLIODevice.cxx
-  vtkIGTLIODevice.h
-  vtkIGTLIOImageDevice.cxx
-  vtkIGTLIOImageDevice.h
-  vtkIGTLIOStatusDevice.cxx
-  vtkIGTLIOStatusDevice.h
-  vtkIGTLIOCommandDevice.cxx
-  vtkIGTLIOCommandDevice.h
-  vtkIGTLIOTransformDevice.cxx
-  vtkIGTLIOTransformDevice.h
+  igtlioDevice.cxx
+  igtlioDevice.h
+  igtlioImageDevice.cxx
+  igtlioImageDevice.h
+  igtlioStatusDevice.cxx
+  igtlioStatusDevice.h
+  igtlioCommandDevice.cxx
+  igtlioCommandDevice.h
+  igtlioTransformDevice.cxx
+  igtlioTransformDevice.h
   )
 
 set(${KIT}_TARGET_LIBRARIES

@@ -1,5 +1,5 @@
 // OpenIGTLinkIF MRML includes
-#include "vtkIGTLIOCommandDevice.h"
+#include "igtlioCommandDevice.h"
 
 // igtl support includes
 #include <igtl_util.h>
@@ -19,58 +19,58 @@ namespace  igtlio
 {
 
 //---------------------------------------------------------------------------
-vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOCommandDeviceCreator::Create(std::string device_name)
+DevicePointer CommandDeviceCreator::Create(std::string device_name)
 {
- vtkSmartPointer<vtkIGTLIOCommandDevice> retval = vtkSmartPointer<vtkIGTLIOCommandDevice>::New();
+ CommandDevicePointer retval = CommandDevicePointer::New();
  retval->SetDeviceName(device_name);
  return retval;
 }
 
 //---------------------------------------------------------------------------
-std::string vtkIGTLIOCommandDeviceCreator::GetDeviceType() const
+std::string CommandDeviceCreator::GetDeviceType() const
 {
- return igtlio::CommandConverter::GetIGTLTypeName();
+ return CommandConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOCommandDeviceCreator);
+vtkStandardNewMacro(CommandDeviceCreator);
 
 
 
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOCommandDevice);
+vtkStandardNewMacro(CommandDevice);
 //---------------------------------------------------------------------------
-vtkIGTLIOCommandDevice::vtkIGTLIOCommandDevice()
-{
-}
-
-//---------------------------------------------------------------------------
-vtkIGTLIOCommandDevice::~vtkIGTLIOCommandDevice()
+CommandDevice::CommandDevice()
 {
 }
 
 //---------------------------------------------------------------------------
-std::string vtkIGTLIOCommandDevice::GetDeviceType() const
+CommandDevice::~CommandDevice()
 {
-  return igtlio::CommandConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+std::string CommandDevice::GetDeviceType() const
+{
+  return CommandConverter::GetIGTLTypeName();
+}
+
+//---------------------------------------------------------------------------
+int CommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
   // RTS_COMMAND received:
   //    - look in the query queue for anyone waiting for it.
-  if (buffer->GetDeviceType()==std::string(igtlio::CommandConverter::GetIGTLResponseName()))
+  if (buffer->GetDeviceType()==std::string(CommandConverter::GetIGTLResponseName()))
     {
-    vtkSmartPointer<vtkIGTLIOCommandDevice> response = vtkSmartPointer<vtkIGTLIOCommandDevice>::New();
-    if (!igtlio::CommandConverter::fromIGTLResponse(buffer, &response->HeaderData, &response->Content, checkCRC))
+    CommandDevicePointer response = CommandDevicePointer::New();
+    if (!CommandConverter::fromIGTLResponse(buffer, &response->HeaderData, &response->Content, checkCRC))
       return 0;
 
     // search among the queries for a command with an identical ID:
     for (unsigned i=0; i<Queries.size(); ++i)
       {
-      vtkSmartPointer<vtkIGTLIOCommandDevice> query = vtkIGTLIOCommandDevice::SafeDownCast(Queries[i].Query.GetPointer());
+      CommandDevicePointer query = CommandDevice::SafeDownCast(Queries[i].Query.GetPointer());
       if (query && query->GetContent().id == response->GetContent().id)
         {
         Queries[i].Response = response;
@@ -85,9 +85,9 @@ int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer
   // COMMAND received
   //   - store the incoming message, emit event
   //     No response is created - this is the responsibility of the application.
-  if (buffer->GetDeviceType()==std::string(igtlio::CommandConverter::GetIGTLTypeName()))
+  if (buffer->GetDeviceType()==std::string(CommandConverter::GetIGTLTypeName()))
     {
-    if (igtlio::CommandConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+    if (CommandConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
       {
       this->Modified();
       this->InvokeEvent(CommandQueryReceivedEvent);
@@ -99,7 +99,7 @@ int vtkIGTLIOCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage()
+igtl::MessageBase::Pointer CommandDevice::GetIGTLMessage()
 {
  // cannot send a non-existent Command (?)
  if (Content.name.empty())
@@ -109,7 +109,7 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage()
 
  this->SetTimestamp(vtkTimerLog::GetUniversalTime());
 
- if (!igtlio::CommandConverter::toIGTL(HeaderData, Content, &this->OutMessage))
+ if (!CommandConverter::toIGTL(HeaderData, Content, &this->OutMessage))
    {
    return 0;
    }
@@ -117,7 +117,7 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage()
 
  // store the current device state as a query
  QueryType query;
- vtkSmartPointer<vtkIGTLIOCommandDevice> queryDevice = vtkSmartPointer<vtkIGTLIOCommandDevice>::New();
+ CommandDevicePointer queryDevice = CommandDevicePointer::New();
  queryDevice->SetContent(this->GetContent());
  queryDevice->SetHeader(this->GetHeader()); // NOTE: requires timestamp to be current
  query.Query = queryDevice;
@@ -133,7 +133,7 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLResponseMessage()
+igtl::MessageBase::Pointer CommandDevice::GetIGTLResponseMessage()
 {
  // cannot send a non-existent Command (?)
  if (Content.name.empty())
@@ -147,7 +147,7 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLResponseMessage()
    this->ResponseMessage = igtl::RTSCommandMessage::New();
 
  igtl::CommandMessage::Pointer response = dynamic_pointer_cast<igtl::CommandMessage>(this->ResponseMessage);
- if (!igtlio::CommandConverter::toIGTL(HeaderData, Content, &response))
+ if (!CommandConverter::toIGTL(HeaderData, Content, &response))
    {
    return 0;
    }
@@ -156,13 +156,13 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLResponseMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
+igtl::MessageBase::Pointer CommandDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
   if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
    }
-  if (prefix==vtkIGTLIODevice::MESSAGE_PREFIX_REPLY)
+  if (prefix==Device::MESSAGE_PREFIX_REPLY)
    {
      return this->GetIGTLResponseMessage();
    }
@@ -172,32 +172,32 @@ igtl::MessageBase::Pointer vtkIGTLIOCommandDevice::GetIGTLMessage(MESSAGE_PREFIX
 }
 
 //---------------------------------------------------------------------------
-std::set<vtkIGTLIODevice::MESSAGE_PREFIX> vtkIGTLIOCommandDevice::GetSupportedMessagePrefixes() const
+std::set<Device::MESSAGE_PREFIX> CommandDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
  return retval;
 }
 
-void vtkIGTLIOCommandDevice::SetContent(igtlio::CommandConverter::ContentData content)
+void CommandDevice::SetContent(CommandConverter::ContentData content)
 {
   Content = content;
   this->Modified();
 }
 
-igtlio::CommandConverter::ContentData vtkIGTLIOCommandDevice::GetContent()
+CommandConverter::ContentData CommandDevice::GetContent()
 {
   return Content;
 }
 
-std::vector<std::string> vtkIGTLIOCommandDevice::GetAvailableCommandNames() const
+std::vector<std::string> CommandDevice::GetAvailableCommandNames() const
 {
-  return igtlio::CommandConverter::GetAvailableCommandNames();
+  return CommandConverter::GetAvailableCommandNames();
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOCommandDevice::PrintSelf(ostream& os, vtkIndent indent)
+void CommandDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->vtkIGTLIODevice::PrintSelf(os, indent);
+  Device::PrintSelf(os, indent);
 
   os << indent << "CommandID:\t" << Content.id << "\n";
   os << indent << "CommandName:\t" << Content.name << "\n";
@@ -206,19 +206,19 @@ void vtkIGTLIOCommandDevice::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIOCommandDevicePointer vtkIGTLIOCommandDevice::GetResponseFromCommandID(int id)
+CommandDevicePointer CommandDevice::GetResponseFromCommandID(int id)
 {
   // search among the queries for a command with an identical ID:
   for (unsigned i=0; i<Queries.size(); ++i)
   {
-    vtkSmartPointer<vtkIGTLIOCommandDevice> response = vtkIGTLIOCommandDevice::SafeDownCast(Queries[i].Query);
+    CommandDevicePointer response = CommandDevice::SafeDownCast(Queries[i].Query);
     if (response && response->GetContent().id == id)
     {
       return response;
     }
   }
 
-  return vtkSmartPointer<vtkIGTLIOCommandDevice>();
+  return CommandDevicePointer();
 }
 
 } // namespace igtlio

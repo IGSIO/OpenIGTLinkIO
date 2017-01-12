@@ -11,9 +11,9 @@
 #include "vtkCommand.h"
 #include <vtkObjectFactory.h>
 
-#include "vtkIGTLIODevice.h"
+#include "igtlioDevice.h"
 #include "igtlCommandConverter.h"
-#include "vtkIGTLIOCommandDevice.h"
+#include "igtlioCommandDevice.h"
 #include "qIGTLIOGuiUtilities.h"
 
 
@@ -85,7 +85,7 @@ void qIGTLIOCommandDeviceWidget::AddCaptionedLineEdit(QGridLayout *layout, QLine
 
 void qIGTLIOCommandDeviceWidget::onGUIModified()
 {
-  igtlio::vtkIGTLIOCommandDevice* device = dynamic_cast<igtlio::vtkIGTLIOCommandDevice*>(Device.GetPointer());
+  igtlio::CommandDevice* device = dynamic_cast<igtlio::CommandDevice*>(Device.GetPointer());
   if (!device)
     return;
 
@@ -123,7 +123,7 @@ void qIGTLIOCommandDeviceWidget::onDeviceModified()
   QDateTime timestamp = QDateTime::fromMSecsSinceEpoch(Device->GetTimestamp()*1000);
   TimestampEdit->setText(timestamp.toString("hh:mm:ss.zzz"));
 
-  igtlio::vtkIGTLIOCommandDevice* device = dynamic_cast<igtlio::vtkIGTLIOCommandDevice*>(Device.GetPointer());
+  igtlio::CommandDevice* device = dynamic_cast<igtlio::CommandDevice*>(Device.GetPointer());
 
   if (!device)
     return;

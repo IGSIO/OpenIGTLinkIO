@@ -1,6 +1,6 @@
 
 // OpenIGTLinkIF MRML includes
-#include "vtkIGTLIOStatusDevice.h"
+#include "igtlioStatusDevice.h"
 
 // igtl support includes
 #include <igtl_util.h>
@@ -19,47 +19,47 @@ namespace igtlio
 {
 
 //---------------------------------------------------------------------------
-vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOStatusDeviceCreator::Create(std::string device_name)
+DevicePointer StatusDeviceCreator::Create(std::string device_name)
 {
- vtkSmartPointer<vtkIGTLIOStatusDevice> retval = vtkSmartPointer<vtkIGTLIOStatusDevice>::New();
+ StatusDevicePointer retval = StatusDevicePointer::New();
  retval->SetDeviceName(device_name);
  return retval;
 }
 
 //---------------------------------------------------------------------------
-std::string vtkIGTLIOStatusDeviceCreator::GetDeviceType() const
+std::string StatusDeviceCreator::GetDeviceType() const
 {
- return igtlio::StatusConverter::GetIGTLTypeName();
+ return StatusConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOStatusDeviceCreator);
+vtkStandardNewMacro(StatusDeviceCreator);
 
 
 
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOStatusDevice);
+vtkStandardNewMacro(StatusDevice);
 //---------------------------------------------------------------------------
-vtkIGTLIOStatusDevice::vtkIGTLIOStatusDevice()
-{
-}
-
-//---------------------------------------------------------------------------
-vtkIGTLIOStatusDevice::~vtkIGTLIOStatusDevice()
+StatusDevice::StatusDevice()
 {
 }
 
 //---------------------------------------------------------------------------
-std::string vtkIGTLIOStatusDevice::GetDeviceType() const
+StatusDevice::~StatusDevice()
 {
-  return igtlio::StatusConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOStatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+std::string StatusDevice::GetDeviceType() const
 {
- if (igtlio::StatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+  return StatusConverter::GetIGTLTypeName();
+}
+
+//---------------------------------------------------------------------------
+int StatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+{
+ if (StatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
    {
    this->Modified();
    return 1;
@@ -69,7 +69,7 @@ int vtkIGTLIOStatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer,
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLIOStatusDevice::GetIGTLMessage()
+igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
 {
  // cannot send a non-existent status (?)
  if (Content.errorname.empty())
@@ -77,7 +77,7 @@ igtl::MessageBase::Pointer vtkIGTLIOStatusDevice::GetIGTLMessage()
   return 0;
   }
 
- if (!igtlio::StatusConverter::toIGTL(HeaderData, Content, &this->OutMessage))
+ if (!StatusConverter::toIGTL(HeaderData, Content, &this->OutMessage))
    {
    return 0;
    }
@@ -86,7 +86,7 @@ igtl::MessageBase::Pointer vtkIGTLIOStatusDevice::GetIGTLMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLIOStatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
+igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
  if (prefix==MESSAGE_PREFIX_GET)
   {
@@ -107,28 +107,28 @@ igtl::MessageBase::Pointer vtkIGTLIOStatusDevice::GetIGTLMessage(MESSAGE_PREFIX 
 }
 
 //---------------------------------------------------------------------------
-std::set<vtkIGTLIODevice::MESSAGE_PREFIX> vtkIGTLIOStatusDevice::GetSupportedMessagePrefixes() const
+std::set<Device::MESSAGE_PREFIX> StatusDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
  retval.insert(MESSAGE_PREFIX_GET);
  return retval;
 }
 
-void vtkIGTLIOStatusDevice::SetContent(igtlio::StatusConverter::ContentData content)
+void StatusDevice::SetContent(StatusConverter::ContentData content)
 {
   Content = content;
   this->Modified();
 }
 
-igtlio::StatusConverter::ContentData vtkIGTLIOStatusDevice::GetContent()
+StatusConverter::ContentData StatusDevice::GetContent()
 {
   return Content;
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOStatusDevice::PrintSelf(ostream& os, vtkIndent indent)
+void StatusDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->vtkIGTLIODevice::PrintSelf(os, indent);
+  Device::PrintSelf(os, indent);
 
   os << indent << "ErrorCode:\t" << Content.code << "\n";
   os << indent << "ErrorSubCode:\t" << Content.subcode << "\n";

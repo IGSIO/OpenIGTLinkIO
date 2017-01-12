@@ -12,8 +12,8 @@
 
 ==========================================================================*/
 
-#ifndef __vtkIGTLIODevice_h
-#define __vtkIGTLIODevice_h
+#ifndef IGTLIODEVICE_H
+#define IGTLIODEVICE_H
 
 // OpenIGTLink includes
 #include <igtlMessageBase.h>
@@ -35,7 +35,7 @@
 
 namespace igtlio
 {
-typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
+typedef vtkSmartPointer<class Device> DevicePointer;
 
 /// A vtkIGTLIODevice represents one device connected over OpenIGTLink.
 ///
@@ -44,7 +44,7 @@ typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
 ///
 /// One Device is bound to a device name, corresponding to an igtl device name.
 ///
-class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIODevice : public vtkObject
+class OPENIGTLINKIO_DEVICES_EXPORT Device : public vtkObject
 {
 public:
   enum MESSAGE_DIRECTION {
@@ -88,7 +88,7 @@ public:
   /// a vtkIGTLIOConnector will cause undefined behaviour.
   virtual void SetDeviceName(std::string name);
 
-  igtlio::BaseConverter::HeaderData GetHeader();
+  BaseConverter::HeaderData GetHeader();
 
  vtkSetMacro( PushOnConnect, bool );
  vtkGetMacro( PushOnConnect, bool );
@@ -143,8 +143,8 @@ public:
  ///
  struct QueryType
  {
-   vtkSmartPointer<vtkIGTLIODevice> Query;
-   vtkSmartPointer<vtkIGTLIODevice> Response;
+   DevicePointer Query;
+   DevicePointer Response;
    QUERY_STATUS status;
  };
 
@@ -157,13 +157,13 @@ public:
   int CancelQuery(int index);
 
  public:
-  vtkAbstractTypeMacro(igtlio::vtkIGTLIODevice,vtkObject);
+  vtkAbstractTypeMacro(Device,vtkObject);
 
 protected:
-  void SetHeader(igtlio::BaseConverter::HeaderData header);
+  void SetHeader(BaseConverter::HeaderData header);
 
   std::vector<QueryType> Queries;
-  igtlio::BaseConverter::HeaderData HeaderData;
+  BaseConverter::HeaderData HeaderData;
 
 private:
  MESSAGE_DIRECTION MessageDirection;
@@ -171,23 +171,23 @@ private:
  double QueryTimeOut;
 
  protected:
-  vtkIGTLIODevice();
-  ~vtkIGTLIODevice();
+  Device();
+  ~Device();
 };
 
 //---------------------------------------------------------------------------
 
-class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIODeviceCreator : public vtkObject
+class OPENIGTLINKIO_DEVICES_EXPORT DeviceCreator : public vtkObject
 {
 public:
   // Create an instance of the specific device, with the given device_id
-  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name) = 0;
+  virtual DevicePointer Create(std::string device_name) = 0;
   // Return the device_type this factory creates devices for.
   virtual std::string GetDeviceType() const = 0;
-  vtkAbstractTypeMacro(vtkIGTLIODeviceCreator,vtkObject);
+  vtkAbstractTypeMacro(DeviceCreator,vtkObject);
 };
 
 } // namespace igtlio
 
 
-#endif //__vtkIGTLIODevice_h
+#endif //IGTLIODEVICE_H

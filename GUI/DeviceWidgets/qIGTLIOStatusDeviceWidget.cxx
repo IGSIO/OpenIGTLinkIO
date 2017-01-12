@@ -9,9 +9,9 @@
 #include "vtkCommand.h"
 #include <vtkObjectFactory.h>
 
-#include "vtkIGTLIODevice.h"
+#include "igtlioDevice.h"
 #include "igtlStatusConverter.h"
-#include "vtkIGTLIOStatusDevice.h"
+#include "igtlioStatusDevice.h"
 #include "qIGTLIOGuiUtilities.h"
 
 //---------------------------------------------------------------------------
@@ -86,7 +86,7 @@ void qIGTLIOStatusDeviceWidget::onDeviceModified()
   //mTimestampEdit->setText(timestamp.toString(Qt::ISODate));
   TimestampEdit->setText(timestamp.toString("hh:mm:ss.zzz"));
 
-  igtlio::vtkIGTLIOStatusDevice* device = dynamic_cast<igtlio::vtkIGTLIOStatusDevice*>(Device.GetPointer());
+  igtlio::StatusDevice* device = dynamic_cast<igtlio::StatusDevice*>(Device.GetPointer());
 
   if (!device)
     return;

@@ -2,7 +2,7 @@
 #include "vtkIGTLIOLogic.h"
 #include "vtkIGTLIOConnector.h"
 #include "vtkTimerLog.h"
-#include "vtkIGTLIOImageDevice.h"
+#include "igtlioImageDevice.h"
 #include "vtkImageData.h"
 #include "igtlImageConverter.h"
 #include "vtkMatrix4x4.h"
@@ -12,7 +12,7 @@
 #include "IGTLIOFixture.h"
 #include "vtkIGTLIOSession.h"
 
-bool compareID(igtlio::vtkIGTLIOCommandDevicePointer a, igtlio::vtkIGTLIOCommandDevicePointer b)
+bool compareID(igtlio::CommandDevicePointer a, igtlio::CommandDevicePointer b)
 {
   if (!a || !b)
   {
@@ -29,7 +29,7 @@ bool compareID(igtlio::vtkIGTLIOCommandDevicePointer a, igtlio::vtkIGTLIOCommand
   return true;
 }
 
-bool compare(igtlio::vtkIGTLIOCommandDevicePointer a, igtlio::vtkIGTLIOCommandDevicePointer b)
+bool compare(igtlio::CommandDevicePointer a, igtlio::CommandDevicePointer b)
 {
   if (!a || !b)
   {
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
   std::cout << "*** Connection done" << std::endl;
   //---------------------------------------------------------------------------
 
-  igtlio::vtkIGTLIOCommandDevicePointer clientDevice;
+  igtlio::CommandDevicePointer clientDevice;
   clientDevice = fixture.Client.Session->SendCommandQuery("TestDevice_Command",
                                                           "GetDeviceParameters",
                                                           "<Command>\n"
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
   std::cout << "*** COMMAND query received by Server" << std::endl;
   //---------------------------------------------------------------------------
 
-  igtlio::vtkIGTLIOCommandDevicePointer serverDevice;
+  igtlio::CommandDevicePointer serverDevice;
   serverDevice = fixture.Server.Session->SendCommandResponse(clientDevice->GetDeviceName(),
                                                              "GetDeviceParameters",
                                                              "<Command>\n"
@@ -115,19 +115,19 @@ int main(int argc, char **argv)
   std::cout << "*** RTS_COMMAND response received by Client" << std::endl;
   //---------------------------------------------------------------------------
 
-  igtlio::vtkIGTLIODevice::QueryType query;
+  igtlio::Device::QueryType query;
   if (!clientDevice->GetQueries().empty())
     query = clientDevice->GetQueries()[0];
 
-  if (!compareID(igtlio::vtkIGTLIOCommandDevice::SafeDownCast(query.Query),
-               igtlio::vtkIGTLIOCommandDevice::SafeDownCast(query.Response)))
+  if (!compareID(igtlio::CommandDevice::SafeDownCast(query.Query),
+               igtlio::CommandDevice::SafeDownCast(query.Response)))
   {
     std::cout << "FAILURE: Query and response dont match." << std::endl;
     return 1;
   }
 
   if (!compare(serverDevice,
-               igtlio::vtkIGTLIOCommandDevice::SafeDownCast(query.Response)))
+               igtlio::CommandDevice::SafeDownCast(query.Response)))
   {
     std::cout << "FAILURE: Received response not equal to what the Server sent." << std::endl;
     return 1;

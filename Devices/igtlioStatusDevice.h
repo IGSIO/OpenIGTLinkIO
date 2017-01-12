@@ -1,11 +1,11 @@
-#ifndef VTKIGTLIOSTATUSDEVICE_H
-#define VTKIGTLIOSTATUSDEVICE_H
+#ifndef IGTLIOSTATUSDEVICE_H
+#define IGTLIOSTATUSDEVICE_H
 
 // igtlio includes
 #include "igtlioDevicesExport.h"
 
 #include "igtlStatusConverter.h"
-#include "vtkIGTLIODevice.h"
+#include "igtlioDevice.h"
 
 // OpenIGTLink includes
 #include <igtlStatusMessage.h>
@@ -17,10 +17,10 @@ namespace igtlio
 {
 
 class vtkImageData;
-typedef vtkSmartPointer<class vtkIGTLIOStatusDevice> vtkIGTLIOStatusDevicePointer;
+typedef vtkSmartPointer<class StatusDevice> StatusDevicePointer;
 
 /// A Device supporting the STATUS igtl Message.
-class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOStatusDevice : public vtkIGTLIODevice
+class OPENIGTLINKIO_DEVICES_EXPORT StatusDevice : public Device
 {
 public:
  virtual std::string GetDeviceType() const;
@@ -29,39 +29,39 @@ public:
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
 
-  void SetContent(igtlio::StatusConverter::ContentData content);
-  igtlio::StatusConverter::ContentData GetContent();
+  void SetContent(StatusConverter::ContentData content);
+  StatusConverter::ContentData GetContent();
 
  public:
-  static vtkIGTLIOStatusDevice *New();
-  vtkTypeMacro(vtkIGTLIOStatusDevice,vtkIGTLIODevice);
+  static StatusDevice *New();
+  vtkTypeMacro(StatusDevice,Device);
 
   void PrintSelf(ostream& os, vtkIndent indent);
 
  protected:
-  vtkIGTLIOStatusDevice();
-  ~vtkIGTLIOStatusDevice();
+  StatusDevice();
+  ~StatusDevice();
 
  protected:
   igtl::StatusMessage::Pointer OutMessage;
   igtl::GetStatusMessage::Pointer GetMessage;
 
-  igtlio::StatusConverter::ContentData Content;
+  StatusConverter::ContentData Content;
 };
 
 
 //---------------------------------------------------------------------------
-class OPENIGTLINKIO_DEVICES_EXPORT vtkIGTLIOStatusDeviceCreator : public vtkIGTLIODeviceCreator
+class OPENIGTLINKIO_DEVICES_EXPORT StatusDeviceCreator : public DeviceCreator
 {
 public:
-  virtual vtkSmartPointer<vtkIGTLIODevice> Create(std::string device_name);
+  virtual DevicePointer Create(std::string device_name);
   virtual std::string GetDeviceType() const;
 
-  static vtkIGTLIOStatusDeviceCreator *New();
-  vtkTypeMacro(vtkIGTLIOStatusDeviceCreator,vtkObject);
+  static StatusDeviceCreator *New();
+  vtkTypeMacro(StatusDeviceCreator,vtkObject);
 };
 
 } // namespace igtlio
 
 
-#endif // VTKIGTLIOSTATUSDEVICE_H
+#endif // IGTLIOSTATUSDEVICE_H

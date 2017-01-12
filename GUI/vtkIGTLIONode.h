@@ -46,18 +46,18 @@ public:
   int GetSiblingIndex() const;
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  qIGTLIODevicesModelNode* FindDeviceNode(igtlio::vtkIGTLIODevice* device_);
+  qIGTLIODevicesModelNode* FindDeviceNode(igtlio::Device* device_);
 
-  igtlio::vtkIGTLIODevice* device;
+  igtlio::Device* device;
   igtlio::vtkIGTLIOConnector* connector;
 
 private:
-  qIGTLIODevicesModelNode* GetNode(igtlio::vtkIGTLIOConnector* connector=NULL, igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION group=igtlio::vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, igtlio::vtkIGTLIODevice* device=NULL);
-  qIGTLIODevicesModelNode(qIGTLIODevicesModelNode* parent_, igtlio::vtkIGTLIOLogic* logic_, igtlio::vtkIGTLIOConnector* connector_=NULL, igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION group_=igtlio::vtkIGTLIODevice::NUM_MESSAGE_DIRECTION, igtlio::vtkIGTLIODevice* device_=NULL);
-  std::vector<igtlio::vtkIGTLIODevicePointer> GetDevicesInGroup() const;
+  qIGTLIODevicesModelNode* GetNode(igtlio::vtkIGTLIOConnector* connector=NULL, igtlio::Device::MESSAGE_DIRECTION group=igtlio::Device::NUM_MESSAGE_DIRECTION, igtlio::Device* device=NULL);
+  qIGTLIODevicesModelNode(qIGTLIODevicesModelNode* parent_, igtlio::vtkIGTLIOLogic* logic_, igtlio::vtkIGTLIOConnector* connector_=NULL, igtlio::Device::MESSAGE_DIRECTION group_=igtlio::Device::NUM_MESSAGE_DIRECTION, igtlio::Device* device_=NULL);
+  std::vector<igtlio::DevicePointer> GetDevicesInGroup() const;
   NODE_TYPE type;
   igtlio::vtkIGTLIOLogic* logic;
-  igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION group;
+  igtlio::Device::MESSAGE_DIRECTION group;
   mutable std::set<qIGTLIODevicesModelNodePointer> Children;
   qIGTLIODevicesModelNode* Parent;
 };

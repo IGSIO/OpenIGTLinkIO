@@ -7,7 +7,7 @@ qIGTLIODevicesModelNodePointer qIGTLIODevicesModelNode::createRoot(igtlio::vtkIG
   return retval;
 }
 
-qIGTLIODevicesModelNode::qIGTLIODevicesModelNode(qIGTLIODevicesModelNode *parent_, igtlio::vtkIGTLIOLogic *logic_, igtlio::vtkIGTLIOConnector *connector_, igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION group_, igtlio::vtkIGTLIODevice *device_)
+qIGTLIODevicesModelNode::qIGTLIODevicesModelNode(qIGTLIODevicesModelNode *parent_, igtlio::vtkIGTLIOLogic *logic_, igtlio::vtkIGTLIOConnector *connector_, igtlio::Device::MESSAGE_DIRECTION group_, igtlio::Device *device_)
 {
   Parent = parent_;
   logic = logic_;
@@ -19,7 +19,7 @@ qIGTLIODevicesModelNode::qIGTLIODevicesModelNode(qIGTLIODevicesModelNode *parent
     {
       type = NODE_TYPE_DEVICE;
     }
-  else if (group!=igtlio::vtkIGTLIODevice::NUM_MESSAGE_DIRECTION)
+  else if (group!=igtlio::Device::NUM_MESSAGE_DIRECTION)
     {
       type = NODE_TYPE_GROUP;
     }
@@ -54,9 +54,9 @@ std::string qIGTLIODevicesModelNode::GetName()
     }
   if (this->isGroup())
     {
-      if (group==igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION_IN)
+      if (group==igtlio::Device::MESSAGE_DIRECTION_IN)
         return "IN";
-      if (group==igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION_OUT)
+      if (group==igtlio::Device::MESSAGE_DIRECTION_OUT)
         return "OUT";
       return "???";
     }
@@ -77,7 +77,7 @@ qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::GetChild(int row)
     }
   if (this->isConnector())
     {
-      node = this->GetNode(connector, static_cast<igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION>(row));
+      node = this->GetNode(connector, static_cast<igtlio::Device::MESSAGE_DIRECTION>(row));
     }
   if (this->isGroup())
     {
@@ -91,7 +91,7 @@ qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::GetParent()
   return Parent;
 }
 
-qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::GetNode(igtlio::vtkIGTLIOConnector *connector, igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION group, igtlio::vtkIGTLIODevice *device)
+qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::GetNode(igtlio::vtkIGTLIOConnector *connector, igtlio::Device::MESSAGE_DIRECTION group, igtlio::Device *device)
 {
   //  dmsg("GetNode b");
   qIGTLIODevicesModelNodePointer node(new qIGTLIODevicesModelNode(this, logic, connector, group, device));
@@ -106,12 +106,12 @@ qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::GetNode(igtlio::vtkIGTLIOConne
   return node.data();
 }
 
-std::vector<igtlio::vtkIGTLIODevicePointer> qIGTLIODevicesModelNode::GetDevicesInGroup() const
+std::vector<igtlio::DevicePointer> qIGTLIODevicesModelNode::GetDevicesInGroup() const
 {
-  std::vector<igtlio::vtkIGTLIODevicePointer> retval;
+  std::vector<igtlio::DevicePointer> retval;
   for (unsigned int i=0; i<connector->GetNumberOfDevices(); ++i)
     {
-      igtlio::vtkIGTLIODevicePointer d = connector->GetDevice(i);
+      igtlio::DevicePointer d = connector->GetDevice(i);
       if (d->GetMessageDirection()==group)
         retval.push_back(d);
     }
@@ -126,7 +126,7 @@ int qIGTLIODevicesModelNode::GetNumberOfChildren() const
     }
   if (this->isConnector())
     {
-      return igtlio::vtkIGTLIODevice::NUM_MESSAGE_DIRECTION;
+      return igtlio::Device::NUM_MESSAGE_DIRECTION;
     }
   if (this->isGroup())
     {
@@ -156,7 +156,7 @@ int qIGTLIODevicesModelNode::GetSiblingIndex() const
     }
   if (this->isDevice())
     {
-      std::vector<igtlio::vtkIGTLIODevicePointer> devices = this->GetDevicesInGroup();
+      std::vector<igtlio::DevicePointer> devices = this->GetDevicesInGroup();
       for (unsigned int i=0; i<devices.size(); ++i)
         {
           if (devices[i] == device)
@@ -176,7 +176,7 @@ void qIGTLIODevicesModelNode::PrintSelf(std::ostream &os, vtkIndent indent)
      << indent << "Device: " << ((device) ? device->GetDeviceName() : "-" ) << "\n";
 }
 
-qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::FindDeviceNode(igtlio::vtkIGTLIODevice *device_)
+qIGTLIODevicesModelNode *qIGTLIODevicesModelNode::FindDeviceNode(igtlio::Device *device_)
 {
   if (this->isDevice() && device==device_)
     return this;

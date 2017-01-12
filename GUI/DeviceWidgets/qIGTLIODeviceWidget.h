@@ -13,7 +13,7 @@
 
 namespace igtlio
 {
-typedef vtkSmartPointer<class vtkIGTLIODevice> vtkIGTLIODevicePointer;
+typedef vtkSmartPointer<class Device> DevicePointer;
 }
 
 class qIGTLIODeviceWidget;
@@ -36,10 +36,10 @@ class OPENIGTLINKIO_GUI_EXPORT qIGTLIODeviceWidget : public QWidget
   IGTLIO_QVTK_OBJECT
 public:
   qIGTLIODeviceWidget(QWidget* parent=NULL);
-  virtual void SetDevice(igtlio::vtkIGTLIODevicePointer device);
+  virtual void SetDevice(igtlio::DevicePointer device);
 
 protected:
-  igtlio::vtkIGTLIODevicePointer Device;
+  igtlio::DevicePointer Device;
 
   virtual void setupUi() = 0;
 

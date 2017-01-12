@@ -17,12 +17,12 @@
 
 // IGTLIO includes
 #include "igtlioLogicExport.h"
-#include "vtkIGTLIODevice.h"
+#include "igtlioDevice.h"
 
 namespace igtlio
 {
 
-typedef vtkSmartPointer<class vtkIGTLIODeviceCreator> vtkIGTLIODeviceCreatorPointer;
+typedef vtkSmartPointer<class DeviceCreator> vtkIGTLIODeviceCreatorPointer;
 typedef vtkSmartPointer<class vtkIGTLIODeviceFactory> vtkIGTLIODeviceFactoryPointer;
 
 class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIODeviceFactory : public vtkObject
@@ -38,7 +38,7 @@ class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIODeviceFactory : public vtkObject
 
   // Create a Device object based on an input device_type
   // TODO: Should we accept prefixed message types as well?
-  vtkIGTLIODevicePointer create(std::string device_type, std::string device_name) const;
+  DevicePointer create(std::string device_type, std::string device_name) const;
 
 protected:
   vtkIGTLIODeviceFactory();

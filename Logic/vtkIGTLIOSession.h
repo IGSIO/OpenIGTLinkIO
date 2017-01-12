@@ -2,8 +2,8 @@
 #define VTKIGTLIOSESSION_H
 
 #include "IGTLIOUtilities.h"
-#include "vtkIGTLIODevice.h"
-#include "vtkIGTLIOCommandDevice.h"
+#include "igtlioDevice.h"
+#include "igtlioCommandDevice.h"
 
 #include "igtlioLogicExport.h"
 
@@ -15,8 +15,8 @@ namespace igtlio
 
 typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
 typedef vtkSmartPointer<class vtkIGTLIOConnector> vtkIGTLIOConnectorPointer;
-typedef vtkSmartPointer<class vtkIGTLIOImageDevice> vtkIGTLIOImageDevicePointer;
-typedef vtkSmartPointer<class vtkIGTLIOTransformDevice> vtkIGTLIOTransformDevicePointer;
+typedef vtkSmartPointer<class ImageDevice> ImageDevicePointer;
+typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
 
 /// Convenience interface for a single IGTL connection.
 ///
@@ -25,7 +25,7 @@ typedef vtkSmartPointer<class vtkIGTLIOTransformDevice> vtkIGTLIOTransformDevice
 ///     vtkIGTLIOLogicPointer root = vtkIGTLIOLogicPointer::New();
 ///     vtkIGTLIOSessionPointer session = root->ConnectToServer(example.org, 18333);
 ///
-///     vtkIGTLIOCommandDevicePointer command;
+///     CommandDevicePointer command;
 ///     command = session->SendCommandQuery("device_id",
 ///                                         "GetDeviceParameters",
 ///                                         "<Command><Parameter Name=\"Depth\"/></Command>",
@@ -46,7 +46,7 @@ public:
   /// - If using BLOCKING, the call blocks until a response appears or timeout. Return response.
   /// - If using ASYNCHRONOUS, wait for the CommandResponseReceivedEvent event. Return device.
   ///
-  vtkIGTLIOCommandDevicePointer SendCommandQuery(std::string device_id,
+  CommandDevicePointer SendCommandQuery(std::string device_id,
                                                  std::string command,
                                                  std::string content,
                                                  igtlio::SYNCHRONIZATION_TYPE synchronized = igtlio::BLOCKING,
@@ -55,17 +55,17 @@ public:
   ///  Send a command response from the given device. Asynchronous.
   /// Precondition: The given device has received a query that is not yet responded to.
   /// Return device.
-  vtkIGTLIOCommandDevicePointer SendCommandResponse(std::string device_id, std::string command,
+  CommandDevicePointer SendCommandResponse(std::string device_id, std::string command,
                                                     std::string content);
 
   ///
   ///  Send the given image from the given device. Asynchronous.
-  vtkIGTLIOImageDevicePointer SendImage(std::string device_id,
+  ImageDevicePointer SendImage(std::string device_id,
                                         vtkSmartPointer<vtkImageData> image,
                                         vtkSmartPointer<vtkMatrix4x4> transform);
 
   /// Send the given image from the given device. Asynchronous.
-  vtkIGTLIOTransformDevicePointer SendTransform(std::string device_id,
+  TransformDevicePointer SendTransform(std::string device_id,
                                                 vtkSmartPointer<vtkMatrix4x4> transform);
 
     /// TODO: add more convenience methods here.
@@ -107,7 +107,7 @@ private:
 //   std::string response = command.GetResponse();
 
   bool waitForConnection(double timeout_s);
-  vtkIGTLIODevicePointer AddDeviceIfNotPresent(DeviceKeyType key);
+  DevicePointer AddDeviceIfNotPresent(DeviceKeyType key);
 };
 
 } // namespace igtlio

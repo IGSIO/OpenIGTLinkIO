@@ -8,7 +8,7 @@
 
 #include "vtkCommand.h"
 
-#include "vtkIGTLIODevice.h"
+#include "igtlioDevice.h"
 #include "qIGTLIOGuiUtilities.h"
 
 qIGTLIOGenericDeviceWidget::qIGTLIOGenericDeviceWidget(QWidget* parent) : qIGTLIODeviceWidget(parent)

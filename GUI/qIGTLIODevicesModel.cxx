@@ -286,7 +286,7 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, unsigned long even
 {
   if (event==igtlio::vtkIGTLIOConnector::NewDeviceEvent)
     {
-      igtlio::vtkIGTLIODevice* device = static_cast<igtlio::vtkIGTLIODevice*>(c);
+      igtlio::Device* device = static_cast<igtlio::Device*>(c);
 
       qIGTLIODevicesModelNode* node = RootNode->FindDeviceNode(device);
       QModelIndex parent = this->createIndex(node->GetParent()->GetSiblingIndex(), 0, node->GetParent());
@@ -299,7 +299,7 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, unsigned long even
     }
   if (event==igtlio::vtkIGTLIOConnector::RemovedDeviceEvent)
     {
-     igtlio::vtkIGTLIODevice* device = static_cast<igtlio::vtkIGTLIODevice*>(c);
+     igtlio::Device* device = static_cast<igtlio::Device*>(c);
 
      qIGTLIODevicesModelNode* node = RootNode->FindDeviceNode(device);
      QModelIndex parent = this->createIndex(node->GetParent()->GetSiblingIndex(), 0, node->GetParent());
@@ -311,7 +311,7 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, unsigned long even
     {
       // TODO: this event is never emittd, and never will. The vtkCommand::ModifiedEvent is emitted
       // from each device, and each of the must be listened to.
-     igtlio::vtkIGTLIODevice* device = static_cast<igtlio::vtkIGTLIODevice*>(c);
+     igtlio::Device* device = static_cast<igtlio::Device*>(c);
      qIGTLIODevicesModelNode* node = RootNode->FindDeviceNode(device);
      QModelIndex bindex = this->createIndex(node->GetSiblingIndex(), 0, node);
      QModelIndex eindex = this->createIndex(node->GetSiblingIndex(), this->columnCount(bindex), node);

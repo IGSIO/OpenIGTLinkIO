@@ -81,7 +81,7 @@ private:
 
   mutable qIGTLIODevicesModelNodePointer RootNode;
   void ReconnectConnector(igtlio::vtkIGTLIOConnector *oldConnector, igtlio::vtkIGTLIOConnector *newConnector);
-  qIGTLIODevicesModelNode *FindDeviceNode(igtlio::vtkIGTLIODevice *device, qIGTLIODevicesModelNode *parent);
+  qIGTLIODevicesModelNode *FindDeviceNode(igtlio::Device *device, qIGTLIODevicesModelNode *parent);
 };
 
 

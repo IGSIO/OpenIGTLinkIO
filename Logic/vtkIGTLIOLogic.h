@@ -37,7 +37,7 @@
 
 // IGTLIO includes
 #include "igtlioLogicExport.h"
-#include "vtkIGTLIODevice.h"
+#include "igtlioDevice.h"
 #include "IGTLIOUtilities.h"
 
 namespace igtlio
@@ -80,8 +80,8 @@ public:
     NewDeviceEvent        = 118949,
 //    DeviceModifiedEvent   = 118950, // must listen to each specific device in order to get this one.
     RemovedDeviceEvent    = 118951,
-    CommandQueryReceivedEvent = vtkIGTLIODevice::CommandQueryReceivedEvent, // one of the connected COMMAND devices got a query
-    CommandResponseReceivedEvent = vtkIGTLIODevice::CommandResponseReceivedEvent // one of the connected COMMAND devices got a response
+    CommandQueryReceivedEvent = Device::CommandQueryReceivedEvent, // one of the connected COMMAND devices got a query
+    CommandResponseReceivedEvent = Device::CommandResponseReceivedEvent // one of the connected COMMAND devices got a response
   };
 
  static vtkIGTLIOLogic *New();
@@ -107,7 +107,7 @@ public:
  //TODO: interface for accessing Devices
  unsigned int GetNumberOfDevices() const;
  void RemoveDevice(unsigned int index);
- vtkIGTLIODevicePointer GetDevice(unsigned int index);
+ DevicePointer GetDevice(unsigned int index);
 
 
 protected:
@@ -122,7 +122,7 @@ private:
   void operator=(const vtkIGTLIOLogic&); // Not implemented
 
   int CreateUniqueConnectorID() const;
-  std::vector<vtkIGTLIODevicePointer> CreateDeviceList() const;
+  std::vector<DevicePointer> CreateDeviceList() const;
 
   vtkSmartPointer<class vtkCallbackCommand> NewDeviceCallback;
   vtkSmartPointer<class vtkCallbackCommand> RemovedDeviceCallback;

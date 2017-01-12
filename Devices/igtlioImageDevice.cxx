@@ -13,7 +13,7 @@
 ==========================================================================*/
 
 // OpenIGTLinkIF MRML includes
-#include "vtkIGTLIOImageDevice.h"
+#include "igtlioImageDevice.h"
 
 // igtl support includes
 #include <igtl_util.h>
@@ -33,57 +33,57 @@ namespace igtlio
 {
 
 //---------------------------------------------------------------------------
-vtkSmartPointer<vtkIGTLIODevice> vtkIGTLIOImageDeviceCreator::Create(std::string device_name)
+DevicePointer ImageDeviceCreator::Create(std::string device_name)
 {
- vtkSmartPointer<vtkIGTLIOImageDevice> retval = vtkSmartPointer<vtkIGTLIOImageDevice>::New();
+ ImageDevicePointer retval = ImageDevicePointer::New();
  retval->SetDeviceName(device_name);
  return retval;
 }
 
 //---------------------------------------------------------------------------
-std::string vtkIGTLIOImageDeviceCreator::GetDeviceType() const
+std::string ImageDeviceCreator::GetDeviceType() const
 {
-  return igtlio::ImageConverter::GetIGTLTypeName();
+  return ImageConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOImageDeviceCreator);
+vtkStandardNewMacro(ImageDeviceCreator);
 
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOImageDevice);
+vtkStandardNewMacro(ImageDevice);
 //---------------------------------------------------------------------------
-vtkIGTLIOImageDevice::vtkIGTLIOImageDevice()
-{
-}
-
-//---------------------------------------------------------------------------
-vtkIGTLIOImageDevice::~vtkIGTLIOImageDevice()
+ImageDevice::ImageDevice()
 {
 }
 
 //---------------------------------------------------------------------------
-std::string vtkIGTLIOImageDevice::GetDeviceType() const
+ImageDevice::~ImageDevice()
 {
-  return igtlio::ImageConverter::GetIGTLTypeName();
 }
 
-void vtkIGTLIOImageDevice::SetContent(igtlio::ImageConverter::ContentData content)
+//---------------------------------------------------------------------------
+std::string ImageDevice::GetDeviceType() const
+{
+  return ImageConverter::GetIGTLTypeName();
+}
+
+void ImageDevice::SetContent(ImageConverter::ContentData content)
 {
   Content = content;
   this->Modified();
 }
 
-igtlio::ImageConverter::ContentData vtkIGTLIOImageDevice::GetContent()
+ImageConverter::ContentData ImageDevice::GetContent()
 {
   return Content;
 }
 
 
 //---------------------------------------------------------------------------
-int vtkIGTLIOImageDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+int ImageDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (igtlio::ImageConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+ if (ImageConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
    {
    this->Modified();
    return 1;
@@ -94,7 +94,7 @@ int vtkIGTLIOImageDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, 
 
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLIOImageDevice::GetIGTLMessage()
+igtl::MessageBase::Pointer ImageDevice::GetIGTLMessage()
 {
  if (!Content.image)
   {
@@ -102,7 +102,7 @@ igtl::MessageBase::Pointer vtkIGTLIOImageDevice::GetIGTLMessage()
   return 0;
   }
 
- if (!igtlio::ImageConverter::toIGTL(HeaderData, Content, &this->OutImageMessage))
+ if (!ImageConverter::toIGTL(HeaderData, Content, &this->OutImageMessage))
    {
    return 0;
    }
@@ -111,7 +111,7 @@ igtl::MessageBase::Pointer vtkIGTLIOImageDevice::GetIGTLMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer vtkIGTLIOImageDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
+igtl::MessageBase::Pointer ImageDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
  if (prefix==MESSAGE_PREFIX_GET)
   {
@@ -132,7 +132,7 @@ igtl::MessageBase::Pointer vtkIGTLIOImageDevice::GetIGTLMessage(MESSAGE_PREFIX p
 }
 
 //---------------------------------------------------------------------------
-std::set<vtkIGTLIODevice::MESSAGE_PREFIX> vtkIGTLIOImageDevice::GetSupportedMessagePrefixes() const
+std::set<Device::MESSAGE_PREFIX> ImageDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
  retval.insert(MESSAGE_PREFIX_GET);
@@ -140,9 +140,9 @@ std::set<vtkIGTLIODevice::MESSAGE_PREFIX> vtkIGTLIOImageDevice::GetSupportedMess
 }
 
 //---------------------------------------------------------------------------
-void vtkIGTLIOImageDevice::PrintSelf(ostream& os, vtkIndent indent)
+void ImageDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->vtkIGTLIODevice::PrintSelf(os, indent);
+  Device::PrintSelf(os, indent);
 
   os << indent << "Image:\t" <<"\n";
   Content.image->PrintSelf(os, indent.GetNextIndent());

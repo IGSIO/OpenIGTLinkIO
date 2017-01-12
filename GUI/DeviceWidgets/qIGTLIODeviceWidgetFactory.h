@@ -9,7 +9,7 @@
 
 // IGTLIO includes
 #include "igtlioGUIExport.h"
-#include "vtkIGTLIODevice.h"
+#include "igtlioDevice.h"
 
 class qIGTLIODeviceWidget;
 typedef vtkSmartPointer<class vtkIGTLIODeviceWidgetCreator> vtkIGTLIODeviceWidgetCreatorPointer;

@@ -8,10 +8,10 @@
 #include "vtkIGTLIODeviceFactory.h"
 #include <vtkObjectFactory.h>
 
-#include "vtkIGTLIOImageDevice.h"
-#include "vtkIGTLIOStatusDevice.h"
-#include "vtkIGTLIOCommandDevice.h"
-#include "vtkIGTLIOTransformDevice.h"
+#include "igtlioImageDevice.h"
+#include "igtlioStatusDevice.h"
+#include "igtlioCommandDevice.h"
+#include "igtlioTransformDevice.h"
 
 namespace igtlio
 {
@@ -21,10 +21,10 @@ vtkStandardNewMacro(vtkIGTLIODeviceFactory);
 //---------------------------------------------------------------------------
 vtkIGTLIODeviceFactory::vtkIGTLIODeviceFactory()
 {
-  this->registerCreator<vtkIGTLIOImageDeviceCreator>();
-  this->registerCreator<vtkIGTLIOStatusDeviceCreator>();
-  this->registerCreator<vtkIGTLIOCommandDeviceCreator>();
-  this->registerCreator<igtlio::vtkIGTLIOTransformDeviceCreator>();
+  this->registerCreator<ImageDeviceCreator>();
+  this->registerCreator<StatusDeviceCreator>();
+  this->registerCreator<CommandDeviceCreator>();
+  this->registerCreator<igtlio::TransformDeviceCreator>();
 }
 
 //---------------------------------------------------------------------------
@@ -61,11 +61,11 @@ std::vector<std::string> vtkIGTLIODeviceFactory::GetAvailableDeviceTypes() const
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIODevicePointer vtkIGTLIODeviceFactory::create(std::string device_type, std::string device_name) const
+DevicePointer vtkIGTLIODeviceFactory::create(std::string device_type, std::string device_name) const
 {
   vtkIGTLIODeviceCreatorPointer creator = this->GetCreator(device_type);
   if (!creator)
-    return vtkIGTLIODevicePointer();
+    return DevicePointer();
   return creator->Create(device_name);
 }
 

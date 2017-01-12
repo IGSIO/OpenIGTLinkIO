@@ -3,7 +3,7 @@
 #include "qIGTLIODeviceWidget.h"
 #include "qIGTLIOGenericDeviceWidget.h"
 
-#include "vtkIGTLIOImageDevice.h"
+#include "igtlioImageDevice.h"
 #include "qIGTLIOStatusDeviceWidget.h"
 #include "qIGTLIOCommandDeviceWidget.h"
 

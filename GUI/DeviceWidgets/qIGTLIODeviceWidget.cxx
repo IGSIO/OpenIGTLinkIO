@@ -1,13 +1,13 @@
 #include "qIGTLIODeviceWidget.h"
 
-#include "vtkIGTLIODevice.h"
+#include "igtlioDevice.h"
 
 qIGTLIODeviceWidget::qIGTLIODeviceWidget(QWidget *parent) : QWidget(parent)
 {
 
 }
 
-void qIGTLIODeviceWidget::SetDevice(igtlio::vtkIGTLIODevicePointer device)
+void qIGTLIODeviceWidget::SetDevice(igtlio::DevicePointer device)
 {
   qvtkReconnect(Device, device, vtkCommand::ModifiedEvent,
                 this, SLOT(onDeviceModified()));

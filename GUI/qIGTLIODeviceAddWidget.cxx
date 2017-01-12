@@ -109,8 +109,8 @@ void qIGTLIODeviceAddWidget::onAddDevice()
   if (!node->connector->GetDevice(igtlio::DeviceKeyType(deviceType, deviceName)))
     {
       qIGTLIODevicesModelNode* node = this->getSelectedNode();
-      igtlio::vtkIGTLIODevicePointer device = node->connector->GetDeviceFactory()->create(deviceType, deviceName);
-      device->SetMessageDirection(igtlio::vtkIGTLIODevice::MESSAGE_DIRECTION_OUT);
+      igtlio::DevicePointer device = node->connector->GetDeviceFactory()->create(deviceType, deviceName);
+      device->SetMessageDirection(igtlio::Device::MESSAGE_DIRECTION_OUT);
       node->connector->AddDevice(device);
     }
 
