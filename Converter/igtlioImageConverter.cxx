@@ -19,6 +19,7 @@
 
 #include <vtkImageData.h>
 #include <vtkMatrix4x4.h>
+#include <vtkVersion.h>
 
 namespace // unnamed namespace
 {
