@@ -6,9 +6,6 @@ project(igtlioQtClient)
 
 set(EXECUTABLE ${PROJECT_NAME})
 
-find_package(OpenIGTLink REQUIRED)
-include(${OpenIGTLink_USE_FILE})
-
 find_package(VTK
   COMPONENTS
   vtkIOImage

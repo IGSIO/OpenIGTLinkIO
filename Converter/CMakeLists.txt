@@ -3,9 +3,6 @@ project(igtlioConverter)
 set(KIT "${PROJECT_NAME}")
 
 set(${KIT}_EXPORT_DIRECTIVE "OPENIGTLINKIO_CONVERTER_EXPORT")
-
-find_package(OpenIGTLink REQUIRED)
-include(${OpenIGTLink_USE_FILE})
     
 find_package(VTK
   COMPONENTS
