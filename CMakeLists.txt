@@ -21,7 +21,7 @@ if(NOT (IGTLIO_QT_VERSION VERSION_EQUAL "4" OR IGTLIO_QT_VERSION VERSION_EQUAL "
     message(FATAL_ERROR "Expected value for IGTLIO_QT_VERSION is either '4' or '5'")
 endif()
 
-set (OpenIGTLinkIO_TARGETS igtlioLogic igtlioDevices igtlioConverter ${OpenIGTLinkIO_TARGETS})
+set (OpenIGTLinkIO_TARGETS igtlioLogic igtlioDevices igtlioConverter)
 set (OpenIGTLinkIO_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
