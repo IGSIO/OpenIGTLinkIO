@@ -8,6 +8,15 @@ endif()
 project(OpenIGTLinkIO)
 ###########################################################
 
+set(OpenIGTLinkIO_VERSION_SUFFIX "")
+
+set(OpenIGTLinkIO_BINARY_INSTALL "bin")
+set(OpenIGTLinkIO_LIBRARY_INSTALL "lib")
+set(OpenIGTLinkIO_CMAKE_INSTALL "${OpenIGTLinkIO_LIBRARY_INSTALL}/igtlio/cmake")
+set(OpenIGTLinkIO_PACKAGE_INSTALL "${OpenIGTLinkIO_CMAKE_INSTALL}/igtlio${OpenIGTLinkIO_VERSION_SUFFIX}")
+set(OpenIGTLinkIO_INCLUDE_INSTALL "include/igtlio${OpenIGTLinkIO_VERSION_SUFFIX}")
+
+
 find_package(OpenIGTLink REQUIRED NO_MODULE)
 include(${OpenIGTLink_USE_FILE})
 
@@ -76,8 +85,15 @@ if(IGTLIO_USE_GUI AND IGTLIO_QT_VERSION EQUAL "5" AND NOT Qt5_DIR)
   set(Qt5_DIR ${Qt5_DIR}/Qt5)
 endif()
 
+set(IS_INSTALL False)
 configure_file(OpenIGTLinkIOConfig.cmake.in
   OpenIGTLinkIOConfig.cmake
+  @ONLY
+  )
+
+set(IS_INSTALL True)
+configure_file(OpenIGTLinkIOConfig.cmake.in
+  install/OpenIGTLinkIOConfig.cmake
   @ONLY
   )
 
@@ -86,3 +102,12 @@ include(CTest)
 if (BUILD_TESTING)
   add_subdirectory(Testing)
 endif()
+
+install(EXPORT OpenIGTLinkIO
+  DESTINATION "${OpenIGTLinkIO_PACKAGE_INSTALL}"
+  FILE "OpenIGTLINKIOTargets.cmake"
+  )
+
+install(FILES ${CMAKE_BINARY_DIR}/install/OpenIGTLinkIOConfig.cmake
+  DESTINATION "${OpenIGTLinkIO_PACKAGE_INSTALL}"
+  )

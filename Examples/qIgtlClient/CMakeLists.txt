@@ -32,3 +32,8 @@ target_link_libraries(${EXECUTABLE}
     PRIVATE
     ${igtlclient_qt_libraries}
     igtlioGUI )
+
+INSTALL(TARGETS ${KIT} EXPORT OpenIGTLinkIO 
+  RUNTIME DESTINATION "${OpenIGTLinkIO_BINARY_INSTALL}"
+  LIBRARY ARCHIVE DESTINATION "${OpenIGTLinkIO_LIBRARY_INSTALL}"
+  )
