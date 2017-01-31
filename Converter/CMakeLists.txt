@@ -28,12 +28,21 @@ set(${KIT}_SRCS
   igtlCommandConverter.cxx
   )
 
+set(${KIT}_HDRS
+  igtlBaseConverter.h
+  igtlImageConverter.h
+  igtlPolyDataConverter.h
+  igtlStatusConverter.h
+  igtlTransformConverter.h
+  igtlCommandConverter.h
+  )
+
 set(${KIT}_TARGET_LIBRARIES
   ${OpenIGTLink_LIBRARIES}
   ${VTK_LIBRARIES}
   )
 
-add_library(${KIT} ${${KIT}_SRCS})
+add_library(${KIT} ${${KIT}_SRCS} ${${KIT}_HDRS})
 target_link_libraries(${KIT} PUBLIC ${${KIT}_TARGET_LIBRARIES})
 target_include_directories(${KIT} ${${KIT}_INCLUDE_DIRECTORIES})
 
@@ -45,6 +54,4 @@ INSTALL(TARGETS ${KIT} EXPORT OpenIGTLinkIO
   LIBRARY ARCHIVE DESTINATION "${OpenIGTLinkIO_LIBRARY_INSTALL}"
   )
 
-INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}" PATTERN *.h)
-
-INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${KIT}Export.h" DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}")
+INSTALL(FILES ${${KIT}_HDRS} "${CMAKE_CURRENT_BINARY_DIR}/${KIT}Export.h" DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}")

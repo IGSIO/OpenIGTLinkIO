@@ -21,14 +21,17 @@ set(${KIT}_INCLUDE_DIRECTORIES
 
 set(${KIT}_SRCS
   vtkIGTLIODevice.cxx
-  vtkIGTLIODevice.h
   vtkIGTLIOImageDevice.cxx
-  vtkIGTLIOImageDevice.h
   vtkIGTLIOStatusDevice.cxx
-  vtkIGTLIOStatusDevice.h
   vtkIGTLIOCommandDevice.cxx
-  vtkIGTLIOCommandDevice.h
   vtkIGTLIOTransformDevice.cxx
+  )
+
+set(${KIT}_HDRS
+  vtkIGTLIODevice.h
+  vtkIGTLIOImageDevice.h
+  vtkIGTLIOStatusDevice.h
+  vtkIGTLIOCommandDevice.h
   vtkIGTLIOTransformDevice.h
   )
 
@@ -38,7 +41,7 @@ set(${KIT}_TARGET_LIBRARIES
   ${VTK_LIBRARIES}
   )
 
-add_library(${KIT} ${${KIT}_SRCS})
+add_library(${KIT} ${${KIT}_SRCS} ${${KIT}_HDRS})
 target_link_libraries(${KIT} ${${KIT}_TARGET_LIBRARIES})
 target_include_directories(${KIT} ${${KIT}_INCLUDE_DIRECTORIES})
 
@@ -50,6 +53,4 @@ INSTALL(TARGETS ${KIT} EXPORT OpenIGTLinkIO
   LIBRARY ARCHIVE DESTINATION "${OpenIGTLinkIO_LIBRARY_INSTALL}"
   )
 
-INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}" PATTERN *.h)
-
-INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${KIT}Export.h" DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}")
+INSTALL(FILES ${${KIT}_HDRS} "${CMAKE_CURRENT_BINARY_DIR}/${KIT}Export.h" DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}")
