@@ -8,11 +8,11 @@ endif()
 project(OpenIGTLinkIO)
 ###########################################################
 
-set(OpenIGTLinkIO_VERSION_SUFFIX "")
+set(OpenIGTLinkIO_VERSION_SUFFIX "") # add a version suffix for parallel multi-version install
 
 set(OpenIGTLinkIO_BINARY_INSTALL "bin")
 set(OpenIGTLinkIO_LIBRARY_INSTALL "lib")
-set(OpenIGTLinkIO_CMAKE_INSTALL "${OpenIGTLinkIO_LIBRARY_INSTALL}/igtlio/cmake")
+set(OpenIGTLinkIO_CMAKE_INSTALL "${OpenIGTLinkIO_LIBRARY_INSTALL}/cmake")
 set(OpenIGTLinkIO_PACKAGE_INSTALL "${OpenIGTLinkIO_CMAKE_INSTALL}/igtlio${OpenIGTLinkIO_VERSION_SUFFIX}")
 set(OpenIGTLinkIO_INCLUDE_INSTALL "include/igtlio${OpenIGTLinkIO_VERSION_SUFFIX}")
 
@@ -91,11 +91,11 @@ configure_file(OpenIGTLinkIOConfig.cmake.in
 
 # Generate Config file for INSTALL_INTERFACE
 set(OpenIGTLinkIO_CONFIG_CODE [=[
-  get_filename_component(OpenIGTLinkIO_CMAKE_PACKAGE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
-  get_filename_component(OpenIGTLinkIO_INSTALL_PREFIX "${OpenIGTLinkIO_CMAKE_PACKAGE_DIR}" DIRECTORY)
-  get_filename_component(OpenIGTLinkIO_LIBRARY_DIR "${OpenIGTLinkIO_INSTALL_PREFIX}" DIRECTORY)
-  get_filename_component(OpenIGTLinkIO_INSTALL_PREFIX "${OpenIGTLinkIO_LIBRARY_DIR}" DIRECTORY)
-
+  get_filename_component(OpenIGTLinkIO_CMAKE_PACKAGE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)       # <prefix>/lib/cmake/igtlio
+  get_filename_component(_TEMP_DIRECTORY "${OpenIGTLinkIO_CMAKE_PACKAGE_DIR}" DIRECTORY)               # <prefix>/lib/cmake
+  get_filename_component(OpenIGTLinkIO_LIBRARY_DIR "${_TEMP_DIRECTORY}" DIRECTORY)                     # <prefix>/lib
+  get_filename_component(OpenIGTLinkIO_INSTALL_PREFIX "${OpenIGTLinkIO_LIBRARY_DIR}" DIRECTORY)        # <prefix>
+  
   set(OpenIGTLinkIO_INCLUDE_DIR "${OpenIGTLinkIO_INSTALL_PREFIX}/@OpenIGTLinkIO_INCLUDE_INSTALL@")
   set(OpenIGTLinkIO_BINARY_DIR "${OpenIGTLinkIO_INSTALL_PREFIX}/@OpenIGTLinkIO_BINARY_INSTALL@")
   
