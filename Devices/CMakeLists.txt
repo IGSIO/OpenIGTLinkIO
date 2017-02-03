@@ -45,8 +45,10 @@ add_library(${KIT} ${${KIT}_SRCS} ${${KIT}_HDRS})
 target_link_libraries(${KIT} ${${KIT}_TARGET_LIBRARIES})
 target_include_directories(${KIT} ${${KIT}_INCLUDE_DIRECTORIES})
 
-include( GenerateExportHeader )
-generate_export_header( ${KIT} EXPORT_FILE_NAME ${KIT}Export.h EXPORT_MACRO_NAME ${${KIT}_EXPORT_DIRECTIVE} )
+include(GenerateExportHeader)
+generate_export_header( ${KIT} EXPORT_FILE_NAME ${KIT}Export.h 
+  EXPORT_MACRO_NAME ${${KIT}_EXPORT_DIRECTIVE} 
+  )
 
 INSTALL(TARGETS ${KIT} EXPORT OpenIGTLinkIO 
   RUNTIME DESTINATION "${OpenIGTLinkIO_BINARY_INSTALL}"
