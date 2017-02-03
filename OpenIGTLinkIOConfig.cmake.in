@@ -1,18 +1,19 @@
-IF(NOT OpenIGTLink_FOUND)
-  SET(OpenIGTLink_DIR "@OpenIGTLink_DIR@")
-  FIND_PACKAGE(OpenIGTLink REQUIRED NO_MODULE)
-ELSE()
-  IF(NOT "@OpenIGTLink_VERSION_MAJOR@.@OpenIGTLink_VERSION_MINOR@.@OpenIGTLink_VERSION_PATCH@" VERSION_EQUAL "${OpenIGTLink_VERSION_MAJOR}.${OpenIGTLink_VERSION_MINOR}.${OpenIGTLink_VERSION_PATCH}")
-	MESSAGE(SEND_ERROR "Trying to use different versions in OpenIGTLinkIO and your superceeding project, use the same version of OpenIGTLink.")
-  ENDIF()
-ENDIF()
-IF(EXISTS ${OpenIGTLink_USE_FILE})
-  INCLUDE(${OpenIGTLink_USE_FILE})
-ENDIF()
+if(NOT OpenIGTLink_FOUND)
+  set(OpenIGTLink_DIR "@OpenIGTLink_DIR@")
+  find_package(OpenIGTLink REQUIRED NO_MODULE)
+else()
+  if(NOT "@OpenIGTLink_VERSION_MAJOR@.@OpenIGTLink_VERSION_MINOR@.@OpenIGTLink_VERSION_PATCH@" VERSION_EQUAL "${OpenIGTLink_VERSION_MAJOR}.${OpenIGTLink_VERSION_MINOR}.${OpenIGTLink_VERSION_PATCH}")
+    message(SEND_ERROR "Different versions in OpenIGTLinkIO (@OpenIGTLink_VERSION_MAJOR@.@OpenIGTLink_VERSION_MINOR@.@OpenIGTLink_VERSION_PATCH@) and referencing project (${OpenIGTLink_VERSION_MAJOR}.${OpenIGTLink_VERSION_MINOR}.${OpenIGTLink_VERSION_PATCH}). Issues may arise.")
+  endif()
+endif()
+
+if(EXISTS ${OpenIGTLink_USE_FILE})
+  include(${OpenIGTLink_USE_FILE})
+endif()
 
 @OpenIGTLinkIO_CONFIG_CODE@
-  
-INCLUDE("@OpenIGTLinkIO_LIBRARY_TARGETS_FILE@")
+
+include("@OpenIGTLinkIO_LIBRARY_TARGETS_FILE@")
 
 # Enable support for old style include/linking
 # It is highly recommended to link to target names, thus 
