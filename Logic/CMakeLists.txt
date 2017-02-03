@@ -14,24 +14,28 @@ include(${VTK_USE_FILE})
 
 set(${KIT}_INCLUDE_DIRECTORIES
   PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR}
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<INSTALL_INTERFACE:${OpenIGTLinkIO_INCLUDE_INSTALL}>
   )
 
 set(${KIT}_SRCS
-  IGTLIOUtilities.h
   IGTLIOUtilities.cxx
-  vtkIGTLIOObject.h
   vtkIGTLIOObject.cxx
   vtkIGTLIODeviceFactory.cxx
-  vtkIGTLIODeviceFactory.h
   vtkIGTLIOCircularBuffer.cxx
-  vtkIGTLIOCircularBuffer.h
   vtkIGTLIOConnector.cxx
-  vtkIGTLIOConnector.h
   vtkIGTLIOSession.cxx
-  vtkIGTLIOSession.h
   vtkIGTLIOLogic.cxx
+  )
+
+set(${KIT}_HDRS
+  IGTLIOUtilities.h
+  vtkIGTLIOObject.h
+  vtkIGTLIODeviceFactory.h
+  vtkIGTLIOCircularBuffer.h
+  vtkIGTLIOConnector.h
+  vtkIGTLIOSession.h
   vtkIGTLIOLogic.h
   )
 
@@ -48,3 +52,9 @@ target_include_directories(${KIT} ${${KIT}_INCLUDE_DIRECTORIES})
 include( GenerateExportHeader )
 generate_export_header( ${KIT} EXPORT_FILE_NAME ${KIT}Export.h EXPORT_MACRO_NAME ${${KIT}_EXPORT_DIRECTIVE} )
 
+INSTALL(TARGETS ${KIT} EXPORT OpenIGTLinkIO 
+  RUNTIME DESTINATION "${OpenIGTLinkIO_BINARY_INSTALL}"
+  LIBRARY ARCHIVE DESTINATION "${OpenIGTLinkIO_LIBRARY_INSTALL}"
+  )
+
+INSTALL(FILES ${${KIT}_HDRS} "${CMAKE_CURRENT_BINARY_DIR}/${KIT}Export.h" DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}")

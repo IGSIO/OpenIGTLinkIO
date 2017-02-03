@@ -11,8 +11,6 @@ find_package(VTK
   NO_MODULE)
 include(${VTK_USE_FILE})
 
-set(EXECUTABLE ${PROJECT_NAME})
-
 set(${KIT}_SRCS
   IGTLIOFixture.cxx
   IGTLIOFixture.h
@@ -22,7 +20,7 @@ set(${KIT}_MOC_SRCS
   )
   
 set(${KIT}_UI_SRCS
-)
+  )
 
 
 set(${KIT}_INCLUDE_DIRECTORIES
