@@ -98,33 +98,36 @@ configure_file(OpenIGTLinkIOConfig.cmake.in
 ###########################################################
 # Generate config file for INSTALL_INTERFACE
 set(OpenIGTLinkIO_CONFIG_CODE [=[
-  get_filename_component(OpenIGTLinkIO_CMAKE_PACKAGE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)       # <prefix>/lib/cmake/igtlio
-  get_filename_component(_TEMP_DIRECTORY "${OpenIGTLinkIO_CMAKE_PACKAGE_DIR}" DIRECTORY)               # <prefix>/lib/cmake
-  get_filename_component(OpenIGTLinkIO_LIBRARY_DIR "${_TEMP_DIRECTORY}" DIRECTORY)                     # <prefix>/lib
-  get_filename_component(OpenIGTLinkIO_INSTALL_PREFIX "${OpenIGTLinkIO_LIBRARY_DIR}" DIRECTORY)        # <prefix>
+get_filename_component(OpenIGTLinkIO_CMAKE_PACKAGE_DIR "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)       # <prefix>/lib/cmake/igtlio
+get_filename_component(_TEMP_DIRECTORY "${OpenIGTLinkIO_CMAKE_PACKAGE_DIR}" DIRECTORY)               # <prefix>/lib/cmake
+get_filename_component(OpenIGTLinkIO_LIBRARY_DIR "${_TEMP_DIRECTORY}" DIRECTORY)                     # <prefix>/lib
+get_filename_component(OpenIGTLinkIO_INSTALL_PREFIX "${OpenIGTLinkIO_LIBRARY_DIR}" DIRECTORY)        # <prefix>
   
-  set(OpenIGTLinkIO_INCLUDE_DIR "${OpenIGTLinkIO_INSTALL_PREFIX}/@OpenIGTLinkIO_INCLUDE_INSTALL@")
-  set(OpenIGTLinkIO_BINARY_DIR "${OpenIGTLinkIO_INSTALL_PREFIX}/@OpenIGTLinkIO_BINARY_INSTALL@")
+set(OpenIGTLinkIO_INCLUDE_DIR "${OpenIGTLinkIO_INSTALL_PREFIX}/@OpenIGTLinkIO_INCLUDE_INSTALL@")
+set(OpenIGTLinkIO_BINARY_DIR "${OpenIGTLinkIO_INSTALL_PREFIX}/@OpenIGTLinkIO_BINARY_INSTALL@")
 set(OpenIGTLinkIO_LIBRARY_DIR "${OpenIGTLinkIO_INSTALL_PREFIX}/@OpenIGTLinkIO_LIBRARY_INSTALL@")
   
-  set(OpenIGTLinkIO_INCLUDE_DIRS "${OpenIGTLinkIO_INCLUDE_DIR}" "${OpenIGTLinkIO_INCLUDE_DIR}/DeviceWidgets")
+set(OpenIGTLinkIO_INCLUDE_DIRS "${OpenIGTLinkIO_INCLUDE_DIR}" "${OpenIGTLinkIO_INCLUDE_DIR}/DeviceWidgets")
 set(OpenIGTLinkIO_LIBRARY_DIRS "${OpenIGTLinkIO_BINARY_DIR} ${OpenIGTLinkIO_LIBRARY_DIR}")]=])
 
 string(REPLACE "@OpenIGTLinkIO_INCLUDE_INSTALL@" "${OpenIGTLinkIO_INCLUDE_INSTALL}" 
   OpenIGTLinkIO_CONFIG_CODE ${OpenIGTLinkIO_CONFIG_CODE}
- )
+  )
 string(REPLACE "@OpenIGTLinkIO_BINARY_INSTALL@" "${OpenIGTLinkIO_BINARY_INSTALL}" 
   OpenIGTLinkIO_CONFIG_CODE ${OpenIGTLinkIO_CONFIG_CODE}
- )
+  )
+string(REPLACE "@OpenIGTLinkIO_LIBRARY_INSTALL@" "${OpenIGTLinkIO_LIBRARY_INSTALL}" 
+  OpenIGTLinkIO_CONFIG_CODE ${OpenIGTLinkIO_CONFIG_CODE}
+  )
 set(OpenIGTLinkIO_LIBRARY_TARGETS_FILE "\${OpenIGTLinkIO_CMAKE_PACKAGE_DIR}/OpenIGTLinkIOTargets.cmake")
 configure_file(OpenIGTLinkIOConfig.cmake.in
-  install/OpenIGTLinkIOConfig.cmake
+  CMakeFiles/install/OpenIGTLinkIOConfig.cmake
   @ONLY
   )
 
 include(CTest)
 
-if (BUILD_TESTING)
+if(BUILD_TESTING)
   add_subdirectory(Testing)
 endif()
 
@@ -133,6 +136,6 @@ install(EXPORT OpenIGTLinkIO
   FILE "OpenIGTLinkIOTargets.cmake"
   )
 
-install(FILES ${CMAKE_BINARY_DIR}/install/OpenIGTLinkIOConfig.cmake
+install(FILES ${CMAKE_BINARY_DIR}/CMakeFiles/install/OpenIGTLinkIOConfig.cmake
   DESTINATION "${OpenIGTLinkIO_PACKAGE_INSTALL}"
   )
