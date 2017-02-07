@@ -12,6 +12,7 @@ set(OpenIGTLinkIO_VERSION_SUFFIX "") # add a version suffix for parallel multi-v
 
 set(OpenIGTLinkIO_BINARY_INSTALL "bin")
 set(OpenIGTLinkIO_LIBRARY_INSTALL "lib")
+set(OpenIGTLinkIO_ARCHIVE_INSTALL "lib")
 set(OpenIGTLinkIO_CMAKE_INSTALL "${OpenIGTLinkIO_LIBRARY_INSTALL}/cmake")
 set(OpenIGTLinkIO_PACKAGE_INSTALL "${OpenIGTLinkIO_CMAKE_INSTALL}/igtlio${OpenIGTLinkIO_VERSION_SUFFIX}")
 set(OpenIGTLinkIO_INCLUDE_INSTALL "include/igtlio${OpenIGTLinkIO_VERSION_SUFFIX}")
