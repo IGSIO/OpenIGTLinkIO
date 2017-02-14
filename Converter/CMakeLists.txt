@@ -29,12 +29,12 @@ set(${KIT}_SRCS
   )
 
 set(${KIT}_HDRS
-  igtlBaseConverter.h
-  igtlImageConverter.h
-  igtlPolyDataConverter.h
-  igtlStatusConverter.h
-  igtlTransformConverter.h
-  igtlCommandConverter.h
+  igtlioBaseConverter.h
+  igtlioImageConverter.h
+  igtlioPolyDataConverter.h
+  igtlioStatusConverter.h
+  igtlioTransformConverter.h
+  igtlioCommandConverter.h
   )
 
 set(${KIT}_TARGET_LIBRARIES

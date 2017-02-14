@@ -28,10 +28,10 @@ set(${KIT}_SRCS
   )
 
 set(${KIT}_HDRS
-  vtkIGTLIODevice.h
-  vtkIGTLIOImageDevice.h
-  vtkIGTLIOStatusDevice.h
-  vtkIGTLIOCommandDevice.h
+  igtlioDevice.h
+  igtlioImageDevice.h
+  igtlioStatusDevice.h
+  igtlioCommandDevice.h
   )
 
 set(${KIT}_TARGET_LIBRARIES

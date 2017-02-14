@@ -27,14 +27,15 @@ set(${KIT}_SRCS
   igtlioConnector.cxx
   igtlioSession.cxx
   igtlioLogic.cxx
+  )
 
 set(${KIT}_HDRS
-  IGTLIOUtilities.h
-  vtkIGTLIOObject.h
-  vtkIGTLIODeviceFactory.h
-  vtkIGTLIOCircularBuffer.h
-  vtkIGTLIOConnector.h
-  vtkIGTLIOSession.h
+  igtlioUtilities.h
+  igtlioObject.h
+  igtlioDeviceFactory.h
+  igtlioCircularBuffer.h
+  igtlioConnector.h
+  igtlioSession.h
   )
 
 set(${KIT}_TARGET_LIBRARIES

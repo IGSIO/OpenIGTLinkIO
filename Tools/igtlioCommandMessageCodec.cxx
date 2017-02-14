@@ -20,7 +20,7 @@ void CommandMessageCodec::SetResult( bool res )
     m_result = res;
 }
 
-void CommandMessageCodec::SetParameter( std::string paramName, std::string value )
+void CommandMessageCodec::AddParameter( std::string paramName, std::string value )
 {
     m_parameters.push_back( std::pair<std::string,std::string>(paramName, value ) );
 }
@@ -34,7 +34,7 @@ std::string CommandMessageCodec::GetContent()
         std::string resString = m_result ? "true" : "false";
         os << "    <Result>" << resString << "</Result>" << std::endl;
     }
-    for( int i = 0; i < m_parameters.size(); ++i )
+    for(unsigned int i = 0; i < m_parameters.size(); ++i )
     {
         os << "    <Parameter Name=\"" << m_parameters[i].first << "\" Value=\"" << m_parameters[i].second << "\" />" << std::endl;
     }
@@ -70,7 +70,7 @@ bool CommandMessageCodec::GetResult()
 
 std::string CommandMessageCodec::GetParameter( std::string paramName )
 {
-    for( int i = 0; i < m_parameters.size(); ++i )
+    for(unsigned int i = 0; i < m_parameters.size(); ++i )
         if( m_parameters[i].first == paramName )
             return m_parameters[i].second;
     return std::string();

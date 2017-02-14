@@ -30,8 +30,8 @@ int main(int argc, char **argv)
     std::string usprobe_name = "usprobe";
 
     igtlio::CommandMessageCodec outCodec;
-    outCodec.SetParameter("Depth","45");
-    outCodec.SetParameter("Gain","35");
+    outCodec.AddParameter("Depth","45");
+    outCodec.AddParameter("Gain","35");
 
     igtlio::CommandDevicePointer clientDevice;
     clientDevice = fixture.Client.Session->SendCommandQuery( usprobe_name, "GetDeviceParameters", outCodec.GetContent(), igtlio::ASYNCHRONOUS );
@@ -68,8 +68,8 @@ int main(int argc, char **argv)
 
     igtlio::CommandMessageCodec serverResponseCodec(true);
     serverResponseCodec.SetResult( true );
-    serverResponseCodec.SetParameter( "Depth", "45" );
-    serverResponseCodec.SetParameter( "Gain", "35" );
+    serverResponseCodec.AddParameter( "Depth", "45" );
+    serverResponseCodec.AddParameter( "Gain", "35" );
 
     fixture.Server.Session->SendCommandResponse( usprobe_name, "GetDeviceParameters", serverResponseCodec.GetContent() );
 

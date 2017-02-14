@@ -1,6 +1,7 @@
 #ifndef IGTLIOCOMMANDMESSAGECODEC_H
 #define IGTLIOCOMMANDMESSAGECODEC_H
 
+#include "igtlioToolsExport.h"
 #include <vector>
 #include <utility>
 #include <string>
@@ -8,7 +9,7 @@
 namespace igtlio
 {
 
-class CommandMessageCodec
+class OPENIGTLINKIO_TOOLS_EXPORT CommandMessageCodec
 {
 
 public:
@@ -18,7 +19,7 @@ public:
 
     // Build the content of the command to send
     void SetResult( bool res );
-    void SetParameter( std::string paramName, std::string value );
+    void AddParameter( std::string paramName, std::string value );
     std::string GetContent();
 
     // Parse the content of a command received
