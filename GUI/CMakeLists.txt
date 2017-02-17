@@ -1,16 +1,13 @@
 project(igtlioGUI)
 
-set(KIT "${PROJECT_NAME}")
-
-set(${KIT}_EXPORT_DIRECTIVE "OPENIGTLINKIO_GUI_EXPORT")
+set(${PROJECT_NAME}_EXPORT_DIRECTIVE "OPENIGTLINKIO_GUI_EXPORT")
     
-find_package(VTK
+find_package(VTK REQUIRED NO_MODULE
   COMPONENTS
-  vtkIOImage
-  vtkImagingMath
-  vtkGUISupportQt
-  REQUIRED
-  NO_MODULE)
+    vtkIOImage
+    vtkImagingMath
+    vtkGUISupportQt
+  )
 include(${VTK_USE_FILE})
 
 set(OpenIGTLinkIO_Qt_Modules 
@@ -21,9 +18,9 @@ set(OpenIGTLinkIO_Qt_Modules
   Sql
   )
 
-if( IGTLIO_QT_VERSION VERSION_GREATER "4")
-  find_package( Qt5 COMPONENTS ${OpenIGTLinkIO_Qt_Modules} REQUIRED)
-  if(NOT Qt5_DIR)
+if(IGTLIO_QT_VERSION VERSION_GREATER "4")
+  find_package(Qt5 COMPONENTS ${OpenIGTLinkIO_Qt_Modules} REQUIRED)
+  if(Qt5_FOUND AND NOT Qt5_DIR)
     # Sometimes Qt5_DIR is not populated
     get_filename_component(Qt5_DIR ${Qt5Core_DIR} DIRECTORY)
     set(Qt5_DIR ${Qt5_DIR}/Qt5)
@@ -58,7 +55,7 @@ if( IGTLIO_QT_VERSION VERSION_GREATER "4")
     OpenIGTLinkIO_Qt_CONFIG_CODE ${OpenIGTLinkIO_Qt_CONFIG_CODE}
    )
 else()
-  find_package( Qt4)
+  find_package(Qt4 REQUIRED)
   include(${QT_USE_FILE})
 
   # Prepare Config file code for Qt
@@ -76,7 +73,7 @@ string(REPLACE "@OpenIGTLinkIO_Qt_Modules@" "${OpenIGTLinkIO_Qt_Modules_Glued}" 
 # propagate OpenIGTLinkIO_Qt_CONFIG_CODE to Main CMakeLists file
 SET(OpenIGTLinkIO_Qt_CONFIG_CODE "${OpenIGTLinkIO_Qt_CONFIG_CODE}" PARENT_SCOPE)
 
-set(${KIT}_SRCS
+set(${PROJECT_NAME}_SRCS
   qIGTLIOGuiUtilities.cxx
   qIGTLIOLogicController.cxx
   qIGTLIOClientWidget.cxx
@@ -96,7 +93,7 @@ set(${KIT}_SRCS
   DeviceWidgets/qIGTLIOCommandDeviceWidget.cxx
   )
 
-set(${KIT}_MOC_SRCS
+set(${PROJECT_NAME}_MOC_SRCS
   qIGTLIOClientWidget.h
   qIGTLIOLogicController.h
   qIGTLIOConnectorModel.h
@@ -112,8 +109,8 @@ set(${KIT}_MOC_SRCS
   DeviceWidgets/qIGTLIOCommandDeviceWidget.h
   )
   
-set(${KIT}_HDRS
-  ${${KIT}_MOC_SRCS}
+set(${PROJECT_NAME}_HDRS
+  ${${PROJECT_NAME}_MOC_SRCS}
   qIGTLIOGuiUtilities.h
   qIGTLIOVtkConnectionMacro.h
   vtkIGTLIONode.h
@@ -122,12 +119,11 @@ set(${KIT}_HDRS
   DeviceWidgets/qIGTLIOGenericDeviceWidget.h
   )
 
-set(${KIT}_UI_SRCS
+set(${PROJECT_NAME}_UI_SRCS
   ../Resources/UI/qIGTLIOConnectorPropertyWidget.ui
 )
 
-set(${KIT}_INCLUDE_DIRECTORIES
-  PUBLIC
+set(${PROJECT_NAME}_INCLUDE_DIRECTORIES PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/DeviceWidgets>
@@ -136,8 +132,8 @@ set(${KIT}_INCLUDE_DIRECTORIES
   )
 
 if(IGTLIO_QT_VERSION VERSION_GREATER "4")
-  qt5_wrap_ui(${KIT}_SRCS ${${KIT}_UI_SRCS})
-  qt5_wrap_cpp( ${KIT}_SRCS ${${KIT}_MOC_SRCS})
+  qt5_wrap_ui(${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_UI_SRCS})
+  qt5_wrap_cpp( ${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_MOC_SRCS})
   set( igtlio_qt_libraries 
     Qt5::Widgets 
     Qt5::Concurrent 
@@ -146,42 +142,41 @@ if(IGTLIO_QT_VERSION VERSION_GREATER "4")
     Qt5::OpenGL
    )
 else()
-  QT4_WRAP_CPP( ${KIT}_SRCS ${${KIT}_MOC_SRCS})
-  QT4_WRAP_UI( ${KIT}_SRCS ${${KIT}_UI_SRCS})
+  QT4_WRAP_CPP( ${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_MOC_SRCS})
+  QT4_WRAP_UI( ${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_UI_SRCS})
   set( igtlio_qt_libraries 
     Qt4::QtGui 
    )
 endif()
 
-set(${KIT}_TARGET_LIBRARIES
+set(${PROJECT_NAME}_TARGET_LIBRARIES
   ${OpenIGTLink_LIBRARIES}
   ${VTK_LIBRARIES}
   ${igtlio_qt_libraries}
   igtlioLogic
   )
 
-add_library(${KIT} ${${KIT}_SRCS} ${${KIT}_HDRS})
-target_link_libraries(${KIT} PUBLIC ${${KIT}_TARGET_LIBRARIES})
-target_include_directories(${KIT} ${${KIT}_INCLUDE_DIRECTORIES})
+add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS} ${${PROJECT_NAME}_HDRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${${PROJECT_NAME}_TARGET_LIBRARIES})
+target_include_directories(${PROJECT_NAME} ${${PROJECT_NAME}_INCLUDE_DIRECTORIES})
 
-include(GenerateExportHeader)
-generate_export_header( ${KIT} EXPORT_FILE_NAME ${KIT}Export.h 
-  EXPORT_MACRO_NAME ${${KIT}_EXPORT_DIRECTIVE} 
-  )
+generate_export_header(${PROJECT_NAME} EXPORT_FILE_NAME ${PROJECT_NAME}Export.h EXPORT_MACRO_NAME ${${PROJECT_NAME}_EXPORT_DIRECTIVE})
 
-install(TARGETS ${KIT} EXPORT OpenIGTLinkIO 
-  RUNTIME DESTINATION "${OpenIGTLinkIO_BINARY_INSTALL}"
-  LIBRARY DESTINATION "${OpenIGTLinkIO_LIBRARY_INSTALL}"
-  ARCHIVE DESTINATION "${OpenIGTLinkIO_ARCHIVE_INSTALL}"
+INSTALL(TARGETS ${PROJECT_NAME} EXPORT OpenIGTLinkIO 
+  RUNTIME DESTINATION "${OpenIGTLinkIO_BINARY_INSTALL}" COMPONENT RuntimeLibraries
+  LIBRARY DESTINATION "${OpenIGTLinkIO_LIBRARY_INSTALL}" COMPONENT RuntimeLibraries
+  ARCHIVE DESTINATION "${OpenIGTLinkIO_ARCHIVE_INSTALL}" COMPONENT Development
   )
 
 # Install DeviceWidget file to subfolder
-foreach(file IN LISTS ${KIT}_HDRS)
+foreach(file IN LISTS ${PROJECT_NAME}_HDRS)
   IF(${file} MATCHES "^DeviceWidgets")
-    install(FILES ${file} DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}/DeviceWidgets")
+    install(FILES ${file} DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}/DeviceWidgets" COMPONENT Includes)
   ELSE()
-    install(FILES ${file} DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}")
+    install(FILES ${file} DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}" COMPONENT Includes)
   ENDIF()
 endforeach()
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${KIT}Export.h" DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}")
+install(FILES 
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Export.h" DESTINATION "${OpenIGTLinkIO_INCLUDE_INSTALL}" COMPONENT Includes
+  )
