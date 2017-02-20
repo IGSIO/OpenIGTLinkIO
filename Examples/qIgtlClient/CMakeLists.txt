@@ -1,42 +1,38 @@
 project(igtlioQtClient)
 
 # =========================================================
-#  
+#  Reference Qt client implementation
 # =========================================================
-
-find_package( VTK
+find_package(VTK REQUIRED NO_MODULE
   COMPONENTS
-  vtkIOImage
-  vtkImagingMath
-  vtkGUISupportQt
-  REQUIRED
-  NO_MODULE
+    vtkIOImage
+    vtkImagingMath
+    vtkGUISupportQt
   )
 include(${VTK_USE_FILE})
 
-if( IGTLIO_QT_VERSION VERSION_GREATER "4")
-  find_package( Qt5 COMPONENTS Widgets REQUIRED)
-  set( igtlclient_qt_libraries Qt5::Widgets)
-else()
-  find_package( Qt4)
-  include(${QT_USE_FILE})
-  set( igtlclient_qt_libraries Qt4::QtGui)
-endif()
-
-set( igtlioQtClient_SRCS 
+set(${PROJECT_NAME}_SRCS 
   main.cpp 
   )
 
-add_executable( ${PROJECT_NAME} ${igtlioQtClient_SRCS})
-
-target_link_libraries( ${PROJECT_NAME}
-  PRIVATE
-    ${igtlclient_qt_libraries}
-    igtlioGUI 
+set(${PROJECT_NAME}_TARGET_LIBRARIES
+  igtlioGUI
   )
 
+if(IGTLIO_QT_VERSION VERSION_GREATER "4")
+  find_package(Qt5 COMPONENTS Widgets REQUIRED)
+  list(APPEND ${PROJECT_NAME}_TARGET_LIBRARIES Qt5::Widgets)
+else()
+  find_package(Qt4)
+  include(${QT_USE_FILE})
+  list(APPEND ${PROJECT_NAME}_TARGET_LIBRARIES Qt4::QtGui)
+endif()
+
+add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_TARGET_LIBRARIES})
+
 INSTALL(TARGETS ${PROJECT_NAME} EXPORT OpenIGTLinkIO 
-  RUNTIME DESTINATION "${OpenIGTLinkIO_BINARY_INSTALL}"
-  LIBRARY DESTINATION "${OpenIGTLinkIO_LIBRARY_INSTALL}"
-  ARCHIVE DESTINATION "${OpenIGTLinkIO_ARCHIVE_INSTALL}"
+  RUNTIME DESTINATION "${OpenIGTLinkIO_BINARY_INSTALL}" COMPONENT RuntimeLibraries
+  LIBRARY DESTINATION "${OpenIGTLinkIO_LIBRARY_INSTALL}" COMPONENT RuntimeLibraries
+  ARCHIVE DESTINATION "${OpenIGTLinkIO_ARCHIVE_INSTALL}" COMPONENT Development
   )
