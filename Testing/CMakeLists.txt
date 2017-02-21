@@ -1,36 +1,32 @@
 project(igtlioTesting)
 
-set(KIT "${PROJECT_NAME}")
-    
-find_package(VTK
+find_package(VTK REQUIRED NO_MODULE
   COMPONENTS
-  vtkIOImage
-  vtkImagingMath
-  vtkImagingCore
-  vtkIOXMLParser
-  REQUIRED
-  NO_MODULE)
+    vtkIOImage
+    vtkImagingMath
+    vtkImagingCore
+    vtkIOXMLParser
+  )
 include(${VTK_USE_FILE})
 
-set(${KIT}_SRCS
+set(${PROJECT_NAME}_SRCS
   IGTLIOFixture.cxx
   IGTLIOFixture.h
   )
 
-set(${KIT}_MOC_SRCS
+set(${PROJECT_NAME}_MOC_SRCS
   )
   
-set(${KIT}_UI_SRCS
+set(${PROJECT_NAME}_UI_SRCS
   )
 
 
-set(${KIT}_INCLUDE_DIRECTORIES
-  PUBLIC
+set(${PROJECT_NAME}_INCLUDE_DIRECTORIES PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   )
 
-set(${KIT}_TARGET_LIBRARIES
+set(${PROJECT_NAME}_TARGET_LIBRARIES
   ${OpenIGTLink_LIBRARIES}
   ${VTK_LIBRARIES}
   igtlioLogic
@@ -38,9 +34,9 @@ set(${KIT}_TARGET_LIBRARIES
   )
 
 macro(add_io_test test_name test_target source_files)
-  add_executable(${test_target} ${source_files} ${${KIT}_SRCS} ${${KIT}_MOC_SRCS})
-  target_link_libraries(${test_target} PUBLIC ${${KIT}_TARGET_LIBRARIES})
-  target_include_directories(${test_target} ${${KIT}_INCLUDE_DIRECTORIES})
+  add_executable(${test_target} ${source_files} ${${PROJECT_NAME}_SRCS} ${${PROJECT_NAME}_MOC_SRCS})
+  target_link_libraries(${test_target} PUBLIC ${${PROJECT_NAME}_TARGET_LIBRARIES})
+  target_include_directories(${test_target} ${${PROJECT_NAME}_INCLUDE_DIRECTORIES})
   add_test(${test_name} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${test_target})
 endmacro()
 

@@ -18,6 +18,10 @@ set(OpenIGTLinkIO_PACKAGE_INSTALL "${OpenIGTLinkIO_CMAKE_INSTALL}/igtlio${OpenIG
 set(OpenIGTLinkIO_INCLUDE_INSTALL "include/igtlio${OpenIGTLinkIO_VERSION_SUFFIX}")
 
 ###########################################################
+# Re-used components
+include(GenerateExportHeader)
+
+###########################################################
 # Find dependencies
 find_package(OpenIGTLink REQUIRED NO_MODULE)
 include(${OpenIGTLink_USE_FILE})
@@ -140,4 +144,5 @@ install(EXPORT OpenIGTLinkIO
 
 install(FILES ${CMAKE_BINARY_DIR}/CMakeFiles/install/OpenIGTLinkIOConfig.cmake
   DESTINATION "${OpenIGTLinkIO_PACKAGE_INSTALL}"
+  COMPONENT CMakeFiles
   )
