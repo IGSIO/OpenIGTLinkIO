@@ -46,7 +46,7 @@ namespace igtlio
 typedef vtkSmartPointer<class Logic> LogicPointer;
 
 typedef vtkSmartPointer<class Connector> ConnectorPointer;
-typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
+typedef vtkSmartPointer<class Session> SessionPointer;
 
 
 /// Logic is the manager for the IGTLIO module.
@@ -95,11 +95,11 @@ public:
 
  /// Start a server and return a Session representing the connection.
  /// If sync is BLOCKING, the call blocks until at client has connected to the server.
- vtkIGTLIOSessionPointer StartServer(int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
+ SessionPointer StartServer(int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
 
  /// Connect to the given server and return Session representing the connection.
  /// if sync is BLOCKING, the call blocks until the server responds or until timeout.
- vtkIGTLIOSessionPointer ConnectToServer(std::string serverHost, int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
+ SessionPointer ConnectToServer(std::string serverHost, int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
 
  /// Call timer-driven routines for each connector
  void PeriodicProcess();

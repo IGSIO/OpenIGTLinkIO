@@ -15,21 +15,21 @@ namespace igtlio
 {
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOSession);
+vtkStandardNewMacro(Session);
 
 
 //----------------------------------------------------------------------
 
-void vtkIGTLIOSession::PrintSelf(std::ostream &, vtkIndent)
+void Session::PrintSelf(std::ostream &, vtkIndent)
 {
 
 }
 
-vtkIGTLIOSession::vtkIGTLIOSession()
+Session::Session()
 {
 }
 
-DevicePointer vtkIGTLIOSession::AddDeviceIfNotPresent(DeviceKeyType key)
+DevicePointer Session::AddDeviceIfNotPresent(DeviceKeyType key)
 {
   DevicePointer device = Connector->GetDevice(key);
 
@@ -43,7 +43,7 @@ DevicePointer vtkIGTLIOSession::AddDeviceIfNotPresent(DeviceKeyType key)
 }
 
 
-CommandDevicePointer vtkIGTLIOSession::SendCommandQuery(std::string device_id,
+CommandDevicePointer Session::SendCommandQuery(std::string device_id,
                                                                  std::string command,
                                                                  std::string content,
                                                                  igtlio::SYNCHRONIZATION_TYPE synchronized,
@@ -87,7 +87,7 @@ CommandDevicePointer vtkIGTLIOSession::SendCommandQuery(std::string device_id,
   return vtkSmartPointer<CommandDevice>();
 }
 
-CommandDevicePointer vtkIGTLIOSession::SendCommandResponse(std::string device_id, std::string command, std::string content)
+CommandDevicePointer Session::SendCommandResponse(std::string device_id, std::string command, std::string content)
 {
   DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
   CommandDevicePointer device = CommandDevice::SafeDownCast(Connector->GetDevice(key));
@@ -108,7 +108,7 @@ CommandDevicePointer vtkIGTLIOSession::SendCommandResponse(std::string device_id
   return device;
 }
 
-ImageDevicePointer vtkIGTLIOSession::SendImage(std::string device_id, vtkSmartPointer<vtkImageData> image, vtkSmartPointer<vtkMatrix4x4> transform)
+ImageDevicePointer Session::SendImage(std::string device_id, vtkSmartPointer<vtkImageData> image, vtkSmartPointer<vtkMatrix4x4> transform)
 {
   ImageDevicePointer device;
   DeviceKeyType key(igtlio::ImageConverter::GetIGTLTypeName(), device_id);
@@ -124,17 +124,17 @@ ImageDevicePointer vtkIGTLIOSession::SendImage(std::string device_id, vtkSmartPo
   return device;
 }
 
-ConnectorPointer vtkIGTLIOSession::GetConnector()
+ConnectorPointer Session::GetConnector()
 {
   return Connector;
 }
 
-void vtkIGTLIOSession::SetConnector(ConnectorPointer connector)
+void Session::SetConnector(ConnectorPointer connector)
 {
   Connector = connector;
 }
 
-void vtkIGTLIOSession::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+void Session::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
 {
   if (!Connector)
   {
@@ -159,7 +159,7 @@ void vtkIGTLIOSession::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE 
   }
 }
 
-void vtkIGTLIOSession::ConnectToServer(std::string serverHost, int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+void Session::ConnectToServer(std::string serverHost, int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
 {
   if (!Connector)
   {
@@ -183,7 +183,7 @@ void vtkIGTLIOSession::ConnectToServer(std::string serverHost, int serverPort, i
   }
 }
 
-bool vtkIGTLIOSession::waitForConnection(double timeout_s)
+bool Session::waitForConnection(double timeout_s)
 {
   double starttime = vtkTimerLog::GetUniversalTime();
 
@@ -202,7 +202,7 @@ bool vtkIGTLIOSession::waitForConnection(double timeout_s)
 }
 
 
-TransformDevicePointer vtkIGTLIOSession::SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform)
+TransformDevicePointer Session::SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform)
 {
   TransformDevicePointer device;
   DeviceKeyType key(igtlio::TransformConverter::GetIGTLTypeName(), device_id);

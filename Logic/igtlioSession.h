@@ -13,7 +13,7 @@ class vtkImageData;
 namespace igtlio
 {
 
-typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
+typedef vtkSmartPointer<class Session> SessionPointer;
 typedef vtkSmartPointer<class Connector> ConnectorPointer;
 typedef vtkSmartPointer<class ImageDevice> ImageDevicePointer;
 typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
@@ -36,7 +36,7 @@ typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
 ///
 ///
 ///
-class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOSession : public vtkObject
+class OPENIGTLINKIO_LOGIC_EXPORT Session : public vtkObject
 {
 public:
   /// convenience methods:
@@ -72,8 +72,8 @@ public:
 
 
 public:
-  static vtkIGTLIOSession *New();
-  vtkTypeMacro(vtkIGTLIOSession, vtkObject);
+  static Session *New();
+  vtkTypeMacro(Session, vtkObject);
   void PrintSelf(ostream&, vtkIndent);
 
   void StartServer(int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
@@ -84,7 +84,7 @@ public:
   void SetConnector(ConnectorPointer connector);
 
 private:
-  vtkIGTLIOSession();
+  Session();
 
   ConnectorPointer Connector;
 
