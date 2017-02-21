@@ -153,17 +153,17 @@ ConnectorPointer Logic::GetConnector(unsigned int index)
   return NULL;
 }
 
-vtkIGTLIOSessionPointer Logic::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+SessionPointer Logic::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
 {
-  vtkIGTLIOSessionPointer session = vtkIGTLIOSessionPointer::New();
+  SessionPointer session = SessionPointer::New();
   session->SetConnector(this->CreateConnector());
   session->StartServer(serverPort, sync, timeout_s);
   return session;
 }
 
-vtkIGTLIOSessionPointer Logic::ConnectToServer(std::string serverHost, int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+SessionPointer Logic::ConnectToServer(std::string serverHost, int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
 {
-  vtkIGTLIOSessionPointer session = vtkIGTLIOSessionPointer::New();
+  SessionPointer session = SessionPointer::New();
   session->SetConnector(this->CreateConnector());
   session->ConnectToServer(serverHost, serverPort, sync, timeout_s);
   return session;
