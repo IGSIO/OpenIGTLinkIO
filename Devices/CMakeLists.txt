@@ -19,6 +19,7 @@ set(${PROJECT_NAME}_SRCS
   igtlioDevice.cxx
   igtlioImageDevice.cxx
   igtlioStatusDevice.cxx
+  igtlioStringDevice.cxx
   igtlioCommandDevice.cxx
   igtlioTransformDevice.cxx
   )
@@ -27,6 +28,7 @@ set(${PROJECT_NAME}_HDRS
   igtlioDevice.h
   igtlioImageDevice.h
   igtlioStatusDevice.h
+  igtlioStringDevice.h
   igtlioCommandDevice.h
   )
 
