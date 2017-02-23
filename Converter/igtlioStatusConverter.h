@@ -9,9 +9,6 @@
 namespace igtlio
 {
 
-/** Conversion between igtl::StatusMessage and vtk classes.
- *
- */
 class OPENIGTLINKIO_CONVERTER_EXPORT StatusConverter : public BaseConverter
 {
 public:

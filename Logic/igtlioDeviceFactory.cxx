@@ -10,6 +10,7 @@
 
 #include "igtlioImageDevice.h"
 #include "igtlioStatusDevice.h"
+#include "igtlioStringDevice.h"
 #include "igtlioCommandDevice.h"
 #include "igtlioTransformDevice.h"
 //#include "igtlioVideoDevice.h"
@@ -25,8 +26,9 @@ DeviceFactory::DeviceFactory()
   this->registerCreator<ImageDeviceCreator>();
   this->registerCreator<StatusDeviceCreator>();
   this->registerCreator<CommandDeviceCreator>();
-  this->registerCreator<igtlio::TransformDeviceCreator>();
-  //this->registerCreator<igtlio::VideoDeviceCreator>();
+  //this->registerCreator<VideoDeviceCreator>();
+  this->registerCreator<TransformDeviceCreator>();
+  this->registerCreator<StringDeviceCreator>();
 }
 
 //---------------------------------------------------------------------------
