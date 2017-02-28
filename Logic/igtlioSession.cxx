@@ -10,6 +10,7 @@
 #include "igtlioImageDevice.h"
 #include "igtlioTransformDevice.h"
 //#include "igtlioVideoDevice.h"
+#include "igtlioStringDevice.h"
 
 
 namespace igtlio
@@ -223,13 +224,28 @@ bool Session::waitForConnection(double timeout_s)
 TransformDevicePointer Session::SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform)
 {
   TransformDevicePointer device;
-  DeviceKeyType key(igtlio::TransformConverter::GetIGTLTypeName(), device_id);
+  DeviceKeyType key(TransformConverter::GetIGTLTypeName(), device_id);
   device = TransformDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
 
-  igtlio::TransformConverter::ContentData contentdata = device->GetContent();
+  TransformConverter::ContentData contentdata = device->GetContent();
   contentdata.deviceName = device_id;
   contentdata.transform = transform;
   device->SetContent(contentdata);
+
+  Connector->SendMessage(CreateDeviceKey(device));
+
+  return device;
+}
+
+StringDevicePointer Session::SendString(std::string device_id, std::string content)
+{
+  StringDevicePointer device;
+  DeviceKeyType key(StringConverter::GetIGTLTypeName(), device_id);
+  device = StringDevice::SafeDownCast((this->AddDeviceIfNotPresent(key)));
+
+  StringConverter::ContentData contentdata = device->GetContent();
+  contentdata.encoding = 3; //what should this be?
+  contentdata.string_msg = content;
 
   Connector->SendMessage(CreateDeviceKey(device));
 

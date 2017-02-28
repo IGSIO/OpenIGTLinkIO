@@ -17,7 +17,8 @@ typedef vtkSmartPointer<class Session> SessionPointer;
 typedef vtkSmartPointer<class Connector> ConnectorPointer;
 typedef vtkSmartPointer<class ImageDevice> ImageDevicePointer;
 typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
-  typedef vtkSmartPointer<class VideoDevice> VideoDevicePointer;
+typedef vtkSmartPointer<class VideoDevice> VideoDevicePointer;
+typedef vtkSmartPointer<class StringDevice> StringDevicePointer;
 
 /// Convenience interface for a single IGTL connection.
 ///
@@ -73,6 +74,9 @@ public:
   /// Send the given image from the given device. Asynchronous.
   TransformDevicePointer SendTransform(std::string device_id,
                                                 vtkSmartPointer<vtkMatrix4x4> transform);
+
+  /// Send the given string from the given device. Asynchronous.
+  StringDevicePointer SendString(std::string device_id, std::string content);
 
     /// TODO: add more convenience methods here.
 
