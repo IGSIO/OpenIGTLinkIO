@@ -6,10 +6,10 @@
 #include "igtlioStatusConverter.h"
 #include "igtlioDevice.h"
 
+class vtkImageData;
 namespace igtlio
 {
 
-class vtkImageData;
 typedef vtkSmartPointer<class StatusDevice> StatusDevicePointer;
 
 /// A Device supporting the STATUS igtl Message.
