@@ -6,10 +6,10 @@
 #include "igtlioStringConverter.h"
 #include "igtlioDevice.h"
 
+class vtkImageData;
 namespace igtlio
 {
 
-class vtkImageData;
 typedef vtkSmartPointer<class StringDevice> StringDevicePointer;
 
 class OPENIGTLINKIO_DEVICES_EXPORT StringDevice : public Device
