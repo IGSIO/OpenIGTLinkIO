@@ -117,7 +117,6 @@ void qIGTLIOConnectorListWidget::onConnectionsChanged(vtkObject* caller, unsigne
 //-----------------------------------------------------------------------------
 void qIGTLIOConnectorListWidget::onAddConnectorButtonClicked()
 {
-  std::cout << "onAddConnectorButtonClicked " << Logic << std::endl;
   Logic->CreateConnector();
   this->selectRow(Logic->GetNumberOfConnectors()-1);
 }
