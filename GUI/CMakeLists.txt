@@ -90,6 +90,7 @@ set(${PROJECT_NAME}_SRCS
   DeviceWidgets/qIGTLIODeviceWidget.cxx
   DeviceWidgets/qIGTLIOGenericDeviceWidget.cxx
   DeviceWidgets/qIGTLIOStatusDeviceWidget.cxx
+  DeviceWidgets/qIGTLIOStringDeviceWidget.cxx
   DeviceWidgets/qIGTLIOCommandDeviceWidget.cxx
   )
 
@@ -106,6 +107,7 @@ set(${PROJECT_NAME}_MOC_SRCS
   qIGTLIODevicePropertiesWidget.h
   DeviceWidgets/qIGTLIODeviceWidget.h
   DeviceWidgets/qIGTLIOStatusDeviceWidget.h
+  DeviceWidgets/qIGTLIOStringDeviceWidget.h
   DeviceWidgets/qIGTLIOCommandDeviceWidget.h
   )
   
