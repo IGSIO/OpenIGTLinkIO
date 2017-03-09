@@ -200,7 +200,7 @@ CommandDevicePointer CommandDevice::GetResponseFromCommandID(int id)
   // search among the queries for a command with an identical ID:
   for (unsigned i=0; i<Queries.size(); ++i)
   {
-    CommandDevicePointer response = CommandDevice::SafeDownCast(Queries[i].Query);
+	CommandDevicePointer response = CommandDevice::SafeDownCast(Queries[i].Response);
     if (response && response->GetContent().id == id)
     {
       return response;
