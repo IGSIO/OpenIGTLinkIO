@@ -79,7 +79,7 @@ int main(int argc, char **argv)
   std::cout << "*** RTS_COMMAND response received by Client" << std::endl;
   //---------------------------------------------------------------------------
 
-  igtlio::Device::QueryType query;
+  igtlio::CommandDevice::QueryType query;
   if (!clientDevice->GetQueries().empty())
     query = clientDevice->GetQueries()[0];
 
