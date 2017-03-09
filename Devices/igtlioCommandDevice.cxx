@@ -209,5 +209,69 @@ CommandDevicePointer CommandDevice::GetResponseFromCommandID(int id)
 
   return CommandDevicePointer();
 }
+//---------------------------------------------------------------------------
+std::vector<CommandDevice::QueryType> CommandDevice::GetQueries() const
+{
+  return Queries;
+}
+
+//---------------------------------------------------------------------------
+int CommandDevice::CheckQueryExpiration()
+{
+  double currentTime = vtkTimerLog::GetUniversalTime();
+//  if (this->QueryWaitingQueue.size() > 0)
+//    {
+//    for (std::list< vtkWeakPointer<vtkMRMLIGTLQueryNode> >::iterator iter = this->QueryWaitingQueue.begin();
+//      iter != this->QueryWaitingQueue.end(); /* increment in the loop to allow erase */ )
+//      {
+//      if (iter->GetPointer()==NULL)
+//        {
+//        // the node has been deleted, so remove it from the list
+//        iter = this->QueryWaitingQueue.erase(iter);
+//        continue;
+//        }
+  bool expired = false;
+
+  for (unsigned i=0; i<Queries.size(); ++i)
+	{
+	  double timeout = this->GetQueryTimeOut();
+	  if ((timeout>0)
+		  && (currentTime-Queries[i].Query->GetTimestamp()>timeout)
+		  && (Queries[i].status==QUERY_STATUS_WAITING))
+		{
+		Queries[i].status=QUERY_STATUS_EXPIRED;
+		expired = true;
+		}
+
+	}
+
+  if (expired)
+	this->InvokeEvent(ResponseEvent);
+
+  return 0;
+}
+
+//---------------------------------------------------------------------------
+int CommandDevice::PruneCompletedQueries()
+{
+  std::vector<QueryType> pruned;
+
+  for (unsigned int i=0; i<Queries.size(); ++i)
+	if (Queries[i].status == QUERY_STATUS_WAITING)
+	  pruned.push_back(Queries[i]);
+
+  if (pruned.size()!=Queries.size())
+	this->Modified();
+
+  Queries = pruned;
+  return 0;
+}
+
+//---------------------------------------------------------------------------
+int CommandDevice::CancelQuery(int index)
+{
+  Queries.erase(Queries.begin()+index);
+  return 0;
+}
 
 } // namespace igtlio

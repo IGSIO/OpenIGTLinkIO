@@ -1,4 +1,4 @@
-/*=auto=========================================================================
+/*==========================================================================
 
 Portions (c) Copyright 2009 Brigham and Women's Hospital (BWH) All Rights Reserved.
 
@@ -12,36 +12,27 @@ Version:   $Revision: 1.2 $
 
 =========================================================================auto=*/
 
-// OpenIGTLinkIF MRML includes
-#include "igtlioConnector.h"
-
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <map>
 #include <igtl_header.h>
 #include <igtlServerSocket.h>
 #include <igtlClientSocket.h>
 #include <igtlOSUtil.h>
 #include <igtlMessageBase.h>
 #include <igtlMessageHeader.h>
-
-// MRML includes
-//#include <vtkMRMLScene.h>
-
-// VTK includes
 #include <vtkCommand.h>
 #include <vtkCollection.h>
-//#include <vtkEventBroker.h>
 #include <vtkImageData.h>
 #include <vtkIntArray.h>
 #include <vtkMultiThreader.h>
 #include <vtkMutexLock.h>
 #include <vtkObjectFactory.h>
 #include <vtkTimerLog.h>
-
-// STD includes
-#include <string>
-#include <iostream>
-#include <sstream>
-#include <map>
+#include "igtlioConnector.h"
 #include "igtlioCircularBuffer.h"
+#include "igtlioCommandDevice.h"
 
 namespace igtlio
 {
@@ -666,7 +657,9 @@ void Connector::ImportDataFromCircularBuffer()
 
   for (unsigned int i=0; i<Devices.size(); ++i)
     {
-    Devices[i]->CheckQueryExpiration();
+	  CommandDevicePointer device = CommandDevice::SafeDownCast(Devices[i].GetPointer());
+	  if(device)
+		device->CheckQueryExpiration();
     }
 }
 
