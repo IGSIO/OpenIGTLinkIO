@@ -59,38 +59,38 @@ int CommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool ch
   // RTS_COMMAND received:
   //    - look in the query queue for anyone waiting for it.
   if (buffer->GetDeviceType()==std::string(CommandConverter::GetIGTLResponseName()))
-    {
-    CommandDevicePointer response = CommandDevicePointer::New();
-    if (!CommandConverter::fromIGTLResponse(buffer, &response->HeaderData, &response->Content, checkCRC))
-      return 0;
+	{
+	CommandDevicePointer response = CommandDevicePointer::New();
+	if (!CommandConverter::fromIGTLResponse(buffer, &response->HeaderData, &response->Content, checkCRC))
+	  return 0;
 
-    // search among the queries for a command with an identical ID:
-    for (unsigned i=0; i<Queries.size(); ++i)
-      {
-      CommandDevicePointer query = CommandDevice::SafeDownCast(Queries[i].Query.GetPointer());
-      if (query && query->GetContent().id == response->GetContent().id)
-        {
-        Queries[i].Response = response;
-        this->Modified();
-        this->InvokeEvent(CommandResponseReceivedEvent);
-        }
-      }
+	// search among the queries for a command with an identical ID:
+	for (unsigned i=0; i<Queries.size(); ++i)
+	  {
+	  CommandDevicePointer query = CommandDevice::SafeDownCast(Queries[i].Query.GetPointer());
+	  if (query && query->GetContent().id == response->GetContent().id)
+		{
+		Queries[i].Response = response;
+		this->Modified();
+		this->InvokeEvent(CommandResponseReceivedEvent);
+		}
+	  }
 
-    return 1;
-    }
+	return 1;
+	}
 
   // COMMAND received
   //   - store the incoming message, emit event
   //     No response is created - this is the responsibility of the application.
   if (buffer->GetDeviceType()==std::string(CommandConverter::GetIGTLTypeName()))
-    {
-    if (CommandConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
-      {
-      this->Modified();
-      this->InvokeEvent(CommandQueryReceivedEvent);
-      return 1;
-      }
-    }
+	{
+	if (CommandConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+	  {
+	  this->Modified();
+	  this->InvokeEvent(CommandReceivedEvent);
+	  return 1;
+	  }
+	}
 
  return 0;
 }
@@ -159,7 +159,7 @@ igtl::MessageBase::Pointer CommandDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
    {
      return this->GetIGTLMessage();
    }
-  if (prefix==Device::MESSAGE_PREFIX_REPLY)
+  if (prefix==Device::MESSAGE_PREFIX_RTS)
    {
      return this->GetIGTLResponseMessage();
    }
@@ -172,6 +172,7 @@ igtl::MessageBase::Pointer CommandDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 std::set<Device::MESSAGE_PREFIX> CommandDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
+ retval.insert(MESSAGE_PREFIX_RTS);
  return retval;
 }
 

@@ -10,17 +10,10 @@
 #ifndef IGTLIOCIRCULARBUFFER_H
 #define IGTLIOCIRCULARBUFFER_H
 
-// VTK includes
-#include <vtkObject.h>
-
-// OpenIGTLink includes
-#include <igtlMessageBase.h>
-
-// IGTLIO includes
-#include "igtlioLogicExport.h"
-
-// STD includes
 #include <string>
+#include <vtkObject.h>
+#include <igtlMessageBase.h>
+#include "igtlioLogicExport.h"
 
 #define IGTLCB_CIRC_BUFFER_SIZE    3
 

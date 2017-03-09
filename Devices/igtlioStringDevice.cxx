@@ -82,7 +82,7 @@ igtl::MessageBase::Pointer StringDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 std::set<Device::MESSAGE_PREFIX> StringDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
- retval.insert(MESSAGE_PREFIX_GET);
+ retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
  return retval;
 }
 

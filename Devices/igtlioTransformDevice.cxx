@@ -112,7 +112,9 @@ igtl::MessageBase::Pointer TransformDevice::GetIGTLMessage()
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer TransformDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
- if (prefix==MESSAGE_PREFIX_GET)
+
+	/*
+  if (prefix==MESSAGE_PREFIX_GET)
   {
    if (this->GetTransformMessage.IsNull())
      {
@@ -122,6 +124,7 @@ igtl::MessageBase::Pointer TransformDevice::GetIGTLMessage(MESSAGE_PREFIX prefix
    this->GetTransformMessage->Pack();
    return dynamic_pointer_cast<igtl::MessageBase>(this->GetTransformMessage);
   }
+  */
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
@@ -134,7 +137,7 @@ igtl::MessageBase::Pointer TransformDevice::GetIGTLMessage(MESSAGE_PREFIX prefix
 std::set<Device::MESSAGE_PREFIX> TransformDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
- retval.insert(MESSAGE_PREFIX_GET);
+ retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
  return retval;
 }
 

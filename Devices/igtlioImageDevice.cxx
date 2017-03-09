@@ -116,6 +116,7 @@ igtl::MessageBase::Pointer ImageDevice::GetIGTLMessage()
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer ImageDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
+	/*
  if (prefix==MESSAGE_PREFIX_GET)
   {
    if (this->GetImageMessage.IsNull())
@@ -126,6 +127,7 @@ igtl::MessageBase::Pointer ImageDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
    this->GetImageMessage->Pack();
    return dynamic_pointer_cast<igtl::MessageBase>(this->GetImageMessage);
   }
+  */
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
@@ -138,7 +140,7 @@ igtl::MessageBase::Pointer ImageDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 std::set<Device::MESSAGE_PREFIX> ImageDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
- retval.insert(MESSAGE_PREFIX_GET);
+ retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
  return retval;
 }
 

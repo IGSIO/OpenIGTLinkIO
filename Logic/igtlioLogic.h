@@ -11,31 +11,14 @@
   Version:   $Revision: 13728 $
 
 ==========================================================================*/
-
-/// This class manages the logic associated with tracking device for IGT.
-
 #ifndef IGTLIOLOGIC_H
 #define IGTLIOLOGIC_H
 
-// OpenIGTLink includes
+#include <vector>
+#include <vtkCallbackCommand.h>
+#include <vtkMultiThreader.h>
 #include <igtlImageMessage.h>
 #include <igtlTransformMessage.h>
-
-//#include "vtkSlicerBaseLogic.h"
-//#include "vtkSlicerModuleLogic.h"
-#include "vtkCallbackCommand.h"
-
-//// MRML includes
-//#include <vtkMRMLTransformNode.h>
-//#include <vtkMRMLFiducialListNode.h>
-
-// VTK includes
-#include <vtkMultiThreader.h>
-
-// STD includes
-#include <vector>
-
-// IGTLIO includes
 #include "igtlioLogicExport.h"
 #include "igtlioDevice.h"
 #include "igtlioUtilities.h"
@@ -44,7 +27,6 @@ namespace igtlio
 {
 
 typedef vtkSmartPointer<class Logic> LogicPointer;
-
 typedef vtkSmartPointer<class Connector> ConnectorPointer;
 typedef vtkSmartPointer<class Session> SessionPointer;
 
@@ -80,7 +62,7 @@ public:
     NewDeviceEvent        = 118949,
 //    DeviceModifiedEvent   = 118950, // must listen to each specific device in order to get this one.
     RemovedDeviceEvent    = 118951,
-    CommandQueryReceivedEvent = Device::CommandQueryReceivedEvent, // one of the connected COMMAND devices got a query
+    CommandQueryReceivedEvent = Device::CommandReceivedEvent, // one of the connected COMMAND devices got a query
     CommandResponseReceivedEvent = Device::CommandResponseReceivedEvent // one of the connected COMMAND devices got a response
   };
 
