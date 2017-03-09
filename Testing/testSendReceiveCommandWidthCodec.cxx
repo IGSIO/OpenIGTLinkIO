@@ -2,14 +2,7 @@
 #include "igtlioSession.h"
 #include "igtlioTransformDevice.h"
 #include "igtlioCommandMessageCodec.h"
-
-#define GenerateErrorIf( condition, errorMessage ) if( condition ) { std::cerr << errorMessage << std::endl; return 1; }
-
-std::string boolToString( bool b )
-{
-    std::string ret = b ? "true" : "false";
-    return ret;
-}
+#include "igtlioTestUtilities.h"
 
 int main(int argc, char **argv)
 {
