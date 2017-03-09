@@ -68,11 +68,13 @@ int StatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool che
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
 {
+	/*
  // cannot send a non-existent status (?)
  if (Content.errorname.empty())
   {
   return 0;
   }
+  */
 
  if (!StatusConverter::toIGTL(HeaderData, Content, &this->OutMessage))
    {

@@ -1,16 +1,16 @@
 #include "igtlioSession.h"
 
+#include <vtksys/SystemTools.hxx>
 #include <vtkObjectFactory.h>
 #include <vtkNew.h>
-
-#include "igtlioConnector.h"
-#include <vtksys/SystemTools.hxx>
 #include "vtkTimerLog.h"
+#include "igtlioConnector.h"
 #include "igtlioCommandDevice.h"
 #include "igtlioImageDevice.h"
 #include "igtlioTransformDevice.h"
 //#include "igtlioVideoDevice.h"
 #include "igtlioStringDevice.h"
+#include "igtlioStatusDevice.h"
 
 
 namespace igtlio
@@ -45,11 +45,7 @@ DevicePointer Session::AddDeviceIfNotPresent(DeviceKeyType key)
 }
 
 
-CommandDevicePointer Session::SendCommandQuery(std::string device_id,
-                                                                 std::string command,
-                                                                 std::string content,
-                                                                 igtlio::SYNCHRONIZATION_TYPE synchronized,
-                                                                 double timeout_s)
+CommandDevicePointer Session::SendCommand(std::string device_id, std::string command, std::string content, igtlio::SYNCHRONIZATION_TYPE synchronized, double timeout_s)
 {
   vtkSmartPointer<CommandDevice> device;
   DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
@@ -250,6 +246,23 @@ StringDevicePointer Session::SendString(std::string device_id, std::string conte
   Connector->SendMessage(CreateDeviceKey(device));
 
   return device;
+}
+
+StatusDevicePointer Session::SendStatus(std::string device_id, int code, int subcode, std::string statusstring, std::string errorname)
+{
+	StatusDevicePointer device;
+	DeviceKeyType key(StatusConverter::GetIGTLTypeName(), device_id);
+	device = StatusDevice::SafeDownCast((this->AddDeviceIfNotPresent(key)));
+
+	StatusConverter::ContentData contentdata = device->GetContent();
+	contentdata.code = code;
+	contentdata.errorname = errorname;
+	contentdata.statusstring = statusstring;
+	contentdata.subcode = subcode;
+
+	Connector->SendMessage(CreateDeviceKey(device));
+
+	return device;
 }
 
 } //namespace igtlio

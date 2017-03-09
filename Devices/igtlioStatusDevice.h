@@ -12,7 +12,6 @@ namespace igtlio
 
 typedef vtkSmartPointer<class StatusDevice> StatusDevicePointer;
 
-/// A Device supporting the STATUS igtl Message.
 class OPENIGTLINKIO_DEVICES_EXPORT StatusDevice : public Device
 {
 public:

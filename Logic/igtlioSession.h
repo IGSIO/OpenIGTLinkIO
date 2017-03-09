@@ -19,6 +19,7 @@ typedef vtkSmartPointer<class ImageDevice> ImageDevicePointer;
 typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
 typedef vtkSmartPointer<class VideoDevice> VideoDevicePointer;
 typedef vtkSmartPointer<class StringDevice> StringDevicePointer;
+typedef vtkSmartPointer<class StatusDevice> StatusDevicePointer;
 
 /// Convenience interface for a single IGTL connection.
 ///
@@ -41,26 +42,17 @@ typedef vtkSmartPointer<class StringDevice> StringDevicePointer;
 class OPENIGTLINKIO_LOGIC_EXPORT Session : public vtkObject
 {
 public:
-  /// convenience methods:
-
-  ///
   ///  Send the given command from the given device.
   /// - If using BLOCKING, the call blocks until a response appears or timeout. Return response.
   /// - If using ASYNCHRONOUS, wait for the CommandResponseReceivedEvent event. Return device.
   ///
-  CommandDevicePointer SendCommandQuery(std::string device_id,
-                                                 std::string command,
-                                                 std::string content,
-                                                 igtlio::SYNCHRONIZATION_TYPE synchronized = igtlio::BLOCKING,
-                                                 double timeout_s = 5);
-  ///
+  CommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content, igtlio::SYNCHRONIZATION_TYPE synchronized = igtlio::BLOCKING, double timeout_s = 5);
+
   ///  Send a command response from the given device. Asynchronous.
   /// Precondition: The given device has received a query that is not yet responded to.
   /// Return device.
-  CommandDevicePointer SendCommandResponse(std::string device_id, std::string command,
-                                                    std::string content);
+  CommandDevicePointer SendCommandResponse(std::string device_id, std::string command, std::string content);
 
-  ///
   ///  Send the given image from the given device. Asynchronous.
   ImageDevicePointer SendImage(std::string device_id,
                                         vtkSmartPointer<vtkImageData> image,
@@ -72,13 +64,13 @@ public:
                                vtkSmartPointer<vtkImageData> image);*/
 
   /// Send the given image from the given device. Asynchronous.
-  TransformDevicePointer SendTransform(std::string device_id,
-                                                vtkSmartPointer<vtkMatrix4x4> transform);
+  TransformDevicePointer SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform);
 
   /// Send the given string from the given device. Asynchronous.
   StringDevicePointer SendString(std::string device_id, std::string content);
 
-    /// TODO: add more convenience methods here.
+  /// Send the given status from the given device. Asynchronous.
+  StatusDevicePointer SendStatus(std::string device_id, int code, int subcode, std::string statusstring, std::string errorname);
 
 
 public:
