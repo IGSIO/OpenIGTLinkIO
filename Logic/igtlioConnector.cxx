@@ -285,56 +285,55 @@ int Connector::Stop()
 //---------------------------------------------------------------------------
 void* Connector::ThreadFunction(void* ptr)
 {
-  vtkMultiThreader::ThreadInfo* vinfo =
-    static_cast<vtkMultiThreader::ThreadInfo*>(ptr);
-  Connector* igtlcon = static_cast<Connector*>(vinfo->UserData);
+  vtkMultiThreader::ThreadInfo* vinfo = static_cast<vtkMultiThreader::ThreadInfo*>(ptr);
+  Connector* connector = static_cast<Connector*>(vinfo->UserData);
 
-  igtlcon->State = STATE_WAIT_CONNECTION;
+  connector->State = STATE_WAIT_CONNECTION;
 
-  if (igtlcon->Type == TYPE_SERVER)
+  if (connector->Type == TYPE_SERVER)
     {
-    igtlcon->ServerSocket = igtl::ServerSocket::New();
-    if (igtlcon->ServerSocket->CreateServer(igtlcon->ServerPort) == -1)
+    connector->ServerSocket = igtl::ServerSocket::New();
+    if (connector->ServerSocket->CreateServer(connector->ServerPort) == -1)
       {
-      vtkErrorWithObjectMacro(igtlcon, "Failed to create server socket !");
-      igtlcon->ServerStopFlag = true;
+      vtkErrorWithObjectMacro(connector, "Failed to create server socket !");
+      connector->ServerStopFlag = true;
       }
     }
 
   // Communication -- common to both Server and Client
-  while (!igtlcon->ServerStopFlag)
+  while (!connector->ServerStopFlag)
     {
     //vtkErrorMacro("vtkOpenIGTLinkIFLogic::ThreadFunction(): alive.");
-    igtlcon->Mutex->Lock();
+    connector->Mutex->Lock();
     //igtlcon->Socket = igtlcon->WaitForConnection();
-    igtlcon->WaitForConnection();
-    igtlcon->Mutex->Unlock();
-    if (igtlcon->Socket.IsNotNull() && igtlcon->Socket->GetConnected())
+    connector->WaitForConnection();
+    connector->Mutex->Unlock();
+    if (connector->Socket.IsNotNull() && connector->Socket->GetConnected())
       {
-      igtlcon->State = STATE_CONNECTED;
+      connector->State = STATE_CONNECTED;
       // need to Request the InvokeEvent, because we are not on the main thread now
-      igtlcon->RequestInvokeEvent(Connector::ConnectedEvent);
+      connector->RequestInvokeEvent(Connector::ConnectedEvent);
       //vtkErrorMacro("vtkOpenIGTLinkIFLogic::ThreadFunction(): Client Connected.");
-      igtlcon->RequestPushOutgoingMessages();
-      igtlcon->ReceiveController();
-      igtlcon->State = STATE_WAIT_CONNECTION;
-      igtlcon->RequestInvokeEvent(Connector::DisconnectedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
+      connector->RequestPushOutgoingMessages();
+      connector->ReceiveController();
+      connector->State = STATE_WAIT_CONNECTION;
+      connector->RequestInvokeEvent(Connector::DisconnectedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
       }
     }
 
-  if (igtlcon->Socket.IsNotNull())
+  if (connector->Socket.IsNotNull())
     {
-    igtlcon->Socket->CloseSocket();
+    connector->Socket->CloseSocket();
     }
 
-  if (igtlcon->Type == TYPE_SERVER && igtlcon->ServerSocket.IsNotNull())
+  if (connector->Type == TYPE_SERVER && connector->ServerSocket.IsNotNull())
     {
-    igtlcon->ServerSocket->CloseSocket();
+    connector->ServerSocket->CloseSocket();
     }
 
-  igtlcon->ThreadID = -1;
-  igtlcon->State = STATE_OFF;
-  igtlcon->RequestInvokeEvent(Connector::DeactivatedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
+  connector->ThreadID = -1;
+  connector->State = STATE_OFF;
+  connector->RequestInvokeEvent(Connector::DeactivatedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
 
   return NULL; //why???
 }
@@ -630,24 +629,24 @@ void Connector::ImportDataFromCircularBuffer()
     CircularBuffer* circBuffer = this->GetCircularBuffer(key);
     circBuffer->StartPull();
 
-    igtl::MessageBase::Pointer buffer = circBuffer->GetPullBuffer();
+	igtl::MessageBase::Pointer messageFromBuffer = circBuffer->GetPullBuffer();
 
     vtkSmartPointer<DeviceCreator> deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
 
     if (!deviceCreator)
       {
-      vtkErrorMacro(<< "Received unknown device type " << buffer->GetDeviceType() << ", device=" << buffer->GetDeviceName());
+	  vtkErrorMacro(<< "Received unknown device type " << messageFromBuffer->GetDeviceType() << ", device=" << messageFromBuffer->GetDeviceName());
       continue;
       }
 
     DevicePointer device = this->GetDevice(key);
 
-    if ((device.GetPointer()!=NULL) && !(CreateDeviceKey(device)==CreateDeviceKey(buffer)))
+	if ((device.GetPointer()!=NULL) && !(CreateDeviceKey(device)==CreateDeviceKey(messageFromBuffer)))
       {
         vtkErrorMacro(
             << "Received an IGTL message of the wrong type, device=" << key.name
             << " has type " << device->GetDeviceType()
-            << " got type " << buffer->GetDeviceType()
+			<< " got type " << messageFromBuffer->GetDeviceType()
               );
         continue;
       }
@@ -659,7 +658,7 @@ void Connector::ImportDataFromCircularBuffer()
         this->AddDevice(device);
       }
 
-    device->ReceiveIGTLMessage(buffer, this->CheckCRC);
+	device->ReceiveIGTLMessage(messageFromBuffer, this->CheckCRC);
     device->Modified();
 
     circBuffer->EndPull();

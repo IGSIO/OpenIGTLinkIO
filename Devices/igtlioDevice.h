@@ -44,10 +44,10 @@ public:
 
  enum MESSAGE_PREFIX {
    MESSAGE_PREFIX_NOT_DEFINED,
-   MESSAGE_PREFIX_GET,
-   MESSAGE_PREFIX_START,
-   MESSAGE_PREFIX_STOP,
-   MESSAGE_PREFIX_REPLY,
+   //MESSAGE_PREFIX_GET,
+   //MESSAGE_PREFIX_START,
+   //MESSAGE_PREFIX_STOP,
+   MESSAGE_PREFIX_RTS,
    NUM_MESSAGE_PREFIX,
  };
  enum QUERY_STATUS {
@@ -63,7 +63,7 @@ public:
    ResponseEvent         = 118952,
    ModifiedEvent         = vtkCommand::ModifiedEvent,
 
-   CommandQueryReceivedEvent    = 119001, // COMMAND device got a query, COMMAND received
+   CommandReceivedEvent    = 119001, // COMMAND device got a query, COMMAND received
    CommandResponseReceivedEvent = 119002  // COMMAND device got a response, RTS_COMMAND received
  };
 
@@ -102,6 +102,7 @@ public:
  // The returned pointer might be allocated internally once
  // and reused between successive calls.
  virtual igtl::MessageBase::Pointer GetIGTLMessage() = 0;
+
  // As GetIGTLMessage(), except that the generated message is for the given prefix.
  // TODO: merge with above
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix) { return igtl::MessageBase::Pointer(); }
@@ -139,13 +140,16 @@ public:
 
   /// Get all current queries
   std::vector<QueryType> GetQueries() const;
+
   /// check for waiting queries that have waited beoynd the timeout for an answer, mark them as expired.
+
   int CheckQueryExpiration();
   /// remove all queries that are answered or expired.
   int PruneCompletedQueries();
+
   int CancelQuery(int index);
 
- public:
+public:
   vtkAbstractTypeMacro(Device,vtkObject);
 
 protected:
@@ -154,14 +158,15 @@ protected:
   std::vector<QueryType> Queries;
   BaseConverter::HeaderData HeaderData;
 
+protected:
+ Device();
+ virtual ~Device();
+
 private:
  MESSAGE_DIRECTION MessageDirection;
  bool PushOnConnect;
  double QueryTimeOut;
 
- protected:
-  Device();
-  ~Device();
 };
 
 //---------------------------------------------------------------------------

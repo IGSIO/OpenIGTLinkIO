@@ -37,7 +37,7 @@ void onNewDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata
   logic->InvokeEvent(Logic::NewDeviceEvent, calldata);
 
   Device* device = reinterpret_cast<Device*>(calldata);
-  device->AddObserver(Device::CommandQueryReceivedEvent, logic->DeviceEventCallback);
+  device->AddObserver(Device::CommandReceivedEvent, logic->DeviceEventCallback);
   device->AddObserver(Device::CommandResponseReceivedEvent, logic->DeviceEventCallback);
 }
 
@@ -56,7 +56,7 @@ void onDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, v
 {
   Logic* logic = reinterpret_cast<Logic*>(clientdata);
 
-  if ((eid==Device::CommandQueryReceivedEvent) ||
+  if ((eid==Device::CommandReceivedEvent) ||
       (eid==Device::CommandResponseReceivedEvent))
   {
     logic->InvokeEvent(eid, calldata);

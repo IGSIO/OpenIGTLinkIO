@@ -105,7 +105,7 @@ CommandDevicePointer Session::SendCommandResponse(std::string device_id, std::st
   contentdata.content = content;
   device->SetContent(contentdata);
 
-  Connector->SendMessage(CreateDeviceKey(device), Device::MESSAGE_PREFIX_REPLY);
+  Connector->SendMessage(CreateDeviceKey(device), Device::MESSAGE_PREFIX_RTS);
   return device;
 }
 

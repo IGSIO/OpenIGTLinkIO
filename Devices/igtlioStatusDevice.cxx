@@ -75,6 +75,7 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
+	/*
  if (prefix==MESSAGE_PREFIX_GET)
   {
    if (this->GetMessage.IsNull())
@@ -85,6 +86,7 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
    this->GetMessage->Pack();
    return dynamic_pointer_cast<igtl::MessageBase>(this->GetMessage);
   }
+  */
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
@@ -97,7 +99,7 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 std::set<Device::MESSAGE_PREFIX> StatusDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
- retval.insert(MESSAGE_PREFIX_GET);
+ retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
  return retval;
 }
 
