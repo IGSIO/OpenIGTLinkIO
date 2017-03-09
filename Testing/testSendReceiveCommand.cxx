@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 
   std::string device_name = "TestDevice";
   igtlio::CommandDevicePointer clientDevice;
-  clientDevice = fixture.Client.Session->SendCommandQuery(device_name,
+  clientDevice = fixture.Client.Session->SendCommand(device_name,
                                                           "Get",
                                                           "<Command>\n"
                                                           "  <Parameter Name=\"Depth\" />\n"

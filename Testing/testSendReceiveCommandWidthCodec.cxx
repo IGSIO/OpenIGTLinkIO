@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     outCodec.AddParameter("Gain","35");
 
     igtlio::CommandDevicePointer clientDevice;
-    clientDevice = fixture.Client.Session->SendCommandQuery( usprobe_name, "GetDeviceParameters", outCodec.GetContent(), igtlio::ASYNCHRONOUS );
+    clientDevice = fixture.Client.Session->SendCommand( usprobe_name, "GetDeviceParameters", outCodec.GetContent(), igtlio::ASYNCHRONOUS );
 
     std::cout << "*** COMMAND query sent from Client" << std::endl;
 
