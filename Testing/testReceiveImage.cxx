@@ -12,49 +12,7 @@
 #include "IGTLIOFixture.h"
 #include "igtlioImageDevice.h"
 #include "igtlioSession.h"
-
-bool compare(vtkSmartPointer<vtkMatrix4x4> a, vtkSmartPointer<vtkMatrix4x4> b)
-{
-  for (int x=0; x<4; ++x)
-  {
-    for (int y=0; y<4; ++y)
-    {
-      if (fabs(b->Element[x][y] - a->Element[x][y]) > 1E-3)
-        return false;
-    }
-  }
-  return true;
-}
-
-
-bool compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
-{
-  vtkSmartPointer<vtkImageDifference> differenceFilter = vtkSmartPointer<vtkImageDifference>::New();
-  differenceFilter->SetInputData(a);
-  differenceFilter->SetImageData(b);
-  differenceFilter->Update();
-  double imageError = differenceFilter->GetError();
-  if (fabs(imageError) > 1E-3)
-    return false;
-  return true;
-}
-
-bool compare(igtlio::ImageDevicePointer a, igtlio::ImageDevicePointer b)
-{
-  if (a->GetDeviceName() != b->GetDeviceName())
-    return false;
-  if (fabs(a->GetTimestamp()-b->GetTimestamp()) < 1E-3)
-    return false;
-  if (a->GetDeviceType() != b->GetDeviceType())
-    return false;
-  if (!compare(a->GetContent().image, b->GetContent().image))
-    return false;
-  if (!compare(a->GetContent().transform, b->GetContent().transform))
-    return false;
-
-  return true;
-}
-
+#include "igtlioTestUtilities.h"
 
 int main(int argc, char **argv)
 {
@@ -102,7 +60,7 @@ int main(int argc, char **argv)
   std::cout << "*** Client received IMAGE device." << std::endl;
   //---------------------------------------------------------------------------
 
-  if (!compare(imageDevice, receivedDevice))
+  if (!igtlio::compare(imageDevice, receivedDevice))
   {
     std::cout << "FAILURE: Image differs from the one sent from server." << std::endl;
     return 1;
