@@ -23,11 +23,14 @@ public:
 	};
 
 public:
- virtual std::string GetDeviceType() const;
- virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
- virtual igtl::MessageBase::Pointer GetIGTLMessage();
- virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
- virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
+  vtkSetMacro( QueryTimeOut, double );
+  vtkGetMacro( QueryTimeOut, double );
+
+  virtual std::string GetDeviceType() const;
+  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
+  virtual igtl::MessageBase::Pointer GetIGTLMessage();
+  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
+  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
 
   void SetContent(CommandConverter::ContentData content);
   CommandConverter::ContentData GetContent();
@@ -84,6 +87,9 @@ public:
   igtl::CommandMessage::Pointer OutMessage;
   igtl::RTSCommandMessage::Pointer ResponseMessage;
   CommandConverter::ContentData Content;
+
+private:
+  double QueryTimeOut;
 };
 
 //---------------------------------------------------------------------------
