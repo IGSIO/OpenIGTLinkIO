@@ -11,7 +11,6 @@
 
 #include <vtkTimerLog.h>
 
-
 namespace igtlio
 {
 //---------------------------------------------------------------------------
@@ -19,7 +18,6 @@ Device::Device()
 {
   PushOnConnect = false;
   MessageDirection = MESSAGE_DIRECTION_IN;
-  QueryTimeOut = 0;
 }
 
 //---------------------------------------------------------------------------

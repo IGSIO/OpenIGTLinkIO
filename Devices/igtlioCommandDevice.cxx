@@ -31,6 +31,7 @@ vtkStandardNewMacro(CommandDevice);
 //---------------------------------------------------------------------------
 CommandDevice::CommandDevice()
 {
+	QueryTimeOut = 0;
 }
 
 //---------------------------------------------------------------------------
@@ -255,6 +256,7 @@ int CommandDevice::CheckQueryExpiration()
 
 	}
 
+  //Never used? Why a responsevent???
   if (expired)
 	this->InvokeEvent(ResponseEvent);
 

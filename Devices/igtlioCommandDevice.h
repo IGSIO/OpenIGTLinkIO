@@ -91,6 +91,9 @@ public:
   igtl::CommandMessage::Pointer OutMessage;
   igtl::RTSCommandMessage::Pointer ResponseMessage;
   CommandConverter::ContentData Content;
+
+private:
+  double QueryTimeOut;
 };
 
 //---------------------------------------------------------------------------
