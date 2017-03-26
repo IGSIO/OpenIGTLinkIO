@@ -48,6 +48,7 @@
 
 typedef vtkSmartPointer<class vtkMutexLock> vtkMutexLockPointer;
 typedef vtkSmartPointer<class vtkMultiThreader> vtkMultiThreaderPointer;
+typedef std::vector< vtkSmartPointer<igtlio::Device> >   MessageDeviceListType;
 
 namespace igtlio
 {
@@ -102,6 +103,7 @@ public:
  int AddDevice(DevicePointer device); // TODO look at OnNodeReferenceAdded
  unsigned int GetNumberOfDevices() const;
  void RemoveDevice(int index); //TODO: look at OnNodeReferenceRemoved
+  int RemoveDevice(DevicePointer device);
  /// Get the given Device. This can be used to modify the Device contents.
  DevicePointer GetDevice(int index);
  DevicePointer GetDevice(DeviceKeyType key);
@@ -190,10 +192,13 @@ public:
   vtkSetMacro( ServerPort, int );
   vtkGetMacro( Type, int );
   vtkSetMacro( Type, int );
+  vtkSetMacro( State, int);
   vtkGetMacro( State, int );
   vtkSetMacro( RestrictDeviceName, int );
   vtkGetMacro( RestrictDeviceName, int );
-
+  vtkSetMacro( PushOutgoingMessageFlag, int );
+  vtkGetMacro( PushOutgoingMessageFlag, int );
+  
   // Controls if active connection will be resumed when
   // scene is loaded (cf: PERSISTENT_ON/_OFF)
   vtkSetMacro( Persistent, int );
