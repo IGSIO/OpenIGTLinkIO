@@ -75,7 +75,6 @@ int ImageDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool chec
  if (ImageConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
    {
    this->Modified();
-     std::cout << "ReceiveIGTLMessage " << std::endl;
    this->InvokeEvent(ReceiveEvent, NULL);
 
    return 1;

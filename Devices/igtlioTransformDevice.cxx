@@ -72,10 +72,11 @@ TransformConverter::ContentData TransformDevice::GetContent()
 int TransformDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
  if (TransformConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
-   {
+ {
    this->Modified();
+   this->InvokeEvent(ReceiveEvent);
    return 1;
-   }
+ }
 
  return 0;
 }
