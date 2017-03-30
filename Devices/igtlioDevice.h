@@ -62,7 +62,7 @@ public:
 
 
 public:
- virtual std::string GetDeviceType() const = 0;
+ virtual std::string GetDeviceType() const;
 
  virtual std::string GetDeviceName() const;
   /// Set device name.
@@ -76,6 +76,8 @@ public:
  vtkGetMacro( PushOnConnect, bool );
  vtkSetMacro( MessageDirection, MESSAGE_DIRECTION );
  vtkGetMacro( MessageDirection, MESSAGE_DIRECTION );
+ vtkSetMacro( Visibility, bool );
+ vtkGetMacro( Visibility, bool );
 
  virtual double GetTimestamp() const;
  virtual void SetTimestamp(double val);
@@ -123,6 +125,7 @@ protected:
 private:
  MESSAGE_DIRECTION MessageDirection;
  bool PushOnConnect;
+ bool Visibility;
 
 };
 

@@ -42,6 +42,12 @@ std::string Device::GetDeviceName() const
 }
 
 //---------------------------------------------------------------------------
+std::string Device::GetDeviceType() const
+{
+  return NULL;
+}
+  
+//---------------------------------------------------------------------------
 void Device::SetDeviceName(std::string name)
 {
   HeaderData.deviceName = name;

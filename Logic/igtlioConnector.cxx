@@ -651,6 +651,7 @@ void Connector::ImportDataFromCircularBuffer()
 
 	device->ReceiveIGTLMessage(messageFromBuffer, this->CheckCRC);
     device->Modified();
+    this->InvokeEvent(Connector::DeviceModifiedEvent, device.GetPointer());
 
     circBuffer->EndPull();
     }
@@ -730,6 +731,22 @@ int Connector::AddDevice(DevicePointer device)
   //TODO: listen to device events?
   this->InvokeEvent(Connector::NewDeviceEvent, device.GetPointer());
   return 1;
+}
+  
+int Connector::RemoveDevice(DevicePointer device)
+{
+  DeviceKeyType key = CreateDeviceKey(device);
+  for (unsigned i=0; i<Devices.size(); ++i)
+  {
+    if (CreateDeviceKey(Devices[i])==key)
+    {
+      Devices.erase(Devices.begin()+i);
+      this->InvokeEvent(Connector::RemovedDeviceEvent, device.GetPointer());
+      return 1;
+    }
+  }
+  vtkErrorMacro("Failed to remove igtl device: " << device->GetDeviceName());
+  return 0;
 }
 
 //---------------------------------------------------------------------------
