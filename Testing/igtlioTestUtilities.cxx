@@ -125,7 +125,6 @@ bool contains(std::vector<int> input, int value, int count)
   int found_times = 0;
   for(int i=0; i<input.size(); ++i)
     {
-      std::cout << "i: " << input[i] << std::endl;
       if(input[i] == value)
         found_times+=1;
     }

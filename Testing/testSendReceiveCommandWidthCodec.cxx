@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     //---------------------------------------------------------------------------
     // Wait for server to receive the command
     //---------------------------------------------------------------------------
-    if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlio::Logic::CommandQueryReceivedEvent))
+	if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlio::Logic::CommandReceivedEvent))
         return 1;
 
     std::cout << "*** COMMAND query received by Server" << std::endl;
