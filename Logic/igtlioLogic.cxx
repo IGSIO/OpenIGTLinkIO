@@ -146,7 +146,7 @@ int Logic::GetNumberOfConnectors() const
 //---------------------------------------------------------------------------
 ConnectorPointer Logic::GetConnector(unsigned int index)
 {
-  if (index>=0 && index<Connectors.size())
+  if (index<Connectors.size())
     return Connectors[index];
 
   vtkErrorMacro("index " << index << " out of bounds.");
@@ -207,7 +207,7 @@ DevicePointer Logic::GetDevice(unsigned int index)
   // TODO: optimize by caching the vector if necessary
   std::vector<DevicePointer> all = this->CreateDeviceList();
 
-  if (index>=0 && index<all.size())
+  if (index<all.size())
     return all[index];
 
   vtkErrorMacro("index " << index << " out of bounds.");
