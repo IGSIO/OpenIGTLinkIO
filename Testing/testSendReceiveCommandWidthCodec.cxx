@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     ClientServerFixture fixture;
 
     if (!fixture.ConnectClientToServer())
-        return 1;
+		return TEST_FAILED;
     GenerateErrorIf( fixture.Client.Logic->GetNumberOfDevices() != 0, "ERROR: Client shouldn't have devices." );
 
     std::cout << "*** Connection done" << std::endl;
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     // Wait for server to receive the command
     //---------------------------------------------------------------------------
 	if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlio::Logic::CommandReceivedEvent))
-        return 1;
+		return TEST_FAILED;
 
     std::cout << "*** COMMAND query received by Server" << std::endl;
 
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
     // Wait for client to receive response
     //---------------------------------------------------------------------------
     if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::CommandResponseReceivedEvent))
-        return 1;
+		return TEST_FAILED;
 
     std::cout << "*** RTS_COMMAND response received by Client" << std::endl;
 
@@ -89,5 +89,5 @@ int main(int argc, char **argv)
     GenerateErrorIf( responseCodec.GetParameter("Depth") != std::string("45"), "Depth in server response should be 45" );
     GenerateErrorIf( responseCodec.GetParameter("Gain") != std::string("35"), "Gain in server response should be 35" );
 
-    return 0;
+	return TEST_SUCCESS;
 }

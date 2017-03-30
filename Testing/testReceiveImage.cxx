@@ -19,13 +19,13 @@ int main(int argc, char **argv)
   ClientServerFixture fixture;
 
   if (!fixture.ConnectClientToServer())
-    return 1;
+	return TEST_FAILED;
 
 
   if (fixture.Client.Logic->GetNumberOfDevices() != 0)
   {
     std::cout << "ERROR: Client has devices before they have been added or fundamental error!" << std::endl;
-    return 1;
+	return TEST_FAILED;
   }
 
   std::cout << "*** Connection done" << std::endl;
@@ -40,13 +40,13 @@ int main(int argc, char **argv)
 
   if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::NewDeviceEvent))
   {
-    return 1;
+	return TEST_FAILED;
   }
 
   if (fixture.Client.Logic->GetNumberOfDevices() == 0)
   {
     std::cout << "FAILURE: No devices received." << std::endl;
-    return 1;
+	return TEST_FAILED;
   }
 
   igtlio::ImageDevicePointer receivedDevice;
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
   if (!receivedDevice)
   {
     std::cout << "FAILURE: Non-image device received." << std::endl;
-    return 1;
+	return TEST_FAILED;
   }
 
   std::cout << "*** Client received IMAGE device." << std::endl;
@@ -63,6 +63,7 @@ int main(int argc, char **argv)
   if (!igtlio::compare(imageDevice, receivedDevice))
   {
     std::cout << "FAILURE: Image differs from the one sent from server." << std::endl;
-    return 1;
+	return TEST_FAILED;
   }
+  return TEST_SUCCESS;
 }
