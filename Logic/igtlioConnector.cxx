@@ -622,7 +622,7 @@ void Connector::ImportDataFromCircularBuffer()
 
 	igtl::MessageBase::Pointer messageFromBuffer = circBuffer->GetPullBuffer();
 
-    vtkSmartPointer<DeviceCreator> deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
+	DeviceCreatorPointer deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
 
     if (!deviceCreator)
       {

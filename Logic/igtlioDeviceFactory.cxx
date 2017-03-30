@@ -42,12 +42,12 @@ void DeviceFactory::PrintSelf(ostream &os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-vtkIGTLIODeviceCreatorPointer DeviceFactory::GetCreator(std::string device_type) const
+DeviceCreatorPointer DeviceFactory::GetCreator(std::string device_type) const
 {
-  std::map<std::string, vtkIGTLIODeviceCreatorPointer>::const_iterator iter = Creators.find(device_type);
+  std::map<std::string, DeviceCreatorPointer>::const_iterator iter = Creators.find(device_type);
   if (iter==Creators.end())
     {
-    return vtkIGTLIODeviceCreatorPointer();
+	return DeviceCreatorPointer();
     }
   return iter->second;
 }
@@ -55,7 +55,7 @@ vtkIGTLIODeviceCreatorPointer DeviceFactory::GetCreator(std::string device_type)
 std::vector<std::string> DeviceFactory::GetAvailableDeviceTypes() const
 {
   std::vector<std::string> retval;
-  for (std::map<std::string, vtkIGTLIODeviceCreatorPointer>::const_iterator iter=Creators.begin();
+  for (std::map<std::string, DeviceCreatorPointer>::const_iterator iter=Creators.begin();
        iter!=Creators.end();
        ++iter)
     {
@@ -67,9 +67,11 @@ std::vector<std::string> DeviceFactory::GetAvailableDeviceTypes() const
 //---------------------------------------------------------------------------
 DevicePointer DeviceFactory::create(std::string device_type, std::string device_name) const
 {
-  vtkIGTLIODeviceCreatorPointer creator = this->GetCreator(device_type);
+  DeviceCreatorPointer creator = this->GetCreator(device_type);
   if (!creator)
-    return DevicePointer();
+  {
+	return DevicePointer();
+  }
   return creator->Create(device_name);
 }
 
@@ -77,7 +79,7 @@ DevicePointer DeviceFactory::create(std::string device_type, std::string device_
 template<class CREATOR_TYPE>
 void DeviceFactory::registerCreator()
 {
-  vtkIGTLIODeviceCreatorPointer creator = vtkSmartPointer<CREATOR_TYPE>::New();
+  DeviceCreatorPointer creator = vtkSmartPointer<CREATOR_TYPE>::New();
   Creators[creator->GetDeviceType()] = creator;
 }
 
