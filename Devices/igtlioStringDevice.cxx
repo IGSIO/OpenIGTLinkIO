@@ -47,10 +47,11 @@ std::string StringDevice::GetDeviceType() const
 int StringDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
  if (StringConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
-   {
+ {
    this->Modified();
+   this->InvokeEvent(ReceiveEvent);
    return 1;
-   }
+ }
 
  return 0;
 }
