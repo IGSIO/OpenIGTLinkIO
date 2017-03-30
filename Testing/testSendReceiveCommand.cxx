@@ -47,7 +47,7 @@ int main(int argc, char **argv)
   std::cout << "*** COMMAND query sent from Client" << std::endl;
   //---------------------------------------------------------------------------
 
-  if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlio::Logic::CommandQueryReceivedEvent))
+  if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlio::Logic::CommandReceivedEvent))
     return 1;
 
   std::cout << "*** COMMAND query received by Server" << std::endl;
