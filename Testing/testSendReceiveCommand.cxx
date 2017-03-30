@@ -24,12 +24,12 @@ int main(int argc, char **argv)
   ClientServerFixture fixture;
 
   if (!fixture.ConnectClientToServer())
-    return 1;
+	return TEST_FAILED;
 
   if (fixture.Client.Logic->GetNumberOfDevices() != 0)
   {
     std::cout << "ERROR: Client has devices before they have been added or fundamental error!" << std::endl;
-    return 1;
+	return TEST_FAILED;
   }
 
   std::cout << "*** Connection done" << std::endl;
@@ -48,14 +48,14 @@ int main(int argc, char **argv)
   //---------------------------------------------------------------------------
 
   if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlio::Logic::CommandReceivedEvent))
-    return 1;
+	return TEST_FAILED;
 
   std::cout << "*** COMMAND query received by Server" << std::endl;
   //---------------------------------------------------------------------------
 
   if(device_name != clientDevice->GetDeviceName())
   {
-	  return 1;
+	  return TEST_FAILED;
   }
 
   igtlio::CommandDevicePointer serverDevice;
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
   //---------------------------------------------------------------------------
 
   if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::CommandResponseReceivedEvent))
-    return 1;
+	return TEST_FAILED;
 
   std::cout << "*** RTS_COMMAND response received by Client" << std::endl;
   //---------------------------------------------------------------------------
@@ -87,18 +87,18 @@ int main(int argc, char **argv)
                igtlio::CommandDevice::SafeDownCast(query.Response)))
   {
     std::cout << "FAILURE: Query and response dont match." << std::endl;
-    return 1;
+	return TEST_FAILED;
   }
 
   if (!igtlio::compare(serverDevice,
                igtlio::CommandDevice::SafeDownCast(query.Response)))
   {
     std::cout << "FAILURE: Received response not equal to what the Server sent." << std::endl;
-    return 1;
+	return TEST_FAILED;
   }
 
   std::cout << "*** Client query/response match found." << std::endl;
   //---------------------------------------------------------------------------
 
-  return 0;
+  return TEST_SUCCESS;
 }

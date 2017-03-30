@@ -10,6 +10,8 @@
 
 
 #define GenerateErrorIf( condition, errorMessage ) if( condition ) { std::cerr << errorMessage << std::endl; return 1; }
+#define TEST_FAILED 1;
+#define TEST_SUCCESS 0;
 
 namespace igtlio
 {
