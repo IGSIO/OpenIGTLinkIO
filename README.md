@@ -1,11 +1,11 @@
-OpenIGTLinkIFIO
+OpenIGTLinkIO
 =============
 
 OpenIGTLink utility library.
 
 Originally forked from OpenIGTLinkIF.
 
-OpenIGTLinkIFIO contains several wrapper layers on top of OpenIGTLink. The code originates from OpenIGTLink/OpenIGTLinkIF. The main intent of the library is to share igtl code between Slicer, CustusX, IBIS, MITK and other systems.
+OpenIGTLinkIO contains several wrapper layers on top of OpenIGTLink. The code originates from OpenIGTLink/OpenIGTLinkIF. The main intent of the library is to share igtl code between Slicer, CustusX, IBIS, MITK and other systems.
 
 **Warning: This is a work in progress. The code is highly unstable!**
 
