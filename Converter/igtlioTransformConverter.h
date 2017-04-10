@@ -33,13 +33,15 @@ class OPENIGTLINKIO_CONVERTER_EXPORT TransformConverter : public BaseConverter
 {
 public:
   /**
-   * This structure contains everything that igtl::ImageMessage is able to contain,
+   * This structure contains everything that igtl::TransformMessage is able to contain,
    * in a vtk-friendly format.
    */
   struct ContentData
   {
   vtkSmartPointer<vtkMatrix4x4> transform;
   std::string deviceName;
+  std::string streamIdTo;
+  std::string streamIdFrom;
   };
 
   static const char*  GetIGTLName() { return GetIGTLTypeName(); };
@@ -47,6 +49,10 @@ public:
 
   static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
   static int toIGTL(const HeaderData& header, const ContentData& source, igtl::TransformMessage::Pointer* dest);
+
+private:
+  static int IGTLHeaderToTransformInfo(igtl::MessageBase::Pointer source, ContentData* dest);
+  static int TransformMetaDataToIGTL(const ContentData& source, igtl::MessageBase::Pointer *dest);
 
 };
 
