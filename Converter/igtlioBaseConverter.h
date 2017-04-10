@@ -51,6 +51,7 @@ public:
   double timestamp;
   EQUIPMENT_TYPE equipmentType;
   std::string equipmentId;
+  std::string streamId;
   };
 
   static int IGTLtoHeader(igtl::MessageBase::Pointer source, HeaderData* header);

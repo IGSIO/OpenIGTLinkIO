@@ -19,6 +19,9 @@
 namespace igtlio
 {
 
+static std::string stream_id_to_name = "STREAM_ID_TO";
+static std::string stream_id_from_name = "STREAM_ID_FROM";
+
 //---------------------------------------------------------------------------
 int TransformConverter::fromIGTL(igtl::MessageBase::Pointer source,
                              HeaderData* header,
@@ -39,6 +42,15 @@ int TransformConverter::fromIGTL(igtl::MessageBase::Pointer source,
       // TODO: error handling
       return 0;
       }
+
+	// get header
+	if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(transMsg), header))
+	  return 0;
+
+	// get additional transform header info
+	if (!IGTLHeaderToTransformInfo(dynamic_pointer_cast<igtl::MessageBase>(transMsg), dest))
+	  return 0;
+
 
     igtl::Matrix4x4 matrix;
     transMsg->GetMatrix(matrix);
@@ -90,6 +102,23 @@ int TransformConverter::fromIGTL(igtl::MessageBase::Pointer source,
 
 }
 
+int TransformConverter::IGTLHeaderToTransformInfo(igtl::MessageBase::Pointer source, ContentData* dest)
+{
+  source->GetMetaDataElement(stream_id_to_name, dest->streamIdTo);
+  source->GetMetaDataElement(stream_id_from_name, dest->streamIdFrom);
+
+  if(dest->streamIdTo.empty())
+  {
+	  dest->streamIdTo = "unknown";
+  }
+  if(dest->streamIdFrom.empty())
+  {
+	  dest->streamIdFrom = "unknown";
+  }
+
+  return 1;
+}
+
 //---------------------------------------------------------------------------
 int TransformConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::TransformMessage::Pointer* dest)
 {
@@ -99,6 +128,7 @@ int TransformConverter::toIGTL(const HeaderData& header, const ContentData& sour
 
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
   HeadertoIGTL(header, &basemsg);
+  TransformMetaDataToIGTL(source, &basemsg);
 
   if (source.transform.Get()==NULL)
     std::cerr << "Got NULL input transform" << std::endl;
@@ -166,6 +196,14 @@ int TransformConverter::VTKToIGTLTransform(const vtkMatrix4x4& vtkMatrix, igtl::
   igtlTransform[1][3] = vtkMatrix.Element[1][3];
   igtlTransform[2][3] = vtkMatrix.Element[2][3];
 
+  return 1;
+}
+
+//----------------------------------------------------------------------------
+int TransformConverter::TransformMetaDataToIGTL(const ContentData& source, igtl::MessageBase::Pointer *dest)
+{
+  (*dest)->SetMetaDataElement(stream_id_to_name, IANA_TYPE_US_ASCII, source.streamIdTo);
+  (*dest)->SetMetaDataElement(stream_id_from_name, IANA_TYPE_US_ASCII, source.streamIdFrom);
   return 1;
 }
 
