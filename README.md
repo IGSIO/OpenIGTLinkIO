@@ -1,5 +1,4 @@
-OpenIGTLinkIO
-=============
+# OpenIGTLinkIO
 
 OpenIGTLink utility library.
 
@@ -17,10 +16,10 @@ The library contains the following modules, ordered from few to lots of dependen
 
 An example application for running a standalone client is also available.
 
-Build instructions
-------------
+## Build instructions
 
 Build with cmake:         
+
 ```
 cmake -G"generator_name" \
       -DOpenIGTLink_DIR:PATH=path/to/igtl/build \
@@ -28,14 +27,22 @@ cmake -G"generator_name" \
       -DCTK_DIR:PATH=path/to/ctk/build \
       path/to/source
 ```
+
 Make sure Qt 4 or 5 is in your path.
 
-CTK must be build with VTK support: -DCTK_LIB_Visualization/VTK/Core:BOOL=ON. Set -DVTK_DIR:PATH=path/to/vtk/build as well.
+If you use a single configuration generator, you can explicitly select the configuration passing `-DCMAKE_BUILD_TYPE:STRING=Release` or `-DCMAKE_BUILD_TYPE:STRING=Debug`.
+
+List of available generator are listed [here](https://cmake.org/cmake/help/v3.8/manual/cmake-generators.7.html).
+
+CTK must be build with VTK support `-DCTK_LIB_Visualization/VTK/Core:BOOL=ON`. Set `-DVTK_DIR:PATH=path/to/vtk/build` as well.
 
 The library can be included into other systems through the usual cmake framework. *Install not tested.*
 
+## Example
+
 The following is an example of how to build the library with all prerequisites:
-```
+
+```bash
 # prerequisites:
 #
 # cmake is in path
@@ -72,4 +79,5 @@ cmake ../OpenIGTLinkIO -DOpenIGTLink_DIR:PATH=~/dev/OpenIGTLink_build -DVTK_DIR:
 make -j6
 ```
 
-
+# License
+This project is released under the [Apache 2 license](LICENSE.md).
