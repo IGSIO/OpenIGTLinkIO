@@ -78,3 +78,6 @@ cd OpenIGTLinkIO_build
 cmake ../OpenIGTLinkIO -DOpenIGTLink_DIR:PATH=~/dev/OpenIGTLink_build -DVTK_DIR:PATH=~/dev/VTK_build -DCTK_DIR:PATH=~/dev/CTK_build 
 make -j6
 ```
+
+# License
+This project is released under the [Apache 2 license](LICENSE.md).
