@@ -23,6 +23,7 @@ set(${PROJECT_NAME}_SRCS
   igtlioStringDevice.cxx
   igtlioCommandDevice.cxx
   igtlioTransformDevice.cxx
+  igtlioPolyDataDevice.cxx
   )
 
 set(${PROJECT_NAME}_HDRS
@@ -33,6 +34,7 @@ set(${PROJECT_NAME}_HDRS
   igtlioStringDevice.h
   igtlioCommandDevice.h
   igtlioTransformDevice.h
+  igtlioPolyDataDevice.h
   )
 
 set(${PROJECT_NAME}_TARGET_LIBRARIES
