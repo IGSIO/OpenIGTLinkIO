@@ -6,7 +6,6 @@
 #include "igtlioStatusConverter.h"
 #include "igtlioDevice.h"
 
-class vtkImageData;
 namespace igtlio
 {
 
