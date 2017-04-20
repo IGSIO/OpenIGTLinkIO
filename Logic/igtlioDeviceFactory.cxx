@@ -14,6 +14,7 @@
 #include "igtlioCommandDevice.h"
 #include "igtlioTransformDevice.h"
 //#include "igtlioVideoDevice.h"
+#include "igtlioPolyDataDevice.h"
 
 namespace igtlio
 {
@@ -29,6 +30,7 @@ DeviceFactory::DeviceFactory()
   //this->registerCreator<VideoDeviceCreator>();
   this->registerCreator<TransformDeviceCreator>();
   this->registerCreator<StringDeviceCreator>();
+  this->registerCreator<PolyDataDeviceCreator>();
 }
 
 //---------------------------------------------------------------------------
