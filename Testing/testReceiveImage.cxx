@@ -9,7 +9,7 @@
 #include <vtksys/SystemTools.hxx>
 #include "igtlioImageConverter.h"
 #include <vtkImageDifference.h>
-#include "IGTLIOFixture.h"
+#include "igtlioFixture.h"
 #include "igtlioImageDevice.h"
 #include "igtlioSession.h"
 #include "igtlioTestUtilities.h"

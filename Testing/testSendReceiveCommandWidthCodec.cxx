@@ -1,4 +1,4 @@
-#include "IGTLIOFixture.h"
+#include "igtlioFixture.h"
 #include "igtlioSession.h"
 #include "igtlioTransformDevice.h"
 #include "igtlioCommandMessageCodec.h"
