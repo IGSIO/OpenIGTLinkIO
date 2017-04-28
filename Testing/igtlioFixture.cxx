@@ -5,19 +5,7 @@
 #include "vtkMatrix4x4.h"
 #include <vtksys/SystemTools.hxx>
 #include "igtlioSession.h"
-
-
-bool contains(std::vector<int> input, int value, int count)
-{
-  int found_times = 0;
-  for(int i=0; i<input.size(); ++i)
-    {
-      std::cout << "i: " << input[i] << std::endl;
-      if(input[i] == value)
-        found_times+=1;
-    }
-  return (found_times >= count) ? true : false;
-}
+#include "igtlioTestUtilities.h"
 
 //---------------------------------------------------------------------------
 void onReceivedEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
@@ -37,7 +25,7 @@ LogicFixture::LogicFixture()
 
   Logic->AddObserver(igtlio::Logic::NewDeviceEvent, LogicEventCallback);
   Logic->AddObserver(igtlio::Logic::RemovedDeviceEvent, LogicEventCallback);
-  Logic->AddObserver(igtlio::Logic::CommandQueryReceivedEvent, LogicEventCallback);
+  Logic->AddObserver(igtlio::Logic::CommandReceivedEvent, LogicEventCallback);
   Logic->AddObserver(igtlio::Logic::CommandResponseReceivedEvent, LogicEventCallback);
 }
 
@@ -102,7 +90,7 @@ bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventI
     Client.Logic->PeriodicProcess();
     vtksys::SystemTools::Delay(5);
 
-    if (contains(logic->ReceivedEvents, eventId, count))
+    if (igtlio::contains(logic->ReceivedEvents, eventId, count))
     {
       return true;
     }

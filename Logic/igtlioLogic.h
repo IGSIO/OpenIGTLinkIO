@@ -11,31 +11,14 @@
   Version:   $Revision: 13728 $
 
 ==========================================================================*/
-
-/// This class manages the logic associated with tracking device for IGT.
-
 #ifndef IGTLIOLOGIC_H
 #define IGTLIOLOGIC_H
 
-// OpenIGTLink includes
+#include <vector>
+#include <vtkCallbackCommand.h>
+#include <vtkMultiThreader.h>
 #include <igtlImageMessage.h>
 #include <igtlTransformMessage.h>
-
-//#include "vtkSlicerBaseLogic.h"
-//#include "vtkSlicerModuleLogic.h"
-#include "vtkCallbackCommand.h"
-
-//// MRML includes
-//#include <vtkMRMLTransformNode.h>
-//#include <vtkMRMLFiducialListNode.h>
-
-// VTK includes
-#include <vtkMultiThreader.h>
-
-// STD includes
-#include <vector>
-
-// IGTLIO includes
 #include "igtlioLogicExport.h"
 #include "igtlioDevice.h"
 #include "igtlioUtilities.h"
@@ -44,9 +27,8 @@ namespace igtlio
 {
 
 typedef vtkSmartPointer<class Logic> LogicPointer;
-
 typedef vtkSmartPointer<class Connector> ConnectorPointer;
-typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
+typedef vtkSmartPointer<class Session> SessionPointer;
 
 
 /// Logic is the manager for the IGTLIO module.
@@ -80,7 +62,7 @@ public:
     NewDeviceEvent        = 118949,
 //    DeviceModifiedEvent   = 118950, // must listen to each specific device in order to get this one.
     RemovedDeviceEvent    = 118951,
-    CommandQueryReceivedEvent = Device::CommandQueryReceivedEvent, // one of the connected COMMAND devices got a query
+	CommandReceivedEvent = Device::CommandReceivedEvent, // one of the connected COMMAND devices got a query
     CommandResponseReceivedEvent = Device::CommandResponseReceivedEvent // one of the connected COMMAND devices got a response
   };
 
@@ -95,11 +77,11 @@ public:
 
  /// Start a server and return a Session representing the connection.
  /// If sync is BLOCKING, the call blocks until at client has connected to the server.
- vtkIGTLIOSessionPointer StartServer(int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
+ SessionPointer StartServer(int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
 
  /// Connect to the given server and return Session representing the connection.
  /// if sync is BLOCKING, the call blocks until the server responds or until timeout.
- vtkIGTLIOSessionPointer ConnectToServer(std::string serverHost, int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
+ SessionPointer ConnectToServer(std::string serverHost, int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
 
  /// Call timer-driven routines for each connector
  void PeriodicProcess();

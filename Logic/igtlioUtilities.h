@@ -32,7 +32,7 @@ struct OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType
 public:
   std::string GetBaseTypeName() const;
 };
-//typedef std::pair<std::string, std::string> DeviceKeyType;
+
 OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(igtl::MessageBase::Pointer message);
 OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(DevicePointer device);
 bool operator==(const DeviceKeyType& lhs, const DeviceKeyType& rhs);

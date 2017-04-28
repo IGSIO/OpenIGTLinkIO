@@ -4,13 +4,14 @@
 #include "vtkTimerLog.h"
 #include <vtksys/SystemTools.hxx>
 #include "IGTLIOFixture.h"
+#include "igtlioTestUtilities.h"
 
 int main(int argc, char **argv)
 {
   ClientServerFixture fixture;
 
   if (!fixture.ConnectClientToServer())
-    return 1;
+	return TEST_FAILED;
 
-  return 0;
+  return TEST_SUCCESS;
 }

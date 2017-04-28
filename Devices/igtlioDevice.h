@@ -44,26 +44,19 @@ public:
 
  enum MESSAGE_PREFIX {
    MESSAGE_PREFIX_NOT_DEFINED,
-   MESSAGE_PREFIX_GET,
-   MESSAGE_PREFIX_START,
-   MESSAGE_PREFIX_STOP,
-   MESSAGE_PREFIX_REPLY,
+   //MESSAGE_PREFIX_GET,
+   //MESSAGE_PREFIX_START,
+   //MESSAGE_PREFIX_STOP,
+   MESSAGE_PREFIX_RTS,
    NUM_MESSAGE_PREFIX,
  };
- enum QUERY_STATUS {
-   QUERY_STATUS_NONE,
-   QUERY_STATUS_WAITING,
-   QUERY_STATUS_SUCCESS,
-   QUERY_STATUS_EXPIRED,
-   QUERY_STATUS_ERROR,
-   NUM_QUERY_STATUS,
- };
+
  enum {
    ReceiveEvent          = 118948,
    ResponseEvent         = 118952,
    ModifiedEvent         = vtkCommand::ModifiedEvent,
 
-   CommandQueryReceivedEvent    = 119001, // COMMAND device got a query, COMMAND received
+   CommandReceivedEvent    = 119001, // COMMAND device got a query, COMMAND received
    CommandResponseReceivedEvent = 119002  // COMMAND device got a response, RTS_COMMAND received
  };
 
@@ -83,11 +76,8 @@ public:
  vtkGetMacro( PushOnConnect, bool );
  vtkSetMacro( MessageDirection, MESSAGE_DIRECTION );
  vtkGetMacro( MessageDirection, MESSAGE_DIRECTION );
- vtkSetMacro( QueryTimeOut, double );
- vtkGetMacro( QueryTimeOut, double );
  vtkSetMacro( Visibility, bool );
  vtkGetMacro( Visibility, bool );
-  
 
  virtual double GetTimestamp() const;
  virtual void SetTimestamp(double val);
@@ -105,6 +95,7 @@ public:
  // The returned pointer might be allocated internally once
  // and reused between successive calls.
  virtual igtl::MessageBase::Pointer GetIGTLMessage() = 0;
+
  // As GetIGTLMessage(), except that the generated message is for the given prefix.
  // TODO: merge with above
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix) { return igtl::MessageBase::Pointer(); }
@@ -118,54 +109,24 @@ public:
  //       - lock (means dont accept incoming messages),
  //       - gettimestamp (of last incoming message)
 
- /// Query handling:
- /// Each device has a list of queries (GET_, STT_, STP_) that has been sent
- /// and are awaiting reply.
- //
- /// Device::GetMessage() pushes a query,
- /// Device::ReceiveMessage() processes the reply, and emits events for the receive
- ///   - statechange: waiting, success, expired,...
- ///
- /// One query (GET_, STT_ or STP_-message that requires an answer)
- ///
- /// TODO: Currently implemented for COMMAND message only. The GET_/STT_/STP_ messages
- /// handle this by simply sending and ignoring failures.
- /// Either move the query mechanism down to COMMAND or generalize.
- ///
- ///
- struct QueryType
- {
-   DevicePointer Query;
-   DevicePointer Response;
-   QUERY_STATUS status;
- };
 
-  /// Get all current queries
-  std::vector<QueryType> GetQueries() const;
-  /// check for waiting queries that have waited beoynd the timeout for an answer, mark them as expired.
-  int CheckQueryExpiration();
-  /// remove all queries that are answered or expired.
-  int PruneCompletedQueries();
-  int CancelQuery(int index);
-
- public:
+public:
   vtkAbstractTypeMacro(Device,vtkObject);
 
 protected:
   void SetHeader(BaseConverter::HeaderData header);
 
-  std::vector<QueryType> Queries;
   BaseConverter::HeaderData HeaderData;
+
+protected:
+ Device();
+ virtual ~Device();
 
 private:
  MESSAGE_DIRECTION MessageDirection;
  bool PushOnConnect;
- double QueryTimeOut;
  bool Visibility;
 
- protected:
-  Device();
-  ~Device();
 };
 
 //---------------------------------------------------------------------------

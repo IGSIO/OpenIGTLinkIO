@@ -1,35 +1,36 @@
 #include "igtlioSession.h"
 
+#include <vtksys/SystemTools.hxx>
 #include <vtkObjectFactory.h>
 #include <vtkNew.h>
-
-#include "igtlioConnector.h"
-#include <vtksys/SystemTools.hxx>
 #include "vtkTimerLog.h"
+#include "igtlioConnector.h"
 #include "igtlioCommandDevice.h"
 #include "igtlioImageDevice.h"
 #include "igtlioTransformDevice.h"
+#include "igtlioStringDevice.h"
+#include "igtlioStatusDevice.h"
 
 
 namespace igtlio
 {
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(vtkIGTLIOSession);
+vtkStandardNewMacro(Session);
 
 
 //----------------------------------------------------------------------
 
-void vtkIGTLIOSession::PrintSelf(std::ostream &, vtkIndent)
+void Session::PrintSelf(std::ostream &, vtkIndent)
 {
 
 }
 
-vtkIGTLIOSession::vtkIGTLIOSession()
+Session::Session()
 {
 }
 
-DevicePointer vtkIGTLIOSession::AddDeviceIfNotPresent(DeviceKeyType key)
+DevicePointer Session::AddDeviceIfNotPresent(DeviceKeyType key)
 {
   DevicePointer device = Connector->GetDevice(key);
 
@@ -43,11 +44,7 @@ DevicePointer vtkIGTLIOSession::AddDeviceIfNotPresent(DeviceKeyType key)
 }
 
 
-CommandDevicePointer vtkIGTLIOSession::SendCommandQuery(std::string device_id,
-                                                                 std::string command,
-                                                                 std::string content,
-                                                                 igtlio::SYNCHRONIZATION_TYPE synchronized,
-                                                                 double timeout_s)
+CommandDevicePointer Session::SendCommand(std::string device_id, std::string command, std::string content, igtlio::SYNCHRONIZATION_TYPE synchronized, double timeout_s)
 {
   vtkSmartPointer<CommandDevice> device;
   DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
@@ -87,7 +84,7 @@ CommandDevicePointer vtkIGTLIOSession::SendCommandQuery(std::string device_id,
   return vtkSmartPointer<CommandDevice>();
 }
 
-CommandDevicePointer vtkIGTLIOSession::SendCommandResponse(std::string device_id, std::string command, std::string content)
+CommandDevicePointer Session::SendCommandResponse(std::string device_id, std::string command, std::string content)
 {
   DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
   CommandDevicePointer device = CommandDevice::SafeDownCast(Connector->GetDevice(key));
@@ -104,11 +101,11 @@ CommandDevicePointer vtkIGTLIOSession::SendCommandResponse(std::string device_id
   contentdata.content = content;
   device->SetContent(contentdata);
 
-  Connector->SendMessage(CreateDeviceKey(device), Device::MESSAGE_PREFIX_REPLY);
+  Connector->SendMessage(CreateDeviceKey(device), Device::MESSAGE_PREFIX_RTS);
   return device;
 }
 
-ImageDevicePointer vtkIGTLIOSession::SendImage(std::string device_id, vtkSmartPointer<vtkImageData> image, vtkSmartPointer<vtkMatrix4x4> transform)
+ImageDevicePointer Session::SendImage(std::string device_id, vtkSmartPointer<vtkImageData> image, vtkSmartPointer<vtkMatrix4x4> transform)
 {
   ImageDevicePointer device;
   DeviceKeyType key(igtlio::ImageConverter::GetIGTLTypeName(), device_id);
@@ -124,17 +121,17 @@ ImageDevicePointer vtkIGTLIOSession::SendImage(std::string device_id, vtkSmartPo
   return device;
 }
 
-ConnectorPointer vtkIGTLIOSession::GetConnector()
+ConnectorPointer Session::GetConnector()
 {
   return Connector;
 }
 
-void vtkIGTLIOSession::SetConnector(ConnectorPointer connector)
+void Session::SetConnector(ConnectorPointer connector)
 {
   Connector = connector;
 }
 
-void vtkIGTLIOSession::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+void Session::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
 {
   if (!Connector)
   {
@@ -159,7 +156,7 @@ void vtkIGTLIOSession::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE 
   }
 }
 
-void vtkIGTLIOSession::ConnectToServer(std::string serverHost, int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+void Session::ConnectToServer(std::string serverHost, int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
 {
   if (!Connector)
   {
@@ -183,7 +180,7 @@ void vtkIGTLIOSession::ConnectToServer(std::string serverHost, int serverPort, i
   }
 }
 
-bool vtkIGTLIOSession::waitForConnection(double timeout_s)
+bool Session::waitForConnection(double timeout_s)
 {
   double starttime = vtkTimerLog::GetUniversalTime();
 
@@ -202,13 +199,13 @@ bool vtkIGTLIOSession::waitForConnection(double timeout_s)
 }
 
 
-TransformDevicePointer vtkIGTLIOSession::SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform)
+TransformDevicePointer Session::SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform)
 {
   TransformDevicePointer device;
-  DeviceKeyType key(igtlio::TransformConverter::GetIGTLTypeName(), device_id);
+  DeviceKeyType key(TransformConverter::GetIGTLTypeName(), device_id);
   device = TransformDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
 
-  igtlio::TransformConverter::ContentData contentdata = device->GetContent();
+  TransformConverter::ContentData contentdata = device->GetContent();
   contentdata.deviceName = device_id;
   contentdata.transform = transform;
   device->SetContent(contentdata);
@@ -216,6 +213,38 @@ TransformDevicePointer vtkIGTLIOSession::SendTransform(std::string device_id, vt
   Connector->SendMessage(CreateDeviceKey(device));
 
   return device;
+}
+
+StringDevicePointer Session::SendString(std::string device_id, std::string content)
+{
+  StringDevicePointer device;
+  DeviceKeyType key(StringConverter::GetIGTLTypeName(), device_id);
+  device = StringDevice::SafeDownCast((this->AddDeviceIfNotPresent(key)));
+
+  StringConverter::ContentData contentdata = device->GetContent();
+  contentdata.encoding = 3; //what should this be?
+  contentdata.string_msg = content;
+
+  Connector->SendMessage(CreateDeviceKey(device));
+
+  return device;
+}
+
+StatusDevicePointer Session::SendStatus(std::string device_id, int code, int subcode, std::string statusstring, std::string errorname)
+{
+	StatusDevicePointer device;
+	DeviceKeyType key(StatusConverter::GetIGTLTypeName(), device_id);
+	device = StatusDevice::SafeDownCast((this->AddDeviceIfNotPresent(key)));
+
+	StatusConverter::ContentData contentdata = device->GetContent();
+	contentdata.code = code;
+	contentdata.errorname = errorname;
+	contentdata.statusstring = statusstring;
+	contentdata.subcode = subcode;
+
+	Connector->SendMessage(CreateDeviceKey(device));
+
+	return device;
 }
 
 } //namespace igtlio

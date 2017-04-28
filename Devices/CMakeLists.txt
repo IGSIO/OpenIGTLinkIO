@@ -19,15 +19,19 @@ set(${PROJECT_NAME}_SRCS
   igtlioDevice.cxx
   igtlioImageDevice.cxx
   igtlioStatusDevice.cxx
+  igtlioStringDevice.cxx
   igtlioCommandDevice.cxx
   igtlioTransformDevice.cxx
+  igtlioPolyDataDevice.cxx
   )
 
 set(${PROJECT_NAME}_HDRS
   igtlioDevice.h
   igtlioImageDevice.h
   igtlioStatusDevice.h
+  igtlioStringDevice.h
   igtlioCommandDevice.h
+  igtlioPolyDataDevice.h
   )
 
 set(${PROJECT_NAME}_TARGET_LIBRARIES

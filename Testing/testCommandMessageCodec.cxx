@@ -1,6 +1,7 @@
 #include "igtlioCommandMessageCodec.h"
 #include <string>
 #include <iostream>
+#include "igtlioTestUtilities.h"
 
 int main(int argc, char **argv)
 {
@@ -20,32 +21,32 @@ int main(int argc, char **argv)
     if( !codec.IsReply() )
     {
         std::cerr << "Command is a reply" << std::endl;
-        return 1;
+		return TEST_FAILED;
     }
 
     if( !codec.GetResult() )
     {
         std::cerr << "Result should be true" << std::endl;
-        return 1;
+		return TEST_FAILED;
     }
 
     if( codec.GetNumberOfParameters() != 2 )
     {
         std::cerr << "There should be 2 parameters" << std::endl;
-        return 1;
+		return TEST_FAILED;
     }
 
     if( codec.GetParameter("Depth") != "45" )
     {
         std::cerr << "Depth should be 45" << std::endl;
-        return 1;
+		return TEST_FAILED;
     }
 
     if( codec.GetParameter("Gain") != "35" )
     {
         std::cerr << "Gain should be 35" << std::endl;
-        return 1;
+		return TEST_FAILED;
     }
 
-    return 0;
+	return TEST_SUCCESS;
 }

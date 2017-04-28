@@ -7,10 +7,10 @@ namespace igtlio
 std::vector<std::string> CommandConverter::GetAvailableCommandNames()
 {
   std::vector<std::string> retval;
-  retval.push_back("SetDeviceParameters");
-  retval.push_back("GetDeviceParameters");
-  retval.push_back("SubscribeDeviceParameters");
-  retval.push_back("GetCapabilities");
+  retval.push_back("Set");
+  retval.push_back("Get");
+  retval.push_back("Subscribe");
+  retval.push_back("Unsubscribe");
   return retval;
 }
 

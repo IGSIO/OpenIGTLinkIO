@@ -23,7 +23,7 @@ qIGTLIODeviceButtonsWidget::qIGTLIODeviceButtonsWidget()
   QHBoxLayout* buttonLayout = new QHBoxLayout(buttonFrame);
   buttonLayout->setMargin(0);
 
-  QStringList actionNames = QStringList() << "SEND" << "GET" << "STT" << "STP";
+  QStringList actionNames = QStringList() << "SEND";
 
   for (int i=0; i<actionNames.size(); ++i)
     {

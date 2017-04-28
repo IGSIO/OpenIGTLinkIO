@@ -1,52 +1,52 @@
 
-#include "igtlioStatusDevice.h"
+#include "igtlioPolyDataDevice.h"
 #include <vtkObjectFactory.h>
 
 namespace igtlio
 {
 
 //---------------------------------------------------------------------------
-DevicePointer StatusDeviceCreator::Create(std::string device_name)
+DevicePointer PolyDataDeviceCreator::Create(std::string device_name)
 {
- StatusDevicePointer retval = StatusDevicePointer::New();
+ PolyDataDevicePointer retval = PolyDataDevicePointer::New();
  retval->SetDeviceName(device_name);
  return retval;
 }
 
 //---------------------------------------------------------------------------
-std::string StatusDeviceCreator::GetDeviceType() const
+std::string PolyDataDeviceCreator::GetDeviceType() const
 {
- return StatusConverter::GetIGTLTypeName();
+ return PolyDataConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(StatusDeviceCreator);
+vtkStandardNewMacro(PolyDataDeviceCreator);
 
 
 
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(StatusDevice);
+vtkStandardNewMacro(PolyDataDevice);
 //---------------------------------------------------------------------------
-StatusDevice::StatusDevice()
-{
-}
-
-//---------------------------------------------------------------------------
-StatusDevice::~StatusDevice()
+PolyDataDevice::PolyDataDevice()
 {
 }
 
 //---------------------------------------------------------------------------
-std::string StatusDevice::GetDeviceType() const
+PolyDataDevice::~PolyDataDevice()
 {
-  return StatusConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-int StatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+std::string PolyDataDevice::GetDeviceType() const
 {
- if (StatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+  return PolyDataConverter::GetIGTLTypeName();
+}
+
+//---------------------------------------------------------------------------
+int PolyDataDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+{
+ if (PolyDataConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
  {
    this->Modified();
    this->InvokeEvent(ReceiveEvent);
@@ -57,9 +57,9 @@ int StatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool che
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
+igtl::MessageBase::Pointer PolyDataDevice::GetIGTLMessage()
 {
-	/*
+    /*
  // cannot send a non-existent status (?)
  if (Content.errorname.empty())
   {
@@ -67,7 +67,7 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
   }
   */
 
- if (!StatusConverter::toIGTL(HeaderData, Content, &this->OutMessage))
+ if (!PolyDataConverter::toIGTL(HeaderData, Content, &this->OutMessage))
    {
    return 0;
    }
@@ -76,20 +76,9 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
+igtl::MessageBase::Pointer PolyDataDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
-	/*
- if (prefix==MESSAGE_PREFIX_GET)
-  {
-   if (this->GetMessage.IsNull())
-     {
-     this->GetMessage = igtl::GetStatusMessage::New();
-     }
-   this->GetMessage->SetDeviceName(HeaderData.deviceName.c_str());
-   this->GetMessage->Pack();
-   return dynamic_pointer_cast<igtl::MessageBase>(this->GetMessage);
-  }
-  */
+
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
@@ -99,33 +88,31 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 }
 
 //---------------------------------------------------------------------------
-std::set<Device::MESSAGE_PREFIX> StatusDevice::GetSupportedMessagePrefixes() const
+std::set<Device::MESSAGE_PREFIX> PolyDataDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
  retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
  return retval;
 }
 
-void StatusDevice::SetContent(StatusConverter::ContentData content)
+void PolyDataDevice::SetContent(PolyDataConverter::ContentData content)
 {
   Content = content;
   this->Modified();
 }
 
-StatusConverter::ContentData StatusDevice::GetContent()
+PolyDataConverter::ContentData PolyDataDevice::GetContent()
 {
   return Content;
 }
 
 //---------------------------------------------------------------------------
-void StatusDevice::PrintSelf(ostream& os, vtkIndent indent)
+void PolyDataDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
   Device::PrintSelf(os, indent);
 
-  os << indent << "ErrorCode:\t" << Content.code << "\n";
-  os << indent << "ErrorSubCode:\t" << Content.subcode << "\n";
-  os << indent << "ErrorName:\t" << Content.errorname << "\n";
-  os << indent << "StatusString:\t" << Content.statusstring << "\n";
+  os << indent << "deviceName:\t" << Content.deviceName << "\n";
 }
 
 } //namespace igtlio
+

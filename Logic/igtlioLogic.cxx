@@ -37,7 +37,7 @@ void onNewDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata
   logic->InvokeEvent(Logic::NewDeviceEvent, calldata);
 
   Device* device = reinterpret_cast<Device*>(calldata);
-  device->AddObserver(Device::CommandQueryReceivedEvent, logic->DeviceEventCallback);
+  device->AddObserver(Device::CommandReceivedEvent, logic->DeviceEventCallback);
   device->AddObserver(Device::CommandResponseReceivedEvent, logic->DeviceEventCallback);
 }
 
@@ -56,7 +56,7 @@ void onDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, v
 {
   Logic* logic = reinterpret_cast<Logic*>(clientdata);
 
-  if ((eid==Device::CommandQueryReceivedEvent) ||
+  if ((eid==Device::CommandReceivedEvent) ||
       (eid==Device::CommandResponseReceivedEvent))
   {
     logic->InvokeEvent(eid, calldata);
@@ -146,24 +146,24 @@ int Logic::GetNumberOfConnectors() const
 //---------------------------------------------------------------------------
 ConnectorPointer Logic::GetConnector(unsigned int index)
 {
-  if (index>=0 && index<Connectors.size())
+  if (index<Connectors.size())
     return Connectors[index];
 
   vtkErrorMacro("index " << index << " out of bounds.");
   return NULL;
 }
 
-vtkIGTLIOSessionPointer Logic::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+SessionPointer Logic::StartServer(int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
 {
-  vtkIGTLIOSessionPointer session = vtkIGTLIOSessionPointer::New();
+  SessionPointer session = SessionPointer::New();
   session->SetConnector(this->CreateConnector());
   session->StartServer(serverPort, sync, timeout_s);
   return session;
 }
 
-vtkIGTLIOSessionPointer Logic::ConnectToServer(std::string serverHost, int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
+SessionPointer Logic::ConnectToServer(std::string serverHost, int serverPort, igtlio::SYNCHRONIZATION_TYPE sync, double timeout_s)
 {
-  vtkIGTLIOSessionPointer session = vtkIGTLIOSessionPointer::New();
+  SessionPointer session = SessionPointer::New();
   session->SetConnector(this->CreateConnector());
   session->ConnectToServer(serverHost, serverPort, sync, timeout_s);
   return session;
@@ -207,7 +207,7 @@ DevicePointer Logic::GetDevice(unsigned int index)
   // TODO: optimize by caching the vector if necessary
   std::vector<DevicePointer> all = this->CreateDeviceList();
 
-  if (index>=0 && index<all.size())
+  if (index<all.size())
     return all[index];
 
   vtkErrorMacro("index " << index << " out of bounds.");

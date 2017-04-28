@@ -2,14 +2,7 @@
 #include "igtlioSession.h"
 #include "igtlioTransformDevice.h"
 #include "igtlioCommandMessageCodec.h"
-
-#define GenerateErrorIf( condition, errorMessage ) if( condition ) { std::cerr << errorMessage << std::endl; return 1; }
-
-std::string boolToString( bool b )
-{
-    std::string ret = b ? "true" : "false";
-    return ret;
-}
+#include "igtlioTestUtilities.h"
 
 int main(int argc, char **argv)
 {
@@ -19,7 +12,7 @@ int main(int argc, char **argv)
     ClientServerFixture fixture;
 
     if (!fixture.ConnectClientToServer())
-        return 1;
+		return TEST_FAILED;
     GenerateErrorIf( fixture.Client.Logic->GetNumberOfDevices() != 0, "ERROR: Client shouldn't have devices." );
 
     std::cout << "*** Connection done" << std::endl;
@@ -34,15 +27,15 @@ int main(int argc, char **argv)
     outCodec.AddParameter("Gain","35");
 
     igtlio::CommandDevicePointer clientDevice;
-    clientDevice = fixture.Client.Session->SendCommandQuery( usprobe_name, "GetDeviceParameters", outCodec.GetContent(), igtlio::ASYNCHRONOUS );
+    clientDevice = fixture.Client.Session->SendCommand( usprobe_name, "GetDeviceParameters", outCodec.GetContent(), igtlio::ASYNCHRONOUS );
 
     std::cout << "*** COMMAND query sent from Client" << std::endl;
 
     //---------------------------------------------------------------------------
     // Wait for server to receive the command
     //---------------------------------------------------------------------------
-    if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlio::Logic::CommandQueryReceivedEvent))
-        return 1;
+	if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlio::Logic::CommandReceivedEvent))
+		return TEST_FAILED;
 
     std::cout << "*** COMMAND query received by Server" << std::endl;
 
@@ -77,7 +70,7 @@ int main(int argc, char **argv)
     // Wait for client to receive response
     //---------------------------------------------------------------------------
     if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::CommandResponseReceivedEvent))
-        return 1;
+		return TEST_FAILED;
 
     std::cout << "*** RTS_COMMAND response received by Client" << std::endl;
 
@@ -86,7 +79,7 @@ int main(int argc, char **argv)
     //---------------------------------------------------------------------------
     GenerateErrorIf(clientDevice->GetQueries().empty(),"Response not properly received");
 
-    igtlio::Device::QueryType query = clientDevice->GetQueries()[0];
+	igtlio::CommandDevice::QueryType query = clientDevice->GetQueries()[0];
     igtlio::CommandDevicePointer queryResponse = igtlio::CommandDevice::SafeDownCast(query.Response);
     igtlio::CommandMessageCodec responseCodec;
     responseCodec.SetContent( queryResponse->GetContent().content );
@@ -96,5 +89,5 @@ int main(int argc, char **argv)
     GenerateErrorIf( responseCodec.GetParameter("Depth") != std::string("45"), "Depth in server response should be 45" );
     GenerateErrorIf( responseCodec.GetParameter("Gain") != std::string("35"), "Gain in server response should be 35" );
 
-    return 0;
+	return TEST_SUCCESS;
 }

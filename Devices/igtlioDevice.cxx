@@ -11,7 +11,6 @@
 
 #include <vtkTimerLog.h>
 
-
 namespace igtlio
 {
 //---------------------------------------------------------------------------
@@ -19,7 +18,6 @@ Device::Device()
 {
   PushOnConnect = false;
   MessageDirection = MESSAGE_DIRECTION_IN;
-  QueryTimeOut = 0;
 }
 
 //---------------------------------------------------------------------------
@@ -69,70 +67,6 @@ void Device::SetTimestamp(double val)
   this->Modified();
 }
 
-//---------------------------------------------------------------------------
-std::vector<Device::QueryType> Device::GetQueries() const
-{
-  return Queries;
-}
-
-//---------------------------------------------------------------------------
-int Device::CheckQueryExpiration()
-{
-  double currentTime = vtkTimerLog::GetUniversalTime();
-//  if (this->QueryWaitingQueue.size() > 0)
-//    {
-//    for (std::list< vtkWeakPointer<vtkMRMLIGTLQueryNode> >::iterator iter = this->QueryWaitingQueue.begin();
-//      iter != this->QueryWaitingQueue.end(); /* increment in the loop to allow erase */ )
-//      {
-//      if (iter->GetPointer()==NULL)
-//        {
-//        // the node has been deleted, so remove it from the list
-//        iter = this->QueryWaitingQueue.erase(iter);
-//        continue;
-//        }
-  bool expired = false;
-
-  for (unsigned i=0; i<Queries.size(); ++i)
-    {
-      double timeout = this->GetQueryTimeOut();
-      if ((timeout>0)
-          && (currentTime-Queries[i].Query->GetTimestamp()>timeout)
-          && (Queries[i].status==QUERY_STATUS_WAITING))
-        {
-        Queries[i].status=QUERY_STATUS_EXPIRED;
-        expired = true;
-        }
-
-    }
-
-  if (expired)
-    this->InvokeEvent(ResponseEvent);
-
-  return 0;
-}
-
-//---------------------------------------------------------------------------
-int Device::PruneCompletedQueries()
-{
-  std::vector<QueryType> pruned;
-
-  for (unsigned int i=0; i<Queries.size(); ++i)
-    if (Queries[i].status == QUERY_STATUS_WAITING)
-      pruned.push_back(Queries[i]);
-
-  if (pruned.size()!=Queries.size())
-    this->Modified();
-
-  Queries = pruned;
-  return 0;
-}
-
-//---------------------------------------------------------------------------
-int Device::CancelQuery(int index)
-{
-  Queries.erase(Queries.begin()+index);
-  return 0;
-}
 
 //---------------------------------------------------------------------------
 void Device::SetHeader(BaseConverter::HeaderData header)
