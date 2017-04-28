@@ -1,4 +1,4 @@
-#include "IGTLIOFixture.h"
+#include "igtlioFixture.h"
 
 #include "vtkImageData.h"
 #include "igtlioImageConverter.h"

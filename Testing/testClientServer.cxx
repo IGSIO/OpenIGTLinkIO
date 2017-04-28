@@ -3,7 +3,7 @@
 #include "igtlioConnector.h"
 #include "vtkTimerLog.h"
 #include <vtksys/SystemTools.hxx>
-#include "IGTLIOFixture.h"
+#include "igtlioFixture.h"
 #include "igtlioTestUtilities.h"
 
 int main(int argc, char **argv)
