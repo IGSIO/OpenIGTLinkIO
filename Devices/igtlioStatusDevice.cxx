@@ -38,6 +38,15 @@ StatusDevice::~StatusDevice()
 }
 
 //---------------------------------------------------------------------------
+vtkIntArray* StatusDevice::GetDeviceContentModifiedEvent() const
+{
+  vtkIntArray* events;
+  events = vtkIntArray::New();
+  events->InsertNextValue(StatusModifiedEvent);
+  return events;
+}
+
+//---------------------------------------------------------------------------
 std::string StatusDevice::GetDeviceType() const
 {
   return StatusConverter::GetIGTLTypeName();
@@ -49,6 +58,7 @@ int StatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool che
  if (StatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
    {
    this->Modified();
+   this->InvokeEvent(StatusModifiedEvent, this);
    return 1;
    }
 
@@ -105,6 +115,7 @@ void StatusDevice::SetContent(StatusConverter::ContentData content)
 {
   Content = content;
   this->Modified();
+  this->InvokeEvent(StatusModifiedEvent, this);
 }
 
 StatusConverter::ContentData StatusDevice::GetContent()

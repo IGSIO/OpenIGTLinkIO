@@ -16,6 +16,11 @@ typedef vtkSmartPointer<class StatusDevice> StatusDevicePointer;
 class OPENIGTLINKIO_DEVICES_EXPORT StatusDevice : public Device
 {
 public:
+  enum {
+    StatusModifiedEvent         = 118956,
+  };
+  
+ virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
  virtual std::string GetDeviceType() const;
  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
  virtual igtl::MessageBase::Pointer GetIGTLMessage();

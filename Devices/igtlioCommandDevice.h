@@ -13,6 +13,11 @@ typedef vtkSmartPointer<class CommandDevice> CommandDevicePointer;
 class OPENIGTLINKIO_DEVICES_EXPORT CommandDevice : public Device
 {
 public:
+  enum {
+    CommandModifiedEvent         = 118958,
+  };
+  
+ virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
  virtual std::string GetDeviceType() const;
  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
  virtual igtl::MessageBase::Pointer GetIGTLMessage();

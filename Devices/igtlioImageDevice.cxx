@@ -52,6 +52,16 @@ ImageDevice::~ImageDevice()
 }
 
 //---------------------------------------------------------------------------
+vtkIntArray* ImageDevice::GetDeviceContentModifiedEvent() const
+{
+  vtkIntArray* events;
+  events = vtkIntArray::New();
+  events->InsertNextValue(ImageModifiedEvent);
+  return events;
+}
+  
+  
+//---------------------------------------------------------------------------
 std::string ImageDevice::GetDeviceType() const
 {
   return ImageConverter::GetIGTLTypeName();
@@ -61,6 +71,7 @@ void ImageDevice::SetContent(ImageConverter::ContentData content)
 {
   Content = content;
   this->Modified();
+  this->InvokeEvent(ImageModifiedEvent, this);
 }
 
 ImageConverter::ContentData ImageDevice::GetContent()
@@ -75,6 +86,7 @@ int ImageDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool chec
  if (ImageConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
    {
    this->Modified();
+   this->InvokeEvent(ImageModifiedEvent, this);
    return 1;
    }
 

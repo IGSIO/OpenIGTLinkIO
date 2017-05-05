@@ -28,6 +28,7 @@ set(${PROJECT_NAME}_HDRS
   igtlioImageDevice.h
   igtlioStatusDevice.h
   igtlioCommandDevice.h
+  igtlioTransformDevice.h
   )
 
 set(${PROJECT_NAME}_TARGET_LIBRARIES

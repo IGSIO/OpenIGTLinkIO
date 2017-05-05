@@ -48,6 +48,15 @@ std::string Device::GetDeviceType() const
 {
   return NULL;
 }
+
+vtkIntArray* Device::GetDeviceContentModifiedEvent() const
+{
+  vtkIntArray* events;
+  events = vtkIntArray::New();
+  events->InsertNextValue(vtkCommand::ModifiedEvent);
+  return events;
+}
+  
   
 //---------------------------------------------------------------------------
 void Device::SetDeviceName(std::string name)
