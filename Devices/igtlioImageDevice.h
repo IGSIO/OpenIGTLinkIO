@@ -32,6 +32,12 @@ typedef vtkSmartPointer<class ImageDevice> ImageDevicePointer;
 class OPENIGTLINKIO_DEVICES_EXPORT ImageDevice : public Device
 {
 public:
+  
+  enum {
+    ImageModifiedEvent         = 118955,
+  };
+  
+ virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
  virtual std::string GetDeviceType() const;
  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
  virtual igtl::MessageBase::Pointer GetIGTLMessage();

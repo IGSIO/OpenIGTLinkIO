@@ -22,10 +22,15 @@ public:
 	  NUM_QUERY_STATUS,
 	};
 
+	enum {
+	  CommandModifiedEvent         = 118958,
+	};
+
 public:
   vtkSetMacro( QueryTimeOut, double );
   vtkGetMacro( QueryTimeOut, double );
 
+  virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
   virtual std::string GetDeviceType() const;
   virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
   virtual igtl::MessageBase::Pointer GetIGTLMessage();

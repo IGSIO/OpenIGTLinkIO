@@ -40,6 +40,15 @@ CommandDevice::~CommandDevice()
 }
 
 //---------------------------------------------------------------------------
+vtkIntArray* CommandDevice::GetDeviceContentModifiedEvent() const
+{
+  vtkIntArray* events;
+  events = vtkIntArray::New();
+  events->InsertNextValue(CommandModifiedEvent);
+  return events;
+}
+  
+//---------------------------------------------------------------------------
 std::string CommandDevice::GetDeviceType() const
 {
   return CommandConverter::GetIGTLTypeName();
@@ -172,6 +181,7 @@ void CommandDevice::SetContent(CommandConverter::ContentData content)
 {
   Content = content;
   this->Modified();
+  this->InvokeEvent(CommandModifiedEvent, this);
 }
 
 CommandConverter::ContentData CommandDevice::GetContent()

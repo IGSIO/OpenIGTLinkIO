@@ -16,6 +16,7 @@
 #define IGTLIODEVICE_H
 
 #include <vtkCommand.h>
+#include <vtkIntArray.h>
 #include <set>
 
 #include "igtlioDevicesExport.h"
@@ -62,6 +63,9 @@ public:
 
 
 public:
+ 
+ virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
+  
  virtual std::string GetDeviceType() const;
 
  virtual std::string GetDeviceName() const;

@@ -51,6 +51,15 @@ TransformDevice::~TransformDevice()
 }
 
 //---------------------------------------------------------------------------
+vtkIntArray* TransformDevice::GetDeviceContentModifiedEvent() const
+{
+  vtkIntArray* events;
+  events = vtkIntArray::New();
+  events->InsertNextValue(TransformModifiedEvent);
+  return events;
+}
+
+//---------------------------------------------------------------------------
 std::string TransformDevice::GetDeviceType() const
 {
   return TransformConverter::GetIGTLTypeName();
@@ -60,6 +69,7 @@ void TransformDevice::SetContent(TransformConverter::ContentData content)
 {
   Content = content;
   this->Modified();
+  this->InvokeEvent(TransformModifiedEvent, this);
 }
 
 TransformConverter::ContentData TransformDevice::GetContent()
@@ -75,6 +85,7 @@ int TransformDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool 
  {
    this->Modified();
    this->InvokeEvent(ReceiveEvent);
+   this->InvokeEvent(TransformModifiedEvent, this);
    return 1;
  }
 

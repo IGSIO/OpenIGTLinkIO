@@ -30,6 +30,11 @@ typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
 class OPENIGTLINKIO_DEVICES_EXPORT TransformDevice : public Device
 {
 public:
+  enum {
+    TransformModifiedEvent         = 118957,
+  };
+  
+virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
  virtual std::string GetDeviceType() const;
  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
  virtual igtl::MessageBase::Pointer GetIGTLMessage();

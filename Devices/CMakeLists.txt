@@ -32,6 +32,7 @@ set(${PROJECT_NAME}_HDRS
   igtlioStringDevice.h
   igtlioCommandDevice.h
   igtlioPolyDataDevice.h
+  igtlioTransformDevice.h
   )
 
 set(${PROJECT_NAME}_TARGET_LIBRARIES
