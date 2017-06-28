@@ -32,7 +32,6 @@ Version:   $Revision: 1.2 $
 #include <vtkTimerLog.h>
 #include "igtlioConnector.h"
 #include "igtlioCircularBuffer.h"
-#include "igtlioCommandDevice.h"
 
 namespace igtlio
 {
@@ -675,6 +674,37 @@ void Connector::PeriodicProcess()
   this->ImportDataFromCircularBuffer();
   this->ImportEventsFromEventBuffer();
   this->PushOutgoingMessages();
+}
+
+CommandDevicePointer Connector::SendCommand(std::string device_id, std::string command, std::string content )
+{
+  DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
+  vtkSmartPointer<CommandDevice> device = CommandDevice::SafeDownCast( AddDeviceIfNotPresent(key) );
+
+  igtlio::CommandConverter::ContentData contentdata = device->GetContent();
+  contentdata.id +=1;
+  contentdata.name = command;
+  contentdata.content = content;
+  device->SetContent(contentdata);
+
+  device->PruneCompletedQueries();
+
+  SendMessage(CreateDeviceKey(device));
+
+  return device;
+}
+
+DevicePointer Connector::AddDeviceIfNotPresent(DeviceKeyType key)
+{
+  DevicePointer device = GetDevice(key);
+
+  if (!device)
+  {
+    device = GetDeviceFactory()->create(key.type, key.name);
+    AddDevice(device);
+  }
+
+  return device;
 }
 
 int Connector::AddDevice(DevicePointer device)

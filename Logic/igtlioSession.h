@@ -109,7 +109,6 @@ private:
 //   std::string response = command.GetResponse();
 
   bool waitForConnection(double timeout_s);
-  DevicePointer AddDeviceIfNotPresent(DeviceKeyType key);
 };
 
 } // namespace igtlio

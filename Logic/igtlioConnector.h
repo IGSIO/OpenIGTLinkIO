@@ -29,6 +29,7 @@
 #include "igtlioDeviceFactory.h"
 #include "igtlioObject.h"
 #include "igtlioUtilities.h"
+#include "igtlioCommandDevice.h"
 
 //// MRML includes
 //#include <vtkMRML.h>
@@ -97,6 +98,9 @@ public:
   /// Call periodically to perform processing in the main thread.
   /// Suggested timeout 5ms.
   void PeriodicProcess();
+
+  CommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content );
+  DevicePointer AddDeviceIfNotPresent(DeviceKeyType key);
 
  /// Add a new Device.
  /// If a Device with an identical device_id already exist, the method will fail.
