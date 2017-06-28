@@ -30,35 +30,12 @@ Session::Session()
 {
 }
 
-DevicePointer Session::AddDeviceIfNotPresent(DeviceKeyType key)
-{
-  DevicePointer device = Connector->GetDevice(key);
 
-  if (!device)
-  {
-    device = Connector->GetDeviceFactory()->create(key.type, key.name);
-    Connector->AddDevice(device);
-  }
-
-  return device;
-}
 
 
 CommandDevicePointer Session::SendCommand(std::string device_id, std::string command, std::string content, igtlio::SYNCHRONIZATION_TYPE synchronized, double timeout_s)
 {
-  vtkSmartPointer<CommandDevice> device;
-  DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
-  device = CommandDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
-
-  igtlio::CommandConverter::ContentData contentdata = device->GetContent();
-  contentdata.id +=1;
-  contentdata.name = command;
-  contentdata.content = content;
-  device->SetContent(contentdata);
-
-  device->PruneCompletedQueries();
-
-  Connector->SendMessage(CreateDeviceKey(device));
+  CommandDevicePointer device = Connector->SendCommand( device_id, command, content );
 
   if (synchronized==igtlio::BLOCKING)
   {
@@ -68,7 +45,7 @@ CommandDevicePointer Session::SendCommand(std::string device_id, std::string com
       Connector->PeriodicProcess();
       vtksys::SystemTools::Delay(5);
 
-      CommandDevicePointer response = device->GetResponseFromCommandID(contentdata.id);
+      CommandDevicePointer response = device->GetResponseFromCommandID(device->GetContent().id);
 
       if (response)
       {
@@ -109,7 +86,7 @@ ImageDevicePointer Session::SendImage(std::string device_id, vtkSmartPointer<vtk
 {
   ImageDevicePointer device;
   DeviceKeyType key(igtlio::ImageConverter::GetIGTLTypeName(), device_id);
-  device = ImageDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
+  device = ImageDevice::SafeDownCast(Connector->AddDeviceIfNotPresent(key));
 
   igtlio::ImageConverter::ContentData contentdata = device->GetContent();
   contentdata.image = image;
@@ -203,7 +180,7 @@ TransformDevicePointer Session::SendTransform(std::string device_id, vtkSmartPoi
 {
   TransformDevicePointer device;
   DeviceKeyType key(TransformConverter::GetIGTLTypeName(), device_id);
-  device = TransformDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
+  device = TransformDevice::SafeDownCast(Connector->AddDeviceIfNotPresent(key));
 
   TransformConverter::ContentData contentdata = device->GetContent();
   contentdata.deviceName = device_id;
@@ -219,7 +196,7 @@ StringDevicePointer Session::SendString(std::string device_id, std::string conte
 {
   StringDevicePointer device;
   DeviceKeyType key(StringConverter::GetIGTLTypeName(), device_id);
-  device = StringDevice::SafeDownCast((this->AddDeviceIfNotPresent(key)));
+  device = StringDevice::SafeDownCast((Connector->AddDeviceIfNotPresent(key)));
 
   StringConverter::ContentData contentdata = device->GetContent();
   contentdata.encoding = 3; //what should this be?
@@ -234,7 +211,7 @@ StatusDevicePointer Session::SendStatus(std::string device_id, int code, int sub
 {
 	StatusDevicePointer device;
 	DeviceKeyType key(StatusConverter::GetIGTLTypeName(), device_id);
-	device = StatusDevice::SafeDownCast((this->AddDeviceIfNotPresent(key)));
+    device = StatusDevice::SafeDownCast((Connector->AddDeviceIfNotPresent(key)));
 
 	StatusConverter::ContentData contentdata = device->GetContent();
 	contentdata.code = code;
