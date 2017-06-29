@@ -9,6 +9,7 @@
 #include "igtlioCommandDevice.h"
 #include "igtlioImageDevice.h"
 #include "igtlioTransformDevice.h"
+#include "igtlioVideoDevice.h"
 
 
 namespace igtlio
@@ -124,6 +125,23 @@ ImageDevicePointer vtkIGTLIOSession::SendImage(std::string device_id, vtkSmartPo
   return device;
 }
 
+  
+VideoDevicePointer vtkIGTLIOSession::SendFrame(std::string device_id, vtkSmartPointer<vtkImageData> image)
+{
+  VideoDevicePointer device;
+  DeviceKeyType key(igtlio::VideoConverter::GetIGTLTypeName(), device_id);
+  device = VideoDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
+  
+  igtlio::VideoConverter::ContentData contentdata = device->GetContent();
+  contentdata.image = image;
+  device->SetContent(contentdata);
+  
+  Connector->SendMessage(CreateDeviceKey(device));
+  
+  return device;
+}
+  
+  
 ConnectorPointer vtkIGTLIOSession::GetConnector()
 {
   return Connector;

@@ -145,7 +145,7 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
   {
     VideoStreamEncoderVPX->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
     //newEncoder->SetKeyFrameDistance(25);
-    VideoStreamEncoderVPX->SetLosslessLink(false);
+    VideoStreamEncoderVPX->SetLosslessLink(true);
     VideoStreamEncoderVPX->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
     VideoStreamEncoderVPX->InitializeEncoder();
     VideoStreamEncoderVPX->SetSpeed(8);
@@ -155,12 +155,12 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
 #ifdef OpenIGTLink_LINK_H265
   if(this->useH265)
   {
-    H265Encoder newEncoder = new H265Encoder();
-    newEncoder->SetPicWidthAndHeight(trackedFrame.GetFrameSize()[0], trackedFrame.GetFrameSize()[1]);
+    VideoStreamEncoderX265->SetPicWidthAndHeight(trackedFrame.GetFrameSize()[0], trackedFrame.GetFrameSize()[1]);
     int bitRateFactor = 7;
-    newEncoder->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent)*bitRateFactor);
-    newEncoder->InitializeEncoder();
-    newEncoder->SetSpeed(9);
+    VideoStreamEncoderX265->SetLosslessLink(true);
+    VideoStreamEncoderX265->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent)*bitRateFactor);
+    VideoStreamEncoderX265->InitializeEncoder();
+    VideoStreamEncoderX265->SetSpeed(9);
     iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderX265)
   }
 #endif

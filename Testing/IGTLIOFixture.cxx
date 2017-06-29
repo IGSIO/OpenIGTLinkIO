@@ -128,6 +128,23 @@ vtkSmartPointer<vtkImageData> ClientServerFixture::CreateTestImage()
   return image;
 }
 
+
+
+vtkSmartPointer<vtkImageData> ClientServerFixture::CreateTestFrame()
+{
+  vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
+  image->SetSpacing(1, 1, 1);
+  image->SetExtent(0, 209, 0, 409, 0, 0);
+  image->AllocateScalars(VTK_UNSIGNED_CHAR, 3);
+  
+  int scalarSize = image->GetScalarSize();
+  unsigned char* ptr = reinterpret_cast<unsigned char*>(image->GetScalarPointer());
+  unsigned char color = 0;
+  std::fill(ptr, ptr+scalarSize, color++);
+  
+  return image;
+}
+
 vtkSmartPointer<vtkMatrix4x4> ClientServerFixture::CreateTestTransform()
 {
   vtkSmartPointer<vtkMatrix4x4> transform = vtkSmartPointer<vtkMatrix4x4>::New();

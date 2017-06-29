@@ -60,13 +60,6 @@ namespace igtlio
     if (!dest->image)
       dest->image = vtkSmartPointer<vtkImageData>::New();
     vtkSmartPointer<vtkImageData> imageData = dest->image;
-    int c = videoMsg->Unpack();
-    
-    if (c == 0) // if CRC check fails
-    {
-      // TODO: error handling
-      return 0;
-    }
     if(videoStreamDecoder)
     {
       int32_t Width = videoMsg->GetWidth();
@@ -89,7 +82,7 @@ namespace igtlio
       }
       igtl_uint16 frameType = videoMsg->GetFrameType();
       bool isGrayImage = false;
-      if(frameType > 0x00FF)
+      if(frameType > 0x00FF)//Using first byte of video frame type to indicate gray or color video. It might be better to change the video stream protocol to add additional field for indicating Gray or color image.
       {
         isGrayImage =  true;
         frameType = frameType >> 8;
@@ -115,6 +108,8 @@ namespace igtlio
   //---------------------------------------------------------------------------
   int VideoConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::VideoMessage::Pointer* dest, GenericEncoder* encoder)
   {
+    if (dest->IsNull())
+      *dest = igtl::VideoMessage::New();
     igtl::VideoMessage::Pointer videoMsg = *dest;
     vtkImageData* frameImage = source.image;
     int   scalarType = frameImage->GetScalarType();       // scalar type, currently only unsigned char is supported
@@ -143,16 +138,10 @@ namespace igtlio
       return 0;
     }
     
-    int imageSizePixels[3] = { 0 };  double imageSpacingMm[3] = { 0 };
+    int imageSizePixels[3] = { 0 };
     
     frameImage->GetDimensions(imageSizePixels);
-    frameImage->GetSpacing(imageSpacingMm);
     
-    float spacingFloat[3] = { 0 };
-    for (int i = 0; i < 3; ++i)
-    {
-      spacingFloat[i] = (float)imageSpacingMm[i];
-    }
     unsigned char* YUV420ImagePointer = new unsigned char[imageSizePixels[0] * imageSizePixels[1]*3/2];
     
     encoder->ConvertRGBToYUV((igtlUint8*)frameImage->GetScalarPointer(), YUV420ImagePointer, imageSizePixels[0], imageSizePixels[1]);
@@ -183,7 +172,7 @@ namespace igtlio
     int iEncFrames = encoder->EncodeSingleFrameIntoVideoMSG(pSrcPic, videoMsg.GetPointer(), isGrayImage);
     delete[] YUV420ImagePointer;
     YUV420ImagePointer = NULL;
-    if (iEncFrames == 0)
+    if (iEncFrames != 0) //OpenIGTLink library returns 0 when successful.
       return 0;
     return 1;
   }
