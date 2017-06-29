@@ -37,8 +37,6 @@
 class vtkImageData;
 class vtkMatrix4x4;
 
-#define VideoThreadMaxNumber 5
-
 namespace igtlio
 {
   
@@ -61,44 +59,13 @@ namespace igtlio
     static const char*  GetIGTLName() { return GetIGTLTypeName(); }
     static const char* GetIGTLTypeName() { return "VIDEO"; }
     
-    int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
-    int toIGTL(const HeaderData& header, const ContentData& source, igtl::VideoMessage::Pointer* dest);
-    
-    enum CodecTypes
-    {
-      useVP9 = 1,
-      useH265 = 2,
-      useH264 = 3
-    };
-    
-    int GetCurrentCodecType()
-    {
-      return currentCodecType;
-    };
-    
-    void SetCurrentCodecType(CodecTypes type)
-    {
-      this->currentCodecType = type;
-    };
+    static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, GenericDecoder* decoder, bool checkCRC);
+    static int toIGTL(const HeaderData& header, const ContentData& source, igtl::VideoMessage::Pointer* dest, GenericEncoder* encoder);
     
   protected:
     
     static int IGTLToVTKScalarType(int igtlType);
-    int IGTLToVTKImageData(igtl::VideoMessage::Pointer videoMsg, ContentData *dest);
-    
-    GenericDecoder* VideoStreamDecoderVPX[VideoThreadMaxNumber];
-    
-    GenericDecoder* VideoStreamDecoderX265[VideoThreadMaxNumber];
-    
-    GenericDecoder* VideoStreamDecoderH264[VideoThreadMaxNumber];
-    
-    SourcePicture* pDecodedPic;
-    
-    CodecTypes currentCodecType;
-    
-    std::map<std::string, GenericEncoder*> videoStreamEncoderMap;
-    
-    igtl::TimeStamp::Pointer igtlFrameTime;
+    static int IGTLToVTKImageData(igtl::VideoMessage::Pointer videoMsg, ContentData *dest, GenericDecoder * videoStreamDecoder);
 
   };
   

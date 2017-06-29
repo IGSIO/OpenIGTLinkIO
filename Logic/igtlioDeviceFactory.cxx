@@ -12,6 +12,7 @@
 #include "igtlioStatusDevice.h"
 #include "igtlioCommandDevice.h"
 #include "igtlioTransformDevice.h"
+#include "igtlioVideoDevice.h"
 
 namespace igtlio
 {
@@ -25,6 +26,7 @@ DeviceFactory::DeviceFactory()
   this->registerCreator<StatusDeviceCreator>();
   this->registerCreator<CommandDeviceCreator>();
   this->registerCreator<igtlio::TransformDeviceCreator>();
+  this->registerCreator<igtlio::VideoDeviceCreator>();
 }
 
 //---------------------------------------------------------------------------

@@ -20,30 +20,11 @@
 
 namespace igtlio
 {
-  
-  VideoConverter::VideoConverter()
-  {
-    for (int i = 0; i< VideoThreadMaxNumber; i++)
-    {
-#if OpenIGTLink_LINK_VP9
-      VideoStreamDecoderVPX[i] = new VP9Decoder();
-#endif
-#if OpenIGTLink_LINK_X265
-      VideoStreamDecoderX265[i] = new H265Decoder();
-#endif
-#if OpenIGTLink_LINK_H264
-      VideoStreamDecoderH264[i] = new H264Decoder();
-#endif
-    }
-    pDecodedPic = new SourcePicture();
-    this->currentCodecType = useVP9;
-    igtlFrameTime = igtl::TimeStamp::New();
-  }
-  
   //---------------------------------------------------------------------------
   int VideoConverter::fromIGTL(igtl::MessageBase::Pointer source,
                                HeaderData* header,
                                ContentData* dest,
+                               GenericDecoder * decoder,
                                bool checkCRC)
   {
     // Create a message buffer to receive image data
@@ -66,7 +47,7 @@ namespace igtlio
       return 0;
     
     // get Video
-    if (this->IGTLToVTKImageData(videoMsg, dest) == 0)
+    if (VideoConverter::IGTLToVTKImageData(videoMsg, dest, decoder) == 0)
       return 0;
     
     return 1;
@@ -74,7 +55,7 @@ namespace igtlio
   
   
   //---------------------------------------------------------------------------
-  int VideoConverter::IGTLToVTKImageData(igtl::VideoMessage::Pointer videoMsg, ContentData *dest)
+  int VideoConverter::IGTLToVTKImageData(igtl::VideoMessage::Pointer videoMsg, ContentData *dest,GenericDecoder * videoStreamDecoder)
   {
     if (!dest->image)
       dest->image = vtkSmartPointer<vtkImageData>::New();
@@ -86,81 +67,7 @@ namespace igtlio
       // TODO: error handling
       return 0;
     }
-    std::string deviceName(videoMsg->GetDeviceName()); // buffer has the header information, the videoMsg has not device name information.
-    int currentDecoderIndex = -1;
-    GenericDecoder * VideoStreamDecoder = NULL;
-    for (int i = 0; i < VideoThreadMaxNumber; i++)
-    {
-      std::string decoderName = "";
-      if (videoMsg->GetCodecType().compare(CodecNameForH264) == 0 && OpenIGTLink_LINK_H264)
-      {
-        decoderName = VideoStreamDecoderH264[i]->GetDeviceName();
-        if (deviceName.compare(decoderName) == 0)
-        {
-          currentDecoderIndex = i;
-          VideoStreamDecoder = VideoStreamDecoderH264[currentDecoderIndex];
-          break;
-        }
-      }
-      else if(videoMsg->GetCodecType().compare(CodecNameForVPX) == 0 && OpenIGTLink_LINK_VP9)
-      {
-        decoderName = VideoStreamDecoderVPX[i]->GetDeviceName();
-        if (deviceName.compare(decoderName) == 0)
-        {
-          currentDecoderIndex = i;
-          VideoStreamDecoder = VideoStreamDecoderVPX[currentDecoderIndex];
-          break;
-        }
-      }
-      else if(videoMsg->GetCodecType().compare(CodecNameForX265) == 0 && OpenIGTLink_LINK_X265)
-      {
-        decoderName = VideoStreamDecoderX265[i]->GetDeviceName();
-        if (deviceName.compare(decoderName) == 0)
-        {
-          currentDecoderIndex = i;
-          VideoStreamDecoder = VideoStreamDecoderX265[currentDecoderIndex];
-          break;
-        }
-      }
-    }
-    if (currentDecoderIndex<0)
-    {
-      for (int i = 0; i < VideoThreadMaxNumber; i++)
-      {
-        std::string decoderName = "";
-        if (videoMsg->GetCodecType().compare(CodecNameForH264) == 0 && OpenIGTLink_LINK_H264)
-        {
-          if (VideoStreamDecoderH264[i]->GetDeviceName().compare("") == 0)
-          {
-            currentDecoderIndex = i;
-            VideoStreamDecoderH264[currentDecoderIndex]->GetDeviceName() = deviceName;
-            VideoStreamDecoder = VideoStreamDecoderH264[currentDecoderIndex];
-            break;
-          }
-        }
-        else if(videoMsg->GetCodecType().compare(CodecNameForVPX) == 0 && OpenIGTLink_LINK_VP9)
-        {
-          if (VideoStreamDecoderVPX[i]->GetDeviceName().compare("") == 0)
-          {
-            currentDecoderIndex = i;
-            VideoStreamDecoderVPX[currentDecoderIndex]->GetDeviceName() = deviceName;
-            VideoStreamDecoder = VideoStreamDecoderVPX[currentDecoderIndex];
-            break;
-          }
-        }
-        else if(videoMsg->GetCodecType().compare(CodecNameForX265) == 0 && OpenIGTLink_LINK_X265)
-        {
-          if (VideoStreamDecoderX265[i]->GetDeviceName().compare("") == 0)
-          {
-            currentDecoderIndex = i;
-            VideoStreamDecoderX265[currentDecoderIndex]->GetDeviceName() = deviceName;
-            VideoStreamDecoder = VideoStreamDecoderX265[currentDecoderIndex];
-            break;
-          }
-        }
-      }
-    }
-    if(currentDecoderIndex>=0 && VideoStreamDecoder)
+    if(videoStreamDecoder)
     {
       int32_t Width = videoMsg->GetWidth();
       int32_t Height = videoMsg->GetHeight();
@@ -171,12 +78,11 @@ namespace igtlio
         imageData->SetExtent(0, Width-1, 0, Height-1, 0, 0 );
         imageData->SetOrigin(0, 0, 0);
         imageData->AllocateScalars(VTK_UNSIGNED_CHAR,3);
-        delete pDecodedPic;
-        pDecodedPic = new SourcePicture();
-        pDecodedPic->data[0] = new igtl_uint8[Width * Height*3/2];
-        memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
       }
-      if(!VideoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMsg, pDecodedPic))
+      SourcePicture* pDecodedPic = new SourcePicture();
+      pDecodedPic->data[0] = new igtl_uint8[Width * Height*3/2];
+      memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
+      if(!videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMsg, pDecodedPic))
       {
         pDecodedPic->~SourcePicture();
         return 0;
@@ -194,19 +100,20 @@ namespace igtlio
       }
       if (isGrayImage)
       {
-        VideoStreamDecoder->ConvertYUVToGrayImage(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(), Height, Width);
+        videoStreamDecoder->ConvertYUVToGrayImage(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(), Height, Width);
       }
       else
       {
-        VideoStreamDecoder->ConvertYUVToRGB(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(),Height, Width);
+        videoStreamDecoder->ConvertYUVToRGB(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(),Height, Width);
       }
       imageData->Modified();
+      delete pDecodedPic;
     }
     return 1;
   }
   
   //---------------------------------------------------------------------------
-  int VideoConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::VideoMessage::Pointer* dest)
+  int VideoConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::VideoMessage::Pointer* dest, GenericEncoder* encoder)
   {
     igtl::VideoMessage::Pointer videoMsg = *dest;
     vtkImageData* frameImage = source.image;
@@ -218,40 +125,7 @@ namespace igtlio
       return 0;
     }
     
-    if (videoStreamEncoderMap.find(header.deviceName) == videoStreamEncoderMap.end())
-    {
-      int imageSizePixels[3] = { 0 };
-      frameImage->GetDimensions(imageSizePixels);
-      float bitRatePercent = 0.05;
-      int frameRate = 20;
-#ifdef OpenIGTLink_LINK_VP9
-      if(this->useVP9)
-      {
-        VP9Encoder* newEncoder = new VP9Encoder();
-        newEncoder->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
-        //newEncoder->SetKeyFrameDistance(25);
-        newEncoder->SetLosslessLink(false);
-        newEncoder->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
-        newEncoder->InitializeEncoder();
-        newEncoder->SetSpeed(8);
-        videoStreamEncoderMap[std::string(header.deviceName)] = newEncoder;
-      }
-#endif
-#ifdef OpenIGTLink_LINK_H265
-      if(this->useH265)
-      {
-        H265Encoder newEncoder = new H265Encoder();
-        newEncoder->SetPicWidthAndHeight(trackedFrame.GetFrameSize()[0], trackedFrame.GetFrameSize()[1]);
-        int bitRateFactor = 7;
-        newEncoder->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent)*bitRateFactor);
-        newEncoder->InitializeEncoder();
-        newEncoder->SetSpeed(9);
-        videoStreamEncoderMap[std::string(header.deviceName)] = newEncoder;
-      }
-#endif
-    }
-    GenericEncoder* videoStreamEncoder =videoStreamEncoderMap[header.deviceName];
-    if (videoStreamEncoder == NULL)
+    if (encoder == NULL)
     {
       std::cerr<<"Failed to pack video message - input video message encoder is NULL";
       return 0;
@@ -281,7 +155,7 @@ namespace igtlio
     }
     unsigned char* YUV420ImagePointer = new unsigned char[imageSizePixels[0] * imageSizePixels[1]*3/2];
     
-    videoStreamEncoder->ConvertRGBToYUV((igtlUint8*)frameImage->GetScalarPointer(), YUV420ImagePointer, imageSizePixels[0], imageSizePixels[1]);
+    encoder->ConvertRGBToYUV((igtlUint8*)frameImage->GetScalarPointer(), YUV420ImagePointer, imageSizePixels[0], imageSizePixels[1]);
     int iSourceWidth = imageSizePixels[0];
     int iSourceHeight = imageSizePixels[1];
     SourcePicture* pSrcPic = new SourcePicture();
@@ -289,11 +163,11 @@ namespace igtlio
     pSrcPic->timeStamp = 0;
     pSrcPic->picWidth  = imageSizePixels[0];
     pSrcPic->picHeight = imageSizePixels[1];
-    if (videoStreamEncoder->GetPicHeight() != iSourceHeight
-        || videoStreamEncoder->GetPicWidth() != iSourceWidth)
+    if (encoder->GetPicHeight() != iSourceHeight
+        || encoder->GetPicWidth() != iSourceWidth)
     {
-      videoStreamEncoder->SetPicWidthAndHeight(iSourceWidth,iSourceHeight);
-      videoStreamEncoder->InitializeEncoder();
+      encoder->SetPicWidthAndHeight(iSourceWidth,iSourceHeight);
+      encoder->InitializeEncoder();
     }
     pSrcPic->data[0] = YUV420ImagePointer;
     pSrcPic->data[1] = pSrcPic->data[0] + (iSourceWidth * iSourceHeight);
@@ -303,9 +177,10 @@ namespace igtlio
     static int frameIndex = 0;
     frameIndex++;
     videoMsg->SetMessageID(frameIndex);
+    igtl::TimeStamp::Pointer igtlFrameTime = igtl::TimeStamp::New();
     igtlFrameTime->SetTime(header.timestamp);
     videoMsg->SetTimeStamp(igtlFrameTime);
-    int iEncFrames = videoStreamEncoder->EncodeSingleFrameIntoVideoMSG(pSrcPic, videoMsg.GetPointer(), isGrayImage);
+    int iEncFrames = encoder->EncodeSingleFrameIntoVideoMSG(pSrcPic, videoMsg.GetPointer(), isGrayImage);
     delete[] YUV420ImagePointer;
     YUV420ImagePointer = NULL;
     if (iEncFrames == 0)
