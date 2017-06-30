@@ -25,6 +25,13 @@ void CommandMessageCodec::AddParameter( std::string paramName, std::string value
     m_parameters.push_back( std::pair<std::string,std::string>(paramName, value ) );
 }
 
+void CommandMessageCodec::AddParameter( std::string paramName, double value )
+{
+    std::stringstream ss;
+    ss << value;
+    AddParameter( paramName, ss.str() );
+}
+
 std::string CommandMessageCodec::GetContent()
 {
     std::stringstream os;
