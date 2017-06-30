@@ -769,6 +769,15 @@ DevicePointer Connector::GetDevice(DeviceKeyType key)
 }
 
 //---------------------------------------------------------------------------
+bool Connector::HasDevice( DevicePointer d )
+{
+    for(unsigned i=0; i<Devices.size(); ++i)
+        if( Devices[i] == d )
+            return true;
+    return false;
+}
+
+//---------------------------------------------------------------------------
 int Connector::SendMessage(DeviceKeyType device_id, Device::MESSAGE_PREFIX prefix)
 {
   DevicePointer device = this->GetDevice(device_id);

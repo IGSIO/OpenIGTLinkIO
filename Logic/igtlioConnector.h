@@ -111,6 +111,7 @@ public:
  /// Get the given Device. This can be used to modify the Device contents.
  DevicePointer GetDevice(int index);
  DevicePointer GetDevice(DeviceKeyType key);
+ bool HasDevice( DevicePointer d );
 
  /// Request the given Device to send a message with the given prefix.
  /// An undefined prefix means sending the normal message.

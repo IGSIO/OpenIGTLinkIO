@@ -20,6 +20,7 @@ public:
     // Build the content of the command to send
     void SetResult( bool res );
     void AddParameter( std::string paramName, std::string value );
+    void AddParameter( std::string paramName, double value );
     std::string GetContent();
 
     // Parse the content of a command received
