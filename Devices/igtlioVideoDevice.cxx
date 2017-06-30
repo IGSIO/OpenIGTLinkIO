@@ -145,10 +145,11 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
   {
     VideoStreamEncoderVPX->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
     //newEncoder->SetKeyFrameDistance(25);
-    VideoStreamEncoderVPX->SetLosslessLink(true);
     VideoStreamEncoderVPX->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
+    VideoStreamEncoderVPX->SetLosslessLink(true);
     VideoStreamEncoderVPX->InitializeEncoder();
-    VideoStreamEncoderVPX->SetSpeed(8);
+    VideoStreamEncoderVPX->SetLosslessLink(true);
+    VideoStreamEncoderVPX->SetSpeed(0);
     iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderVPX);
   }
 #endif

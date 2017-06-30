@@ -111,6 +111,9 @@ namespace igtlio
     if (dest->IsNull())
       *dest = igtl::VideoMessage::New();
     igtl::VideoMessage::Pointer videoMsg = *dest;
+    igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(videoMsg);
+    HeadertoIGTL(header, &basemsg);
+    
     vtkImageData* frameImage = source.image;
     int   scalarType = frameImage->GetScalarType();       // scalar type, currently only unsigned char is supported
     int   ncomp = frameImage->GetNumberOfScalarComponents();
@@ -161,7 +164,7 @@ namespace igtlio
     pSrcPic->data[0] = YUV420ImagePointer;
     pSrcPic->data[1] = pSrcPic->data[0] + (iSourceWidth * iSourceHeight);
     pSrcPic->data[2] = pSrcPic->data[1] + (iSourceWidth * iSourceHeight >> 2);
-    bool isGrayImage = true;
+    bool isGrayImage = false;
     
     static int frameIndex = 0;
     frameIndex++;

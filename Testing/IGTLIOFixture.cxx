@@ -133,15 +133,19 @@ vtkSmartPointer<vtkImageData> ClientServerFixture::CreateTestImage()
 vtkSmartPointer<vtkImageData> ClientServerFixture::CreateTestFrame()
 {
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
+  int width = 200, height = 400;
   image->SetSpacing(1, 1, 1);
-  image->SetExtent(0, 209, 0, 409, 0, 0);
+  image->SetExtent(0, width-1, 0, height-1, 0, 0);
   image->AllocateScalars(VTK_UNSIGNED_CHAR, 3);
   
-  int scalarSize = image->GetScalarSize();
   unsigned char* ptr = reinterpret_cast<unsigned char*>(image->GetScalarPointer());
-  unsigned char color = 0;
-  std::fill(ptr, ptr+scalarSize, color++);
-  
+  unsigned char color = 108;
+  for(int i = 0 ; i< width*height*3; i++)
+  {
+    *ptr = color%256;
+    color++;
+    ptr++;
+  }
   return image;
 }
 
