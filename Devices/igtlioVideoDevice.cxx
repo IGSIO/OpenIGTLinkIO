@@ -146,10 +146,8 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
     VideoStreamEncoderVPX->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
     //newEncoder->SetKeyFrameDistance(25);
     VideoStreamEncoderVPX->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
-    VideoStreamEncoderVPX->SetLosslessLink(true);
     VideoStreamEncoderVPX->InitializeEncoder();
     VideoStreamEncoderVPX->SetLosslessLink(true);
-    VideoStreamEncoderVPX->SetSpeed(0);
     iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderVPX);
   }
 #endif
@@ -176,15 +174,25 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
- if (prefix==MESSAGE_PREFIX_GET)
+ if (prefix==MESSAGE_PREFIX_START)
   {
-   if (this->GetVideoMessage.IsNull())
+   if (this->StartVideoMessage.IsNull())
      {
-     this->GetVideoMessage = igtl::StartVideoDataMessage::New();
+     this->StartVideoMessage = igtl::StartVideoMessage::New();
      }
-   this->GetVideoMessage->SetDeviceName(HeaderData.deviceName.c_str());
-   this->GetVideoMessage->Pack();
-   return dynamic_pointer_cast<igtl::MessageBase>(this->GetVideoMessage);
+   this->StartVideoMessage->SetDeviceName(HeaderData.deviceName.c_str());
+   this->StartVideoMessage->Pack();
+   return dynamic_pointer_cast<igtl::MessageBase>(this->StartVideoMessage);
+  }
+ if (prefix==MESSAGE_PREFIX_STOP)
+  {
+    if (this->StopVideoMessage.IsNull())
+    {
+      this->StopVideoMessage = igtl::StopVideoMessage::New();
+    }
+    this->StopVideoMessage->SetDeviceName(HeaderData.deviceName.c_str());
+    this->StopVideoMessage->Pack();
+    return dynamic_pointer_cast<igtl::MessageBase>(this->StopVideoMessage);
   }
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
@@ -198,7 +206,8 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 std::set<Device::MESSAGE_PREFIX> VideoDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
- retval.insert(MESSAGE_PREFIX_GET);
+ retval.insert(MESSAGE_PREFIX_START);
+ retval.insert(MESSAGE_PREFIX_STOP);
  return retval;
 }
 

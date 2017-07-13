@@ -75,7 +75,10 @@ protected:
 
  protected:
   igtl::VideoMessage::Pointer OutVideoMessage;
-  igtl::StartVideoDataMessage::Pointer GetVideoMessage;
+  
+  igtl::StartVideoMessage::Pointer StartVideoMessage;
+  
+  igtl::StopVideoMessage::Pointer StopVideoMessage;
 
   VideoConverter::ContentData Content;
   
