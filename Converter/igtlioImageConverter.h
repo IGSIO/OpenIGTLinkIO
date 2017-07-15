@@ -49,8 +49,6 @@ public:
   static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
   static int toIGTL(const HeaderData& header, const ContentData& source, igtl::ImageMessage::Pointer* dest);
 
-protected:
-
   static int IGTLToVTKScalarType(int igtlType);
   static int IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, ContentData *dest);
   static int IGTLToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras);
