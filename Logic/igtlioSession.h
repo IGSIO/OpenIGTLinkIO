@@ -67,8 +67,8 @@ public:
  
   ///
   ///  Send the given video frame from the given device. Asynchronous.
-  VideoDevicePointer SendFrame(std::string device_id,
-                               vtkSmartPointer<vtkImageData> image);
+  /*VideoDevicePointer SendFrame(std::string device_id,
+                               vtkSmartPointer<vtkImageData> image);*/
 
   /// Send the given image from the given device. Asynchronous.
   TransformDevicePointer SendTransform(std::string device_id,

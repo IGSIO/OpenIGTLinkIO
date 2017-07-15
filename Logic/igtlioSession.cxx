@@ -9,7 +9,7 @@
 #include "igtlioCommandDevice.h"
 #include "igtlioImageDevice.h"
 #include "igtlioTransformDevice.h"
-#include "igtlioVideoDevice.h"
+//#include "igtlioVideoDevice.h"
 
 
 namespace igtlio
@@ -125,7 +125,7 @@ ImageDevicePointer vtkIGTLIOSession::SendImage(std::string device_id, vtkSmartPo
   return device;
 }
 
-  
+/* 
 VideoDevicePointer vtkIGTLIOSession::SendFrame(std::string device_id, vtkSmartPointer<vtkImageData> image)
 {
   VideoDevicePointer device;
@@ -140,7 +140,7 @@ VideoDevicePointer vtkIGTLIOSession::SendFrame(std::string device_id, vtkSmartPo
   
   return device;
 }
-  
+*/
   
 ConnectorPointer vtkIGTLIOSession::GetConnector()
 {

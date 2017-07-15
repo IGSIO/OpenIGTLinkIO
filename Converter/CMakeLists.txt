@@ -17,7 +17,7 @@ set(${PROJECT_NAME}_INCLUDE_DIRECTORIES PUBLIC
 
 set(${PROJECT_NAME}_SRCS
   igtlioBaseConverter.cxx
-  igtlioVideoConverter.cxx
+  #igtlioVideoConverter.cxx
   igtlioImageConverter.cxx
   igtlioPolyDataConverter.cxx
   igtlioStatusConverter.cxx
@@ -27,7 +27,7 @@ set(${PROJECT_NAME}_SRCS
 
 set(${PROJECT_NAME}_HDRS
   igtlioBaseConverter.h
-  igtlioVideoConverter.h
+  #igtlioVideoConverter.h
   igtlioImageConverter.h
   igtlioPolyDataConverter.h
   igtlioStatusConverter.h
