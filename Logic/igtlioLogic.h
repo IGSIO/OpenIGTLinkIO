@@ -90,6 +90,7 @@ public:
  unsigned int GetNumberOfDevices() const;
  void RemoveDevice(unsigned int index);
  DevicePointer GetDevice(unsigned int index);
+ int ConnectorIndexFromDevice( DevicePointer d );
 
 
 protected:
