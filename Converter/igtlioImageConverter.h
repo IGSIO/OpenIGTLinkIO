@@ -53,7 +53,7 @@ public:
   static int IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, ContentData* dest);
 
   static int IGTLImageToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras);
-  static int VTKTransformToIGTLImage(const vtkMatrix4x4& ijk2ras, int imageSize[3], double spacing[3], igtl::ImageMessage::Pointer imgMsg);
+  static int VTKTransformToIGTLImage(const vtkMatrix4x4& ijk2ras, int imageSize[3], double spacing[3], double origin[3], igtl::ImageMessage::Pointer imgMsg);
 
 };
 

@@ -368,23 +368,34 @@ int ImageConverter::IGTLImageToVTKTransform(igtl::ImageMessage::Pointer imgMsg, 
 }
 
 //----------------------------------------------------------------------------
-int ImageConverter::VTKTransformToIGTLImage(const vtkMatrix4x4& ijk2ras, int imageSize[3], double spacing[3], igtl::ImageMessage::Pointer imgMsg)
+int ImageConverter::VTKTransformToIGTLImage(const vtkMatrix4x4& ijk2ras, int imageSize[3], double spacing[3], double origin[3], igtl::ImageMessage::Pointer imgMsg)
 {
   // VTK: corner image origin
   // OpenIGTLink image message: center image origin
 
-  double ntx = ijk2ras.Element[0][0] / spacing[0];
-  double nty = ijk2ras.Element[1][0] / spacing[0];
-  double ntz = ijk2ras.Element[2][0] / spacing[0];
-  double nsx = ijk2ras.Element[0][1] / spacing[1];
-  double nsy = ijk2ras.Element[1][1] / spacing[1];
-  double nsz = ijk2ras.Element[2][1] / spacing[1];
-  double nnx = ijk2ras.Element[0][2] / spacing[2];
-  double nny = ijk2ras.Element[1][2] / spacing[2];
-  double nnz = ijk2ras.Element[2][2] / spacing[2];
-  double px = ijk2ras.Element[0][3];
-  double py = ijk2ras.Element[1][3];
-  double pz = ijk2ras.Element[2][3];
+  vtkSmartPointer<vtkMatrix4x4> ijkToVolumeTransform = vtkSmartPointer<vtkMatrix4x4>::New();
+  ijkToVolumeTransform->Identity();
+  ijkToVolumeTransform->Element[0][0] = spacing[0];
+  ijkToVolumeTransform->Element[1][1] = spacing[1];
+  ijkToVolumeTransform->Element[2][2] = spacing[2];
+  ijkToVolumeTransform->Element[0][3] = origin[0];
+  ijkToVolumeTransform->Element[1][3] = origin[1];
+  ijkToVolumeTransform->Element[2][3] = origin[2];
+  vtkSmartPointer<vtkMatrix4x4> ijkToReferenceTransform = vtkSmartPointer<vtkMatrix4x4>::New();
+  vtkMatrix4x4::Multiply4x4(&ijk2ras, ijkToVolumeTransform, ijkToReferenceTransform);
+
+  double ntx = ijkToReferenceTransform->Element[0][0] / spacing[0];
+  double nty = ijkToReferenceTransform->Element[1][0] / spacing[0];
+  double ntz = ijkToReferenceTransform->Element[2][0] / spacing[0];
+  double nsx = ijkToReferenceTransform->Element[0][1] / spacing[1];
+  double nsy = ijkToReferenceTransform->Element[1][1] / spacing[1];
+  double nsz = ijkToReferenceTransform->Element[2][1] / spacing[1];
+  double nnx = ijkToReferenceTransform->Element[0][2] / spacing[2];
+  double nny = ijkToReferenceTransform->Element[1][2] / spacing[2];
+  double nnz = ijkToReferenceTransform->Element[2][2] / spacing[2];
+  double px = ijkToReferenceTransform->Element[0][3];
+  double py = ijkToReferenceTransform->Element[1][3];
+  double pz = ijkToReferenceTransform->Element[2][3];
 
   // Shift the center
   // NOTE: The center of the image should be shifted due to different
