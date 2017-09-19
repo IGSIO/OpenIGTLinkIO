@@ -215,6 +215,15 @@ DevicePointer Logic::GetDevice(unsigned int index)
 }
 
 //---------------------------------------------------------------------------
+int Logic::ConnectorIndexFromDevice( DevicePointer d )
+{
+    for( int i = 0; i < Connectors.size(); ++i )
+        if( Connectors[i]->HasDevice(d) )
+            return i;
+    return -1;
+}
+
+//---------------------------------------------------------------------------
 std::vector<DevicePointer> Logic::CreateDeviceList() const
 {
   std::set<DevicePointer> all;

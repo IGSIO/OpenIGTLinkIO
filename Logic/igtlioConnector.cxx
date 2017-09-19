@@ -32,7 +32,6 @@ Version:   $Revision: 1.2 $
 #include <vtkTimerLog.h>
 #include "igtlioConnector.h"
 #include "igtlioCircularBuffer.h"
-#include "igtlioCommandDevice.h"
 
 namespace igtlio
 {
@@ -677,6 +676,37 @@ void Connector::PeriodicProcess()
   this->PushOutgoingMessages();
 }
 
+CommandDevicePointer Connector::SendCommand(std::string device_id, std::string command, std::string content )
+{
+  DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
+  vtkSmartPointer<CommandDevice> device = CommandDevice::SafeDownCast( AddDeviceIfNotPresent(key) );
+
+  igtlio::CommandConverter::ContentData contentdata = device->GetContent();
+  contentdata.id +=1;
+  contentdata.name = command;
+  contentdata.content = content;
+  device->SetContent(contentdata);
+
+  device->PruneCompletedQueries();
+
+  SendMessage(CreateDeviceKey(device));
+
+  return device;
+}
+
+DevicePointer Connector::AddDeviceIfNotPresent(DeviceKeyType key)
+{
+  DevicePointer device = GetDevice(key);
+
+  if (!device)
+  {
+    device = GetDeviceFactory()->create(key.type, key.name);
+    AddDevice(device);
+  }
+
+  return device;
+}
+
 int Connector::AddDevice(DevicePointer device)
 {
   if (this->GetDevice(CreateDeviceKey(device))!=NULL)
@@ -736,6 +766,15 @@ DevicePointer Connector::GetDevice(DeviceKeyType key)
     if (CreateDeviceKey(Devices[i])==key)
       return Devices[i];
   return DevicePointer();
+}
+
+//---------------------------------------------------------------------------
+bool Connector::HasDevice( DevicePointer d )
+{
+    for(unsigned i=0; i<Devices.size(); ++i)
+        if( Devices[i] == d )
+            return true;
+    return false;
 }
 
 //---------------------------------------------------------------------------
