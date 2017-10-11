@@ -11,6 +11,7 @@
 //#include "igtlioVideoDevice.h"
 #include "igtlioStringDevice.h"
 #include "igtlioStatusDevice.h"
+//#include "igtlioVideoDevice.h"
 
 
 namespace igtlio

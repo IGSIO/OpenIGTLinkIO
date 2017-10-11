@@ -20,6 +20,7 @@ typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
 typedef vtkSmartPointer<class VideoDevice> VideoDevicePointer;
 typedef vtkSmartPointer<class StringDevice> StringDevicePointer;
 typedef vtkSmartPointer<class StatusDevice> StatusDevicePointer;
+  typedef vtkSmartPointer<class VideoDevice> VideoDevicePointer;
 
 /// Convenience interface for a single IGTL connection.
 ///

@@ -204,6 +204,46 @@ int TransformConverter::TransformMetaDataToIGTL(const ContentData& source, igtl:
 {
   (*dest)->SetMetaDataElement(stream_id_to_name, IANA_TYPE_US_ASCII, source.streamIdTo);
   (*dest)->SetMetaDataElement(stream_id_from_name, IANA_TYPE_US_ASCII, source.streamIdFrom);
+
+  return 1;
+}
+
+//---------------------------------------------------------------------------
+int TransformConverter::IGTLToVTKTransform(const igtl::Matrix4x4& igtlTransform, vtkSmartPointer<vtkMatrix4x4> vtkMatrix)
+{
+  vtkMatrix->Identity();
+  vtkMatrix->Element[0][0] = igtlTransform[0][0];
+  vtkMatrix->Element[1][0] = igtlTransform[1][0];
+  vtkMatrix->Element[2][0] = igtlTransform[2][0];
+  vtkMatrix->Element[0][1] = igtlTransform[0][1];
+  vtkMatrix->Element[1][1] = igtlTransform[1][1];
+  vtkMatrix->Element[2][1] = igtlTransform[2][1];
+  vtkMatrix->Element[0][2] = igtlTransform[0][2];
+  vtkMatrix->Element[1][2] = igtlTransform[1][2];
+  vtkMatrix->Element[2][2] = igtlTransform[2][2];
+  vtkMatrix->Element[0][3] = igtlTransform[0][3];
+  vtkMatrix->Element[1][3] = igtlTransform[1][3];
+  vtkMatrix->Element[2][3] = igtlTransform[2][3];
+
+  return 1;
+}
+
+//----------------------------------------------------------------------------
+int TransformConverter::VTKToIGTLTransform(const vtkMatrix4x4& vtkMatrix, igtl::Matrix4x4& igtlTransform)
+{
+  igtlTransform[0][0] = vtkMatrix.Element[0][0];
+  igtlTransform[1][0] = vtkMatrix.Element[1][0];
+  igtlTransform[2][0] = vtkMatrix.Element[2][0];
+  igtlTransform[0][1] = vtkMatrix.Element[0][1];
+  igtlTransform[1][1] = vtkMatrix.Element[1][1];
+  igtlTransform[2][1] = vtkMatrix.Element[2][1];
+  igtlTransform[0][2] = vtkMatrix.Element[0][2];
+  igtlTransform[1][2] = vtkMatrix.Element[1][2];
+  igtlTransform[2][2] = vtkMatrix.Element[2][2];
+  igtlTransform[0][3] = vtkMatrix.Element[0][3];
+  igtlTransform[1][3] = vtkMatrix.Element[1][3];
+  igtlTransform[2][3] = vtkMatrix.Element[2][3];
+
   return 1;
 }
 
