@@ -50,9 +50,6 @@ public:
   static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
   static int toIGTL(const HeaderData& header, const ContentData& source, igtl::TransformMessage::Pointer* dest);
 
-  static int IGTLToVTKTransform(const igtl::Matrix4x4& igtlTransform, vtkSmartPointer<vtkMatrix4x4> vtkTransform);
-  static int VTKToIGTLTransform(const vtkMatrix4x4& vtkTransform, igtl::Matrix4x4& igtlTransform);
-
 private:
   static int IGTLHeaderToTransformInfo(igtl::MessageBase::Pointer source, ContentData* dest);
   static int TransformMetaDataToIGTL(const ContentData& source, igtl::MessageBase::Pointer *dest);
