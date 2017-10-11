@@ -39,8 +39,8 @@ public:
    */
   struct ContentData
   {
-  vtkSmartPointer<vtkImageData> image;
-  vtkSmartPointer<vtkMatrix4x4> transform; // ijk2ras, From image pixel space to RAS
+    vtkSmartPointer<vtkImageData> image;
+    vtkSmartPointer<vtkMatrix4x4> transform; // ijk2ras, From image pixel space to RAS
   };
 
   static const char*  GetIGTLName() { return GetIGTLTypeName(); }
@@ -49,11 +49,12 @@ public:
   static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
   static int toIGTL(const HeaderData& header, const ContentData& source, igtl::ImageMessage::Pointer* dest);
 
-protected:
-
   static int IGTLToVTKScalarType(int igtlType);
-  static int IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, ContentData *dest);
-  static int IGTLToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras);
+  static int IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, ContentData* dest);
+
+  static int IGTLImageToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras);
+  static int VTKTransformToIGTLImage(const vtkMatrix4x4& ijk2ras, int imageSize[3], double spacing[3], double origin[3], igtl::ImageMessage::Pointer imgMsg);
+
 };
 
 } //namespace igtlio

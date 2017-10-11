@@ -100,7 +100,7 @@ int ImageConverter::fromIGTL(igtl::MessageBase::Pointer source,
   // set volume orientation
   if (!dest->transform)
     dest->transform = vtkSmartPointer<vtkMatrix4x4>::New();
-  if (IGTLToVTKTransform(imgMsg, dest->transform) == 0)
+  if (IGTLImageToVTKTransform(imgMsg, dest->transform) == 0)
     return 0;
 
   return 1;
@@ -292,7 +292,7 @@ int ImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, Conte
 }
 
 //---------------------------------------------------------------------------
-int ImageConverter::IGTLToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras)
+int ImageConverter::IGTLImageToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras)
 {
   // Retrieve the image data
   int   size[3];          // image dimension
@@ -363,6 +363,73 @@ int ImageConverter::IGTLToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSm
   ijk2ras->Element[0][3] = px;
   ijk2ras->Element[1][3] = py;
   ijk2ras->Element[2][3] = pz;
+
+  return 1;
+}
+
+//----------------------------------------------------------------------------
+int ImageConverter::VTKTransformToIGTLImage(const vtkMatrix4x4& ijk2ras, int imageSize[3], double spacing[3], double origin[3], igtl::ImageMessage::Pointer imgMsg)
+{
+  // VTK: corner image origin
+  // OpenIGTLink image message: center image origin
+
+  vtkSmartPointer<vtkMatrix4x4> ijkToVolumeTransform = vtkSmartPointer<vtkMatrix4x4>::New();
+  ijkToVolumeTransform->Identity();
+  ijkToVolumeTransform->Element[0][0] = spacing[0];
+  ijkToVolumeTransform->Element[1][1] = spacing[1];
+  ijkToVolumeTransform->Element[2][2] = spacing[2];
+  ijkToVolumeTransform->Element[0][3] = origin[0];
+  ijkToVolumeTransform->Element[1][3] = origin[1];
+  ijkToVolumeTransform->Element[2][3] = origin[2];
+  vtkSmartPointer<vtkMatrix4x4> ijkToReferenceTransform = vtkSmartPointer<vtkMatrix4x4>::New();
+  vtkMatrix4x4::Multiply4x4(&ijk2ras, ijkToVolumeTransform, ijkToReferenceTransform);
+
+  double ntx = ijkToReferenceTransform->Element[0][0] / spacing[0];
+  double nty = ijkToReferenceTransform->Element[1][0] / spacing[0];
+  double ntz = ijkToReferenceTransform->Element[2][0] / spacing[0];
+  double nsx = ijkToReferenceTransform->Element[0][1] / spacing[1];
+  double nsy = ijkToReferenceTransform->Element[1][1] / spacing[1];
+  double nsz = ijkToReferenceTransform->Element[2][1] / spacing[1];
+  double nnx = ijkToReferenceTransform->Element[0][2] / spacing[2];
+  double nny = ijkToReferenceTransform->Element[1][2] / spacing[2];
+  double nnz = ijkToReferenceTransform->Element[2][2] / spacing[2];
+  double px = ijkToReferenceTransform->Element[0][3];
+  double py = ijkToReferenceTransform->Element[1][3];
+  double pz = ijkToReferenceTransform->Element[2][3];
+
+  // Shift the center
+  // NOTE: The center of the image should be shifted due to different
+  // definitions of image origin between VTK (Slicer) and OpenIGTLink;
+  // OpenIGTLink image has its origin at the center, while VTK image
+  // has one at the corner.
+
+  double hfovi = spacing[0] * (imageSize[0] - 1) / 2.0;
+  double hfovj = spacing[1] * (imageSize[1] - 1) / 2.0;
+  double hfovk = spacing[2] * (imageSize[2] - 1) / 2.0;
+
+  double cx = ntx * hfovi + nsx * hfovj + nnx * hfovk;
+  double cy = nty * hfovi + nsy * hfovj + nny * hfovk;
+  double cz = ntz * hfovi + nsz * hfovj + nnz * hfovk;
+
+  px = px + cx;
+  py = py + cy;
+  pz = pz + cz;
+
+  igtl::Matrix4x4 matrix;
+  matrix[0][0] = static_cast<float>(ntx);
+  matrix[1][0] = static_cast<float>(nty);
+  matrix[2][0] = static_cast<float>(ntz);
+  matrix[0][1] = static_cast<float>(nsx);
+  matrix[1][1] = static_cast<float>(nsy);
+  matrix[2][1] = static_cast<float>(nsz);
+  matrix[0][2] = static_cast<float>(nnx);
+  matrix[1][2] = static_cast<float>(nny);
+  matrix[2][2] = static_cast<float>(nnz);
+  matrix[0][3] = static_cast<float>(px);
+  matrix[1][3] = static_cast<float>(py);
+  matrix[2][3] = static_cast<float>(pz);
+
+  imgMsg->SetMatrix(matrix);
 
   return 1;
 }

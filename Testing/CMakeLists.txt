@@ -48,3 +48,4 @@ add_io_test("testSendReceiveCommand" testSendReceiveCommand testSendReceiveComma
 add_io_test("testDeduceToolBasedOnName" testDeduceToolBasedOnName testDeduceToolBasedOnName.cxx)
 add_io_test("testCommandMessageCodec" testCommandMessageCodec testCommandMessageCodec.cxx)
 add_io_test("testSendReceiveCommandWidthCodec" testSendReceiveCommandWidthCodec testSendReceiveCommandWidthCodec.cxx)
+add_io_test("testReceiveVideo" testReceiveVideo testReceiveVideo.cxx)

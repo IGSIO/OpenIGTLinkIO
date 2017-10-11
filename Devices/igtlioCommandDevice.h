@@ -22,20 +22,19 @@ public:
 	  NUM_QUERY_STATUS,
 	};
 
-	enum {
-	  CommandModifiedEvent         = 118958,
-	};
-
-public:
   vtkSetMacro( QueryTimeOut, double );
   vtkGetMacro( QueryTimeOut, double );
 
-  virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
-  virtual std::string GetDeviceType() const;
-  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
-  virtual igtl::MessageBase::Pointer GetIGTLMessage();
-  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
-  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
+  enum {
+    CommandModifiedEvent         = 118958,
+  };
+  
+ virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
+ virtual std::string GetDeviceType() const;
+ virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
+ virtual igtl::MessageBase::Pointer GetIGTLMessage();
+ virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
+ virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
 
   void SetContent(CommandConverter::ContentData content);
   CommandConverter::ContentData GetContent();

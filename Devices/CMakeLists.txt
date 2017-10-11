@@ -17,6 +17,7 @@ set(${PROJECT_NAME}_INCLUDE_DIRECTORIES PUBLIC
 
 set(${PROJECT_NAME}_SRCS
   igtlioDevice.cxx
+  #igtlioVideoDevice.cxx
   igtlioImageDevice.cxx
   igtlioStatusDevice.cxx
   igtlioStringDevice.cxx
@@ -27,6 +28,7 @@ set(${PROJECT_NAME}_SRCS
 
 set(${PROJECT_NAME}_HDRS
   igtlioDevice.h
+  #igtlioVideoDevice.h
   igtlioImageDevice.h
   igtlioStatusDevice.h
   igtlioStringDevice.h

@@ -49,7 +49,6 @@ public:
   static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* dest, bool checkCRC);
   static int toIGTL(const HeaderData& header, const ContentData& source, igtl::PolyDataMessage::Pointer* dest);
 
-protected:
   // Extract vtkPolyData from existing polyDataMsg, insert into existing poly.
   static int IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyDataMsg, vtkSmartPointer<vtkPolyData> poly);
 

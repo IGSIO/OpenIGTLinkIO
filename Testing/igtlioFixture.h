@@ -39,6 +39,7 @@ struct ClientServerFixture
 public:
   vtkSmartPointer<vtkMatrix4x4> CreateTestTransform();
   vtkSmartPointer<vtkImageData> CreateTestImage();
+  vtkSmartPointer<vtkImageData> CreateTestFrame();
 };
 
 

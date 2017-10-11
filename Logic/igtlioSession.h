@@ -19,6 +19,7 @@ typedef vtkSmartPointer<class ImageDevice> ImageDevicePointer;
 typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
 typedef vtkSmartPointer<class StringDevice> StringDevicePointer;
 typedef vtkSmartPointer<class StatusDevice> StatusDevicePointer;
+  typedef vtkSmartPointer<class VideoDevice> VideoDevicePointer;
 
 /// Convenience interface for a single IGTL connection.
 ///
@@ -53,7 +54,14 @@ public:
   CommandDevicePointer SendCommandResponse(std::string device_id, std::string command, std::string content);
 
   ///  Send the given image from the given device. Asynchronous.
-  ImageDevicePointer SendImage(std::string device_id, vtkSmartPointer<vtkImageData> image, vtkSmartPointer<vtkMatrix4x4> transform);
+  ImageDevicePointer SendImage(std::string device_id,
+                                        vtkSmartPointer<vtkImageData> image,
+                                        vtkSmartPointer<vtkMatrix4x4> transform);
+ 
+  ///
+  ///  Send the given video frame from the given device. Asynchronous.
+  /*VideoDevicePointer SendFrame(std::string device_id,
+                               vtkSmartPointer<vtkImageData> image);*/
 
   /// Send the given image from the given device. Asynchronous.
   TransformDevicePointer SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform);
