@@ -80,11 +80,8 @@ public:
  vtkGetMacro( PushOnConnect, bool );
  vtkSetMacro( MessageDirection, MESSAGE_DIRECTION );
  vtkGetMacro( MessageDirection, MESSAGE_DIRECTION );
- vtkSetMacro( QueryTimeOut, double );
- vtkGetMacro( QueryTimeOut, double );
  vtkSetMacro( Visibility, bool );
  vtkGetMacro( Visibility, bool );
-  
 
  virtual double GetTimestamp() const;
  virtual void SetTimestamp(double val);
@@ -132,7 +129,6 @@ protected:
 private:
  MESSAGE_DIRECTION MessageDirection;
  bool PushOnConnect;
- double QueryTimeOut;
  bool Visibility;
 
 };

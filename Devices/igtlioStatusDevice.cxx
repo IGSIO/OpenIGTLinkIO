@@ -60,7 +60,6 @@ int StatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool che
    this->Modified();
    this->InvokeEvent(StatusModifiedEvent, this);
    this->InvokeEvent(ReceiveEvent);
-   this->InvokeEvent(StatusModifiedEvent, this);
    return 1;
  }
 

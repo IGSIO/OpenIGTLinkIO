@@ -88,7 +88,6 @@ int ImageDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool chec
    this->Modified();
    this->InvokeEvent(ImageModifiedEvent, this);
    this->InvokeEvent(ReceiveEvent, NULL);
-   this->InvokeEvent(ImageModifiedEvent, this);
    return 1;
    }
 

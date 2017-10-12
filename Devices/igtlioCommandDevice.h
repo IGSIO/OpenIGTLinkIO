@@ -16,23 +16,19 @@ public:
   enum {
     CommandModifiedEvent         = 118958,
   };
-  
-	enum QUERY_STATUS {
-	  QUERY_STATUS_NONE,
-	  QUERY_STATUS_WAITING,
-	  QUERY_STATUS_SUCCESS,
-	  QUERY_STATUS_EXPIRED,
-	  QUERY_STATUS_ERROR,
-	  NUM_QUERY_STATUS,
-	};
+
+  enum QUERY_STATUS {
+    QUERY_STATUS_NONE,
+    QUERY_STATUS_WAITING,
+    QUERY_STATUS_SUCCESS,
+    QUERY_STATUS_EXPIRED,
+    QUERY_STATUS_ERROR,
+    NUM_QUERY_STATUS,
+  };
 
   vtkSetMacro( QueryTimeOut, double );
   vtkGetMacro( QueryTimeOut, double );
 
-  enum {
-    CommandModifiedEvent         = 118958,
-  };
-  
  virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
  virtual std::string GetDeviceType() const;
  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
@@ -64,9 +60,9 @@ public:
   ///
   struct QueryType
   {
-	DevicePointer Query;
-	DevicePointer Response;
-	QUERY_STATUS status;
+  DevicePointer Query;
+  DevicePointer Response;
+  QUERY_STATUS status;
   };
 
    /// Get all current queries

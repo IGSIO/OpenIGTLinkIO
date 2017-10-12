@@ -86,7 +86,6 @@ int TransformDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool 
    this->Modified();
    this->InvokeEvent(TransformModifiedEvent, this);
    this->InvokeEvent(ReceiveEvent);
-   this->InvokeEvent(TransformModifiedEvent, this);
    return 1;
  }
 
