@@ -187,7 +187,7 @@ int PolyDataConverter::IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyData
  for (int i = 0; i < nAttributes; i ++)
    {
    igtl::PolyDataAttribute::Pointer attribute;
-   attribute = polyDataMsg->GetAttribute(i);
+   attribute = polyDataMsg->GetAttribute(igtl::PolyDataMessage::AttributeList::size_type(i));
 
    vtkSmartPointer<vtkFloatArray> data =
      vtkSmartPointer<vtkFloatArray>::New();
