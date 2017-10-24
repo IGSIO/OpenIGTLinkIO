@@ -195,41 +195,7 @@ int PolyDataConverter::IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyData
    data->SetName(attribute->GetName()); //set the name of the value
    int n = attribute->GetSize();
 
-   // NOTE: Data types for POINT (igtl::PolyDataMessage::POINT_*) and CELL
-   // (igtl::PolyDataMessage::CELL_*) have the same lower 4 bit.
-   // By masking the values with 0x0F, attribute types (either SCALAR, VECTOR, NORMAL,
-   // TENSOR, or RGBA) can be obtained. On the other hand, by masking the value
-   // with 0xF0, data types (POINT or CELL) can be obtained.
-   // See, igtlPolyDataMessage.h in the OpenIGTLink library.
-   switch (attribute->GetType() & 0x0F)
-     {
-     case igtl::PolyDataAttribute::POINT_SCALAR:
-       {
-       data->SetNumberOfComponents(1);
-       break;
-       }
-     case igtl::PolyDataAttribute::POINT_VECTOR:
-     case igtl::PolyDataAttribute::POINT_NORMAL:
-       {
-       data->SetNumberOfComponents(3);
-       break;
-       }
-     case igtl::PolyDataAttribute::POINT_TENSOR:
-       {
-       data->SetNumberOfComponents(9); // TODO: Is it valid in Slicer?
-       break;
-       }
-     case igtl::PolyDataAttribute::POINT_RGBA:
-       {
-       data->SetNumberOfComponents(4); // TODO: Is it valid in Slicer?
-       break;
-       }
-     default:
-       {
-       // ERROR
-       break;
-       }
-     }
+   data->SetNumberOfComponents(attribute->GetNumberOfComponents());
    data->SetNumberOfTuples(n);
    attribute->GetData(static_cast<igtl_float32*>(data->GetPointer(0)));
 
@@ -336,7 +302,7 @@ int PolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, igtl
        }
      }
 
-   // Triangl strips
+   // Triangle strips
    vtkSmartPointer<vtkCellArray> triangleStripCells = poly->GetStrips();
    if (triangleStripCells.GetPointer() != NULL)
      {
@@ -444,24 +410,42 @@ int PolyDataConverter::VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl
     }
 
   vtkSmartPointer<vtkDataArray> array = src->GetArray(i);
-  int ncomps  = array->GetNumberOfComponents();
-  if (ncomps == 1)
+  int attributeType = src->IsArrayAnAttribute(i);
+  switch(attributeType)
     {
-    dest->SetType(igtl::PolyDataAttribute::POINT_SCALAR | attrTypeBit);
+    case vtkDataSetAttributes::SCALARS:
+      // OpenIGTLink designates special cases for scalars of a certain number of components
+      switch(array->GetNumberOfComponents())
+        {
+        case 4:
+          dest->SetType(igtl::PolyDataAttribute::POINT_RGBA | attrTypeBit);
+          break;
+        default:
+          dest->SetType(igtl::PolyDataAttribute::POINT_SCALAR | attrTypeBit, array->GetNumberOfComponents());
+          break;
+        }
+        break;
+    case vtkDataSetAttributes::VECTORS:
+      dest->SetType(igtl::PolyDataAttribute::POINT_VECTOR | attrTypeBit);
+      break;
+    case vtkDataSetAttributes::TCOORDS:
+      dest->SetType(igtl::PolyDataAttribute::POINT_TCOORDS | attrTypeBit);
+      break;
+    case vtkDataSetAttributes::NORMALS:
+      dest->SetType(igtl::PolyDataAttribute::POINT_NORMAL | attrTypeBit);
+      break;
+    case vtkDataSetAttributes::TENSORS:
+      dest->SetType(igtl::PolyDataAttribute::POINT_TENSOR | attrTypeBit);
+      break;
+    case vtkDataSetAttributes::GLOBALIDS:
+    case vtkDataSetAttributes::PEDIGREEIDS:
+    case vtkDataSetAttributes::EDGEFLAG:
+    default:
+      // Unsupported types, pass as generic scalar data (will be impossible to identify on receive)
+      dest->SetType(igtl::PolyDataAttribute::POINT_SCALAR, array->GetNumberOfComponents());
+      break;
     }
-  else if (ncomps == 3)
-    {
-    // TODO: how to differenciate normal and vector?
-    dest->SetType(igtl::PolyDataAttribute::POINT_NORMAL | attrTypeBit);
-    }
-  else if (ncomps == 9)
-    {
-    dest->SetType(igtl::PolyDataAttribute::POINT_TENSOR | attrTypeBit);
-    }
-  else if (ncomps == 4)
-    {
-    dest->SetType(igtl::PolyDataAttribute::POINT_RGBA | attrTypeBit);
-    }
+
   dest->SetName(array->GetName() ? array->GetName() : "");
   int ntuples = array->GetNumberOfTuples();
   dest->SetSize(ntuples);
@@ -470,7 +454,7 @@ int PolyDataConverter::VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl
     {
     double * tuple = array->GetTuple(j);
     igtlFloat32 data[9];
-    for (int k = 0; k < ncomps; k ++)
+    for (int k = 0; k < array->GetNumberOfComponents(); k ++)
       {
       data[k] = static_cast<igtlFloat32>(tuple[k]);
       }
