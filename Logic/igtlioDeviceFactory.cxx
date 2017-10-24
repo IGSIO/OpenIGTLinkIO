@@ -13,6 +13,7 @@
 #include "igtlioStringDevice.h"
 #include "igtlioCommandDevice.h"
 #include "igtlioTransformDevice.h"
+#include "igtlioPolyDataDevice.h"
 //#include "igtlioVideoDevice.h"
 #include "igtlioPolyDataDevice.h"
 

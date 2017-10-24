@@ -1,6 +1,20 @@
+/*==========================================================================
+
+  Portions (c) Copyright 2008-2009 Brigham and Women's Hospital (BWH) All Rights Reserved.
+
+  See Doc/copyright/copyright.txt
+  or http://www.slicer.org/copyright/copyright.txt for details.
+
+  Program:   3D Slicer
+  Module:    $HeadURL: https://github.com/openigtlink/OpenIGTLinkIF/blob/master/MRML/vtkIGTLToMRMLPolyData.cxx $
+  Date:      $Date: 2010-12-07 21:39:19 -0500 (Tue, 07 Dec 2010) $
+  Version:   $Revision: 15621 $
+
+==========================================================================*/
 
 #include "igtlioPolyDataDevice.h"
 #include <vtkObjectFactory.h>
+#include <vtkPolyData.h>
 
 namespace igtlio
 {
@@ -35,6 +49,15 @@ PolyDataDevice::PolyDataDevice()
 //---------------------------------------------------------------------------
 PolyDataDevice::~PolyDataDevice()
 {
+}
+
+//---------------------------------------------------------------------------
+vtkIntArray* PolyDataDevice::GetDeviceContentModifiedEvent() const
+{
+  vtkIntArray* events;
+  events = vtkIntArray::New();
+  events->InsertNextValue(PolyDataModifiedEvent);
+  return events;
 }
 
 //---------------------------------------------------------------------------
