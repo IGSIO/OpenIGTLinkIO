@@ -76,7 +76,7 @@ public:
 public:
   static Session *New();
   vtkTypeMacro(Session, vtkObject);
-  void PrintSelf(ostream&, vtkIndent);
+  void PrintSelf(ostream&, vtkIndent) VTK_OVERRIDE;
 
   void StartServer(int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
   void ConnectToServer(std::string serverHost, int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);

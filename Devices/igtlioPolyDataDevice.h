@@ -31,15 +31,15 @@ class OPENIGTLINKIO_DEVICES_EXPORT PolyDataDevice : public Device
 public:
 
   enum {
-    PolyDataModifiedEvent         = 118958,
+    PolyDataModifiedEvent         = 118959,
   };
   
- virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
- virtual std::string GetDeviceType() const;
- virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
- virtual igtl::MessageBase::Pointer GetIGTLMessage();
- virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
- virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
+ virtual vtkIntArray* GetDeviceContentModifiedEvent() const VTK_OVERRIDE;
+ virtual std::string GetDeviceType() const VTK_OVERRIDE;
+ virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC) VTK_OVERRIDE;
+ virtual igtl::MessageBase::Pointer GetIGTLMessage() VTK_OVERRIDE;
+ virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix) VTK_OVERRIDE;
+ virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const VTK_OVERRIDE;
 
   void SetContent(PolyDataConverter::ContentData content);
   PolyDataConverter::ContentData GetContent();
@@ -48,7 +48,7 @@ public:
   static PolyDataDevice *New();
   vtkTypeMacro(PolyDataDevice,Device);
 
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
  protected:
   PolyDataDevice();
@@ -66,8 +66,8 @@ public:
 class OPENIGTLINKIO_DEVICES_EXPORT PolyDataDeviceCreator : public DeviceCreator
 {
 public:
-  virtual DevicePointer Create(std::string device_name);
-  virtual std::string GetDeviceType() const;
+  virtual DevicePointer Create(std::string device_name) VTK_OVERRIDE;
+  virtual std::string GetDeviceType() const VTK_OVERRIDE;
 
   static PolyDataDeviceCreator *New();
   vtkTypeMacro(PolyDataDeviceCreator,vtkObject);

@@ -86,7 +86,7 @@ public:
  virtual double GetTimestamp() const;
  virtual void SetTimestamp(double val);
 
- void PrintSelf(ostream& os, vtkIndent indent);
+ void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
  bool MessageDirectionIsOut() const { return MessageDirection==MESSAGE_DIRECTION_OUT; }
  bool MessageDirectionIsIn() const { return MessageDirection==MESSAGE_DIRECTION_IN; }

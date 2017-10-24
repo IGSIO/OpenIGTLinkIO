@@ -68,7 +68,7 @@ public:
 
  static Logic *New();
  vtkTypeMacro(Logic, vtkObject);
- void PrintSelf(ostream&, vtkIndent);
+ void PrintSelf(ostream&, vtkIndent) VTK_OVERRIDE;
 
  ConnectorPointer CreateConnector();
  int RemoveConnector(unsigned int index);

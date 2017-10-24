@@ -15,7 +15,6 @@
 #include "igtlioTransformDevice.h"
 #include "igtlioPolyDataDevice.h"
 //#include "igtlioVideoDevice.h"
-#include "igtlioPolyDataDevice.h"
 
 namespace igtlio
 {

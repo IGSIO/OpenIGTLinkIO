@@ -31,7 +31,7 @@ class OPENIGTLINKIO_LOGIC_EXPORT DeviceFactory : public vtkObject
   static DeviceFactory *New();
   vtkTypeMacro(DeviceFactory,vtkObject);
 
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   DeviceCreatorPointer GetCreator(std::string device_type) const;
   std::vector<std::string> GetAvailableDeviceTypes() const;
