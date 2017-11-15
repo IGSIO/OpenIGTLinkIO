@@ -40,7 +40,7 @@ public:
   struct ContentData
   {
     vtkSmartPointer<vtkPolyData> polydata;
-	std::string deviceName;
+    std::string deviceName;
   };
 
   static const char*  GetIGTLName() { return GetIGTLTypeName(); }
