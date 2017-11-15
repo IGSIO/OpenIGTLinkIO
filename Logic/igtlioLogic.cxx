@@ -217,7 +217,7 @@ DevicePointer Logic::GetDevice(unsigned int index)
 //---------------------------------------------------------------------------
 int Logic::ConnectorIndexFromDevice( DevicePointer d )
 {
-    for( int i = 0; i < Connectors.size(); ++i )
+    for( std::vector<ConnectorPointer>::size_type i = 0; i < Connectors.size(); ++i )
         if( Connectors[i]->HasDevice(d) )
             return i;
     return -1;
