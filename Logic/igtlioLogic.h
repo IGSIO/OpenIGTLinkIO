@@ -60,9 +60,9 @@ public:
     ConnectionAboutToBeRemovedEvent      = 118961,
 
     NewDeviceEvent        = 118949,
-//    DeviceModifiedEvent   = 118950, // must listen to each specific device in order to get this one.
+    //DeviceModifiedEvent   = 118950, // must listen to each specific device in order to get this one.
     RemovedDeviceEvent    = 118951,
-	CommandReceivedEvent = Device::CommandReceivedEvent, // one of the connected COMMAND devices got a query
+    CommandReceivedEvent = Device::CommandReceivedEvent, // one of the connected COMMAND devices got a query
     CommandResponseReceivedEvent = Device::CommandResponseReceivedEvent // one of the connected COMMAND devices got a response
   };
 
