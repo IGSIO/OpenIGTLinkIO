@@ -23,6 +23,7 @@ set(${PROJECT_NAME}_SRCS
   igtlioStatusConverter.cxx
   igtlioTransformConverter.cxx
   igtlioCommandConverter.cxx
+  igtlioStringConverter.cxx
   )
 
 set(${PROJECT_NAME}_HDRS
@@ -32,7 +33,7 @@ set(${PROJECT_NAME}_HDRS
   igtlioPolyDataConverter.h
   igtlioStatusConverter.h
   igtlioTransformConverter.h
-  igtlioCommandConverter.h
+  igtlioStringConverter.h
   )
 
 set(${PROJECT_NAME}_TARGET_LIBRARIES

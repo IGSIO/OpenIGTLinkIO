@@ -21,7 +21,7 @@ struct LogicFixture
 
   igtlio::LogicPointer Logic;
   igtlio::ConnectorPointer Connector;
-  igtlio::vtkIGTLIOSessionPointer Session;
+  igtlio::SessionPointer Session;
 
   vtkSmartPointer<class vtkCallbackCommand> LogicEventCallback;
   std::vector<int> ReceivedEvents;

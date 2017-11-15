@@ -1,6 +1,7 @@
-#include "IGTLIOFixture.h"
+#include "igtlioFixture.h"
 #include "igtlioSession.h"
 #include "igtlioTransformDevice.h"
+#include "igtlioTestUtilities.h"
 
 ///
 /// Setup a client and server.
@@ -16,12 +17,12 @@ int main(int argc, char **argv)
   ClientServerFixture fixture;
 
   if (!fixture.ConnectClientToServer())
-    return 1;
+	return TEST_FAILED;
 
   if (fixture.Client.Logic->GetNumberOfDevices() != 0)
   {
     std::cout << "ERROR: Client has devices before they have been added or fundamental error!" << std::endl;
-    return 1;
+	return TEST_FAILED;
   }
 
   std::cout << "*** Connection done" << std::endl;
@@ -54,7 +55,7 @@ int main(int argc, char **argv)
   if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::NewDeviceEvent, number_of_devices))
   {
     std::cout << "ERROR: Did not get " << number_of_devices << " events" << std::endl;
-    return 1;
+	return TEST_FAILED;
   }
 
     //---------------------------------------------------------------------------
@@ -67,7 +68,7 @@ int main(int argc, char **argv)
     if(tool_name != usprobe_name && tool_name != pointer_name)
       {
         std::cout << "ERROR: tool is not what is expected: " << tool_name << std::endl;
-        return 1;
+		return TEST_FAILED;
       }
     else
         tools[tool_name] = 1;
@@ -76,7 +77,7 @@ int main(int argc, char **argv)
   if(tools.size() != 2)
     {
       std::cout << "ERROR: Expected 2 tools to be present, found " << tools.size() << std::endl;
-      return 1;
+	  return TEST_FAILED;
     }
 
   std::map<std::string, int>::iterator it;
@@ -86,10 +87,10 @@ int main(int argc, char **argv)
       if(type == "unknown")
         {
           std::cout << "ERROR: Tool with name " << it->first << " is of unknown type." << std::endl;
-        return 1;
+		return TEST_FAILED;
         }
     }
 
 
-  return 0;
+  return TEST_SUCCESS;
 }

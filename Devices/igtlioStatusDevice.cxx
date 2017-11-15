@@ -56,11 +56,12 @@ std::string StatusDevice::GetDeviceType() const
 int StatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
  if (StatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
-   {
+ {
    this->Modified();
    this->InvokeEvent(StatusModifiedEvent, this);
+   this->InvokeEvent(ReceiveEvent);
    return 1;
-   }
+ }
 
  return 0;
 }
@@ -68,11 +69,13 @@ int StatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool che
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
 {
+	/*
  // cannot send a non-existent status (?)
  if (Content.errorname.empty())
   {
   return 0;
   }
+  */
 
  if (!StatusConverter::toIGTL(HeaderData, Content, &this->OutMessage))
    {
@@ -85,6 +88,7 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
+	/*
  if (prefix==MESSAGE_PREFIX_GET)
   {
    if (this->GetMessage.IsNull())
@@ -95,6 +99,7 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
    this->GetMessage->Pack();
    return dynamic_pointer_cast<igtl::MessageBase>(this->GetMessage);
   }
+  */
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
@@ -107,7 +112,7 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 std::set<Device::MESSAGE_PREFIX> StatusDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
- retval.insert(MESSAGE_PREFIX_GET);
+ retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
  return retval;
 }
 

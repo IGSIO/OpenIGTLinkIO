@@ -10,8 +10,10 @@ find_package(VTK REQUIRED NO_MODULE
 include(${VTK_USE_FILE})
 
 set(${PROJECT_NAME}_SRCS
-  IGTLIOFixture.cxx
-  IGTLIOFixture.h
+  igtlioFixture.cxx
+  igtlioFixture.h
+  igtlioTestUtilities.h
+  igtlioTestUtilities.cxx
   )
 
 set(${PROJECT_NAME}_MOC_SRCS

@@ -13,11 +13,13 @@ class vtkImageData;
 namespace igtlio
 {
 
-typedef vtkSmartPointer<class vtkIGTLIOSession> vtkIGTLIOSessionPointer;
+typedef vtkSmartPointer<class Session> SessionPointer;
 typedef vtkSmartPointer<class Connector> ConnectorPointer;
 typedef vtkSmartPointer<class ImageDevice> ImageDevicePointer;
 typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
-  typedef vtkSmartPointer<class VideoDevice> VideoDevicePointer;
+typedef vtkSmartPointer<class VideoDevice> VideoDevicePointer;
+typedef vtkSmartPointer<class StringDevice> StringDevicePointer;
+typedef vtkSmartPointer<class StatusDevice> StatusDevicePointer;
 
 /// Convenience interface for a single IGTL connection.
 ///
@@ -37,29 +39,20 @@ typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
 ///
 ///
 ///
-class OPENIGTLINKIO_LOGIC_EXPORT vtkIGTLIOSession : public vtkObject
+class OPENIGTLINKIO_LOGIC_EXPORT Session : public vtkObject
 {
 public:
-  /// convenience methods:
-
-  ///
   ///  Send the given command from the given device.
   /// - If using BLOCKING, the call blocks until a response appears or timeout. Return response.
   /// - If using ASYNCHRONOUS, wait for the CommandResponseReceivedEvent event. Return device.
   ///
-  CommandDevicePointer SendCommandQuery(std::string device_id,
-                                                 std::string command,
-                                                 std::string content,
-                                                 igtlio::SYNCHRONIZATION_TYPE synchronized = igtlio::BLOCKING,
-                                                 double timeout_s = 5);
-  ///
+  CommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content, igtlio::SYNCHRONIZATION_TYPE synchronized = igtlio::BLOCKING, double timeout_s = 5);
+
   ///  Send a command response from the given device. Asynchronous.
   /// Precondition: The given device has received a query that is not yet responded to.
   /// Return device.
-  CommandDevicePointer SendCommandResponse(std::string device_id, std::string command,
-                                                    std::string content);
+  CommandDevicePointer SendCommandResponse(std::string device_id, std::string command, std::string content);
 
-  ///
   ///  Send the given image from the given device. Asynchronous.
   ImageDevicePointer SendImage(std::string device_id,
                                         vtkSmartPointer<vtkImageData> image,
@@ -71,16 +64,19 @@ public:
                                vtkSmartPointer<vtkImageData> image);*/
 
   /// Send the given image from the given device. Asynchronous.
-  TransformDevicePointer SendTransform(std::string device_id,
-                                                vtkSmartPointer<vtkMatrix4x4> transform);
+  TransformDevicePointer SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform);
 
-    /// TODO: add more convenience methods here.
+  /// Send the given string from the given device. Asynchronous.
+  StringDevicePointer SendString(std::string device_id, std::string content);
+
+  /// Send the given status from the given device. Asynchronous.
+  StatusDevicePointer SendStatus(std::string device_id, int code, int subcode, std::string statusstring, std::string errorname);
 
 
 public:
-  static vtkIGTLIOSession *New();
-  vtkTypeMacro(vtkIGTLIOSession, vtkObject);
-  void PrintSelf(ostream&, vtkIndent);
+  static Session *New();
+  vtkTypeMacro(Session, vtkObject);
+  void PrintSelf(ostream&, vtkIndent) VTK_OVERRIDE;
 
   void StartServer(int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
   void ConnectToServer(std::string serverHost, int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
@@ -90,7 +86,7 @@ public:
   void SetConnector(ConnectorPointer connector);
 
 private:
-  vtkIGTLIOSession();
+  Session();
 
   ConnectorPointer Connector;
 
@@ -113,7 +109,6 @@ private:
 //   std::string response = command.GetResponse();
 
   bool waitForConnection(double timeout_s);
-  DevicePointer AddDeviceIfNotPresent(DeviceKeyType key);
 };
 
 } // namespace igtlio

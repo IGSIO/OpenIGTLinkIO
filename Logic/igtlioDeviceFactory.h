@@ -22,7 +22,7 @@
 namespace igtlio
 {
 
-typedef vtkSmartPointer<class DeviceCreator> vtkIGTLIODeviceCreatorPointer;
+typedef vtkSmartPointer<class DeviceCreator> DeviceCreatorPointer;
 typedef vtkSmartPointer<class DeviceFactory> DeviceFactoryPointer;
 
 class OPENIGTLINKIO_LOGIC_EXPORT DeviceFactory : public vtkObject
@@ -31,9 +31,9 @@ class OPENIGTLINKIO_LOGIC_EXPORT DeviceFactory : public vtkObject
   static DeviceFactory *New();
   vtkTypeMacro(DeviceFactory,vtkObject);
 
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  vtkIGTLIODeviceCreatorPointer GetCreator(std::string device_type) const;
+  DeviceCreatorPointer GetCreator(std::string device_type) const;
   std::vector<std::string> GetAvailableDeviceTypes() const;
 
   // Create a Device object based on an input device_type
@@ -48,7 +48,7 @@ protected:
   template<class CREATOR_TYPE>
   void registerCreator();
 
-  std::map<std::string, vtkIGTLIODeviceCreatorPointer> Creators;
+  std::map<std::string, DeviceCreatorPointer> Creators;
 };
 
 } // namespace igtlio

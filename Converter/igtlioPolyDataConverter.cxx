@@ -29,7 +29,7 @@ namespace igtlio
 {
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::IGTLToVTK(igtl::MessageBase::Pointer source, PolyDataConverter::MessageContent *dest, bool checkCRC)
+int PolyDataConverter::fromIGTL(igtl::MessageBase::Pointer source, HeaderData *header, PolyDataConverter::ContentData *dest, bool checkCRC)
 {
  // Create a message buffer to receive image data
  igtl::PolyDataMessage::Pointer polyDataMsg;
@@ -45,6 +45,10 @@ int PolyDataConverter::IGTLToVTK(igtl::MessageBase::Pointer source, PolyDataConv
    std::cerr << "Unable to create vtkPolyData from incoming POLYDATA message. Failed to unpack the message" << std::endl;
    return 0;
    }
+
+ // get header
+ if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(polyDataMsg), header))
+   return 0;
 
  vtkSmartPointer<vtkPolyData> poly = vtkSmartPointer<vtkPolyData>::New();
 
@@ -215,7 +219,7 @@ int PolyDataConverter::IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyData
 }
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::VTKToIGTL(const PolyDataConverter::MessageContent &source, igtl::PolyDataMessage::Pointer *dest)
+int PolyDataConverter::toIGTL(const HeaderData &header, const PolyDataConverter::ContentData &source, igtl::PolyDataMessage::Pointer *dest)
 {
    if (source.polydata.GetPointer() == NULL)
      {
@@ -223,17 +227,12 @@ int PolyDataConverter::VTKToIGTL(const PolyDataConverter::MessageContent &source
      return 0;
      }
 
-   //------------------------------------------------------------
-   // Allocate Status Message Class
-   if ((*dest).IsNull())
-     {
-     (*dest) = igtl::PolyDataMessage::New();
-     }
-   else
-     {
-     (*dest)->Clear();
-     }
+   if (dest->IsNull())
+	 *dest = igtl::PolyDataMessage::New();
    igtl::PolyDataMessage::Pointer outMessage = *dest;
+
+   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(outMessage);
+   HeadertoIGTL(header, &basemsg);
 
    // Set message name -- use the same name as the MRML node
    outMessage->SetDeviceName(source.deviceName.c_str());

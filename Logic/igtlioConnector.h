@@ -29,6 +29,7 @@
 #include "igtlioDeviceFactory.h"
 #include "igtlioObject.h"
 #include "igtlioUtilities.h"
+#include "igtlioCommandDevice.h"
 
 //// MRML includes
 //#include <vtkMRML.h>
@@ -98,6 +99,9 @@ public:
   /// Suggested timeout 5ms.
   void PeriodicProcess();
 
+  CommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content );
+  DevicePointer AddDeviceIfNotPresent(DeviceKeyType key);
+
  /// Add a new Device.
  /// If a Device with an identical device_id already exist, the method will fail.
  int AddDevice(DevicePointer device); // TODO look at OnNodeReferenceAdded
@@ -107,6 +111,7 @@ public:
  /// Get the given Device. This can be used to modify the Device contents.
  DevicePointer GetDevice(int index);
  DevicePointer GetDevice(DeviceKeyType key);
+ bool HasDevice( DevicePointer d );
 
  /// Request the given Device to send a message with the given prefix.
  /// An undefined prefix means sending the normal message.
@@ -175,7 +180,7 @@ public:
   static Connector *New();
   vtkTypeMacro(Connector,vtkIGTLIOObject);
 
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
  protected:
   Connector();

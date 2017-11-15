@@ -10,17 +10,10 @@
 #ifndef IGTLIOCIRCULARBUFFER_H
 #define IGTLIOCIRCULARBUFFER_H
 
-// VTK includes
-#include <vtkObject.h>
-
-// OpenIGTLink includes
-#include <igtlMessageBase.h>
-
-// IGTLIO includes
-#include "igtlioLogicExport.h"
-
-// STD includes
 #include <string>
+#include <vtkObject.h>
+#include <igtlMessageBase.h>
+#include "igtlioLogicExport.h"
 
 #define IGTLCB_CIRC_BUFFER_SIZE    3
 
@@ -36,7 +29,7 @@ class OPENIGTLINKIO_LOGIC_EXPORT CircularBuffer : public vtkObject
   static CircularBuffer *New();
   vtkTypeMacro(CircularBuffer,vtkObject);
 
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
   int GetNumberOfBuffer() { return IGTLCB_CIRC_BUFFER_SIZE; }
 

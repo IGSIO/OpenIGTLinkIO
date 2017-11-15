@@ -8,6 +8,9 @@ endif()
 project(OpenIGTLinkIO)
 ###########################################################
 
+#### Enable C++11
+set (CMAKE_CXX_STANDARD 11)
+
 set(OpenIGTLinkIO_VERSION_SUFFIX "") # add a version suffix for parallel multi-version install
 
 set(OpenIGTLinkIO_BINARY_INSTALL "bin")
@@ -33,11 +36,11 @@ if(NOT BUILD_SHARED_LIBS)
 endif()
 
 if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OpenIGTLinkIO_BINARY_INSTALL}")
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OpenIGTLinkIO_LIBRARY_INSTALL}")
 endif()
 
 if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OpenIGTLinkIO_LIBRARY_INSTALL}")
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OpenIGTLinkIO_BINARY_INSTALL}")
 endif()
 
 if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
@@ -56,13 +59,14 @@ if(NOT (IGTLIO_QT_VERSION VERSION_EQUAL "4" OR IGTLIO_QT_VERSION VERSION_EQUAL "
     message(FATAL_ERROR "Expected value for IGTLIO_QT_VERSION is either '4' or '5'")
 endif()
 
-set (OpenIGTLinkIO_TARGETS igtlioLogic igtlioDevices igtlioConverter)
+set (OpenIGTLinkIO_TARGETS igtlioLogic igtlioDevices igtlioConverter igtlioTools )
 set (OpenIGTLinkIO_INCLUDE_DIRS
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/Logic
   ${CMAKE_CURRENT_SOURCE_DIR}/Converter
   ${CMAKE_CURRENT_SOURCE_DIR}/Devices
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tools
   )
 
 add_subdirectory(Converter)

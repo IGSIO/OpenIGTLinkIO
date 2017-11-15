@@ -37,17 +37,17 @@ public:
    * This structure contains everything that igtl::PolyMessage is able to contain,
    * in a vtk-friendly format.
    */
-  struct MessageContent
+  struct ContentData
   {
     vtkSmartPointer<vtkPolyData> polydata;
-    std::string deviceName;
+	std::string deviceName;
   };
 
   static const char*  GetIGTLName() { return GetIGTLTypeName(); }
   static const char* GetIGTLTypeName() { return "POLYDATA"; }
 
-  static int IGTLToVTK(igtl::MessageBase::Pointer source, MessageContent* dest, bool checkCRC);
-  static int VTKToIGTL(const MessageContent& source, igtl::PolyDataMessage::Pointer* dest);
+  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* dest, bool checkCRC);
+  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::PolyDataMessage::Pointer* dest);
 
   // Extract vtkPolyData from existing polyDataMsg, insert into existing poly.
   static int IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyDataMsg, vtkSmartPointer<vtkPolyData> poly);
