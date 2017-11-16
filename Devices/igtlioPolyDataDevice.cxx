@@ -69,7 +69,7 @@ std::string PolyDataDevice::GetDeviceType() const
 //---------------------------------------------------------------------------
 int PolyDataDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (PolyDataConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+ if (PolyDataConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, &this->metaInfo))
  {
    this->Modified();
    this->InvokeEvent(ReceiveEvent);
@@ -90,7 +90,7 @@ igtl::MessageBase::Pointer PolyDataDevice::GetIGTLMessage()
   }
   */
 
- if (!PolyDataConverter::toIGTL(HeaderData, Content, &this->OutMessage))
+ if (!PolyDataConverter::toIGTL(HeaderData, Content, &this->OutMessage, &this->metaInfo))
    {
    return 0;
    }

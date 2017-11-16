@@ -33,9 +33,9 @@ public:
   static const char* GetIGTLResponseName() { return "RTS_COMMAND"; }
 
 
-  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
-  static int fromIGTLResponse(igtl::MessageBase::Pointer source, HeaderData *header, ContentData *dest, bool checkCRC);
-  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::CommandMessage::Pointer* dest);
+  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
+  static int fromIGTLResponse(igtl::MessageBase::Pointer source, HeaderData *header, ContentData *dest, bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
+  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::CommandMessage::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo= NULL);
 
   static std::vector<std::string> GetAvailableCommandNames();
 };

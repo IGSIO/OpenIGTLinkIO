@@ -29,7 +29,7 @@ namespace igtlio
 {
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::fromIGTL(igtl::MessageBase::Pointer source, HeaderData *header, PolyDataConverter::ContentData *dest, bool checkCRC)
+int PolyDataConverter::fromIGTL(igtl::MessageBase::Pointer source, HeaderData *header, PolyDataConverter::ContentData *dest, bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo)
 {
  // Create a message buffer to receive image data
  igtl::PolyDataMessage::Pointer polyDataMsg;
@@ -47,7 +47,7 @@ int PolyDataConverter::fromIGTL(igtl::MessageBase::Pointer source, HeaderData *h
    }
 
  // get header
- if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(polyDataMsg), header))
+ if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(polyDataMsg), header, metaInfo))
    return 0;
 
  vtkSmartPointer<vtkPolyData> poly = vtkSmartPointer<vtkPolyData>::New();
@@ -219,7 +219,7 @@ int PolyDataConverter::IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyData
 }
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::toIGTL(const HeaderData &header, const PolyDataConverter::ContentData &source, igtl::PolyDataMessage::Pointer *dest)
+int PolyDataConverter::toIGTL(const HeaderData &header, const PolyDataConverter::ContentData &source, igtl::PolyDataMessage::Pointer *dest, igtl::MessageBase::MetaDataMap* metaInfo)
 {
    if (source.polydata.GetPointer() == NULL)
      {
@@ -232,7 +232,7 @@ int PolyDataConverter::toIGTL(const HeaderData &header, const PolyDataConverter:
    igtl::PolyDataMessage::Pointer outMessage = *dest;
 
    igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(outMessage);
-   HeadertoIGTL(header, &basemsg);
+   HeadertoIGTL(header, &basemsg, metaInfo);
 
    // Set message name -- use the same name as the MRML node
    outMessage->SetDeviceName(source.deviceName.c_str());

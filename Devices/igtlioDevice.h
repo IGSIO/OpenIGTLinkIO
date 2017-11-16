@@ -112,7 +112,12 @@ public:
  // TODO: add old features from Connector:
  //       - lock (means dont accept incoming messages),
  //       - gettimestamp (of last incoming message)
-
+ 
+ // Return Meta information
+ const igtl::MessageBase::MetaDataMap& GetMetaData() const;
+ 
+ // Copy the source meta information. 
+ void SetMetaData(const igtl::MessageBase::MetaDataMap& sourceMetaInfo);
 
 public:
   vtkAbstractTypeMacro(Device,vtkObject);
@@ -121,6 +126,8 @@ protected:
   void SetHeader(BaseConverter::HeaderData header);
 
   BaseConverter::HeaderData HeaderData;
+  
+  igtl::MessageBase::MetaDataMap metaInfo;
 
 protected:
  Device();

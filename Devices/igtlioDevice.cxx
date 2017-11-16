@@ -47,6 +47,23 @@ std::string Device::GetDeviceType() const
   return NULL;
 }
 
+const igtl::MessageBase::MetaDataMap& Device::GetMetaData() const
+{
+  return this->metaInfo;
+}
+
+void Device::SetMetaData(const igtl::MessageBase::MetaDataMap& sourceMetaInfo)
+{
+  metaInfo.clear();
+  for (igtl::MessageBase::MetaDataMap::const_iterator it = sourceMetaInfo.begin(); it != sourceMetaInfo.end(); ++it)
+    {
+    std::string key = it->first;
+    IANA_ENCODING_TYPE encodingScheme = it->second.first;
+    std::string value = it->second.second;
+    metaInfo[key] = std::pair<IANA_ENCODING_TYPE, std::string>(encodingScheme, value);
+    }
+}
+
 vtkIntArray* Device::GetDeviceContentModifiedEvent() const
 {
   vtkIntArray* events;

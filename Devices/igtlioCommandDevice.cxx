@@ -62,7 +62,7 @@ int CommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool ch
   if (buffer->GetDeviceType()==std::string(CommandConverter::GetIGTLResponseName()))
 	{
 	CommandDevicePointer response = CommandDevicePointer::New();
-	if (!CommandConverter::fromIGTLResponse(buffer, &response->HeaderData, &response->Content, checkCRC))
+	if (!CommandConverter::fromIGTLResponse(buffer, &response->HeaderData, &response->Content, checkCRC, &this->metaInfo))
 	  return 0;
 
 	// search among the queries for a command with an identical ID:
@@ -85,7 +85,7 @@ int CommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool ch
   //     No response is created - this is the responsibility of the application.
   if (buffer->GetDeviceType()==std::string(CommandConverter::GetIGTLTypeName()))
 	{
-	if (CommandConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+	if (CommandConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, &this->metaInfo))
 	  {
 	  this->Modified();
 	  this->InvokeEvent(CommandReceivedEvent);
@@ -107,7 +107,7 @@ igtl::MessageBase::Pointer CommandDevice::GetIGTLMessage()
 
  this->SetTimestamp(vtkTimerLog::GetUniversalTime());
 
- if (!CommandConverter::toIGTL(HeaderData, Content, &this->OutMessage))
+ if (!CommandConverter::toIGTL(HeaderData, Content, &this->OutMessage, &this->metaInfo))
    {
    return 0;
    }
@@ -145,7 +145,7 @@ igtl::MessageBase::Pointer CommandDevice::GetIGTLResponseMessage()
    this->ResponseMessage = igtl::RTSCommandMessage::New();
 
  igtl::CommandMessage::Pointer response = dynamic_pointer_cast<igtl::CommandMessage>(this->ResponseMessage);
- if (!CommandConverter::toIGTL(HeaderData, Content, &response))
+ if (!CommandConverter::toIGTL(HeaderData, Content, &response, &this->metaInfo))
    {
    return 0;
    }

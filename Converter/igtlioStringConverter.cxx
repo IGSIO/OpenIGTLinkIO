@@ -10,7 +10,7 @@ namespace igtlio
 int StringConverter::fromIGTL(igtl::MessageBase::Pointer source,
                              HeaderData* header,
                              ContentData* dest,
-                             bool checkCRC)
+                             bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo)
 {
   // Create a message buffer to receive  data
   igtl::StringMessage::Pointer msg;
@@ -28,7 +28,7 @@ int StringConverter::fromIGTL(igtl::MessageBase::Pointer source,
     }
 
   // get header
-  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header))
+  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header, metaInfo))
     return 0;
 
   dest->string_msg = msg->GetString();
@@ -38,14 +38,14 @@ int StringConverter::fromIGTL(igtl::MessageBase::Pointer source,
 }
 
 //---------------------------------------------------------------------------
-int StringConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::StringMessage::Pointer* dest)
+int StringConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::StringMessage::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo)
 {
   if (dest->IsNull())
     *dest = igtl::StringMessage::New();
   igtl::StringMessage::Pointer msg = *dest;
 
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
-  HeadertoIGTL(header, &basemsg);
+  HeadertoIGTL(header, &basemsg, metaInfo);
 
   msg->SetString(source.string_msg);
   msg->SetEncoding(source.encoding);

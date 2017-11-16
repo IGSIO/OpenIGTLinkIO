@@ -81,7 +81,7 @@ TransformConverter::ContentData TransformDevice::GetContent()
 //---------------------------------------------------------------------------
 int TransformDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (TransformConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+ if (TransformConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, &this->metaInfo))
  {
    this->Modified();
    this->InvokeEvent(TransformModifiedEvent, this);
@@ -102,7 +102,7 @@ igtl::MessageBase::Pointer TransformDevice::GetIGTLMessage()
   return 0;
   }
 
- if (!TransformConverter::toIGTL(HeaderData, Content, &this->OutTransformMessage))
+ if (!TransformConverter::toIGTL(HeaderData, Content, &this->OutTransformMessage, &this->metaInfo))
    {
    return 0;
    }

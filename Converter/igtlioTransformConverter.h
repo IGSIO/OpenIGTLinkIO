@@ -47,8 +47,8 @@ public:
   static const char*  GetIGTLName() { return GetIGTLTypeName(); };
   static const char* GetIGTLTypeName() { return "TRANSFORM"; };
 
-  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
-  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::TransformMessage::Pointer* dest);
+  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
+  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::TransformMessage::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
 
   static int IGTLToVTKTransform(const igtl::Matrix4x4& igtlTransform, vtkSmartPointer<vtkMatrix4x4> vtkTransform);
   static int VTKToIGTLTransform(const vtkMatrix4x4& vtkTransform, igtl::Matrix4x4& igtlTransform);

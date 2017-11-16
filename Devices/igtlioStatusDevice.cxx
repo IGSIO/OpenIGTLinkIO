@@ -55,7 +55,7 @@ std::string StatusDevice::GetDeviceType() const
 //---------------------------------------------------------------------------
 int StatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (StatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+ if (StatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, &this->metaInfo))
  {
    this->Modified();
    this->InvokeEvent(StatusModifiedEvent, this);
@@ -77,7 +77,7 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
   }
   */
 
- if (!StatusConverter::toIGTL(HeaderData, Content, &this->OutMessage))
+ if (!StatusConverter::toIGTL(HeaderData, Content, &this->OutMessage, &this->metaInfo))
    {
    return 0;
    }

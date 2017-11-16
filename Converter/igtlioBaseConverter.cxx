@@ -4,51 +4,35 @@
 namespace igtlio
 {
 
-static std::string equipment_uid_name = "EQUIPMENT_UID";
-static std::string equipment_type_name = "EQUIPMENT_TYPE";
-static std::string stream_id_name = "STREAM_ID";
-
 //---------------------------------------------------------------------------
-int BaseConverter::IGTLtoHeader(igtl::MessageBase::Pointer source, BaseConverter::HeaderData *header)
+int BaseConverter::IGTLtoHeader(igtl::MessageBase::Pointer source, BaseConverter::HeaderData *header, igtl::MessageBase::MetaDataMap* metaInfo)
 {
   header->deviceName = source->GetDeviceName();
   // get timestamp
   if (IGTLToTimestamp(source, header) == 0)
     return 0;
-
-  source->GetMetaDataElement(equipment_uid_name, header->equipmentId);
-  source->GetMetaDataElement(stream_id_name, header->streamId);
-  std::string equipmentTypeString;
-  source->GetMetaDataElement(equipment_type_name, equipmentTypeString);
-
-  // Added stream_id. OpenIGTLink DEVICE_NAME can possibly be used, but a separate tag is probably best.
-  // stream_id can then be used to connect components with calibration messages (sent as transform messages).
-  // stream_id for to and from should be placed the header of transform messages
-
-  if(header->equipmentId.empty())
-  {
-	  header->equipmentId = "unknown";
-  }
-  if(header->streamId.empty())
-  {
-	  header->streamId = "unknown";
-  }
-  if(equipmentTypeString.empty())
-  {
-	header->equipmentType = BaseConverter::UNKNOWN;
-  } else {
-	  header->equipmentType = static_cast<EQUIPMENT_TYPE>(std::stoi(equipmentTypeString));
-  }
-
+  igtl::MessageBase::MetaDataMap sourceMetaInfo = source->GetMetaData();
+  metaInfo->clear();
+  for (igtl::MessageBase::MetaDataMap::const_iterator it = sourceMetaInfo.begin(); it != sourceMetaInfo.end(); ++it)
+    {
+    std::string key = it->first;
+    IANA_ENCODING_TYPE encodingScheme = it->second.first;
+    std::string value = it->second.second;
+    (*metaInfo)[key] = std::pair<IANA_ENCODING_TYPE, std::string>(encodingScheme, value);
+    }
   return 1;
 }
 
-int BaseConverter::HeadertoIGTL(const BaseConverter::HeaderData &header, igtl::MessageBase::Pointer *dest)
+int BaseConverter::HeadertoIGTL(const BaseConverter::HeaderData &header, igtl::MessageBase::Pointer *dest, igtl::MessageBase::MetaDataMap* metaInfo)
 {
   (*dest)->SetDeviceName(header.deviceName.c_str());
-  (*dest)->SetMetaDataElement(equipment_uid_name, IANA_TYPE_US_ASCII, header.equipmentId);
-  (*dest)->SetMetaDataElement(stream_id_name, IANA_TYPE_US_ASCII, header.streamId);
-  (*dest)->SetMetaDataElement(equipment_type_name, header.equipmentType);
+  for (igtl::MessageBase::MetaDataMap::const_iterator it = metaInfo->begin(); it != metaInfo->end(); ++it)
+    {
+    std::string key = it->first;
+    IANA_ENCODING_TYPE encodingScheme = it->second.first;
+    std::string value = it->second.second;
+    (*dest)->SetMetaDataElement(key, encodingScheme, value);
+    }
   return 1;
 }
 

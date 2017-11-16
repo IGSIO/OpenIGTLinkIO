@@ -18,7 +18,7 @@ std::vector<std::string> CommandConverter::GetAvailableCommandNames()
 int CommandConverter::fromIGTL(igtl::MessageBase::Pointer source,
                              HeaderData* header,
                              ContentData* dest,
-                             bool checkCRC)
+                             bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo)
 {
   // Create a message buffer to receive  data
   igtl::CommandMessage::Pointer msg;
@@ -36,7 +36,7 @@ int CommandConverter::fromIGTL(igtl::MessageBase::Pointer source,
     }
 
   // get header
-  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header))
+  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header, metaInfo))
     return 0;
 
   dest->id = msg->GetCommandId();
@@ -49,7 +49,7 @@ int CommandConverter::fromIGTL(igtl::MessageBase::Pointer source,
 int CommandConverter::fromIGTLResponse(igtl::MessageBase::Pointer source,
                              HeaderData* header,
                              ContentData* dest,
-                             bool checkCRC)
+                             bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo)
 {
   //TODO: merge this method with fromIGTL(),
 
@@ -69,7 +69,7 @@ int CommandConverter::fromIGTLResponse(igtl::MessageBase::Pointer source,
     }
 
   // get header
-  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header))
+  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header, metaInfo))
     return 0;
 
   dest->id = msg->GetCommandId();
@@ -81,14 +81,14 @@ int CommandConverter::fromIGTLResponse(igtl::MessageBase::Pointer source,
 
 
 //---------------------------------------------------------------------------
-int CommandConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::CommandMessage::Pointer* dest)
+int CommandConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::CommandMessage::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo)
 {
   if (dest->IsNull())
     *dest = igtl::CommandMessage::New();
   igtl::CommandMessage::Pointer msg = *dest;
 
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
-  HeadertoIGTL(header, &basemsg);
+  HeadertoIGTL(header, &basemsg, metaInfo);
 
   msg->SetCommandId(source.id);
   msg->SetCommandName(source.name);

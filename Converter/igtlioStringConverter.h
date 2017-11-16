@@ -24,8 +24,8 @@ public:
   static const char*  GetIGTLName() { return GetIGTLTypeName(); }
   static const char* GetIGTLTypeName() { return "STRING"; }
 
-  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
-  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::StringMessage::Pointer* dest);
+  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
+  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::StringMessage::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
 
 };
 
