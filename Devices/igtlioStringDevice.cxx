@@ -44,12 +44,22 @@ std::string StringDevice::GetDeviceType() const
 }
 
 //---------------------------------------------------------------------------
+vtkIntArray* StringDevice::GetDeviceContentModifiedEvent() const
+{
+  vtkIntArray* events;
+  events = vtkIntArray::New();
+  events->InsertNextValue(StringModifiedEvent);
+  return events;
+}
+
+//---------------------------------------------------------------------------
 int StringDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
  if (StringConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, &this->metaInfo))
  {
    this->Modified();
    this->InvokeEvent(ReceiveEvent);
+   this->InvokeEvent(StringModifiedEvent, this);
    return 1;
  }
 
@@ -91,6 +101,7 @@ void StringDevice::SetContent(StringConverter::ContentData content)
 {
   Content = content;
   this->Modified();
+  this->InvokeEvent(StringModifiedEvent, this);
 }
 
 StringConverter::ContentData StringDevice::GetContent()

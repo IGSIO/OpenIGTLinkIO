@@ -73,6 +73,7 @@ int PolyDataDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool c
  {
    this->Modified();
    this->InvokeEvent(ReceiveEvent);
+   this->InvokeEvent(PolyDataModifiedEvent, this);
    return 1;
  }
 
@@ -122,6 +123,7 @@ void PolyDataDevice::SetContent(PolyDataConverter::ContentData content)
 {
   Content = content;
   this->Modified();
+  this->InvokeEvent(PolyDataModifiedEvent, this);
 }
 
 PolyDataConverter::ContentData PolyDataDevice::GetContent()
