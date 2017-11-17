@@ -125,7 +125,8 @@ int TransformConverter::toIGTL(const HeaderData& header, const ContentData& sour
   if (dest->IsNull())
     *dest = igtl::TransformMessage::New();
   igtl::TransformMessage::Pointer msg = *dest;
-
+  if (metaInfo!=NULL)
+    msg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
   HeadertoIGTL(header, &basemsg, metaInfo);
   TransformMetaDataToIGTL(source, &basemsg);

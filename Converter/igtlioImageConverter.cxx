@@ -440,7 +440,8 @@ int ImageConverter::toIGTL(const HeaderData& header, const ContentData& source, 
   if (dest->IsNull())
     *dest = igtl::ImageMessage::New();
   igtl::ImageMessage::Pointer msg = *dest;
-
+  if (metaInfo!=NULL)
+    msg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
   HeadertoIGTL(header, &basemsg, metaInfo);
 

@@ -230,6 +230,8 @@ int PolyDataConverter::toIGTL(const HeaderData &header, const PolyDataConverter:
    if (dest->IsNull())
 	 *dest = igtl::PolyDataMessage::New();
    igtl::PolyDataMessage::Pointer outMessage = *dest;
+   if (metaInfo!=NULL)
+    outMessage->SetHeaderVersion(IGTL_HEADER_VERSION_2);
 
    igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(outMessage);
    HeadertoIGTL(header, &basemsg, metaInfo);
