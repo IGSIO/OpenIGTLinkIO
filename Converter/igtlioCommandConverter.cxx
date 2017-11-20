@@ -85,6 +85,7 @@ int CommandConverter::toIGTL(const HeaderData& header, const ContentData& source
 {
   if (dest->IsNull())
     *dest = igtl::CommandMessage::New();
+  (*dest)->InitPack();
   igtl::CommandMessage::Pointer msg = *dest;
   if (metaInfo!=NULL)
     msg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
@@ -94,7 +95,6 @@ int CommandConverter::toIGTL(const HeaderData& header, const ContentData& source
   msg->SetCommandId(source.id);
   msg->SetCommandName(source.name);
   msg->SetCommandContent(source.content);
-
   msg->Pack();
 
   return 1;

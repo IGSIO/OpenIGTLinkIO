@@ -111,7 +111,7 @@ public:
  /// Get the given Device. This can be used to modify the Device contents.
  
  /// invoke event if device content modified
- void DeviceModified(vtkObject *caller, unsigned long event, void *callData );
+ void DeviceContentModified(vtkObject *caller, unsigned long event, void *callData );
  DevicePointer GetDevice(int index);
  DevicePointer GetDevice(DeviceKeyType key);
  bool HasDevice( DevicePointer d );
@@ -133,7 +133,7 @@ public:
     DeactivatedEvent      = 118947,
 //    ReceiveEvent          = 118948,
     NewDeviceEvent        = 118949,
-    DeviceModifiedEvent   = 118950, // invoked by the devices
+    DeviceContentModifiedEvent   = 118950, // invoked by the devices
     RemovedDeviceEvent    = 118951,
   };
 

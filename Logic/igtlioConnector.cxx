@@ -718,23 +718,19 @@ int Connector::AddDevice(DevicePointer device)
   device->SetTimestamp(vtkTimerLog::GetUniversalTime());
   Devices.push_back(device);
   //TODO: listen to device events?
-  vtkIntArray* deviceEvents = device->GetDeviceContentModifiedEvent();
-  device->AddObserver((unsigned long)(deviceEvents->GetValue(0)), this, &Connector::DeviceModified);
+  unsigned int deviceEvent = device->GetDeviceContentModifiedEvent();
+  device->AddObserver((unsigned long)deviceEvent, this, &Connector::DeviceContentModified);
   this->InvokeEvent(Connector::NewDeviceEvent, device.GetPointer());
   return 1;
 }
 
 
-void Connector::DeviceModified(vtkObject *caller, unsigned long event, void *callData )
+void Connector::DeviceContentModified(vtkObject *caller, unsigned long event, void *callData )
 {
   igtlio::Device* modifiedDevice = reinterpret_cast<igtlio::Device*>(callData);
   if (modifiedDevice)
     {
-    if(modifiedDevice->MessageDirectionIsOut())
-      {
-      this->PushNode(modifiedDevice);
-      }
-    this->InvokeEvent(Connector::DeviceModifiedEvent, modifiedDevice);
+    this->InvokeEvent(Connector::DeviceContentModifiedEvent, modifiedDevice);
     }
 }
 

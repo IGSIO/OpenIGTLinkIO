@@ -38,12 +38,9 @@ StatusDevice::~StatusDevice()
 }
 
 //---------------------------------------------------------------------------
-vtkIntArray* StatusDevice::GetDeviceContentModifiedEvent() const
+unsigned int StatusDevice::GetDeviceContentModifiedEvent() const
 {
-  vtkIntArray* events;
-  events = vtkIntArray::New();
-  events->InsertNextValue(StatusModifiedEvent);
-  return events;
+  return StatusModifiedEvent;
 }
 
 //---------------------------------------------------------------------------

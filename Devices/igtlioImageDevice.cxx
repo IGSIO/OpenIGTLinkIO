@@ -52,12 +52,9 @@ ImageDevice::~ImageDevice()
 }
 
 //---------------------------------------------------------------------------
-vtkIntArray* ImageDevice::GetDeviceContentModifiedEvent() const
+unsigned int ImageDevice::GetDeviceContentModifiedEvent() const
 {
-  vtkIntArray* events;
-  events = vtkIntArray::New();
-  events->InsertNextValue(ImageModifiedEvent);
-  return events;
+  return ImageModifiedEvent;
 }
   
   

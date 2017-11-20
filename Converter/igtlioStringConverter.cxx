@@ -42,6 +42,7 @@ int StringConverter::toIGTL(const HeaderData& header, const ContentData& source,
 {
   if (dest->IsNull())
     *dest = igtl::StringMessage::New();
+  (*dest)->InitPack();
   igtl::StringMessage::Pointer msg = *dest;
   if (metaInfo!=NULL)
     msg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
@@ -50,7 +51,6 @@ int StringConverter::toIGTL(const HeaderData& header, const ContentData& source,
 
   msg->SetString(source.string_msg);
   msg->SetEncoding(source.encoding);
-
   msg->Pack();
 
   return 1;

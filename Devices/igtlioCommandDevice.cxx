@@ -40,12 +40,9 @@ CommandDevice::~CommandDevice()
 }
 
 //---------------------------------------------------------------------------
-vtkIntArray* CommandDevice::GetDeviceContentModifiedEvent() const
+unsigned int CommandDevice::GetDeviceContentModifiedEvent() const
 {
-  vtkIntArray* events;
-  events = vtkIntArray::New();
-  events->InsertNextValue(CommandModifiedEvent);
-  return events;
+  return CommandModifiedEvent;
 }
   
 //---------------------------------------------------------------------------

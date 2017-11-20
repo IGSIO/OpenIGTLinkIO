@@ -44,12 +44,9 @@ std::string StringDevice::GetDeviceType() const
 }
 
 //---------------------------------------------------------------------------
-vtkIntArray* StringDevice::GetDeviceContentModifiedEvent() const
+unsigned int StringDevice::GetDeviceContentModifiedEvent() const
 {
-  vtkIntArray* events;
-  events = vtkIntArray::New();
-  events->InsertNextValue(StringModifiedEvent);
-  return events;
+  return StringModifiedEvent;
 }
 
 //---------------------------------------------------------------------------

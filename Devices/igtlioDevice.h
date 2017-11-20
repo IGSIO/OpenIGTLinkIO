@@ -64,7 +64,7 @@ public:
 
 public:
  
- virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
+ virtual unsigned int GetDeviceContentModifiedEvent() const;
   
  virtual std::string GetDeviceType() const;
 

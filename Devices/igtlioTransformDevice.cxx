@@ -51,12 +51,9 @@ TransformDevice::~TransformDevice()
 }
 
 //---------------------------------------------------------------------------
-vtkIntArray* TransformDevice::GetDeviceContentModifiedEvent() const
+unsigned int TransformDevice::GetDeviceContentModifiedEvent() const
 {
-  vtkIntArray* events;
-  events = vtkIntArray::New();
-  events->InsertNextValue(TransformModifiedEvent);
-  return events;
+  return TransformModifiedEvent;
 }
 
 //---------------------------------------------------------------------------

@@ -44,6 +44,7 @@ int StatusConverter::toIGTL(const HeaderData& header, const ContentData& source,
 {
   if (dest->IsNull())
     *dest = igtl::StatusMessage::New();
+  (*dest)->InitPack();  
   igtl::StatusMessage::Pointer msg = *dest;
   if (metaInfo!=NULL)
     msg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
@@ -54,7 +55,6 @@ int StatusConverter::toIGTL(const HeaderData& header, const ContentData& source,
   msg->SetSubCode(source.code);
   msg->SetErrorName(source.errorname.c_str());
   msg->SetStatusString(source.statusstring.c_str());
-
   msg->Pack();
 
   return 1;

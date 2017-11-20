@@ -64,12 +64,9 @@ void Device::SetMetaData(const igtl::MessageBase::MetaDataMap& sourceMetaInfo)
     }
 }
 
-vtkIntArray* Device::GetDeviceContentModifiedEvent() const
+unsigned int Device::GetDeviceContentModifiedEvent() const
 {
-  vtkIntArray* events;
-  events = vtkIntArray::New();
-  events->InsertNextValue(vtkCommand::ModifiedEvent);
-  return events;
+  return vtkCommand::ModifiedEvent;
 }
   
   

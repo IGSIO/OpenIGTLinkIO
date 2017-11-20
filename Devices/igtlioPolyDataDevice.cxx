@@ -52,12 +52,9 @@ PolyDataDevice::~PolyDataDevice()
 }
 
 //---------------------------------------------------------------------------
-vtkIntArray* PolyDataDevice::GetDeviceContentModifiedEvent() const
+unsigned int PolyDataDevice::GetDeviceContentModifiedEvent() const
 {
-  vtkIntArray* events;
-  events = vtkIntArray::New();
-  events->InsertNextValue(PolyDataModifiedEvent);
-  return events;
+  return PolyDataModifiedEvent;
 }
 
 //---------------------------------------------------------------------------

@@ -228,7 +228,9 @@ int PolyDataConverter::toIGTL(const HeaderData &header, const PolyDataConverter:
      }
 
    if (dest->IsNull())
-	 *dest = igtl::PolyDataMessage::New();
+     *dest = igtl::PolyDataMessage::New();
+   (*dest)->Clear();
+   (*dest)->InitPack();
    igtl::PolyDataMessage::Pointer outMessage = *dest;
    if (metaInfo!=NULL)
     outMessage->SetHeaderVersion(IGTL_HEADER_VERSION_2);
