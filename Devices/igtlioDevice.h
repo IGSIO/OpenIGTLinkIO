@@ -116,8 +116,23 @@ public:
  // Return Meta information
  const igtl::MessageBase::MetaDataMap& GetMetaData() const;
  
- // Copy the source meta information. 
- void SetMetaData(const igtl::MessageBase::MetaDataMap& sourceMetaInfo);
+ /// Add Meta data element
+ bool SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE encodingScheme, std::string value);
+
+ template <class dataType>
+ bool SetMetaDataElement(const std::string& key, dataType value)
+ {
+   std::stringstream ss;
+   ss << value;
+   return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+ }
+ 
+ /// Get meta data element
+ bool GetMetaDataElement(const std::string& key, std::string& value) const;
+ bool GetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE& encoding, std::string& value) const;
+ 
+ /// Clear all data elements
+ void ClearMetaData();
 
 public:
   vtkAbstractTypeMacro(Device,vtkObject);

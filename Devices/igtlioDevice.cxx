@@ -52,16 +52,43 @@ const igtl::MessageBase::MetaDataMap& Device::GetMetaData() const
   return this->metaInfo;
 }
 
-void Device::SetMetaData(const igtl::MessageBase::MetaDataMap& sourceMetaInfo)
+void Device::ClearMetaData()
 {
-  metaInfo.clear();
-  for (igtl::MessageBase::MetaDataMap::const_iterator it = sourceMetaInfo.begin(); it != sourceMetaInfo.end(); ++it)
+  this->metaInfo.clear();
+}
+
+  
+bool Device::SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE encodingScheme, std::string value)
+{
+  igtl_metadata_header_entry entry;
+  if (key.length() > std::numeric_limits<igtl_uint16>::max())
     {
-    std::string key = it->first;
-    IANA_ENCODING_TYPE encodingScheme = it->second.first;
-    std::string value = it->second.second;
-    metaInfo[key] = std::pair<IANA_ENCODING_TYPE, std::string>(encodingScheme, value);
+    return false;
     }
+  entry.key_size = static_cast<igtl_uint16>(key.length());
+  entry.value_encoding = static_cast<igtlUint16>(encodingScheme);
+  entry.value_size = value.length();
+
+  metaInfo[key] = std::pair<IANA_ENCODING_TYPE, std::string>(encodingScheme, value);
+  return true;
+}
+
+bool Device::GetMetaDataElement(const std::string& key, std::string& value) const
+{
+  IANA_ENCODING_TYPE type;
+  return GetMetaDataElement(key, type, value);
+}
+
+bool Device::GetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE& encoding, std::string& value) const
+{
+  if (this->metaInfo.find(key) != this->metaInfo.end())
+    {
+    encoding = this->metaInfo.find(key)->second.first;
+    value = this->metaInfo.find(key)->second.second;
+    return true;
+    }
+
+  return false;
 }
 
 unsigned int Device::GetDeviceContentModifiedEvent() const
