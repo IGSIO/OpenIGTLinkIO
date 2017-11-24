@@ -730,7 +730,7 @@ void Connector::DeviceContentModified(vtkObject *caller, unsigned long event, vo
   igtlio::Device* modifiedDevice = reinterpret_cast<igtlio::Device*>(callData);
   if (modifiedDevice)
     {
-    this->InvokeEvent(Connector::DeviceContentModifiedEvent, modifiedDevice);
+    this->InvokeEvent(modifiedDevice->GetDeviceContentModifiedEvent(), modifiedDevice);
     }
 }
 
