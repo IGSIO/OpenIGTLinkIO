@@ -10,7 +10,7 @@ namespace igtlio
 int StatusConverter::fromIGTL(igtl::MessageBase::Pointer source,
                              HeaderData* header,
                              ContentData* dest,
-                             bool checkCRC)
+                             bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo)
 {
   // Create a message buffer to receive  data
   igtl::StatusMessage::Pointer msg;
@@ -28,7 +28,7 @@ int StatusConverter::fromIGTL(igtl::MessageBase::Pointer source,
     }
 
   // get header
-  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header))
+  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header, metaInfo))
     return 0;
 
   dest->code = msg->GetCode();
@@ -40,20 +40,21 @@ int StatusConverter::fromIGTL(igtl::MessageBase::Pointer source,
 }
 
 //---------------------------------------------------------------------------
-int StatusConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::StatusMessage::Pointer* dest)
+int StatusConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::StatusMessage::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo)
 {
   if (dest->IsNull())
     *dest = igtl::StatusMessage::New();
+  (*dest)->InitPack();  
   igtl::StatusMessage::Pointer msg = *dest;
-
+  if (metaInfo!=NULL)
+    msg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
-  HeadertoIGTL(header, &basemsg);
+  HeadertoIGTL(header, &basemsg, metaInfo);
 
   msg->SetCode(source.code);
   msg->SetSubCode(source.code);
   msg->SetErrorName(source.errorname.c_str());
   msg->SetStatusString(source.statusstring.c_str());
-
   msg->Pack();
 
   return 1;

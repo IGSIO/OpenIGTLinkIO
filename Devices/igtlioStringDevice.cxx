@@ -44,12 +44,19 @@ std::string StringDevice::GetDeviceType() const
 }
 
 //---------------------------------------------------------------------------
+unsigned int StringDevice::GetDeviceContentModifiedEvent() const
+{
+  return StringModifiedEvent;
+}
+
+//---------------------------------------------------------------------------
 int StringDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (StringConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+ if (StringConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, &this->metaInfo))
  {
    this->Modified();
    this->InvokeEvent(ReceiveEvent);
+   this->InvokeEvent(StringModifiedEvent, this);
    return 1;
  }
 
@@ -60,7 +67,7 @@ int StringDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool che
 igtl::MessageBase::Pointer StringDevice::GetIGTLMessage()
 {
 
- if (!StringConverter::toIGTL(HeaderData, Content, &this->OutMessage))
+ if (!StringConverter::toIGTL(HeaderData, Content, &this->OutMessage, &this->metaInfo))
    {
    return 0;
    }
@@ -91,6 +98,7 @@ void StringDevice::SetContent(StringConverter::ContentData content)
 {
   Content = content;
   this->Modified();
+  this->InvokeEvent(StringModifiedEvent, this);
 }
 
 StringConverter::ContentData StringDevice::GetContent()

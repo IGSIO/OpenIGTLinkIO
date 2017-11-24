@@ -18,7 +18,7 @@ public:
     StatusModifiedEvent         = 118956,
   };
   
- virtual vtkIntArray* GetDeviceContentModifiedEvent() const VTK_OVERRIDE;
+ virtual unsigned int GetDeviceContentModifiedEvent() const VTK_OVERRIDE;
  virtual std::string GetDeviceType() const VTK_OVERRIDE;
  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC) VTK_OVERRIDE;
  virtual igtl::MessageBase::Pointer GetIGTLMessage() VTK_OVERRIDE;

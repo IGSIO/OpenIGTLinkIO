@@ -609,7 +609,7 @@ void Connector::ImportDataFromCircularBuffer()
 
 	device->ReceiveIGTLMessage(messageFromBuffer, this->CheckCRC);
     device->Modified();
-    this->InvokeEvent(Connector::DeviceModifiedEvent, device.GetPointer());
+    //this->InvokeEvent(Connector::DeviceModifiedEvent, device.GetPointer());
 
     circBuffer->EndPull();
     }
@@ -718,10 +718,22 @@ int Connector::AddDevice(DevicePointer device)
   device->SetTimestamp(vtkTimerLog::GetUniversalTime());
   Devices.push_back(device);
   //TODO: listen to device events?
+  unsigned int deviceEvent = device->GetDeviceContentModifiedEvent();
+  device->AddObserver((unsigned long)deviceEvent, this, &Connector::DeviceContentModified);
   this->InvokeEvent(Connector::NewDeviceEvent, device.GetPointer());
   return 1;
 }
-  
+
+
+void Connector::DeviceContentModified(vtkObject *caller, unsigned long event, void *callData )
+{
+  igtlio::Device* modifiedDevice = reinterpret_cast<igtlio::Device*>(callData);
+  if (modifiedDevice)
+    {
+    this->InvokeEvent(Connector::DeviceContentModifiedEvent, modifiedDevice);
+    }
+}
+
 int Connector::RemoveDevice(DevicePointer device)
 {
   DeviceKeyType key = CreateDeviceKey(device);

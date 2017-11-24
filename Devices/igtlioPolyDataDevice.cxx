@@ -52,12 +52,9 @@ PolyDataDevice::~PolyDataDevice()
 }
 
 //---------------------------------------------------------------------------
-vtkIntArray* PolyDataDevice::GetDeviceContentModifiedEvent() const
+unsigned int PolyDataDevice::GetDeviceContentModifiedEvent() const
 {
-  vtkIntArray* events;
-  events = vtkIntArray::New();
-  events->InsertNextValue(PolyDataModifiedEvent);
-  return events;
+  return PolyDataModifiedEvent;
 }
 
 //---------------------------------------------------------------------------
@@ -69,10 +66,11 @@ std::string PolyDataDevice::GetDeviceType() const
 //---------------------------------------------------------------------------
 int PolyDataDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (PolyDataConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC))
+ if (PolyDataConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, &this->metaInfo))
  {
    this->Modified();
    this->InvokeEvent(ReceiveEvent);
+   this->InvokeEvent(PolyDataModifiedEvent, this);
    return 1;
  }
 
@@ -90,7 +88,7 @@ igtl::MessageBase::Pointer PolyDataDevice::GetIGTLMessage()
   }
   */
 
- if (!PolyDataConverter::toIGTL(HeaderData, Content, &this->OutMessage))
+ if (!PolyDataConverter::toIGTL(HeaderData, Content, &this->OutMessage, &this->metaInfo))
    {
    return 0;
    }
@@ -122,6 +120,7 @@ void PolyDataDevice::SetContent(PolyDataConverter::ContentData content)
 {
   Content = content;
   this->Modified();
+  this->InvokeEvent(PolyDataModifiedEvent, this);
 }
 
 PolyDataConverter::ContentData PolyDataDevice::GetContent()

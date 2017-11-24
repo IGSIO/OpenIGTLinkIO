@@ -30,17 +30,6 @@ namespace igtlio
 class OPENIGTLINKIO_CONVERTER_EXPORT BaseConverter
 {
 public:
-	enum EQUIPMENT_TYPE {
-		UNKNOWN = 0,
-		VIDEO, //images
-		US_PROBE, //images + strings/params
-		CONTROLLER, //strings/params (us_scanner, hardware controlling something, ekg...)
-		TRACKED_TOOL, //transforms
-		TRACKED_VIDEO, //transforms + images
-		TRACKED_US_PROBE //images + transforms + strings/params
-	};
-
-public:
   /**
    * This structure contains data common to all igtl messages,
    * TODO: add header xml-data here.
@@ -49,16 +38,12 @@ public:
   {
   std::string deviceName;
   double timestamp;
-  EQUIPMENT_TYPE equipmentType;
-  std::string equipmentId;
-  std::string streamId;
   };
 
-  static int IGTLtoHeader(igtl::MessageBase::Pointer source, HeaderData* header);
-  static int HeadertoIGTL(const HeaderData& header, igtl::MessageBase::Pointer* dest);
+  static int IGTLtoHeader(igtl::MessageBase::Pointer source, HeaderData* header, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
+  static int HeadertoIGTL(const HeaderData& header, igtl::MessageBase::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
 
   static int IGTLToTimestamp(igtl::MessageBase::Pointer msg, HeaderData *dest);
-
 };
 
 } // namespace igtlio

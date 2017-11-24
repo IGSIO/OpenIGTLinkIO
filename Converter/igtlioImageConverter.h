@@ -46,8 +46,8 @@ public:
   static const char*  GetIGTLName() { return GetIGTLTypeName(); }
   static const char* GetIGTLTypeName() { return "IMAGE"; }
 
-  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC);
-  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::ImageMessage::Pointer* dest);
+  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
+  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::ImageMessage::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
 
   static int IGTLToVTKScalarType(int igtlType);
   static int IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, ContentData* dest);
