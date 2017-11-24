@@ -255,7 +255,7 @@ void qIGTLIODevicesModel::ReconnectConnector(igtlio::Connector* oldConnector, ig
           << igtlio::Connector::ActivatedEvent
           << igtlio::Connector::DeactivatedEvent
           << igtlio::Connector::NewDeviceEvent
-          << igtlio::Connector::DeviceModifiedEvent
+          << igtlio::Connector::DeviceContentModifiedEvent
           << igtlio::Connector::RemovedDeviceEvent
           )
     {
@@ -307,7 +307,7 @@ void qIGTLIODevicesModel::onConnectorEvent(vtkObject* caller, unsigned long even
      this->beginRemoveRows(parent, node->GetSiblingIndex(), node->GetSiblingIndex());
      this->endRemoveRows();
     }
-  if (event==igtlio::Connector::DeviceModifiedEvent)
+  if (event==igtlio::Connector::DeviceContentModifiedEvent)
     {
       // TODO: this event is never emittd, and never will. The vtkCommand::ModifiedEvent is emitted
       // from each device, and each of the must be listened to.
