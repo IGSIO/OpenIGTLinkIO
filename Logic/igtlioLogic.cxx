@@ -57,6 +57,7 @@ void onDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, v
   Logic* logic = reinterpret_cast<Logic*>(clientdata);
 
   if ((eid==Device::CommandReceivedEvent) ||
+      (eid==Connector::DeviceContentModifiedEvent) ||
       (eid==Device::CommandResponseReceivedEvent))
   {
     logic->InvokeEvent(eid, calldata);
@@ -107,6 +108,7 @@ ConnectorPointer Logic::CreateConnector()
   Connectors.push_back(connector);
 
   connector->AddObserver(Connector::NewDeviceEvent, NewDeviceCallback);
+  connector->AddObserver(Connector::DeviceContentModifiedEvent, DeviceEventCallback);
   connector->AddObserver(Connector::RemovedDeviceEvent, RemovedDeviceCallback);
 
   this->InvokeEvent(ConnectionAddedEvent, connector.GetPointer());

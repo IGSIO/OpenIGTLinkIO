@@ -27,6 +27,7 @@ LogicFixture::LogicFixture()
   Logic->AddObserver(igtlio::Logic::RemovedDeviceEvent, LogicEventCallback);
   Logic->AddObserver(igtlio::Logic::CommandReceivedEvent, LogicEventCallback);
   Logic->AddObserver(igtlio::Logic::CommandResponseReceivedEvent, LogicEventCallback);
+  Logic->AddObserver(igtlio::Logic::DeviceModifiedEvent, LogicEventCallback);
 }
 
 void LogicFixture::startClient()

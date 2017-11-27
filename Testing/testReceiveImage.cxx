@@ -36,9 +36,17 @@ int main(int argc, char **argv)
                                                   fixture.CreateTestImage(),
                                                   fixture.CreateTestTransform());
   std::cout << "*** Sent message from Server to Client" << std::endl;
+  
   //---------------------------------------------------------------------------
 
   if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::NewDeviceEvent))
+  {
+	return TEST_FAILED;
+  }
+  
+  //---------------------------------------------------------------------------
+  // The device modified event should be invoke when the setContent was called in the device
+  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::DeviceModifiedEvent))
   {
 	return TEST_FAILED;
   }
