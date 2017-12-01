@@ -21,6 +21,7 @@
 #include <igtlTransformMessage.h>
 #include "igtlioLogicExport.h"
 #include "igtlioDevice.h"
+#include "igtlioConnector.h"
 #include "igtlioUtilities.h"
 
 namespace igtlio
@@ -56,11 +57,11 @@ class OPENIGTLINKIO_LOGIC_EXPORT Logic : public vtkObject
 public:
   enum {
     //TODO: harmonize event handling for Logic, Connector, Device.
-    ConnectionAddedEvent        = 118960,
-    ConnectionAboutToBeRemovedEvent      = 118961,
+    ConnectionAddedEvent        = 118970,
+    ConnectionAboutToBeRemovedEvent      = 118971,
 
     NewDeviceEvent        = 118949,
-    //DeviceModifiedEvent   = 118950, // must listen to each specific device in order to get this one.
+    DeviceModifiedEvent   = Connector::DeviceContentModifiedEvent, // listen to the custom event invoked from connector.
     RemovedDeviceEvent    = 118951,
     CommandReceivedEvent = Device::CommandReceivedEvent, // one of the connected COMMAND devices got a query
     CommandResponseReceivedEvent = Device::CommandResponseReceivedEvent // one of the connected COMMAND devices got a response

@@ -1,0 +1,86 @@
+@startuml
+  class Connector{
+   ..events..
+    ConnectedEvent = 118944
+    DisconnectedEvent = 118945
+    ActivatedEvent = 118946
+    DeactivatedEvent = 118947
+    NewDeviceEvent = 118949    
+    DeviceContentModifedEvent = 118950
+    RemovedDeviceEvent = 118951
+   ..
+   +DeviceContentModified() : void
+   InvokeEvent(DeviceContentModifedEvent)
+   +AddDevice(): int
+   InvokeEvent(NewDeviceEvent)
+   +RemoveDevice(): int
+   InvokeEvent(RemovedDeviceEvent)
+  }
+	
+	class Device{
+	 ..events..
+	 ReceiveEvent          = 118948
+	 ResponseEvent         = 118952
+	 ModifiedEvent         = vtkCommand::ModifiedEvent
+	 CommandReceivedEvent    = 119001
+	 CommandResponseReceivedEvent = 119002
+	 ..
+	}
+	
+	class CommandDevice{
+	 ..events..
+	 CommandModifiedEvent = 118958
+	 ..
+	 +ReceiveIGTLMessage() : int 
+	 InvokeEvent(CommandReceivedEvent)
+	 InvokeEvent(CommandResponseReceivedEvent)
+	 +SetContent()
+	 InvokeEvent(ContentModifiedEvent)
+	 +CheckQueryExpiration() : int
+	 InvokeEvent(ResponseEvent)
+	}
+	
+	class NonCommandDevices{
+	 ..events..
+	 ContentModifiedEvent = 118955-118967, 118959-118960
+	 ..
+	 +ReceiveIGTLMessage(): int
+	 InvokeEvent(ContentModifiedEvent)
+	 InvokeEvent(ReceiveEvent)
+	 +SetContent()
+	 InvokeEvent(ContentModifiedEvent)
+	}
+	
+	class Logic {
+		..events..
+		ConnectionAddedEvent        = 118970 
+		ConnectionAboutToBeRemovedEvent      = 118971
+		NewDeviceEvent        = 118949
+		DeviceModifiedEvent   = 118950
+		RemovedDeviceEvent    = 118951
+		CommandReceivedEvent    = 119001
+		CommandResponseReceivedEvent = 119002
+		....
+		+CreateConnector(): ConnectorPointer
+		InvokeEvent(ConnectionAddedEvent)
+		#onDeviceEventFunc() : void
+		#onNewDeviceEventFunc() : void
+		#onRemovedDeviceEventFunc() : void
+	}
+	together {
+	 class Device
+	 class CommandDevice
+	 class NonCommandDevices
+	}
+  Device<|--CommandDevice
+  Device<|--NonCommandDevices
+  Logic"1"-->"0..*"Connector : observes
+  Connector"1"-->"0..*"NonCommandDevices : observes
+  Logic"1"-->"0..*"NonCommandDevices : observes
+  Connector"1"-->"0..*"CommandDevice : observes
+  Logic"1"-->"0..*"CommandDevice : observes
+  'Connector::AddDevice-->Logic::onNewDeviceEventFunc : callback
+  'Connector::RemovedDevice-->Logic::onRemovedDeviceEventFunc : callback
+  'NonCommandDevices::ReceiveIGTLMessage-->Connector::DeviceContentModified : callback
+  'CommandDevice::ReceiveIGTLMessage->Logic::onDeviceEventFunc: callback
+@enduml

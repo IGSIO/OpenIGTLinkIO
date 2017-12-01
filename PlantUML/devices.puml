@@ -1,0 +1,274 @@
+@startuml
+package "OpenIGTLink"  #DDDDDF {
+}
+package "Devices" #DDDDDD {
+	abstract class vtkObject {
+	}
+	abstract class BaseConverter {
+    + HeaderData
+    __
+    + IGTLtoHeader() : int
+    + HeadertoIGTL() : int
+    + IGTLToTimestamp() : int
+  }
+
+ class ImageConverter {
+    + ContentData
+    __
+    + GetIGTLName(): const char* 
+    + GetIGTLTypeName(): const char* 
+    + fromIGTL() : int
+    + toIGTL() : int
+    + IGTLToVTKScalarType() : int
+    + IGTLToVTKImageData() : int
+    + IGTLImageToVTKTransform() : int
+    + VTKTransformToIGTLImage() : int
+  }
+  
+ class PolyDataConverter {
+    + ContentData
+    __
+    + GetIGTLName(): const char* 
+    + GetIGTLTypeName(): const char* 
+    + fromIGTL() : int
+    + toIGTL() : int
+    + IGTLToVTKPolyData() : int
+    + VTKPolyDataToIGTL() : int
+    + VTKToIGTLCellArray() : int
+    + VTKToIGTLAttribute() : int
+  }
+	
+ class StatusConverter {
+    + ContentData
+    __
+    + GetIGTLName(): const char* 
+    + GetIGTLTypeName(): const char* 
+    + fromIGTL() : int
+    + toIGTL() : int
+  }
+  
+  class StringConverter {
+    + ContentData
+    __
+    + GetIGTLName() : const char* 
+    + GetIGTLTypeName(): const char* 
+    + fromIGTL()
+    + toIGTL()
+  }
+  
+  class TransformConverter {
+    + ContentData
+    __
+    + GetIGTLName() : const char* 
+    + GetIGTLTypeName(): const char* 
+    + fromIGTL() : int
+    + toIGTL() : int
+    + IGTLToVTKTransform() : int
+    + VTKToIGTLTransform() : int
+    - IGTLHeaderToTransformInfo() : int
+    - TransformMetaDataToIGTL() : int
+  }
+  
+  class CommandConverter {
+    + ContentData
+    __
+    + GetIGTLName(): const char* 
+    + GetIGTLTypeName(): const char* 
+    + GetIGTLResponseName(): const char* 
+    + fromIGTL() : int
+    + fromIGTLResponse() : int
+    + toIGTL() : int
+    + GetAvailableCommandName(): std::vector<std::string> 
+  }
+
+  BaseConverter <|-- ImageConverter
+  BaseConverter <|-- PolyDataConverter
+  BaseConverter <|-- StatusConverter
+  BaseConverter <|-- StringConverter
+  BaseConverter <|-- TransformConverter
+  BaseConverter <|-- CommandConverter
+  
+  abstract class Device {
+    + MESSAGE_DIRECTION : enum
+    + MESSAGE_PREFIX : enum
+    .. events ..
+    ReceiveEvent : 118948
+    ResponseEvent : 118952
+    ModifiedEvent : vtkCommand::ModifiedEvent
+    CommandReceivedEvent : 119001
+    CommandResponseReceivedEvent : 119002
+    ..
+    + GetDeviceContentModifiedEvent() : unsigned int
+    + GetDeviceType(): std::string 
+    + GetDeviceName(): std::string 
+    + SetDeviceName(): void
+    + GetHeader(): BaseConverter::HeaderData
+    + SetPushOnConnect(): void
+    + GetPushOnConnect(): bool
+    + SetMessageDirection(): void
+    + GetMessageDirection(): MESSAGE_DIRECTION
+    + SetVisibility(): void
+    + GetVisibility(): bool
+    + SetTimestamp(): void
+    + GetTimestamp(): double
+    + PrintSelf(): void
+    + MessageDirectionIsOut(): bool
+    + MessageDirectionIsIn(): bool
+    + ReceiveIGTLMessage() = 0
+    + GetIGTLMessage() = 0
+    + GetIGTLMessage(MESSAGE_PREFIX prefix): igtl::MessageBase::Pointer
+    + GetSupportedMessagePrefixes(): std::set<MESSAGE_PREFIX>
+    + GetMetaData(): igtl::MessageBase::MetaDataMap&
+    + SetMetaData(): void
+    # SetHeader(): void
+    # HeaderData
+    # metaInfo
+    # Device()
+    # ~Device()
+  }
+  
+  class ImageDevice {
+    # OutImageMessage
+    # GetImageMessage
+    # Content
+  	.. events ..
+    ImageModifiedEvent : 118955
+    ..
+    + New(): ImageDevice
+    + PrintSelf(): void
+    + GetDeviceContentModifiedEvent() : unsigned int
+    + GetDeviceType(): std::string 
+    + ReceiveIGTLMessage(): int
+    + GetIGTLMessage(): igtl::MessageBase::Pointer
+    + GetIGTLMessage(MESSAGE_PREFIX prefix): igtl::MessageBase::Pointer
+    + GetSupportedMessagePrefixes(): std::set<MESSAGE_PREFIX>
+    + SetContent(): void
+    + GetContent(): ImageConverter::ContentData
+  }
+  
+  class PolyDataDevice {
+    # OutMessage
+    # GetMessage
+    # Content
+  	.. events ..
+    PolyDataModifiedEvent : 118959
+    ..
+    + New(): PolyDataDevice
+    + PrintSelf(): void
+    + GetDeviceContentModifiedEvent() : unsigned int
+    + GetDeviceType(): std::string 
+    + ReceiveIGTLMessage(): int
+    + GetIGTLMessage(): igtl::MessageBase::Pointer
+    + GetIGTLMessage(MESSAGE_PREFIX prefix): igtl::MessageBase::Pointer
+    + GetSupportedMessagePrefixes(): std::set<MESSAGE_PREFIX>
+    + SetContent(): void
+    + GetContent(): PolyDataConverter::ContentData
+  }
+  
+  class StatusDevice {
+    # OutMessage
+    # GetMessage
+    # Content
+  	.. events ..
+    StatusModifiedEvent : 118956
+    ..
+    + New(): StatusDevice
+    + PrintSelf(): void
+    + GetDeviceContentModifiedEvent() : unsigned int
+    + GetDeviceType(): std::string 
+    + ReceiveIGTLMessage(): int
+    + GetIGTLMessage(): igtl::MessageBase::Pointer
+    + GetIGTLMessage(MESSAGE_PREFIX prefix): igtl::MessageBase::Pointer
+    + GetSupportedMessagePrefixes(): std::set<MESSAGE_PREFIX>
+    + SetContent(): void
+    + GetContent(): StatusConverter::ContentData
+  }
+  
+  class StringDevice {
+    # OutMessage
+    # Content
+  	.. events ..
+    StringModifiedEvent : 118960
+    ..
+    + New(): StringDevice
+    + PrintSelf(): void
+    + GetDeviceContentModifiedEvent() : unsigned int
+    + GetDeviceType(): std::string 
+    + ReceiveIGTLMessage(): int
+    + GetIGTLMessage(): igtl::MessageBase::Pointer
+    + GetIGTLMessage(MESSAGE_PREFIX prefix): igtl::MessageBase::Pointer
+    + GetSupportedMessagePrefixes(): std::set<MESSAGE_PREFIX>
+    + SetContent(): void
+    + GetContent(): StringConverter::ContentData
+  }
+  
+  class TransformDevice {
+    # OutTransformMessage
+    # GetTransformMessage
+    # Content
+    # TransformDevice()
+    # ~TransformDevice()
+  	.. events ..
+    TransformModifiedEvent : 118957
+    ..
+    + New(): TransformDevice
+    + PrintSelf(): void
+    + GetDeviceContentModifiedEvent() : unsigned int
+    + GetDeviceType(): std::string 
+    + ReceiveIGTLMessage(): int
+    + GetIGTLMessage(): igtl::MessageBase::Pointer
+    + GetIGTLMessage(MESSAGE_PREFIX prefix): igtl::MessageBase::Pointer
+    + GetSupportedMessagePrefixes(): std::set<MESSAGE_PREFIX>
+    + SetContent(): void
+    + GetContent(): TransformConverter::ContentData
+  }
+  
+  class CommandDevice {
+    # OutMessage
+    # ResponseMessage
+    # Content
+    # CommandDevice()
+    # ~CommandDevice()
+    # Queries: std::vector<QueryType>
+  	.. events ..
+    CommandModifiedEvent : 118958
+    ..
+    + QueryType : struct
+  	+ QUERY_STATUS: enum
+    + New(): CommandDevice
+    + PrintSelf(): void
+    + GetDeviceContentModifiedEvent() : unsigned int
+    + GetDeviceType(): std::string 
+    + ReceiveIGTLMessage(): int
+    + GetIGTLMessage(): igtl::MessageBase::Pointer
+    + GetIGTLMessage(MESSAGE_PREFIX prefix): igtl::MessageBase::Pointer
+    + GetSupportedMessagePrefixes(): std::set<MESSAGE_PREFIX>
+    + SetContent(): void
+    + GetContent(): CommandConverter::ContentData
+    + GetIGTLResponseMessage(): igtl::MessageBase::Pointer
+    + GetResponseFromCommandID(): CommandDevicePointer
+    + GetQueries(): std::vector<QueryType> 
+    + CheckQueryExpiration(): int
+    + PruneCompletedQueries(): int
+    + CancelQuery():int
+    - QueryTimeOut: double
+    
+  }
+  vtkObject <|-- Device
+  Device <|-- ImageDevice
+  Device <|-- PolyDataDevice
+  Device <|-- StatusDevice
+  Device <|-- StringDevice
+  Device <|-- CommandDevice
+  Device <|-- TransformDevice
+  
+  top to bottom direction
+  ImageDevice "0..*"-->"1"ImageConverter
+  PolyDataDevice "0..*"-->"1"PolyDataConverter
+  StatusDevice "0..*"-->"1"StatusConverter
+  StringDevice "0..*"-->"1"StringConverter
+  TransformDevice "0..*"-->"1"TransformConverter
+  CommandDevice "0..*"-->"1"CommandConverter
+}
+"OpenIGTLink" <|-- "Devices"
+@enduml
