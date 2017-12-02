@@ -70,7 +70,7 @@ int CommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool ch
 		{
 		Queries[i].Response = response;
 		this->Modified();
-		this->InvokeEvent(CommandResponseReceivedEvent);
+		this->InvokeEvent(CommandResponseReceivedEvent, this);
 		}
 	  }
 
@@ -85,7 +85,7 @@ int CommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool ch
 	if (CommandConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, &this->metaInfo))
 	  {
 	  this->Modified();
-	  this->InvokeEvent(CommandReceivedEvent);
+	  this->InvokeEvent(CommandReceivedEvent, this);
 	  return 1;
 	  }
 	}
