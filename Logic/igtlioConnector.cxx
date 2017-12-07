@@ -467,8 +467,11 @@ int Connector::ReceiveController()
       vtkDebugMacro("Received body: " << read);
       if (read != buffer->GetPackBodySize())
         {
-        vtkErrorMacro ("Only read " << read << " but expected to read "
-                       << buffer->GetPackBodySize() << "\n");
+        if(!this->ServerStopFlag)
+        {
+          vtkErrorMacro ("Only read " << read << " but expected to read "
+                         << buffer->GetPackBodySize() << "\n");
+        }
         continue;
         }
 
@@ -840,6 +843,11 @@ int Connector::PushNode(DevicePointer node, int event)
 {
   // TODO: verify that removed event argument is OK
   return this->SendMessage(CreateDeviceKey(node), Device::MESSAGE_PREFIX_NOT_DEFINED);
+}
+
+bool Connector::IsConnected()
+{
+  return this->Socket.IsNotNull() && this->Socket->GetConnected();
 }
 
 } // namespace igtlio

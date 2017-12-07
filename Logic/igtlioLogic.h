@@ -73,6 +73,7 @@ public:
 
  ConnectorPointer CreateConnector();
  int RemoveConnector(unsigned int index);
+ int RemoveConnector(ConnectorPointer connector);
  int GetNumberOfConnectors() const;
  ConnectorPointer GetConnector(unsigned int index);
 
@@ -107,6 +108,7 @@ private:
 
   int CreateUniqueConnectorID() const;
   std::vector<DevicePointer> CreateDeviceList() const;
+  int RemoveConnector(std::vector<ConnectorPointer>::iterator toRemove);
 
   vtkSmartPointer<class vtkCallbackCommand> NewDeviceCallback;
   vtkSmartPointer<class vtkCallbackCommand> RemovedDeviceCallback;
