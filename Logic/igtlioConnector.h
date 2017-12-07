@@ -221,6 +221,8 @@ public:
   vtkGetMacro( CheckCRC, bool);
   void SetCheckCRC(bool c);
 
+  bool IsConnected();
+
   //----------------------------------------------------------------
   // Thread Control
   //----------------------------------------------------------------

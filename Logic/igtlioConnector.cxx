@@ -845,4 +845,9 @@ int Connector::PushNode(DevicePointer node, int event)
   return this->SendMessage(CreateDeviceKey(node), Device::MESSAGE_PREFIX_NOT_DEFINED);
 }
 
+bool Connector::IsConnected()
+{
+  return this->Socket.IsNotNull() && this->Socket->GetConnected();
+}
+
 } // namespace igtlio
