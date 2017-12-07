@@ -131,6 +131,25 @@ int Logic::RemoveConnector(unsigned int index)
 {
   std::vector<ConnectorPointer>::iterator toRemove = Connectors.begin()+index;
 
+  return this->RemoveConnector(toRemove);
+}
+
+//---------------------------------------------------------------------------
+int Logic::RemoveConnector(ConnectorPointer connector)
+{
+
+  std::vector<ConnectorPointer>::iterator toRemove = Connectors.begin();
+  for(; toRemove != Connectors.end(); ++toRemove)
+  {
+    if(connector == (*toRemove))
+      break;
+  }
+  return this->RemoveConnector(toRemove);
+}
+
+//---------------------------------------------------------------------------
+int Logic::RemoveConnector(std::vector<ConnectorPointer>::iterator toRemove)
+{
   toRemove->GetPointer()->RemoveObserver(NewDeviceCallback);
   toRemove->GetPointer()->RemoveObserver(RemovedDeviceCallback);
 
@@ -138,6 +157,7 @@ int Logic::RemoveConnector(unsigned int index)
   Connectors.erase(toRemove);
   return 0;
 }
+
 
 //---------------------------------------------------------------------------
 int Logic::GetNumberOfConnectors() const
