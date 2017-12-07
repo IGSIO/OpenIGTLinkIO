@@ -467,8 +467,11 @@ int Connector::ReceiveController()
       vtkDebugMacro("Received body: " << read);
       if (read != buffer->GetPackBodySize())
         {
-        vtkErrorMacro ("Only read " << read << " but expected to read "
-                       << buffer->GetPackBodySize() << "\n");
+        if(!this->ServerStopFlag)
+        {
+          vtkErrorMacro ("Only read " << read << " but expected to read "
+                         << buffer->GetPackBodySize() << "\n");
+        }
         continue;
         }
 
