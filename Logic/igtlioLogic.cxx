@@ -150,12 +150,15 @@ int Logic::RemoveConnector(ConnectorPointer connector)
 //---------------------------------------------------------------------------
 int Logic::RemoveConnector(std::vector<ConnectorPointer>::iterator toRemove)
 {
+  if(toRemove == Connectors.end())
+    return 0;
+
   toRemove->GetPointer()->RemoveObserver(NewDeviceCallback);
   toRemove->GetPointer()->RemoveObserver(RemovedDeviceCallback);
 
   this->InvokeEvent(ConnectionAboutToBeRemovedEvent, toRemove->GetPointer());
   Connectors.erase(toRemove);
-  return 0;
+  return 1;
 }
 
 
