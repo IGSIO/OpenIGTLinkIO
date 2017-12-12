@@ -610,7 +610,7 @@ void Connector::ImportDataFromCircularBuffer()
         this->AddDevice(device);
       }
 
-	device->ReceiveIGTLMessage(messageFromBuffer, this->CheckCRC);
+	  device->ReceiveIGTLMessage(messageFromBuffer, this->CheckCRC);
     device->Modified();
     //this->InvokeEvent(Connector::DeviceModifiedEvent, device.GetPointer());
 

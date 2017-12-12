@@ -14,8 +14,9 @@
 #include "igtlioCommandDevice.h"
 #include "igtlioTransformDevice.h"
 #include "igtlioPolyDataDevice.h"
-//#include "igtlioVideoDevice.h"
-
+#if defined(USE_H264) || defined(USE_VP9) || defined(USE_X265) || defined(USE_OpenHEVC)
+  #include "igtlioVideoDevice.h"
+#endif
 namespace igtlio
 {
 
@@ -27,10 +28,12 @@ DeviceFactory::DeviceFactory()
   this->registerCreator<ImageDeviceCreator>();
   this->registerCreator<StatusDeviceCreator>();
   this->registerCreator<CommandDeviceCreator>();
-  //this->registerCreator<VideoDeviceCreator>();
   this->registerCreator<TransformDeviceCreator>();
   this->registerCreator<StringDeviceCreator>();
   this->registerCreator<PolyDataDeviceCreator>();
+#if defined(USE_H264) || defined(USE_VP9) || defined(USE_X265) || defined(USE_OpenHEVC)
+  this->registerCreator<VideoDeviceCreator>();
+#endif
 }
 
 //---------------------------------------------------------------------------

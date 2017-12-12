@@ -32,33 +32,26 @@ class OPENIGTLINKIO_DEVICES_EXPORT VideoDevice : public Device
 public:
   
   enum {
-    VideoModifiedEvent         = 118958,
+    VideoModifiedEvent         = 118961,
   };
   
-  enum CodecTypes
-  {
-    useVP9 = 1,
-    useH265 = 2,
-    useH264 = 3
-  };
-  
- virtual vtkIntArray* GetDeviceContentModifiedEvent() const;
- virtual std::string GetDeviceType() const;
- virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC);
- virtual igtl::MessageBase::Pointer GetIGTLMessage();
- virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix);
- virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const;
+ virtual unsigned int GetDeviceContentModifiedEvent() const VTK_OVERRIDE;
+ virtual std::string GetDeviceType() const VTK_OVERRIDE;
+ virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC) VTK_OVERRIDE;
+ virtual igtl::MessageBase::Pointer GetIGTLMessage() VTK_OVERRIDE;
+ virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix) VTK_OVERRIDE ;
+ virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const VTK_OVERRIDE;
   
   void SetContent(VideoConverter::ContentData content);
   
   VideoConverter::ContentData  GetContent();
   
-  int GetCurrentCodecType()
+  std::string GetCurrentCodecType()
   {
     return currentCodecType;
   };
   
-  void SetCurrentCodecType(CodecTypes type)
+  void SetCurrentCodecType(std::string type)
   {
     this->currentCodecType = type;
   };
@@ -67,7 +60,7 @@ public:
 public:
   static VideoDevice *New();
   vtkTypeMacro(VideoDevice,Device);
-  void PrintSelf(ostream& os, vtkIndent indent);
+  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
 protected:
   VideoDevice();
@@ -88,9 +81,11 @@ protected:
   
   GenericDecoder* VideoStreamDecoderH264;
   
+  std::map<std::string,GenericDecoder*> decoders;
+  
   SourcePicture* pDecodedPic;
   
-  CodecTypes currentCodecType;
+  std::string currentCodecType;
   
   GenericEncoder* VideoStreamEncoderVPX;
   
@@ -104,8 +99,8 @@ protected:
 class OPENIGTLINKIO_DEVICES_EXPORT VideoDeviceCreator : public DeviceCreator
 {
 public:
-  virtual DevicePointer Create(std::string device_name);
-  virtual std::string GetDeviceType() const;
+  virtual DevicePointer Create(std::string device_name) VTK_OVERRIDE;
+  virtual std::string GetDeviceType() const VTK_OVERRIDE;
 
   static VideoDeviceCreator *New();
   vtkTypeMacro(VideoDeviceCreator,vtkObject);

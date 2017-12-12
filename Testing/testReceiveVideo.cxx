@@ -40,8 +40,6 @@ bool compare(igtlio::VideoDevicePointer a, igtlio::VideoDevicePointer b)
 {
   if (a->GetDeviceName() != b->GetDeviceName())
     return false;
-  if (fabs(a->GetTimestamp()-b->GetTimestamp()) > 1E-3)
-    return false;
   if (a->GetDeviceType() != b->GetDeviceType())
     return false;
   if (!compare(a->GetContent().image, b->GetContent().image))

@@ -122,7 +122,7 @@ vtkSmartPointer<vtkImageData> ClientServerFixture::CreateTestImage()
 vtkSmartPointer<vtkImageData> ClientServerFixture::CreateTestFrame()
 {
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
-  int width = 200, height = 400;
+  int width = 512, height = 512;
   image->SetSpacing(1, 1, 1);
   image->SetExtent(0, width-1, 0, height-1, 0, 0);
   image->AllocateScalars(VTK_UNSIGNED_CHAR, 3);

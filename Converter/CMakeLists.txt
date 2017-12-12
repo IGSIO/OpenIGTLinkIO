@@ -14,10 +14,8 @@ set(${PROJECT_NAME}_INCLUDE_DIRECTORIES PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   $<INSTALL_INTERFACE:${OpenIGTLinkIO_INCLUDE_INSTALL}>
   )
-
 set(${PROJECT_NAME}_SRCS
   igtlioBaseConverter.cxx
-  #igtlioVideoConverter.cxx
   igtlioImageConverter.cxx
   igtlioPolyDataConverter.cxx
   igtlioStatusConverter.cxx
@@ -28,13 +26,21 @@ set(${PROJECT_NAME}_SRCS
 
 set(${PROJECT_NAME}_HDRS
   igtlioBaseConverter.h
-  #igtlioVideoConverter.h
   igtlioImageConverter.h
   igtlioPolyDataConverter.h
   igtlioStatusConverter.h
   igtlioTransformConverter.h
   igtlioStringConverter.h
   )
+
+IF(USE_H264 OR USE_VP9 OR USE_X265 OR USE_OpenHEVC)
+  LIST(APPEND ${PROJECT_NAME}_SRCS
+  igtlioVideoConverter.cxx
+  )
+  LIST(APPEND ${PROJECT_NAME}_HDRS
+  igtlioVideoConverter.h
+  )
+ENDIF()
 
 set(${PROJECT_NAME}_TARGET_LIBRARIES
   ${OpenIGTLink_LIBRARIES}

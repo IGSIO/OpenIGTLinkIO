@@ -17,7 +17,6 @@ set(${PROJECT_NAME}_INCLUDE_DIRECTORIES PUBLIC
 
 set(${PROJECT_NAME}_SRCS
   igtlioDevice.cxx
-  #igtlioVideoDevice.cxx
   igtlioImageDevice.cxx
   igtlioStatusDevice.cxx
   igtlioStringDevice.cxx
@@ -28,7 +27,6 @@ set(${PROJECT_NAME}_SRCS
 
 set(${PROJECT_NAME}_HDRS
   igtlioDevice.h
-  #igtlioVideoDevice.h
   igtlioImageDevice.h
   igtlioStatusDevice.h
   igtlioStringDevice.h
@@ -36,6 +34,15 @@ set(${PROJECT_NAME}_HDRS
   igtlioTransformDevice.h
   igtlioPolyDataDevice.h
   )
+
+IF(USE_H264 OR USE_VP9 OR USE_X265 OR USE_OpenHEVC)
+  LIST(APPEND ${PROJECT_NAME}_SRCS
+  igtlioVideoDevice.cxx
+  )
+  LIST(APPEND ${PROJECT_NAME}_HDRS
+  igtlioVideoDevice.h
+  )
+ENDIF()
 
 set(${PROJECT_NAME}_TARGET_LIBRARIES
   igtlioConverter

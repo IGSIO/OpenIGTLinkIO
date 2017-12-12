@@ -44,34 +44,45 @@ vtkStandardNewMacro(VideoDevice);
 //---------------------------------------------------------------------------
 VideoDevice::VideoDevice()
 {
-#if OpenIGTLink_LINK_VP9
-    VideoStreamDecoderVPX = new VP9Decoder();
-    VideoStreamEncoderVPX = new VP9Encoder();
-#endif
-#if OpenIGTLink_LINK_X265
-    VideoStreamDecoderX265 = new H265Decoder();
-    VideoStreamEncoderX265 = new H265Encoder();
-#endif
-#if OpenIGTLink_LINK_H264
+    VideoStreamDecoderH264 = NULL;
+    VideoStreamEncoderH264 = NULL;
+    VideoStreamDecoderVPX  = NULL;
+    VideoStreamEncoderVPX  = NULL;
+    VideoStreamDecoderX265 = NULL;
+    VideoStreamEncoderX265 = NULL;
+#if defined(USE_H264)
     VideoStreamDecoderH264 = new H264Decoder();
     VideoStreamEncoderH264 = new H264Encoder();
 #endif
+#if defined(USE_VP9)
+    VideoStreamDecoderVPX = new VP9Decoder();
+    VideoStreamEncoderVPX = new VP9Encoder();
+#endif
+#if defined(USE_OpenHEVC)
+    VideoStreamDecoderX265 = new H265Decoder();
+#endif
+#if defined(USE_H265)
+    VideoStreamEncoderX265 = new H265Encoder();
+#endif
+
+  decoders.clear();
+  decoders.insert(std::pair<std::string, GenericDecoder*>(CodecNameForH264,VideoStreamDecoderH264));
+  decoders.insert(std::pair<std::string, GenericDecoder*>(CodecNameForVPX, VideoStreamDecoderVPX));
+  decoders.insert(std::pair<std::string, GenericDecoder*>(CodecNameForX265,VideoStreamDecoderX265));
   pDecodedPic = new SourcePicture();
-  this->currentCodecType = useVP9;
+  this->currentCodecType = CodecNameForVPX;
 }
 
 //---------------------------------------------------------------------------
 VideoDevice::~VideoDevice()
 {
+  decoders.clear();
 }
 
 //---------------------------------------------------------------------------
-vtkIntArray* VideoDevice::GetDeviceContentModifiedEvent() const
+unsigned int VideoDevice::GetDeviceContentModifiedEvent() const
 {
-  vtkIntArray* events;
-  events = vtkIntArray::New();
-  events->InsertNextValue(VideoModifiedEvent);
-  return events;
+  return VideoModifiedEvent;
 }
   
   
@@ -100,23 +111,14 @@ int VideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool chec
   igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
   headerMsg->Copy(buffer);
   if(strcmp(headerMsg->GetDeviceName(), this->GetDeviceName().c_str())==0)
-  {
+    {
     int returnValue = 0;
     //To Do, we need to unpack the buffer to know the codec type, which is done in the converter
     // So the user need to set the correct currentCodecType before hand.
-    if (this->currentCodecType == useH264 && OpenIGTLink_LINK_H264)
-    {
-      returnValue = VideoConverter::fromIGTL(buffer, &HeaderData, &Content, VideoStreamDecoderH264, checkCRC);
-    }
-    else if(this->currentCodecType == useVP9 && OpenIGTLink_LINK_VP9)
-    {
-      returnValue = VideoConverter::fromIGTL(buffer, &HeaderData, &Content, VideoStreamDecoderVPX, checkCRC);
-    }
-    else if(this->currentCodecType == useH265 && OpenIGTLink_LINK_X265)
-    {
-      returnValue = VideoConverter::fromIGTL(buffer, &HeaderData, &Content,VideoStreamDecoderX265, checkCRC);
-    }
-   if (returnValue)
+    
+    returnValue = VideoConverter::fromIGTL(buffer, &HeaderData, &Content, this->decoders, checkCRC, &this->metaInfo);
+
+    if (returnValue)
      {
      this->Modified();
      this->InvokeEvent(VideoModifiedEvent, this);
@@ -140,19 +142,33 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
   float bitRatePercent = 0.05;
   int frameRate = 20;
   int iReturn = 0;
-#ifdef OpenIGTLink_LINK_VP9
-  if(this->useVP9)
+  this->OutVideoMessage = igtl::VideoMessage::New();
+#if defined(USE_H264)
+  if(this->currentCodecType.compare(CodecNameForH264) == 0)
+  {
+    VideoStreamEncoderH264->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
+    //newEncoder->SetKeyFrameDistance(25);
+    VideoStreamEncoderH264->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
+    VideoStreamEncoderH264->InitializeEncoder();
+    VideoStreamEncoderH264->SetLosslessLink(true);
+    this->OutVideoMessage->SetCodecType(CodecNameForH264);
+    iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderH264, &this->metaInfo);
+  }
+#endif
+#if defined(USE_VP9)
+  if(this->currentCodecType.compare(CodecNameForVPX) == 0)
   {
     VideoStreamEncoderVPX->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
     //newEncoder->SetKeyFrameDistance(25);
     VideoStreamEncoderVPX->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
     VideoStreamEncoderVPX->InitializeEncoder();
     VideoStreamEncoderVPX->SetLosslessLink(true);
-    iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderVPX);
+    this->OutVideoMessage->SetCodecType(CodecNameForVPX);
+    iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderVPX, &this->metaInfo);
   }
 #endif
-#ifdef OpenIGTLink_LINK_H265
-  if(this->useH265)
+#if defined(USE_X265)
+  if(this->currentCodecType.compare(CodecNameForX265) == 0)
   {
     VideoStreamEncoderX265->SetPicWidthAndHeight(trackedFrame.GetFrameSize()[0], trackedFrame.GetFrameSize()[1]);
     int bitRateFactor = 7;
@@ -160,7 +176,8 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
     VideoStreamEncoderX265->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent)*bitRateFactor);
     VideoStreamEncoderX265->InitializeEncoder();
     VideoStreamEncoderX265->SetSpeed(9);
-    iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderX265)
+    this->OutVideoMessage->SetCodecType(CodecNameForX265);
+    iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderX265, &this->metaInfo)
   }
 #endif
  if (!iReturn)
@@ -174,7 +191,7 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
- if (prefix==MESSAGE_PREFIX_START)
+/*if (prefix==MESSAGE_PREFIX_RTS)
   {
    if (this->StartVideoMessage.IsNull())
      {
@@ -193,7 +210,7 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
     this->StopVideoMessage->SetDeviceName(HeaderData.deviceName.c_str());
     this->StopVideoMessage->Pack();
     return dynamic_pointer_cast<igtl::MessageBase>(this->StopVideoMessage);
-  }
+  }*/
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
@@ -206,8 +223,7 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 std::set<Device::MESSAGE_PREFIX> VideoDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
- retval.insert(MESSAGE_PREFIX_START);
- retval.insert(MESSAGE_PREFIX_STOP);
+ retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
  return retval;
 }
 

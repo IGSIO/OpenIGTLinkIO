@@ -17,21 +17,23 @@
 
 
 // OpenIGTLink includes
-#include <igtlVideoMessage.h>
 #include "igtlVideoMessage.h"
-#if OpenIGTLink_LINK_H264
+#include "igtlConfigure.h"
+#include "igtl_util.h"
+#if defined(USE_H264)
   #include "H264Encoder.h"
   #include "H264Decoder.h"
 #endif
-#if OpenIGTLink_LINK_VP9
+#if defined(USE_VP9)
   #include "VP9Encoder.h"
   #include "VP9Decoder.h"
 #endif
-#if OpenIGTLink_LINK_X265
-  #include "H265Encoder.h"
+#if defined(USE_OpenHEVC)
   #include "H265Decoder.h"
 #endif
-
+#if defined(USE_X265)
+  #include "H265Encoder.h"
+#endif
 #include "igtlioBaseConverter.h"
 
 class vtkImageData;
@@ -59,8 +61,8 @@ namespace igtlio
     static const char*  GetIGTLName() { return GetIGTLTypeName(); }
     static const char* GetIGTLTypeName() { return "VIDEO"; }
     
-    static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, GenericDecoder* decoder, bool checkCRC);
-    static int toIGTL(const HeaderData& header, const ContentData& source, igtl::VideoMessage::Pointer* dest, GenericEncoder* encoder);
+    static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, std::map<std::string,GenericDecoder*> decoders, bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
+    static int toIGTL(const HeaderData& header, const ContentData& source, igtl::VideoMessage::Pointer* dest, GenericEncoder* encoder, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
     
   protected:
     

@@ -60,8 +60,10 @@ public:
  
   ///
   ///  Send the given video frame from the given device. Asynchronous.
-  /*VideoDevicePointer SendFrame(std::string device_id,
-                               vtkSmartPointer<vtkImageData> image);*/
+#if defined(USE_H264) || defined(USE_VP9) || (defined(USE_X265) && defined(USE_OpenHEVC))
+  VideoDevicePointer SendFrame(std::string device_id,
+                               vtkSmartPointer<vtkImageData> image);
+#endif
 
   /// Send the given image from the given device. Asynchronous.
   TransformDevicePointer SendTransform(std::string device_id, vtkSmartPointer<vtkMatrix4x4> transform);

@@ -11,9 +11,6 @@
 
 #include "igtlioVideoConverter.h"
 
-#include <igtl_util.h>
-#include <igtlVideoMessage.h>
-
 #include <vtkImageData.h>
 #include <vtkMatrix4x4.h>
 #include <vtkVersion.h>
@@ -24,8 +21,8 @@ namespace igtlio
   int VideoConverter::fromIGTL(igtl::MessageBase::Pointer source,
                                HeaderData* header,
                                ContentData* dest,
-                               GenericDecoder * decoder,
-                               bool checkCRC)
+                               std::map<std::string,GenericDecoder*> decoders,
+                               bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo)
   {
     // Create a message buffer to receive image data
     igtl::VideoMessage::Pointer videoMsg;
@@ -41,9 +38,28 @@ namespace igtlio
       // TODO: error handling
       return 0;
     }
+    GenericDecoder* decoder = NULL;
+#if defined(USE_H264)
+  if(videoMsg->GetCodecType().compare(CodecNameForH264)==0)
+    {
+    decoder = decoders.find(CodecNameForH264)->second;
+    }
+#endif
+#if defined(USE_VP9)
+  if(videoMsg->GetCodecType().compare(CodecNameForVPX)==0)
+    {
+    decoder = decoders.find(CodecNameForVPX)->second;
+    }
+#endif
+#if defined(USE_OpenHEVC)
+    if(videoMsg->GetCodecType().compare(CodecNameForX265)==0)
+    {
+    decoder = decoders.find(CodecNameForX265)->second;
+    }
+#endif
     
     // get header
-    if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(videoMsg), header))
+    if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(videoMsg), header, metaInfo))
       return 0;
     
     // get Video
@@ -106,13 +122,18 @@ namespace igtlio
   }
   
   //---------------------------------------------------------------------------
-  int VideoConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::VideoMessage::Pointer* dest, GenericEncoder* encoder)
+  int VideoConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::VideoMessage::Pointer* dest, GenericEncoder* encoder, igtl::MessageBase::MetaDataMap* metaInfo)
   {
     if (dest->IsNull())
       *dest = igtl::VideoMessage::New();
+    (*dest)->InitPack();
+    igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(*dest);
+    
+    HeadertoIGTL(header, &basemsg, metaInfo);
+    
     igtl::VideoMessage::Pointer videoMsg = *dest;
-    igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(videoMsg);
-    HeadertoIGTL(header, &basemsg);
+    if (metaInfo!=NULL)
+      videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
     
     vtkImageData* frameImage = source.image;
     int   scalarType = frameImage->GetScalarType();       // scalar type, currently only unsigned char is supported
@@ -169,9 +190,6 @@ namespace igtlio
     static int frameIndex = 0;
     frameIndex++;
     videoMsg->SetMessageID(frameIndex);
-    igtl::TimeStamp::Pointer igtlFrameTime = igtl::TimeStamp::New();
-    igtlFrameTime->SetTime(header.timestamp);
-    videoMsg->SetTimeStamp(igtlFrameTime);
     int iEncFrames = encoder->EncodeSingleFrameIntoVideoMSG(pSrcPic, videoMsg.GetPointer(), isGrayImage);
     delete[] YUV420ImagePointer;
     YUV420ImagePointer = NULL;
