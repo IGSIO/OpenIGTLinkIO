@@ -60,7 +60,7 @@ public:
  
   ///
   ///  Send the given video frame from the given device. Asynchronous.
-#if defined(USE_H264) || defined(USE_VP9) || (defined(USE_X265) && defined(USE_OpenHEVC))
+#if defined(OpenIGTLink_USE_H264) || defined(OpenIGTLink_USE_VP9) || (defined(OpenIGTLink_USE_X265) && defined(OpenIGTLink_USE_OpenHEVC))
   VideoDevicePointer SendFrame(std::string device_id,
                                vtkSmartPointer<vtkImageData> image);
 #endif

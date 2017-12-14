@@ -48,12 +48,20 @@ public:
   
   std::string GetCurrentCodecType()
   {
-    return currentCodecType;
+    return CurrentCodecType;
   };
   
-  void SetCurrentCodecType(std::string type)
+  int SetCurrentCodecType(std::string codecType)
   {
-    this->currentCodecType = type;
+  if (codecType.compare(IGTL_VIDEO_CODEC_NAME_X265)==0 || codecType.compare(IGTL_VIDEO_CODEC_NAME_VP9)==0 || codecType.compare(IGTL_VIDEO_CODEC_NAME_H264)==0 || codecType.compare(IGTL_VIDEO_CODEC_NAME_OPENHEVC)==0)
+    {
+    this->CurrentCodecType = std::string(codecType);
+    return 0;
+    }
+  else
+    {
+    return -1;
+    }
   };
   
 
@@ -81,11 +89,11 @@ protected:
   
   GenericDecoder* VideoStreamDecoderH264;
   
-  std::map<std::string,GenericDecoder*> decoders;
+  std::map<std::string,GenericDecoder*> DecodersMap;
   
-  SourcePicture* pDecodedPic;
+  SourcePicture* DecodedPic;
   
-  std::string currentCodecType;
+  std::string CurrentCodecType;
   
   GenericEncoder* VideoStreamEncoderVPX;
   

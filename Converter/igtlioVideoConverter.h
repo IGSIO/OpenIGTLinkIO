@@ -20,18 +20,18 @@
 #include "igtlVideoMessage.h"
 #include "igtlConfigure.h"
 #include "igtl_util.h"
-#if defined(USE_H264)
+#if defined(OpenIGTLink_USE_H264)
   #include "H264Encoder.h"
   #include "H264Decoder.h"
 #endif
-#if defined(USE_VP9)
+#if defined(OpenIGTLink_USE_VP9)
   #include "VP9Encoder.h"
   #include "VP9Decoder.h"
 #endif
-#if defined(USE_OpenHEVC)
+#if defined(OpenIGTLink_USE_OpenHEVC)
   #include "H265Decoder.h"
 #endif
-#if defined(USE_X265)
+#if defined(OpenIGTLink_USE_X265)
   #include "H265Encoder.h"
 #endif
 #include "igtlioBaseConverter.h"

@@ -14,7 +14,7 @@
 #include "igtlioCommandDevice.h"
 #include "igtlioTransformDevice.h"
 #include "igtlioPolyDataDevice.h"
-#if defined(USE_H264) || defined(USE_VP9) || defined(USE_X265) || defined(USE_OpenHEVC)
+#if OpenIGTLink_ENABLE_VIDEOSTREAMING == 1
   #include "igtlioVideoDevice.h"
 #endif
 namespace igtlio
@@ -31,7 +31,7 @@ DeviceFactory::DeviceFactory()
   this->registerCreator<TransformDeviceCreator>();
   this->registerCreator<StringDeviceCreator>();
   this->registerCreator<PolyDataDeviceCreator>();
-#if defined(USE_H264) || defined(USE_VP9) || defined(USE_X265) || defined(USE_OpenHEVC)
+#if OpenIGTLink_ENABLE_VIDEOSTREAMING == 1
   this->registerCreator<VideoDeviceCreator>();
 #endif
 }

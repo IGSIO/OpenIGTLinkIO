@@ -11,7 +11,7 @@
 #include "igtlioStringDevice.h"
 #include "igtlioStatusDevice.h"
 
-#if defined(USE_H264) || defined(USE_VP9) || defined(USE_X265) || defined(USE_OpenHEVC)
+#if OpenIGTLink_ENABLE_VIDEOSTREAMING == 1
   #include "igtlioVideoDevice.h"
 #endif
 
@@ -102,7 +102,7 @@ ImageDevicePointer Session::SendImage(std::string device_id, vtkSmartPointer<vtk
   return device;
 }
 
-#if defined(USE_H264) || defined(USE_VP9) || defined(USE_X265) || defined(USE_OpenHEVC)
+#if OpenIGTLink_ENABLE_VIDEOSTREAMING == 1
 VideoDevicePointer Session::SendFrame(std::string device_id, vtkSmartPointer<vtkImageData> image)
 {
   VideoDevicePointer device;

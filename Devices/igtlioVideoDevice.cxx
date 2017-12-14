@@ -50,33 +50,33 @@ VideoDevice::VideoDevice()
     VideoStreamEncoderVPX  = NULL;
     VideoStreamDecoderX265 = NULL;
     VideoStreamEncoderX265 = NULL;
-#if defined(USE_H264)
+#if defined(OpenIGTLink_USE_H264)
     VideoStreamDecoderH264 = new H264Decoder();
     VideoStreamEncoderH264 = new H264Encoder();
 #endif
-#if defined(USE_VP9)
+#if defined(OpenIGTLink_USE_VP9)
     VideoStreamDecoderVPX = new VP9Decoder();
     VideoStreamEncoderVPX = new VP9Encoder();
 #endif
-#if defined(USE_OpenHEVC)
+#if defined(OpenIGTLink_USE_OpenHEVC)
     VideoStreamDecoderX265 = new H265Decoder();
 #endif
 #if defined(USE_H265)
     VideoStreamEncoderX265 = new H265Encoder();
 #endif
 
-  decoders.clear();
-  decoders.insert(std::pair<std::string, GenericDecoder*>(CodecNameForH264,VideoStreamDecoderH264));
-  decoders.insert(std::pair<std::string, GenericDecoder*>(CodecNameForVPX, VideoStreamDecoderVPX));
-  decoders.insert(std::pair<std::string, GenericDecoder*>(CodecNameForX265,VideoStreamDecoderX265));
-  pDecodedPic = new SourcePicture();
-  this->currentCodecType = CodecNameForVPX;
+  DecodersMap.clear();
+  DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_H264,VideoStreamDecoderH264));
+  DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_VP9, VideoStreamDecoderVPX));
+  DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_OPENHEVC,VideoStreamDecoderX265));
+  DecodedPic = new SourcePicture();
+  this->CurrentCodecType = IGTL_VIDEO_CODEC_NAME_VP9;
 }
 
 //---------------------------------------------------------------------------
 VideoDevice::~VideoDevice()
 {
-  decoders.clear();
+  DecodersMap.clear();
 }
 
 //---------------------------------------------------------------------------
@@ -114,9 +114,9 @@ int VideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool chec
     {
     int returnValue = 0;
     //To Do, we need to unpack the buffer to know the codec type, which is done in the converter
-    // So the user need to set the correct currentCodecType before hand.
+    // So the user need to set the correct CurrentCodecType before hand.
     
-    returnValue = VideoConverter::fromIGTL(buffer, &HeaderData, &Content, this->decoders, checkCRC, &this->metaInfo);
+    returnValue = VideoConverter::fromIGTL(buffer, &HeaderData, &Content, this->DecodersMap, checkCRC, &this->metaInfo);
 
     if (returnValue)
      {
@@ -143,41 +143,41 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
   int frameRate = 20;
   int iReturn = 0;
   this->OutVideoMessage = igtl::VideoMessage::New();
-#if defined(USE_H264)
-  if(this->currentCodecType.compare(CodecNameForH264) == 0)
+#if defined(OpenIGTLink_USE_H264)
+  if(this->CurrentCodecType.compare(IGTL_VIDEO_CODEC_NAME_H264) == 0)
   {
     VideoStreamEncoderH264->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
     //newEncoder->SetKeyFrameDistance(25);
     VideoStreamEncoderH264->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
     VideoStreamEncoderH264->InitializeEncoder();
     VideoStreamEncoderH264->SetLosslessLink(true);
-    this->OutVideoMessage->SetCodecType(CodecNameForH264);
+    this->OutVideoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_H264);
     iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderH264, &this->metaInfo);
   }
 #endif
-#if defined(USE_VP9)
-  if(this->currentCodecType.compare(CodecNameForVPX) == 0)
+#if defined(OpenIGTLink_USE_VP9)
+  if(this->CurrentCodecType.compare(IGTL_VIDEO_CODEC_NAME_VP9) == 0)
   {
     VideoStreamEncoderVPX->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
     //newEncoder->SetKeyFrameDistance(25);
     VideoStreamEncoderVPX->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
     VideoStreamEncoderVPX->InitializeEncoder();
     VideoStreamEncoderVPX->SetLosslessLink(true);
-    this->OutVideoMessage->SetCodecType(CodecNameForVPX);
+    this->OutVideoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_VP9);
     iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderVPX, &this->metaInfo);
   }
 #endif
-#if defined(USE_X265)
-  if(this->currentCodecType.compare(CodecNameForX265) == 0)
+#if defined(OpenIGTLink_USE_X265)
+  if(this->CurrentCodecType.compare(IGTL_VIDEO_CODEC_NAME_X265) == 0)
   {
-    VideoStreamEncoderX265->SetPicWidthAndHeight(trackedFrame.GetFrameSize()[0], trackedFrame.GetFrameSize()[1]);
+    VideoStreamEncoderX265->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
     int bitRateFactor = 7;
     VideoStreamEncoderX265->SetLosslessLink(true);
     VideoStreamEncoderX265->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent)*bitRateFactor);
     VideoStreamEncoderX265->InitializeEncoder();
     VideoStreamEncoderX265->SetSpeed(9);
-    this->OutVideoMessage->SetCodecType(CodecNameForX265);
-    iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderX265, &this->metaInfo)
+    this->OutVideoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_X265);
+    iReturn = VideoConverter::toIGTL(HeaderData, Content, &this->OutVideoMessage, VideoStreamEncoderX265, &this->metaInfo);
   }
 #endif
  if (!iReturn)
@@ -191,26 +191,6 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
-/*if (prefix==MESSAGE_PREFIX_RTS)
-  {
-   if (this->StartVideoMessage.IsNull())
-     {
-     this->StartVideoMessage = igtl::StartVideoMessage::New();
-     }
-   this->StartVideoMessage->SetDeviceName(HeaderData.deviceName.c_str());
-   this->StartVideoMessage->Pack();
-   return dynamic_pointer_cast<igtl::MessageBase>(this->StartVideoMessage);
-  }
- if (prefix==MESSAGE_PREFIX_STOP)
-  {
-    if (this->StopVideoMessage.IsNull())
-    {
-      this->StopVideoMessage = igtl::StopVideoMessage::New();
-    }
-    this->StopVideoMessage->SetDeviceName(HeaderData.deviceName.c_str());
-    this->StopVideoMessage->Pack();
-    return dynamic_pointer_cast<igtl::MessageBase>(this->StopVideoMessage);
-  }*/
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();

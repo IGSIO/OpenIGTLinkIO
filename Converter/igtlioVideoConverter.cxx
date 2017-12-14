@@ -39,22 +39,22 @@ namespace igtlio
       return 0;
     }
     GenericDecoder* decoder = NULL;
-#if defined(USE_H264)
-  if(videoMsg->GetCodecType().compare(CodecNameForH264)==0)
+#if defined(OpenIGTLink_USE_H264)
+  if(videoMsg->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_H264)==0)
     {
-    decoder = decoders.find(CodecNameForH264)->second;
+    decoder = decoders.find(IGTL_VIDEO_CODEC_NAME_H264)->second;
     }
 #endif
-#if defined(USE_VP9)
-  if(videoMsg->GetCodecType().compare(CodecNameForVPX)==0)
+#if defined(OpenIGTLink_USE_VP9)
+  if(videoMsg->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_VP9)==0)
     {
-    decoder = decoders.find(CodecNameForVPX)->second;
+    decoder = decoders.find(IGTL_VIDEO_CODEC_NAME_VP9)->second;
     }
 #endif
-#if defined(USE_OpenHEVC)
-    if(videoMsg->GetCodecType().compare(CodecNameForX265)==0)
+#if defined(OpenIGTLink_USE_OpenHEVC)
+    if(videoMsg->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_OPENHEVC)==0)
     {
-    decoder = decoders.find(CodecNameForX265)->second;
+    decoder = decoders.find(IGTL_VIDEO_CODEC_NAME_OPENHEVC)->second;
     }
 #endif
     

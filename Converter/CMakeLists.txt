@@ -33,7 +33,7 @@ set(${PROJECT_NAME}_HDRS
   igtlioStringConverter.h
   )
 
-IF(USE_H264 OR USE_VP9 OR USE_X265 OR USE_OpenHEVC)
+IF(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   LIST(APPEND ${PROJECT_NAME}_SRCS
   igtlioVideoConverter.cxx
   )
