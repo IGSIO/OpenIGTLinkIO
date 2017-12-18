@@ -20,6 +20,7 @@ set(${PROJECT_NAME}_SRCS
   igtlioObject.cxx
   igtlioDeviceFactory.cxx
   igtlioCircularBuffer.cxx
+  igtlioCircularSectionBuffer.cxx
   igtlioConnector.cxx
   igtlioSession.cxx
   igtlioLogic.cxx
@@ -30,6 +31,7 @@ set(${PROJECT_NAME}_HDRS
   igtlioObject.h
   igtlioDeviceFactory.h
   igtlioCircularBuffer.h
+  igtlioCircularSectionBuffer.h
   igtlioConnector.h
   igtlioSession.h
   )

@@ -105,7 +105,7 @@ ImageDevicePointer Session::SendImage(std::string device_id, vtkSmartPointer<vtk
 #if OpenIGTLink_ENABLE_VIDEOSTREAMING == 1
 VideoDevicePointer Session::SendFrame(std::string device_id, vtkSmartPointer<vtkImageData> image)
 {
-  VideoDevicePointer device;
+  VideoDevice* device;
   DeviceKeyType key(igtlio::VideoConverter::GetIGTLTypeName(), device_id);
   device = VideoDevice::SafeDownCast(Connector->AddDeviceIfNotPresent(key));
   

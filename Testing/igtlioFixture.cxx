@@ -18,7 +18,8 @@ void onReceivedEventFunc(vtkObject* caller, unsigned long eid, void* clientdata,
 LogicFixture::LogicFixture()
 {
   Logic = igtlio::LogicPointer::New();
-
+  ReceivedEvents = std::vector<int>(1000);
+  ReceivedEvents.clear();
   LogicEventCallback = vtkSmartPointer<vtkCallbackCommand>::New();
   LogicEventCallback->SetCallback(onReceivedEventFunc);
   LogicEventCallback->SetClientData(this);
@@ -81,7 +82,7 @@ bool ClientServerFixture::ConnectClientToServer()
 bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventId, int count)
 {
 
-  double timeout = 2;
+  double timeout = 2000;
   double starttime = vtkTimerLog::GetUniversalTime();
 
   // Client waits for an image to be sent from the server.
@@ -119,9 +120,8 @@ vtkSmartPointer<vtkImageData> ClientServerFixture::CreateTestImage()
 
 
 
-vtkSmartPointer<vtkImageData> ClientServerFixture::CreateTestFrame()
+int ClientServerFixture::CreateTestFrame(vtkImageData* image )
 {
-  vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
   int width = 512, height = 512;
   image->SetSpacing(1, 1, 1);
   image->SetExtent(0, width-1, 0, height-1, 0, 0);
@@ -129,13 +129,14 @@ vtkSmartPointer<vtkImageData> ClientServerFixture::CreateTestFrame()
   
   unsigned char* ptr = reinterpret_cast<unsigned char*>(image->GetScalarPointer());
   unsigned char color = 108;
+  
   for(int i = 0 ; i< width*height*3; i++)
   {
     *ptr = color%256;
     color++;
     ptr++;
   }
-  return image;
+  return 1;
 }
 
 vtkSmartPointer<vtkMatrix4x4> ClientServerFixture::CreateTestTransform()

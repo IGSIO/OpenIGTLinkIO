@@ -50,4 +50,5 @@ add_io_test("testCommandMessageCodec" testCommandMessageCodec testCommandMessage
 add_io_test("testSendReceiveCommandWidthCodec" testSendReceiveCommandWidthCodec testSendReceiveCommandWidthCodec.cxx)
 IF(OpenIGTLink_USE_H264 OR OpenIGTLink_USE_VP9 OR (OpenIGTLink_USE_X265 AND OpenIGTLink_USE_OpenHEVC))
   add_io_test("testReceiveVideo" testReceiveVideo testReceiveVideo.cxx)
+  add_io_test("testBufferForVideoStream" testBufferForVideoStream testBufferForVideoStream.cxx)
 ENDIF()

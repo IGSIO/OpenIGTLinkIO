@@ -32,6 +32,7 @@ Version:   $Revision: 1.2 $
 #include <vtkTimerLog.h>
 #include "igtlioConnector.h"
 #include "igtlioCircularBuffer.h"
+#include "igtlioCircularSectionBuffer.h"
 
 namespace igtlio
 {
@@ -437,25 +438,28 @@ int Connector::ReceiveController()
     //----------------------------------------------------------------
     // Search Circular Buffer
     DeviceKeyType key = CreateDeviceKey(headerMsg);
-
-    CircularBufferMap::iterator iter = this->Buffer.find(key);
-    if (iter == this->Buffer.end()) // First time to refer the device name
+    CircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
+    if (iter == this->SectionBuffer.end()) // First time to refer the device name
       {
       this->CircularBufferMutex->Lock();
-      this->Buffer[key] = CircularBufferPointer::New();
+      this->SectionBuffer[key] = CircularSectionBuffer::New();
+      this->SectionBuffer[key]->SetPacketMode(igtlio::CircularSectionBuffer::SinglePacketMode);
+      if (strcmp(headerMsg->GetDeviceType(), "VIDEO")==0)
+        {
+        this->SectionBuffer[key]->SetPacketMode(igtlio::CircularSectionBuffer::MultiplePacketsMode);
+        }
       this->CircularBufferMutex->Unlock();
       }
 
     //----------------------------------------------------------------
     // Load to the circular buffer
 
-    CircularBufferPointer circBuffer = this->Buffer[key];
+    CircularSectionBufferPointer circBuffer = this->SectionBuffer[key];
 
     if (circBuffer && circBuffer->StartPush() != -1)
       {
       //std::cerr << "Pushing into the circular buffer." << std::endl;
       circBuffer->StartPush();
-
       igtl::MessageBase::Pointer buffer = circBuffer->GetPushBuffer();
       buffer->SetMessageHeader(headerMsg);
       buffer->AllocatePack();
@@ -537,12 +541,12 @@ int Connector::Skip(int length, int skipFully)
 
 
 //----------------------------------------------------------------------------
-unsigned int Connector::GetUpdatedBuffersList(NameListType& nameList)
+unsigned int Connector::GetUpdatedSectionBuffersList(NameListType& nameList)
 {
   nameList.clear();
 
-  CircularBufferMap::iterator iter;
-  for (iter = this->Buffer.begin(); iter != this->Buffer.end(); iter ++)
+  CircularSectionBufferMap::iterator iter;
+  for (iter = this->SectionBuffer.begin(); iter != this->SectionBuffer.end(); iter ++)
     {
     if (iter->second != NULL && iter->second->IsUpdated())
       {
@@ -552,14 +556,13 @@ unsigned int Connector::GetUpdatedBuffersList(NameListType& nameList)
   return nameList.size();
 }
 
-
 //----------------------------------------------------------------------------
-CircularBufferPointer Connector::GetCircularBuffer(const DeviceKeyType &key)
+CircularSectionBufferPointer Connector::GetCircularSectionBuffer(const DeviceKeyType &key)
 {
-  CircularBufferMap::iterator iter = this->Buffer.find(key);
-  if (iter != this->Buffer.end())
+  CircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
+  if (iter != this->SectionBuffer.end())
     {
-    return this->Buffer[key]; // the key has been found in the list
+    return this->SectionBuffer[key]; // the key has been found in the list
     }
   else
     {
@@ -567,23 +570,24 @@ CircularBufferPointer Connector::GetCircularBuffer(const DeviceKeyType &key)
     }
 }
 
-
 //---------------------------------------------------------------------------
 void Connector::ImportDataFromCircularBuffer()
 {
   Connector::NameListType nameList;
-  this->GetUpdatedBuffersList(nameList);
+  this->GetUpdatedSectionBuffersList(nameList);
 
   Connector::NameListType::iterator nameIter;
   for (nameIter = nameList.begin(); nameIter != nameList.end(); nameIter ++)
     {
     DeviceKeyType key = *nameIter;
-    CircularBuffer* circBuffer = this->GetCircularBuffer(key);
+    CircularSectionBuffer* circBuffer = this->GetCircularSectionBuffer(key);
     circBuffer->StartPull();
+    DevicePointer device = NULL;
+    while(circBuffer->IsSectionBufferInProcess())
+    {
+    igtl::MessageBase::Pointer messageFromBuffer = circBuffer->GetPullBuffer();
 
-	igtl::MessageBase::Pointer messageFromBuffer = circBuffer->GetPullBuffer();
-
-	DeviceCreatorPointer deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
+    DeviceCreatorPointer deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
 
     if (!deviceCreator)
       {
@@ -591,17 +595,17 @@ void Connector::ImportDataFromCircularBuffer()
       continue;
       }
 
-    DevicePointer device = this->GetDevice(key);
+    device = this->GetDevice(key);
 
-	if ((device.GetPointer()!=NULL) && !(CreateDeviceKey(device)==CreateDeviceKey(messageFromBuffer)))
-      {
-        vtkErrorMacro(
-            << "Received an IGTL message of the wrong type, device=" << key.name
-            << " has type " << device->GetDeviceType()
-			<< " got type " << messageFromBuffer->GetDeviceType()
-              );
-        continue;
-      }
+    if ((device.GetPointer()!=NULL) && !(CreateDeviceKey(device)==CreateDeviceKey(messageFromBuffer)))
+        {
+          vtkErrorMacro(
+              << "Received an IGTL message of the wrong type, device=" << key.name
+              << " has type " << device->GetDeviceType()
+        << " got type " << messageFromBuffer->GetDeviceType()
+                );
+          continue;
+        }
 
     if (!device && !this->RestrictDeviceName)
       {
@@ -611,9 +615,9 @@ void Connector::ImportDataFromCircularBuffer()
       }
 
 	  device->ReceiveIGTLMessage(messageFromBuffer, this->CheckCRC);
-    device->Modified();
+    }
     //this->InvokeEvent(Connector::DeviceModifiedEvent, device.GetPointer());
-
+    device->Modified();
     circBuffer->EndPull();
     }
 

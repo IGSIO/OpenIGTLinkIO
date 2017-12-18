@@ -52,7 +52,8 @@ namespace igtlio
     }
 #endif
 #if defined(OpenIGTLink_USE_OpenHEVC)
-  if(videoMsg->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_OPENHEVC)==0)
+  // VideoMsg was encoded using X265 at the server side, so the codec type was set to "IGTL_VIDEO_CODEC_NAME_X265" by the server.
+  if(videoMsg->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_X265)==0)
     {
     decoder = decoders.find(IGTL_VIDEO_CODEC_NAME_OPENHEVC)->second;
     }
@@ -119,6 +120,8 @@ namespace igtlio
       videoStreamDecoder->ConvertYUVToRGB(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(),Height, Width);
       }
     imageData->Modified();
+    if (pDecodedPic->data[0]!=NULL)
+      delete [] pDecodedPic->data[0];
     delete pDecodedPic;
     return 1;
   }
@@ -128,7 +131,6 @@ namespace igtlio
   {
     if (dest->IsNull())
       *dest = igtl::VideoMessage::New();
-    (*dest)->InitPack();
     igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(*dest);
     
     HeadertoIGTL(header, &basemsg, metaInfo);

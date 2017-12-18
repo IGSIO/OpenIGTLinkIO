@@ -55,6 +55,7 @@ namespace igtlio
 {
 typedef vtkSmartPointer<class Connector> ConnectorPointer;
 typedef vtkSmartPointer<class CircularBuffer> CircularBufferPointer;
+typedef vtkSmartPointer<class CircularSectionBuffer> CircularSectionBufferPointer;
 
 
 enum CONNECTION_ROLE
@@ -247,8 +248,8 @@ private:
   //----------------------------------------------------------------
 
   typedef std::vector<DeviceKeyType> NameListType;
-  unsigned int GetUpdatedBuffersList(NameListType& nameList); // TODO: this will be moved to private
-  CircularBufferPointer GetCircularBuffer(const DeviceKeyType& key);     // TODO: Is it OK to use device name as a key?
+  unsigned int GetUpdatedSectionBuffersList(NameListType& nameList); // TODO: this will be moved to private
+  CircularSectionBufferPointer GetCircularSectionBuffer(const DeviceKeyType& key);     // TODO: Is it OK to use device name as a key?
 
   //----------------------------------------------------------------
   // Device Lists
@@ -322,8 +323,8 @@ private:
   //----------------------------------------------------------------
 
 
-  typedef std::map<DeviceKeyType, CircularBufferPointer> CircularBufferMap;
-  CircularBufferMap Buffer;
+  typedef std::map<DeviceKeyType, CircularSectionBuffer*> CircularSectionBufferMap;
+  CircularSectionBufferMap SectionBuffer;
 
   vtkMutexLockPointer CircularBufferMutex;
   int           RestrictDeviceName;  // Flag to restrict incoming and outgoing data by device names
