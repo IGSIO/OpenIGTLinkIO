@@ -48,4 +48,6 @@ add_io_test("testSendReceiveCommand" testSendReceiveCommand testSendReceiveComma
 add_io_test("testDeduceToolBasedOnName" testDeduceToolBasedOnName testDeduceToolBasedOnName.cxx)
 add_io_test("testCommandMessageCodec" testCommandMessageCodec testCommandMessageCodec.cxx)
 add_io_test("testSendReceiveCommandWidthCodec" testSendReceiveCommandWidthCodec testSendReceiveCommandWidthCodec.cxx)
-#add_io_test("testReceiveVideo" testReceiveVideo testReceiveVideo.cxx)
+IF(OpenIGTLink_USE_H264 OR OpenIGTLink_USE_VP9 OR (OpenIGTLink_USE_X265 AND OpenIGTLink_USE_OpenHEVC))
+  add_io_test("testReceiveVideo" testReceiveVideo testReceiveVideo.cxx)
+ENDIF()

@@ -40,8 +40,6 @@ bool compare(igtlio::VideoDevicePointer a, igtlio::VideoDevicePointer b)
 {
   if (a->GetDeviceName() != b->GetDeviceName())
     return false;
-  if (fabs(a->GetTimestamp()-b->GetTimestamp()) > 1E-3)
-    return false;
   if (a->GetDeviceType() != b->GetDeviceType())
     return false;
   if (!compare(a->GetContent().image, b->GetContent().image))
@@ -60,10 +58,10 @@ int main(int argc, char **argv)
 
 
   if (fixture.Client.Logic->GetNumberOfDevices() != 0)
-  {
+    {
     std::cout << "ERROR: Client has devices before they have been added or fundamental error!" << std::endl;
     return 1;
-  }
+    }
 
   std::cout << "*** Connection done" << std::endl;
   //---------------------------------------------------------------------------
@@ -75,30 +73,30 @@ int main(int argc, char **argv)
   //---------------------------------------------------------------------------
 
   if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::NewDeviceEvent))
-  {
+    {
     return 1;
-  }
+    }
 
   if (fixture.Client.Logic->GetNumberOfDevices() == 0)
-  {
+    {
     std::cout << "FAILURE: No devices received." << std::endl;
     return 1;
-  }
+    }
 
   igtlio::VideoDevicePointer receivedDevice;
   receivedDevice = igtlio::VideoDevice::SafeDownCast(fixture.Client.Logic->GetDevice(0));
   if (!receivedDevice)
-  {
+    {
     std::cout << "FAILURE: Non-video device received." << std::endl;
     return 1;
-  }
+    }
 
   std::cout << "*** Client received video device." << std::endl;
   //---------------------------------------------------------------------------
 
   if (!compare(videoDevice, receivedDevice))
-  {
+    {
     std::cout << "FAILURE: frame differs from the one sent from server." << std::endl;
     return 1;
-  }
+    }
 }

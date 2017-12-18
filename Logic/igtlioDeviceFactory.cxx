@@ -14,8 +14,9 @@
 #include "igtlioCommandDevice.h"
 #include "igtlioTransformDevice.h"
 #include "igtlioPolyDataDevice.h"
-//#include "igtlioVideoDevice.h"
-
+#if OpenIGTLink_ENABLE_VIDEOSTREAMING == 1
+  #include "igtlioVideoDevice.h"
+#endif
 namespace igtlio
 {
 
@@ -27,10 +28,12 @@ DeviceFactory::DeviceFactory()
   this->registerCreator<ImageDeviceCreator>();
   this->registerCreator<StatusDeviceCreator>();
   this->registerCreator<CommandDeviceCreator>();
-  //this->registerCreator<VideoDeviceCreator>();
   this->registerCreator<TransformDeviceCreator>();
   this->registerCreator<StringDeviceCreator>();
   this->registerCreator<PolyDataDeviceCreator>();
+#if OpenIGTLink_ENABLE_VIDEOSTREAMING == 1
+  this->registerCreator<VideoDeviceCreator>();
+#endif
 }
 
 //---------------------------------------------------------------------------

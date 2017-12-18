@@ -8,9 +8,12 @@
 #include "igtlioCommandDevice.h"
 #include "igtlioImageDevice.h"
 #include "igtlioTransformDevice.h"
-//#include "igtlioVideoDevice.h"
 #include "igtlioStringDevice.h"
 #include "igtlioStatusDevice.h"
+
+#if OpenIGTLink_ENABLE_VIDEOSTREAMING == 1
+  #include "igtlioVideoDevice.h"
+#endif
 
 
 namespace igtlio
@@ -99,12 +102,12 @@ ImageDevicePointer Session::SendImage(std::string device_id, vtkSmartPointer<vtk
   return device;
 }
 
-/* 
+#if OpenIGTLink_ENABLE_VIDEOSTREAMING == 1
 VideoDevicePointer Session::SendFrame(std::string device_id, vtkSmartPointer<vtkImageData> image)
 {
   VideoDevicePointer device;
   DeviceKeyType key(igtlio::VideoConverter::GetIGTLTypeName(), device_id);
-  device = VideoDevice::SafeDownCast(this->AddDeviceIfNotPresent(key));
+  device = VideoDevice::SafeDownCast(Connector->AddDeviceIfNotPresent(key));
   
   igtlio::VideoConverter::ContentData contentdata = device->GetContent();
   contentdata.image = image;
@@ -114,7 +117,7 @@ VideoDevicePointer Session::SendFrame(std::string device_id, vtkSmartPointer<vtk
   
   return device;
 }
-*/
+#endif
   
 ConnectorPointer Session::GetConnector()
 {
