@@ -34,10 +34,10 @@ namespace igtlio
     int c = videoMsg->Unpack(checkCRC);
     
     if ((c & igtl::MessageHeader::UNPACK_BODY) == 0) // if CRC check fails
-    {
+      {
       // TODO: error handling
       return 0;
-    }
+      }
     GenericDecoder* decoder = NULL;
 #if defined(OpenIGTLink_USE_H264)
   if(videoMsg->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_H264)==0)
@@ -52,7 +52,7 @@ namespace igtlio
     }
 #endif
 #if defined(OpenIGTLink_USE_OpenHEVC)
-    if(videoMsg->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_OPENHEVC)==0)
+  if(videoMsg->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_OPENHEVC)==0)
     {
     decoder = decoders.find(IGTL_VIDEO_CODEC_NAME_OPENHEVC)->second;
     }
@@ -73,51 +73,53 @@ namespace igtlio
   //---------------------------------------------------------------------------
   int VideoConverter::IGTLToVTKImageData(igtl::VideoMessage::Pointer videoMsg, ContentData *dest,GenericDecoder * videoStreamDecoder)
   {
+    if(videoStreamDecoder == NULL)
+      {
+      std::cerr<<"Failed to decode video message - input video message decoder is NULL";
+      }
     if (!dest->image)
       dest->image = vtkSmartPointer<vtkImageData>::New();
     vtkSmartPointer<vtkImageData> imageData = dest->image;
-    if(videoStreamDecoder)
-    {
-      int32_t Width = videoMsg->GetWidth();
-      int32_t Height = videoMsg->GetHeight();
-      if (videoMsg->GetWidth() != imageData->GetDimensions()[0] ||
-          videoMsg->GetHeight() != imageData->GetDimensions()[1])
+
+    int32_t Width = videoMsg->GetWidth();
+    int32_t Height = videoMsg->GetHeight();
+    if (videoMsg->GetWidth() != imageData->GetDimensions()[0] ||
+        videoMsg->GetHeight() != imageData->GetDimensions()[1])
       {
-        imageData->SetDimensions(Width , Height, 1);
-        imageData->SetExtent(0, Width-1, 0, Height-1, 0, 0 );
-        imageData->SetOrigin(0, 0, 0);
-        imageData->AllocateScalars(VTK_UNSIGNED_CHAR,3);
+      imageData->SetDimensions(Width , Height, 1);
+      imageData->SetExtent(0, Width-1, 0, Height-1, 0, 0 );
+      imageData->SetOrigin(0, 0, 0);
+      imageData->AllocateScalars(VTK_UNSIGNED_CHAR,3);
       }
-      SourcePicture* pDecodedPic = new SourcePicture();
-      pDecodedPic->data[0] = new igtl_uint8[Width * Height*3/2];
-      memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
-      if(!videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMsg, pDecodedPic))
+    SourcePicture* pDecodedPic = new SourcePicture();
+    pDecodedPic->data[0] = new igtl_uint8[Width * Height*3/2];
+    memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
+    if(!videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMsg, pDecodedPic))
       {
-        pDecodedPic->~SourcePicture();
-        return 0;
+      pDecodedPic->~SourcePicture();
+      return 0;
       }
-      igtl_uint16 frameType = videoMsg->GetFrameType();
-      bool isGrayImage = false;
-      if(frameType > 0x00FF)//Using first byte of video frame type to indicate gray or color video. It might be better to change the video stream protocol to add additional field for indicating Gray or color image.
+    igtl_uint16 frameType = videoMsg->GetFrameType();
+    bool isGrayImage = false;
+    if(frameType > 0x00FF)//Using first byte of video frame type to indicate gray or color video. It might be better to change the video stream protocol to add additional field for indicating Gray or color image.
       {
-        isGrayImage =  true;
-        frameType = frameType >> 8;
+      isGrayImage =  true;
+      frameType = frameType >> 8;
       }
-      else
+    else
       {
-        isGrayImage =  false;
+      isGrayImage =  false;
       }
-      if (isGrayImage)
+    if (isGrayImage)
       {
-        videoStreamDecoder->ConvertYUVToGrayImage(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(), Height, Width);
+      videoStreamDecoder->ConvertYUVToGrayImage(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(), Height, Width);
       }
-      else
+    else
       {
-        videoStreamDecoder->ConvertYUVToRGB(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(),Height, Width);
+      videoStreamDecoder->ConvertYUVToRGB(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(),Height, Width);
       }
-      imageData->Modified();
-      delete pDecodedPic;
-    }
+    imageData->Modified();
+    delete pDecodedPic;
     return 1;
   }
   
@@ -139,28 +141,28 @@ namespace igtlio
     int   scalarType = frameImage->GetScalarType();       // scalar type, currently only unsigned char is supported
     int   ncomp = frameImage->GetNumberOfScalarComponents();
     if (ncomp != 3 && (scalarType != videoMsg->TYPE_INT8 || scalarType != videoMsg->TYPE_UINT8) )
-    {
+      {
      std::cerr<<"Invalid image data format!";
       return 0;
-    }
+      }
     
     if (encoder == NULL)
-    {
+      {
       std::cerr<<"Failed to pack video message - input video message encoder is NULL";
       return 0;
-    }
+      }
     
     if (videoMsg.IsNull())
-    {
+      {
       std::cerr<<"Failed to pack video message - input video message is NULL";
       return 0;
-    }
+      }
     
     if (!source.image->GetScalarPointer())
-    {
+      {
       std::cerr<<"Unable to send video message - image data is NOT valid!";
       return 0;
-    }
+      }
     
     int imageSizePixels[3] = { 0 };
     
@@ -178,10 +180,10 @@ namespace igtlio
     pSrcPic->picHeight = imageSizePixels[1];
     if (encoder->GetPicHeight() != iSourceHeight
         || encoder->GetPicWidth() != iSourceWidth)
-    {
+      {
       encoder->SetPicWidthAndHeight(iSourceWidth,iSourceHeight);
       encoder->InitializeEncoder();
-    }
+      }
     pSrcPic->data[0] = YUV420ImagePointer;
     pSrcPic->data[1] = pSrcPic->data[0] + (iSourceWidth * iSourceHeight);
     pSrcPic->data[2] = pSrcPic->data[1] + (iSourceWidth * iSourceHeight >> 2);
@@ -201,7 +203,7 @@ namespace igtlio
   int VideoConverter::IGTLToVTKScalarType(int igtlType)
   {
     switch (igtlType)
-    {
+      {
       case igtl::VideoMessage::TYPE_INT8: return VTK_CHAR;
       case igtl::VideoMessage::TYPE_UINT8: return VTK_UNSIGNED_CHAR;
       case igtl::VideoMessage::TYPE_INT16: return VTK_SHORT;
@@ -211,7 +213,7 @@ namespace igtlio
       default:
         std::cerr << "Invalid IGTL scalar Type: "<<igtlType << std::endl;
         return VTK_VOID;
-    }
+      }
   }
   
 } //namespace igtlio
