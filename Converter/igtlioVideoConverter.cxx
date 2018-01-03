@@ -95,7 +95,7 @@ namespace igtlio
     SourcePicture* pDecodedPic = new SourcePicture();
     pDecodedPic->data[0] = new igtl_uint8[Width * Height*3/2];
     memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
-    if(!videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMsg, pDecodedPic))
+    if(videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMsg, pDecodedPic) == -1)
       {
       pDecodedPic->~SourcePicture();
       return 0;

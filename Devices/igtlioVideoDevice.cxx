@@ -46,6 +46,8 @@ VideoDevice::VideoDevice()
 {
   this->OutVideoMessage = igtl::VideoMessage::New();
   this->OutVideoMessage->SetHeaderVersion(OpenIGTLink_HEADER_VERSION);
+  this->InVideoMessage = igtl::VideoMessage::New();
+  this->InVideoMessage->SetHeaderVersion(OpenIGTLink_HEADER_VERSION);
   VideoStreamDecoderH264 = NULL;
   VideoStreamEncoderH264 = NULL;
   VideoStreamDecoderVPX  = NULL;
@@ -113,6 +115,14 @@ VideoConverter::ContentData VideoDevice::GetContent()
   return Content;
 }
 
+igtl::VideoMessage::Pointer  VideoDevice::GetReceivedIGTLMessage()
+{
+  igtl::VideoMessage::Pointer videoMessage = igtl::VideoMessage::New();
+  
+  videoMessage->InitPack();
+  videoMessage->Copy(this->InVideoMessage);
+  return videoMessage;
+}
 
 //---------------------------------------------------------------------------
 int VideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
@@ -121,10 +131,14 @@ int VideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool chec
   headerMsg->Copy(buffer);
   if(strcmp(headerMsg->GetDeviceName(), this->GetDeviceName().c_str())==0)
     {
+    // Copy the current received video message
+    this->InVideoMessage->InitPack();
+    this->InVideoMessage->Copy(buffer);
+    this->InVideoMessage->SetDeviceType(buffer->GetDeviceType());
+    
     int returnValue = 0;
     //To Do, we need to unpack the buffer to know the codec type, which is done in the converter
     // So the user need to set the correct CurrentCodecType before hand.
-    
     returnValue = VideoConverter::fromIGTL(buffer, &HeaderData, &Content, this->DecodersMap, checkCRC, &this->metaInfo);
 
     if (returnValue)
