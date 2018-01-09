@@ -41,6 +41,8 @@ public:
  virtual igtl::MessageBase::Pointer GetIGTLMessage() VTK_OVERRIDE;
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix) VTK_OVERRIDE ;
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const VTK_OVERRIDE;
+ 
+ igtl::VideoMessage::Pointer GetCompressedIGTLMessage();
   
   void SetContent(VideoConverter::ContentData content);
   
@@ -75,8 +77,6 @@ protected:
   ~VideoDevice();
 
  protected:
-  igtl::VideoMessage::Pointer OutVideoMessage;
-  
   igtl::StartVideoMessage::Pointer StartVideoMessage;
   
   igtl::StopVideoMessage::Pointer StopVideoMessage;
