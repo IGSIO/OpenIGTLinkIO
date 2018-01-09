@@ -56,6 +56,8 @@ namespace igtlio
     struct ContentData
     {
       vtkSmartPointer<vtkImageData> image;
+      VideoFrameType frameType;
+      char codecName[IGTL_VIDEO_CODEC_NAME_SIZE];
       igtl::VideoMessage::Pointer videoMessage; // for saving the compressed data.
     };
     
@@ -68,7 +70,7 @@ namespace igtlio
   protected:
     
     static int IGTLToVTKScalarType(int igtlType);
-    static int IGTLToVTKImageData(ContentData *dest, GenericDecoder * videoStreamDecoder);
+    static int IGTLToVTKImageData(ContentData *dest, igtl::VideoMessage::Pointer videoMessage, GenericDecoder * videoStreamDecoder);
 
   };
   

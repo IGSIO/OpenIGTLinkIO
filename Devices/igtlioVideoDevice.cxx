@@ -77,7 +77,7 @@ VideoDevice::VideoDevice()
   DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_VP9, VideoStreamDecoderVPX));
   DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_OPENHEVC,VideoStreamDecoderX265));
   DecodedPic = new SourcePicture();
-  this->CurrentCodecType = IGTL_VIDEO_CODEC_NAME_VP9;
+  this->CurrentCodecType = "";
 }
 
 //---------------------------------------------------------------------------
@@ -135,6 +135,7 @@ int VideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool chec
 
     if (returnValue)
      {
+     this->SetCurrentCodecType(std::string(Content.codecName));
      this->Modified();
      this->InvokeEvent(VideoModifiedEvent, this);
      return 1;

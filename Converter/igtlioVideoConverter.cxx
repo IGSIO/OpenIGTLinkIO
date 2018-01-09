@@ -27,44 +27,56 @@ namespace igtlio
     // Create a message buffer to receive image data
     if (dest->videoMessage.IsNull())
       dest->videoMessage = igtl::VideoMessage::New();
-    dest->videoMessage->InitPack();
-    dest->videoMessage->Copy(source);
+    dest->videoMessage->Copy(source); // We would like to save the untouched data before the Unpack()
+    igtl::VideoMessage::Pointer videoMessage = igtl::VideoMessage::New();
+    videoMessage->InitPack();
+    videoMessage->Copy(source);
     // Deserialize the data
     // If CheckCRC==0, CRC check is skipped.
-    int c = dest->videoMessage->Unpack(checkCRC);
+    int c = videoMessage->Unpack(checkCRC);
     
     if ((c & igtl::MessageHeader::UNPACK_BODY) == 0) // if CRC check fails
       {
       // TODO: error handling
       return 0;
       }
+    igtl_uint16 frameType = videoMessage->GetFrameType();
+    if (frameType>0X00FF)
+      {
+      frameType= frameType>>8;
+      }
+    dest->frameType = (VideoFrameType)frameType;
+    strncpy(dest->codecName, "    ", IGTL_VIDEO_CODEC_NAME_SIZE);
     GenericDecoder* decoder = NULL;
 #if defined(OpenIGTLink_USE_H264)
-  if(dest->videoMessage->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_H264)==0)
+  if(videoMessage->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_H264)==0)
     {
     decoder = decoders.find(IGTL_VIDEO_CODEC_NAME_H264)->second;
+    strncpy(dest->codecName, IGTL_VIDEO_CODEC_NAME_H264, IGTL_VIDEO_CODEC_NAME_SIZE);
     }
 #endif
 #if defined(OpenIGTLink_USE_VP9)
-  if(dest->videoMessage->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_VP9)==0)
+  if(videoMessage->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_VP9)==0)
     {
     decoder = decoders.find(IGTL_VIDEO_CODEC_NAME_VP9)->second;
+    strncpy(dest->codecName, IGTL_VIDEO_CODEC_NAME_VP9, IGTL_VIDEO_CODEC_NAME_SIZE);
     }
 #endif
 #if defined(OpenIGTLink_USE_OpenHEVC)
   // videoMessage was encoded using X265 at the server side, so the codec type was set to "IGTL_VIDEO_CODEC_NAME_X265" by the server.
-  if(dest->videoMessage->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_X265)==0)
+  if(videoMessage->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_X265)==0)
     {
     decoder = decoders.find(IGTL_VIDEO_CODEC_NAME_OPENHEVC)->second;
+    strncpy(dest->codecName, IGTL_VIDEO_CODEC_NAME_X265, IGTL_VIDEO_CODEC_NAME_SIZE);
     }
 #endif
     
     // get header
-    if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(dest->videoMessage), header, metaInfo))
+    if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(videoMessage), header, metaInfo))
       return 0;
     
     // get Video
-    if (VideoConverter::IGTLToVTKImageData(dest, decoder) == 0)
+    if (VideoConverter::IGTLToVTKImageData(dest, videoMessage, decoder) == 0)
       return 0;
     
     return 1;
@@ -72,7 +84,7 @@ namespace igtlio
   
   
   //---------------------------------------------------------------------------
-  int VideoConverter::IGTLToVTKImageData(ContentData *dest,GenericDecoder * videoStreamDecoder)
+  int VideoConverter::IGTLToVTKImageData(ContentData *dest, igtl::VideoMessage::Pointer videoMessage,GenericDecoder * videoStreamDecoder)
   {
     if(videoStreamDecoder == NULL)
       {
@@ -82,10 +94,10 @@ namespace igtlio
       dest->image = vtkSmartPointer<vtkImageData>::New();
     vtkSmartPointer<vtkImageData> imageData = dest->image;
 
-    int32_t Width = dest->videoMessage->GetWidth();
-    int32_t Height = dest->videoMessage->GetHeight();
-    if (dest->videoMessage->GetWidth() != imageData->GetDimensions()[0] ||
-        dest->videoMessage->GetHeight() != imageData->GetDimensions()[1])
+    int32_t Width = videoMessage->GetWidth();
+    int32_t Height = videoMessage->GetHeight();
+    if (videoMessage->GetWidth() != imageData->GetDimensions()[0] ||
+        videoMessage->GetHeight() != imageData->GetDimensions()[1])
       {
       imageData->SetDimensions(Width , Height, 1);
       imageData->SetExtent(0, Width-1, 0, Height-1, 0, 0 );
@@ -95,12 +107,12 @@ namespace igtlio
     SourcePicture* pDecodedPic = new SourcePicture();
     pDecodedPic->data[0] = new igtl_uint8[Width * Height*3/2];
     memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
-    if(videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(dest->videoMessage, pDecodedPic) == -1)
+    if(videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMessage, pDecodedPic) == -1)
       {
       pDecodedPic->~SourcePicture();
       return 0;
       }
-    igtl_uint16 frameType = dest->videoMessage->GetFrameType();
+    igtl_uint16 frameType = videoMessage->GetFrameType();
     bool isGrayImage = false;
     if(frameType > 0x00FF)//Using first byte of video frame type to indicate gray or color video. It might be better to change the video stream protocol to add additional field for indicating Gray or color image.
       {
