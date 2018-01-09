@@ -56,18 +56,19 @@ namespace igtlio
     struct ContentData
     {
       vtkSmartPointer<vtkImageData> image;
+      igtl::VideoMessage::Pointer videoMessage; // for saving the compressed data.
     };
     
     static const char*  GetIGTLName() { return GetIGTLTypeName(); }
     static const char* GetIGTLTypeName() { return "VIDEO"; }
     
     static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, std::map<std::string,GenericDecoder*> decoders, bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
-    static int toIGTL(const HeaderData& header, const ContentData& source, igtl::VideoMessage::Pointer* dest, GenericEncoder* encoder, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
+    static int toIGTL(const HeaderData& header, const ContentData& source, GenericEncoder* encoder, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
     
   protected:
     
     static int IGTLToVTKScalarType(int igtlType);
-    static int IGTLToVTKImageData(igtl::VideoMessage::Pointer videoMsg, ContentData *dest, GenericDecoder * videoStreamDecoder);
+    static int IGTLToVTKImageData(ContentData *dest, GenericDecoder * videoStreamDecoder);
 
   };
   
