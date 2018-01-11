@@ -59,6 +59,8 @@ namespace igtlio
       VideoFrameType frameType;
       char codecName[IGTL_VIDEO_CODEC_NAME_SIZE];
       igtl::VideoMessage::Pointer videoMessage; // for saving the compressed data.
+      igtl::VideoMessage::Pointer keyFrameMessage; // for saving the compressed data.
+      bool keyFrameUpdated;
     };
     
     static const char*  GetIGTLName() { return GetIGTLTypeName(); }

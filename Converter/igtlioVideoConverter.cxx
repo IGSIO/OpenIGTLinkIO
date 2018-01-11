@@ -70,7 +70,6 @@ namespace igtlio
     strncpy(dest->codecName, IGTL_VIDEO_CODEC_NAME_X265, IGTL_VIDEO_CODEC_NAME_SIZE);
     }
 #endif
-    
     // get header
     if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(videoMessage), header, metaInfo))
       return 0;
@@ -122,6 +121,14 @@ namespace igtlio
     else
       {
       isGrayImage =  false;
+      }
+    dest->keyFrameUpdated = false;
+    if (frameType == FrameTypeKey)
+      {
+      if (dest->keyFrameMessage.IsNull())
+        dest->keyFrameMessage = igtl::VideoMessage::New();
+      dest->keyFrameMessage->Copy(dest->videoMessage); // We would like to track the latest key frame message
+      dest->keyFrameUpdated = true;
       }
     if (isGrayImage)
       {

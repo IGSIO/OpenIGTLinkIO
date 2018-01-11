@@ -119,6 +119,14 @@ igtl::VideoMessage::Pointer  VideoDevice::GetCompressedIGTLMessage()
   return videoMessage;
 }
 
+igtl::VideoMessage::Pointer  VideoDevice::GetKeyFrameMessage()
+{
+  igtl::VideoMessage::Pointer videoMessage = igtl::VideoMessage::New();
+  videoMessage->InitPack();
+  videoMessage->Copy(this->Content.keyFrameMessage);
+  return videoMessage;
+}
+
 //---------------------------------------------------------------------------
 int VideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {

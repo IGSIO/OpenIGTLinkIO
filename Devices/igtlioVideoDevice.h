@@ -43,6 +43,8 @@ public:
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const VTK_OVERRIDE;
  
  igtl::VideoMessage::Pointer GetCompressedIGTLMessage();
+ 
+ igtl::VideoMessage::Pointer GetKeyFrameMessage();
   
   void SetContent(VideoConverter::ContentData content);
   
@@ -55,7 +57,10 @@ public:
   
   int SetCurrentCodecType(std::string codecType)
   {
-  if (codecType.compare(IGTL_VIDEO_CODEC_NAME_X265)==0 || codecType.compare(IGTL_VIDEO_CODEC_NAME_VP9)==0 || codecType.compare(IGTL_VIDEO_CODEC_NAME_H264)==0 || codecType.compare(IGTL_VIDEO_CODEC_NAME_OPENHEVC)==0)
+  if (strncmp(codecType.c_str(), IGTL_VIDEO_CODEC_NAME_X265, IGTL_VIDEO_CODEC_NAME_SIZE)==0 ||
+      strncmp(codecType.c_str(), IGTL_VIDEO_CODEC_NAME_VP9, IGTL_VIDEO_CODEC_NAME_SIZE)==0 ||
+      strncmp(codecType.c_str(), IGTL_VIDEO_CODEC_NAME_H264, IGTL_VIDEO_CODEC_NAME_SIZE)==0 ||
+      strncmp(codecType.c_str(), IGTL_VIDEO_CODEC_NAME_OPENHEVC, IGTL_VIDEO_CODEC_NAME_SIZE)==0)
     {
     this->CurrentCodecType = std::string(codecType);
     return 0;
