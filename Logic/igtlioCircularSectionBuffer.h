@@ -91,7 +91,7 @@ class OPENIGTLINKIO_LOGIC_EXPORT CircularSectionBuffer : public vtkObject
   
   int                BufferSize;
   
-#if OpenIGTLink_ENABLE_VIDEOSTREAMING
+#if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   std::string       DeviceType[IGTLCB_CIRC_BUFFER_SIZE_VIDEOSTREAM];
   unsigned short     DataStatus[IGTLCB_CIRC_BUFFER_SIZE_VIDEOSTREAM];
   igtl::MessageBase::Pointer Messages[IGTLCB_CIRC_BUFFER_SIZE_VIDEOSTREAM];

@@ -88,23 +88,27 @@ protected:
 
   VideoConverter::ContentData Content;
   
-  GenericDecoder* VideoStreamDecoderVPX;
+  igtl::GenericDecoder* VideoStreamDecoderVPX;
   
-  GenericDecoder* VideoStreamDecoderX265;
+  igtl::GenericDecoder* VideoStreamDecoderX265;
   
-  GenericDecoder* VideoStreamDecoderH264;
+  igtl::GenericDecoder* VideoStreamDecoderH264;
   
-  std::map<std::string,GenericDecoder*> DecodersMap;
+  igtl::GenericDecoder* VideoStreamDecoderAV1;
   
-  SourcePicture* DecodedPic;
+  std::map<std::string, igtl::GenericDecoder*> DecodersMap;
+  
+  igtl::SourcePicture* DecodedPic;
   
   std::string CurrentCodecType;
   
-  GenericEncoder* VideoStreamEncoderVPX;
+  igtl::GenericEncoder* VideoStreamEncoderVPX;
   
-  GenericEncoder* VideoStreamEncoderX265;
+  igtl::GenericEncoder* VideoStreamEncoderX265;
   
-  GenericEncoder* VideoStreamEncoderH264;
+  igtl::GenericEncoder* VideoStreamEncoderH264;
+  
+  igtl::GenericEncoder* VideoStreamEncoderAV1;
   
 };
 

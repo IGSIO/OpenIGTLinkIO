@@ -15,7 +15,7 @@
 
 bool compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
 {
-#if OpenIGTLink_ENABLE_VIDEOSTREAMING
+#if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   GenericEncoder * encoder = new VP9Encoder();
   GenericDecoder * decoder = new VP9Decoder();
   igtlUint8* yuv_a = new igtlUint8[a->GetDimensions()[0]*a->GetDimensions()[1]*3/2];

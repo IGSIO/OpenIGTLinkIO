@@ -50,6 +50,8 @@ VideoDevice::VideoDevice()
   VideoStreamEncoderVPX  = NULL;
   VideoStreamDecoderX265 = NULL;
   VideoStreamEncoderX265 = NULL;
+  VideoStreamDecoderAV1 = NULL;
+  VideoStreamEncoderAV1 = NULL;
 #if defined(OpenIGTLink_USE_H264)
   VideoStreamDecoderH264 = new H264Decoder();
   VideoStreamEncoderH264 = new H264Encoder();
@@ -62,6 +64,13 @@ VideoDevice::VideoDevice()
   VideoStreamEncoderVPX->SetPicWidthAndHeight(256,256);
   VideoStreamEncoderVPX->InitializeEncoder();
   VideoStreamEncoderVPX->SetLosslessLink(true);
+#endif
+#if defined(OpenIGTLink_USE_AV1)
+  VideoStreamDecoderAV1 = new igtlAV1Decoder();
+  VideoStreamEncoderAV1 = new igtlAV1Encoder();
+  VideoStreamEncoderAV1->SetPicWidthAndHeight(256,256);
+  VideoStreamEncoderAV1->SetLosslessLink(true);
+  VideoStreamEncoderAV1->InitializeEncoder();
 #endif
 #if defined(OpenIGTLink_USE_OpenHEVC)
   VideoStreamDecoderX265 = new H265Decoder();
@@ -76,8 +85,10 @@ VideoDevice::VideoDevice()
   DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_H264,VideoStreamDecoderH264));
   DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_VP9, VideoStreamDecoderVPX));
   DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_OPENHEVC,VideoStreamDecoderX265));
+  DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_AV1,
+      VideoStreamDecoderAV1));
   DecodedPic = new SourcePicture();
-  this->CurrentCodecType = "";
+  this->CurrentCodecType = IGTL_VIDEO_CODEC_NAME_VP9;
 }
 
 //---------------------------------------------------------------------------

@@ -11,7 +11,7 @@
 #include "igtlioStringDevice.h"
 #include "igtlioStatusDevice.h"
 
-#if OpenIGTLink_ENABLE_VIDEOSTREAMING == 1
+#if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   #include "igtlioVideoDevice.h"
 #endif
 
@@ -102,7 +102,8 @@ ImageDevicePointer Session::SendImage(std::string device_id, vtkSmartPointer<vtk
   return device;
 }
 
-#if OpenIGTLink_ENABLE_VIDEOSTREAMING == 1
+#if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
+#include "igtl_video.h"
 VideoDevicePointer Session::SendFrame(std::string device_id, vtkSmartPointer<vtkImageData> image)
 {
   VideoDevice* device;
@@ -112,7 +113,7 @@ VideoDevicePointer Session::SendFrame(std::string device_id, vtkSmartPointer<vtk
   igtlio::VideoConverter::ContentData contentdata = device->GetContent();
   contentdata.image = image;
   device->SetContent(contentdata);
-  
+  device->SetCurrentCodecType(IGTL_VIDEO_CODEC_NAME_VP9);
   Connector->SendMessage(CreateDeviceKey(device));
   
   return device;

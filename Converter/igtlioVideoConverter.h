@@ -21,23 +21,29 @@
 #include "igtlConfigure.h"
 #include "igtl_util.h"
 #if defined(OpenIGTLink_USE_H264)
-  #include "H264Encoder.h"
-  #include "H264Decoder.h"
+  #include "igtlH264Encoder.h"
+  #include "igtlH264Decoder.h"
+#endif
+#if defined(OpenIGTLink_USE_AV1)
+  #include "igtlAV1Encoder.h"
+  #include "igtlAV1Decoder.h"
 #endif
 #if defined(OpenIGTLink_USE_VP9)
-  #include "VP9Encoder.h"
-  #include "VP9Decoder.h"
+  #include "igtlVP9Encoder.h"
+  #include "igtlVP9Decoder.h"
 #endif
 #if defined(OpenIGTLink_USE_OpenHEVC)
-  #include "H265Decoder.h"
+  #include "igtlH265Decoder.h"
 #endif
 #if defined(OpenIGTLink_USE_X265)
-  #include "H265Encoder.h"
+  #include "igtlH265Encoder.h"
 #endif
 #include "igtlioBaseConverter.h"
 
 class vtkImageData;
 class vtkMatrix4x4;
+
+using namespace igtl;
 
 namespace igtlio
 {
@@ -58,21 +64,21 @@ namespace igtlio
       vtkSmartPointer<vtkImageData> image;
       VideoFrameType frameType;
       char codecName[IGTL_VIDEO_CODEC_NAME_SIZE];
-      igtl::VideoMessage::Pointer videoMessage; // for saving the compressed data.
-      igtl::VideoMessage::Pointer keyFrameMessage; // for saving the compressed data.
+      VideoMessage::Pointer videoMessage; // for saving the compressed data.
+      VideoMessage::Pointer keyFrameMessage; // for saving the compressed data.
       bool keyFrameUpdated;
     };
     
     static const char*  GetIGTLName() { return GetIGTLTypeName(); }
     static const char* GetIGTLTypeName() { return "VIDEO"; }
     
-    static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, std::map<std::string,GenericDecoder*> decoders, bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
-    static int toIGTL(const HeaderData& header, const ContentData& source, GenericEncoder* encoder, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
+    static int fromIGTL(MessageBase::Pointer source, HeaderData* header, ContentData* content, std::map<std::string,GenericDecoder*> decoders, bool checkCRC, MessageBase::MetaDataMap* metaInfo = NULL);
+    static int toIGTL(const HeaderData& header, const ContentData& source, GenericEncoder* encoder, MessageBase::MetaDataMap* metaInfo = NULL);
     
   protected:
     
     static int IGTLToVTKScalarType(int igtlType);
-    static int IGTLToVTKImageData(ContentData *dest, igtl::VideoMessage::Pointer videoMessage, GenericDecoder * videoStreamDecoder);
+    static int IGTLToVTKImageData(ContentData *dest, VideoMessage::Pointer videoMessage, GenericDecoder * videoStreamDecoder);
 
   };
   

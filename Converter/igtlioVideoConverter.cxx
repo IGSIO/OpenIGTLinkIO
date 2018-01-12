@@ -62,6 +62,13 @@ namespace igtlio
     strncpy(dest->codecName, IGTL_VIDEO_CODEC_NAME_VP9, IGTL_VIDEO_CODEC_NAME_SIZE);
     }
 #endif
+#if defined(OpenIGTLink_USE_AV1)
+  if(videoMessage->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_AV1)==0)
+    {
+    decoder = decoders.find(IGTL_VIDEO_CODEC_NAME_AV1)->second;
+    strncpy(dest->codecName, IGTL_VIDEO_CODEC_NAME_AV1, IGTL_VIDEO_CODEC_NAME_SIZE);
+    }
+#endif
 #if defined(OpenIGTLink_USE_OpenHEVC)
   // videoMessage was encoded using X265 at the server side, so the codec type was set to "IGTL_VIDEO_CODEC_NAME_X265" by the server.
   if(videoMessage->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_X265)==0)

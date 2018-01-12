@@ -29,7 +29,7 @@ vtkStandardNewMacro(CircularSectionBuffer);
 //---------------------------------------------------------------------------
 CircularSectionBuffer::CircularSectionBuffer()
 {
-#if OpenIGTLink_ENABLE_VIDEOSTREAMING
+#if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   this->BufferSize = IGTLCB_CIRC_BUFFER_SIZE_VIDEOSTREAM;
 #else
   this->BufferSize = IGTLCB_CIRC_BUFFER_SIZE;
