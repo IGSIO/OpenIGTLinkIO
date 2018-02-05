@@ -689,7 +689,7 @@ CommandDevicePointer Connector::SendCommand(std::string device_id, std::string c
   vtkSmartPointer<CommandDevice> device = CommandDevice::SafeDownCast( AddDeviceIfNotPresent(key) );
 
   igtlio::CommandConverter::ContentData contentdata = device->GetContent();
-  contentdata.id +=1;
+  contentdata.id = this->CommandId;
   contentdata.name = command;
   contentdata.content = content;
   device->SetContent(contentdata);
@@ -697,6 +697,8 @@ CommandDevicePointer Connector::SendCommand(std::string device_id, std::string c
   device->PruneCompletedQueries();
 
   SendMessage(CreateDeviceKey(device));
+
+  ++this->CommandId;
 
   return device;
 }
