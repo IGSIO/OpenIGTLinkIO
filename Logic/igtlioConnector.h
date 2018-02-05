@@ -345,6 +345,8 @@ private:
 
   bool CheckCRC;
 
+  int CommandId = 0;
+
 };
 
 } // namespace  igtlio
