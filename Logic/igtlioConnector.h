@@ -323,7 +323,7 @@ private:
   //----------------------------------------------------------------
 
 
-  typedef std::map<DeviceKeyType, CircularSectionBuffer*> CircularSectionBufferMap;
+  typedef std::map<DeviceKeyType, CircularSectionBufferPointer> CircularSectionBufferMap;
   CircularSectionBufferMap SectionBuffer;
 
   vtkMutexLockPointer CircularBufferMutex;
