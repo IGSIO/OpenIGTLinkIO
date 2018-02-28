@@ -442,7 +442,7 @@ int Connector::ReceiveController()
     if (iter == this->SectionBuffer.end()) // First time to refer the device name
       {
       this->CircularBufferMutex->Lock();
-      this->SectionBuffer[key] = CircularSectionBuffer::New();
+      this->SectionBuffer[key] = CircularSectionBufferPointer::New();
       this->SectionBuffer[key]->SetPacketMode(igtlio::CircularSectionBuffer::SinglePacketMode);
       if (strcmp(headerMsg->GetDeviceType(), "VIDEO")==0)
         {
