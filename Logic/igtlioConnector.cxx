@@ -74,6 +74,8 @@ Connector::Connector()
 
   this->EventQueueMutex = vtkMutexLockPointer::New();
 
+  this->CommandQueueMutex = vtkMutexLockPointer::New();
+
   this->PushOutgoingMessageFlag = 0;
   this->PushOutgoingMessageMutex = vtkMutexLockPointer::New();
 
@@ -438,6 +440,16 @@ int Connector::ReceiveController()
     //----------------------------------------------------------------
     // Search Circular Buffer
     DeviceKeyType key = CreateDeviceKey(headerMsg);
+
+    // Intercept command devices before they are added to the circular buffer, and add them to the command queue
+    if (std::strcmp(headerMsg->GetDeviceType(), "COMMAND") == 0 || std::strcmp(headerMsg->GetDeviceType(), "RTS_COMMAND") == 0)
+      {
+      if (this->ReceiveCommandMessage(headerMsg))
+        {
+        continue;
+        }
+      }
+
     CircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
     if (iter == this->SectionBuffer.end()) // First time to refer the device name
       {
@@ -495,6 +507,34 @@ int Connector::ReceiveController()
 
 }
 
+//----------------------------------------------------------------------------
+bool Connector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg)
+{
+  DeviceKeyType key = CreateDeviceKey(headerMsg);
+
+  igtl::MessageBase::Pointer buffer = igtl::MessageBase::New();
+  buffer->InitBuffer();
+  buffer->SetMessageHeader(headerMsg);
+  buffer->AllocateBuffer();
+
+  vtkDebugMacro("Waiting to receive body:  size=" << buffer->GetPackBodySize()
+    << ", GetBodySizeToRead=" << buffer->GetBodySizeToRead()
+    << ", GetPackSize=" << buffer->GetPackSize());
+  int read = this->Socket->Receive(buffer->GetPackBodyPointer(), buffer->GetPackBodySize());
+  vtkDebugMacro("Received body: " << read);
+  if (read != buffer->GetPackBodySize())
+  {
+    if (!this->ServerStopFlag)
+    {
+      vtkErrorMacro("Only read " << read << " but expected to read "
+        << buffer->GetPackBodySize() << "\n");
+    }
+    return false;
+  }
+  this->CommandQueue.push(buffer);
+
+  return true;
+}
 
 //----------------------------------------------------------------------------
 int Connector::SendData(int size, unsigned char* data)
@@ -678,12 +718,14 @@ void Connector::PushOutgoingMessages()
 //----------------------------------------------------------------------------
 void Connector::PeriodicProcess()
 {
+  this->ParseCommands();
   this->ImportDataFromCircularBuffer();
   this->ImportEventsFromEventBuffer();
   this->PushOutgoingMessages();
 }
 
-CommandDevicePointer Connector::SendCommand(std::string device_id, std::string command, std::string content )
+//----------------------------------------------------------------------------
+CommandDevicePointer Connector::SendCommand(std::string device_id, std::string command, std::string content, double timeout_s/*=5*/)
 {
   DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
   vtkSmartPointer<CommandDevice> device = CommandDevice::SafeDownCast( AddDeviceIfNotPresent(key) );
@@ -693,12 +735,61 @@ CommandDevicePointer Connector::SendCommand(std::string device_id, std::string c
   contentdata.name = command;
   contentdata.content = content;
   device->SetContent(contentdata);
+  device->SetQueryTimeOut(timeout_s);
 
   device->PruneCompletedQueries();
 
   SendMessage(CreateDeviceKey(device));
 
   return device;
+}
+
+//----------------------------------------------------------------------------
+void Connector::ParseCommands()
+{
+  this->CommandQueueMutex->Lock();
+
+  while (!this->CommandQueue.empty())
+    {
+    igtl::MessageBase::Pointer commandBuffer = this->CommandQueue.front();
+    igtlio::DeviceKeyType key = igtlio::CreateDeviceKey(commandBuffer);
+
+    DeviceCreatorPointer deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
+
+    if (!deviceCreator)
+      {
+      vtkErrorMacro(
+        << "Received unknown device type " << commandBuffer->GetDeviceType()
+        << ", device=" << commandBuffer->GetDeviceName()
+        );
+      continue;
+      }
+
+    DevicePointer device = NULL;
+    device = this->GetDevice(key);
+
+    if ((device.GetPointer() != NULL) && !(CreateDeviceKey(device) == CreateDeviceKey(commandBuffer)))
+      {
+      vtkErrorMacro(
+        << "Received an IGTL message of the wrong type, device=" << key.name
+        << " has type " << device->GetDeviceType()
+        << " got type " << commandBuffer->GetDeviceType()
+        );
+      continue;
+      }
+
+    if (!device && !this->RestrictDeviceName)
+      {
+      device = deviceCreator->Create(key.name);
+      device->SetMessageDirection(Device::MESSAGE_DIRECTION_IN);
+      this->AddDevice(device);
+      }
+
+    device->ReceiveIGTLMessage(commandBuffer, this->CheckCRC);
+    this->CommandQueue.pop();
+    }
+
+  this->CommandQueueMutex->Unlock();
 }
 
 DevicePointer Connector::AddDeviceIfNotPresent(DeviceKeyType key)

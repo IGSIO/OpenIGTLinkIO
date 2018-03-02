@@ -69,6 +69,7 @@ int CommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool ch
 	  if (query && query->GetContent().id == response->GetContent().id)
 		{
 		Queries[i].Response = response;
+		Queries[i].status = QUERY_STATUS_SUCCESS;
 		this->Modified();
 		this->InvokeEvent(CommandResponseReceivedEvent, this);
 		}
