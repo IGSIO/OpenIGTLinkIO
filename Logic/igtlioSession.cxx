@@ -106,7 +106,7 @@ ImageDevicePointer Session::SendImage(std::string device_id, vtkSmartPointer<vtk
 #include "igtl_video.h"
 VideoDevicePointer Session::SendFrame(std::string device_id, vtkSmartPointer<vtkImageData> image)
 {
-  VideoDevice* device;
+  VideoDevicePointer device;
   DeviceKeyType key(igtlio::VideoConverter::GetIGTLTypeName(), device_id);
   device = VideoDevice::SafeDownCast(Connector->AddDeviceIfNotPresent(key));
   

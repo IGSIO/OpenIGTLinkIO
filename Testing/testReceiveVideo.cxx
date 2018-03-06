@@ -94,7 +94,6 @@ int main(int argc, char **argv)
 
   std::cout << "*** Client received video device." << std::endl;
   //---------------------------------------------------------------------------
-
   if (!compare(videoDevice, receivedDevice))
     {
     std::cout << "FAILURE: frame differs from the one sent from server." << std::endl;

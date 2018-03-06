@@ -79,7 +79,7 @@ int main(int argc, char **argv)
     //---------------------------------------------------------------------------
     GenerateErrorIf(clientDevice->GetQueries().empty(),"Response not properly received");
 
-	igtlio::CommandDevice::QueryType query = clientDevice->GetQueries()[0];
+	  igtlio::CommandDevice::QueryType query = clientDevice->GetQueries()[0];
     igtlio::CommandDevicePointer queryResponse = igtlio::CommandDevice::SafeDownCast(query.Response);
     igtlio::CommandMessageCodec responseCodec;
     responseCodec.SetContent( queryResponse->GetContent().content );

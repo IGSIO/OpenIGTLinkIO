@@ -68,6 +68,7 @@ void CommandMessageCodec::SetContent( std::string content )
             m_parameters.push_back( std::pair<std::string,std::string>( name, value) );
         }
     }
+    root->Delete();
 }
 
 bool CommandMessageCodec::GetResult()

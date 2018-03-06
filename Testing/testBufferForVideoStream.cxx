@@ -75,7 +75,7 @@ int main(int argc, char **argv)
   std::cout << "*** Connection done" << std::endl;
   //---------------------------------------------------------------------------
   igtlio::VideoDevicePointer videoDevice;
-  vtkImageData* image = vtkImageData::New();
+  vtkSmartPointer<vtkImageData> image = vtkImageData::New();
   fixture.CreateTestFrame(image);
   videoDevice = fixture.Server.Session->SendFrame("TestDevice_Image",image);
   std::cout << "*** Sent message from Server to Client" << std::endl;
@@ -107,9 +107,9 @@ int main(int argc, char **argv)
   
   // Normal buffer testing
   igtlio::ImageDevicePointer imageDevice;
-  while(loop++ < 10)
+  while(loop++ < 5)
     {
-    int frameNum = (float)(std::rand())/RAND_MAX * 50 + 8;
+    int frameNum = (float)(std::rand())/RAND_MAX * 20 + 8;
     for (int frameIndex = 0; frameIndex< frameNum; frameIndex++)
       {
       imageDevice = fixture.Server.Session->SendImage("TestDevice_Image", fixture.CreateTestImage(), fixture.CreateTestTransform());
@@ -125,18 +125,18 @@ int main(int argc, char **argv)
       fixture.Server.Logic->PeriodicProcess();
       igtl::Sleep(20);
       }
-    int bufferReadNum = (float)(std::rand())/RAND_MAX * 30 + 4;
+    int bufferReadNum = (float)(std::rand())/RAND_MAX * 10 + 4;
     for (int bufferReadIndex = 0; bufferReadIndex< bufferReadNum; bufferReadIndex++)
       {
       fixture.Client.Logic->PeriodicProcess();
       }
     }
   
-  // Video buffer testing
+  /* Video buffer testing
   loop = 0;
-  while(loop++ < 10)
+  while(loop++ < 2)
     {
-    int frameNum = (float)(std::rand())/RAND_MAX * 50 + 8;
+    int frameNum = (float)(std::rand())/RAND_MAX * 20 + 8;
     for (int frameIndex = 0; frameIndex< frameNum; frameIndex++)
       {
       videoDevice = fixture.Server.Session->SendFrame("TestDevice_Image", image);
@@ -152,10 +152,10 @@ int main(int argc, char **argv)
       fixture.Server.Logic->PeriodicProcess();
       igtl::Sleep(20);
       }
-    int bufferReadNum = (float)(std::rand())/RAND_MAX * 30 + 4;
+    int bufferReadNum = (float)(std::rand())/RAND_MAX * 10 + 4;
     for (int bufferReadIndex = 0; bufferReadIndex< bufferReadNum; bufferReadIndex++)
       {
       fixture.Client.Logic->PeriodicProcess();
       }
-    }
+    }*/
 }
