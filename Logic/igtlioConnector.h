@@ -46,6 +46,7 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <queue>
 
 typedef vtkSmartPointer<class vtkMutexLock> vtkMutexLockPointer;
 typedef vtkSmartPointer<class vtkMultiThreader> vtkMultiThreaderPointer;
@@ -100,7 +101,7 @@ public:
   /// Suggested timeout 5ms.
   void PeriodicProcess();
 
-  CommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content );
+  CommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content, double timeout_s= 5);
   DevicePointer AddDeviceIfNotPresent(DeviceKeyType key);
 
  /// Add a new Device.
@@ -255,6 +256,10 @@ private:
   // Device Lists
   //----------------------------------------------------------------
 
+  // Description"
+  // Command and response devices that have been received are added to the appropriate devices
+  void ParseCommands();
+
   // Description:
   // Import received data from the circular buffer to the MRML scne.
   // This is currently called by vtkOpenIGTLinkIFLogic class.
@@ -287,6 +292,11 @@ private:
   // to push individual "outgoing" MRML nodes, set "OpenIGTLinkIF.pushOnConnection" attribute to 1. 
   // The request will be processed in PushOutgonigMessages().
   void RequestPushOutgoingMessages(); // called from Thread
+
+  // Description:
+  // Used when receiving command or command response messages.
+  // Adds the commands to a queue that is parsed during periodic process
+  bool ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg);
 
  protected:
 
@@ -334,6 +344,10 @@ private:
   // and they will be Invoked in the main thread.
   std::list<unsigned long> EventQueue;
   vtkMutexLockPointer EventQueueMutex;
+
+  // Collect commands before they enter the circular buffer, in order to make sure that they are not overwritten
+  std::queue<igtl::MessageBase::Pointer> CommandQueue;
+  vtkMutexLockPointer CommandQueueMutex;
 
   // Flag for the push outoing message request
   // If the flag is ON, the external timer will update the outgoing nodes with 
