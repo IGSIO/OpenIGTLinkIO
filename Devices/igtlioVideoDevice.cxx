@@ -209,6 +209,8 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
     iReturn = VideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderX265, &this->metaInfo);
     }
 #endif
+  int frameType = Content.videoMessage->GetFrameType();
+  Content.keyFrameUpdated = (frameType == igtl::FrameTypeKey);
  if (!iReturn)
    {
    return 0;
