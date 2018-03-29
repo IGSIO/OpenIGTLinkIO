@@ -75,6 +75,11 @@ int CommandConverter::fromIGTLResponse(igtl::MessageBase::Pointer source,
   dest->id = msg->GetCommandId();
   dest->name = msg->GetCommandName();
   dest->content = msg->GetCommandContent();
+  std::string status;
+  if (msg->GetMetaDataElement("Status", status))
+  {
+    dest->status = STRCASECMP(status.c_str(), "TRUE");
+  }
 
   return 1;
 }
@@ -95,6 +100,7 @@ int CommandConverter::toIGTL(const HeaderData& header, const ContentData& source
   msg->SetCommandId(source.id);
   msg->SetCommandName(source.name);
   msg->SetCommandContent(source.content);
+  msg->SetMetaDataElement("Status", IANA_TYPE_US_ASCII, source.status ? "SUCCESS" : "FAIL");
   msg->Pack();
 
   return 1;

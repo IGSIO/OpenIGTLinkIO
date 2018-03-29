@@ -26,6 +26,7 @@ public:
     int id;
     std::string name;
     std::string content;
+    bool status;
   };
 
   static const char*  GetIGTLName() { return GetIGTLTypeName(); }
