@@ -71,16 +71,17 @@ vtkStandardNewMacro(Logic);
 
 //---------------------------------------------------------------------------
 Logic::Logic()
+  : vtkObject()
+  , NewDeviceCallback(vtkSmartPointer<vtkCallbackCommand>::New())
+  , RemovedDeviceCallback(vtkSmartPointer<vtkCallbackCommand>::New())
+  , DeviceEventCallback(vtkSmartPointer<vtkCallbackCommand>::New())
 {
-  NewDeviceCallback = vtkSmartPointer<vtkCallbackCommand>::New();
   NewDeviceCallback->SetCallback(onNewDeviceEventFunc);
   NewDeviceCallback->SetClientData(this);
 
-  RemovedDeviceCallback = vtkSmartPointer<vtkCallbackCommand>::New();
   RemovedDeviceCallback->SetCallback(onRemovedDeviceEventFunc);
   RemovedDeviceCallback->SetClientData(this);
 
-  DeviceEventCallback = vtkSmartPointer<vtkCallbackCommand>::New();
   DeviceEventCallback->SetCallback(onDeviceEventFunc);
   DeviceEventCallback->SetClientData(this);
 }
