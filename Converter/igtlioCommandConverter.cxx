@@ -1,5 +1,8 @@
 #include "igtlioCommandConverter.h"
 
+// STL includes
+#include <algorithm>
+#include <locale>
 
 namespace igtlio
 {
@@ -78,7 +81,8 @@ int CommandConverter::fromIGTLResponse(igtl::MessageBase::Pointer source,
   std::string status;
   if (msg->GetMetaDataElement("Status", status))
   {
-    dest->status = STRCASECMP(status.c_str(), "TRUE");
+    std::transform(status.begin(), status.end(), status.begin(), toupper);
+    dest->status = status == "TRUE";
   }
 
   return 1;

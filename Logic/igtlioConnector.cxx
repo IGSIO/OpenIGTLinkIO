@@ -39,6 +39,7 @@ namespace igtlio
 
 //------------------------------------------------------------------------------
 vtkStandardNewMacro(Connector);
+//----------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------
 const char *Connector::ConnectorTypeStr[Connector::NUM_TYPE] =
@@ -90,6 +91,7 @@ Connector::~Connector()
   this->Stop();
 }
 
+//----------------------------------------------------------------------------
 void Connector::PrintSelf(ostream& os, vtkIndent indent)
 {
   Superclass::PrintSelf(os,indent);
@@ -233,7 +235,6 @@ int Connector::Stop()
     }
 }
 
-
 //---------------------------------------------------------------------------
 void* Connector::ThreadFunction(void* ptr)
 {
@@ -290,7 +291,6 @@ void* Connector::ThreadFunction(void* ptr)
   return NULL; //why???
 }
 
-
 //----------------------------------------------------------------------------
 void Connector::RequestInvokeEvent(unsigned long eventId)
 {
@@ -299,7 +299,6 @@ void Connector::RequestInvokeEvent(unsigned long eventId)
   this->EventQueueMutex->Unlock();
 }
 
-
 //----------------------------------------------------------------------------
 void Connector::RequestPushOutgoingMessages()
 {
@@ -307,7 +306,6 @@ void Connector::RequestPushOutgoingMessages()
   this->PushOutgoingMessageFlag = 1;
   this->PushOutgoingMessageMutex->Unlock();
 }
-
 
 //----------------------------------------------------------------------------
 int Connector::WaitForConnection()
@@ -361,7 +359,6 @@ int Connector::WaitForConnection()
   //return NULL;
   return 0;
 }
-
 
 //----------------------------------------------------------------------------
 int Connector::ReceiveController()
@@ -504,7 +501,6 @@ int Connector::ReceiveController()
   this->Socket->CloseSocket();
 
   return 0;
-
 }
 
 //----------------------------------------------------------------------------
@@ -539,7 +535,6 @@ bool Connector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg)
 //----------------------------------------------------------------------------
 int Connector::SendData(int size, unsigned char* data)
 {
-
   if (this->Socket.IsNull())
     {
     return 0;
@@ -552,9 +547,7 @@ int Connector::SendData(int size, unsigned char* data)
     }
 
   return this->Socket->Send(data, size);  // return 1 on success, otherwise 0.
-
 }
-
 
 //----------------------------------------------------------------------------
 int Connector::Skip(int length, int skipFully)
@@ -578,7 +571,6 @@ int Connector::Skip(int length, int skipFully)
 
   return (length - remain);
 }
-
 
 //----------------------------------------------------------------------------
 unsigned int Connector::GetUpdatedSectionBuffersList(NameListType& nameList)
@@ -792,6 +784,7 @@ void Connector::ParseCommands()
   this->CommandQueueMutex->Unlock();
 }
 
+//----------------------------------------------------------------------------
 DevicePointer Connector::AddDeviceIfNotPresent(DeviceKeyType key)
 {
   DevicePointer device = GetDevice(key);
@@ -805,6 +798,7 @@ DevicePointer Connector::AddDeviceIfNotPresent(DeviceKeyType key)
   return device;
 }
 
+//----------------------------------------------------------------------------
 int Connector::AddDevice(DevicePointer device)
 {
   if (this->GetDevice(CreateDeviceKey(device))!=NULL)
@@ -822,7 +816,7 @@ int Connector::AddDevice(DevicePointer device)
   return 1;
 }
 
-
+//----------------------------------------------------------------------------
 void Connector::DeviceContentModified(vtkObject *caller, unsigned long event, void *callData )
 {
   igtlio::Device* modifiedDevice = reinterpret_cast<igtlio::Device*>(callData);
@@ -832,6 +826,7 @@ void Connector::DeviceContentModified(vtkObject *caller, unsigned long event, vo
     }
 }
 
+//----------------------------------------------------------------------------
 int Connector::RemoveDevice(DevicePointer device)
 {
   DeviceKeyType key = CreateDeviceKey(device);
@@ -920,11 +915,13 @@ int Connector::SendMessage(DeviceKeyType device_id, Device::MESSAGE_PREFIX prefi
 //  return 0;
 }
 
+//----------------------------------------------------------------------------
 DeviceFactoryPointer Connector::GetDeviceFactory()
 {
   return DeviceFactory;
 }
 
+//----------------------------------------------------------------------------
 void Connector::SetDeviceFactory(DeviceFactoryPointer val)
 {
   if (val==DeviceFactory)
@@ -940,6 +937,7 @@ int Connector::PushNode(DevicePointer node, int event)
   return this->SendMessage(CreateDeviceKey(node), Device::MESSAGE_PREFIX_NOT_DEFINED);
 }
 
+//---------------------------------------------------------------------------
 bool Connector::IsConnected()
 {
   return this->Socket.IsNotNull() && this->Socket->GetConnected();
