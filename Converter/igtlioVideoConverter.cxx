@@ -22,7 +22,8 @@ namespace igtlio
                                HeaderData* header,
                                ContentData* dest,
                                std::map<std::string,GenericDecoder*> decoders,
-                               bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo)
+                               bool checkCRC,
+                               igtl::MessageBase::MetaDataMap& outMetaInfo)
   {
     // Create a message buffer to receive image data
     if (dest->videoMessage.IsNull())
@@ -78,7 +79,7 @@ namespace igtlio
     }
 #endif
     // get header
-    if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(videoMessage), header, metaInfo))
+    if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(videoMessage), header, outMetaInfo))
       return 0;
     
     // get Video
@@ -90,7 +91,7 @@ namespace igtlio
   
   
   //---------------------------------------------------------------------------
-  int VideoConverter::IGTLToVTKImageData(ContentData *dest, igtl::VideoMessage::Pointer videoMessage,GenericDecoder * videoStreamDecoder)
+  int VideoConverter::IGTLToVTKImageData(ContentData *dest, igtl::VideoMessage::Pointer videoMessage, GenericDecoder *videoStreamDecoder)
   {
     if(videoStreamDecoder == NULL)
       {
@@ -153,14 +154,15 @@ namespace igtlio
   }
   
   //---------------------------------------------------------------------------
-  int VideoConverter::toIGTL(const HeaderData& header, const ContentData& source, GenericEncoder* encoder, igtl::MessageBase::MetaDataMap* metaInfo)
+  int VideoConverter::toIGTL(const HeaderData& header, const ContentData& source, GenericEncoder* encoder, igtl::MessageBase::MetaDataMap metaInfo)
   {
     igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(source.videoMessage);
     
     HeadertoIGTL(header, &basemsg, metaInfo);
     
     igtl::VideoMessage::Pointer videoMsg = source.videoMessage;
-    if (metaInfo!=NULL)
+
+    if (!metaInfo.empty())
       videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
     
     vtkImageData* frameImage = source.image;

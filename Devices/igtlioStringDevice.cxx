@@ -52,7 +52,7 @@ unsigned int StringDevice::GetDeviceContentModifiedEvent() const
 //---------------------------------------------------------------------------
 int StringDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (StringConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, &this->metaInfo))
+ if (StringConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
  {
    this->Modified();
    this->InvokeEvent(ReceiveEvent);
@@ -67,7 +67,7 @@ int StringDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool che
 igtl::MessageBase::Pointer StringDevice::GetIGTLMessage()
 {
 
- if (!StringConverter::toIGTL(HeaderData, Content, &this->OutMessage, &this->metaInfo))
+ if (!StringConverter::toIGTL(HeaderData, Content, &this->OutMessage, this->metaInfo))
    {
    return 0;
    }

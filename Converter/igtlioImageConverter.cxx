@@ -72,7 +72,8 @@ namespace igtlio
 int ImageConverter::fromIGTL(igtl::MessageBase::Pointer source,
                              HeaderData* header,
                              ContentData* dest,
-                             bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo)
+                             bool checkCRC,
+                             igtl::MessageBase::MetaDataMap& outMetaInfo)
 {
   // Create a message buffer to receive image data
   igtl::ImageMessage::Pointer imgMsg;
@@ -90,7 +91,7 @@ int ImageConverter::fromIGTL(igtl::MessageBase::Pointer source,
     }
 
   // get header
-  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(imgMsg), header, metaInfo))
+  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(imgMsg), header, outMetaInfo))
     return 0;
 
   // get image
@@ -435,13 +436,15 @@ int ImageConverter::VTKTransformToIGTLImage(const vtkMatrix4x4& ijk2ras, int ima
 }
 
 //---------------------------------------------------------------------------
-int ImageConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::ImageMessage::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo)
+int ImageConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::ImageMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
   if (dest->IsNull())
     *dest = igtl::ImageMessage::New();
   igtl::ImageMessage::Pointer msg = *dest;
-  if (metaInfo!=NULL)
+  if (!metaInfo.empty())
+    {
     msg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
+    }
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
   HeadertoIGTL(header, &basemsg, metaInfo);
 

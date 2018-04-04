@@ -72,9 +72,9 @@ namespace igtlio
     static const char*  GetIGTLName() { return GetIGTLTypeName(); }
     static const char* GetIGTLTypeName() { return "VIDEO"; }
     
-    static int fromIGTL(MessageBase::Pointer source, HeaderData* header, ContentData* content, std::map<std::string,GenericDecoder*> decoders, bool checkCRC, MessageBase::MetaDataMap* metaInfo = NULL);
-    static int toIGTL(const HeaderData& header, const ContentData& source, GenericEncoder* encoder, MessageBase::MetaDataMap* metaInfo = NULL);
-    
+    static int fromIGTL(MessageBase::Pointer source, HeaderData* header, ContentData* content, std::map<std::string, GenericDecoder*> decoders, bool checkCRC, igtl::MessageBase::MetaDataMap& outMetaInfo);
+    static int toIGTL(const HeaderData& header, const ContentData& source, GenericEncoder* encoder, igtl::MessageBase::MetaDataMap metaInfo = igtl::MessageBase::MetaDataMap());
+
   protected:
     
     static int IGTLToVTKScalarType(int igtlType);

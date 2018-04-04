@@ -150,7 +150,7 @@ int VideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool chec
     int returnValue = 0;
     //To Do, we need to unpack the buffer to know the codec type, which is done in the converter
     // So the user need to set the correct CurrentCodecType before hand.
-    returnValue = VideoConverter::fromIGTL(buffer, &HeaderData, &Content, this->DecodersMap, checkCRC, &this->metaInfo);
+    returnValue = VideoConverter::fromIGTL(buffer, &HeaderData, &Content, this->DecodersMap, checkCRC, this->metaInfo);
 
     if (returnValue)
      {
@@ -196,7 +196,7 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
     //newEncoder->SetKeyFrameDistance(25);
     VideoStreamEncoderVPX->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
     Content.videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_VP9);
-    iReturn = VideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderVPX, &this->metaInfo);
+    iReturn = VideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderVPX, this->metaInfo);
     }
 #endif
 #if defined(OpenIGTLink_USE_X265)

@@ -46,8 +46,8 @@ public:
   static const char*  GetIGTLName() { return GetIGTLTypeName(); }
   static const char* GetIGTLTypeName() { return "POLYDATA"; }
 
-  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* dest, bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
-  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::PolyDataMessage::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
+  static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC, igtl::MessageBase::MetaDataMap& outMetaInfo);
+  static int toIGTL(const HeaderData& header, const ContentData& source, igtl::PolyDataMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo = igtl::MessageBase::MetaDataMap());
 
   // Extract vtkPolyData from existing polyDataMsg, insert into existing poly.
   static int IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyDataMsg, vtkSmartPointer<vtkPolyData> poly);

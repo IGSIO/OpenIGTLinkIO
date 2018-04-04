@@ -29,7 +29,11 @@ namespace igtlio
 {
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::fromIGTL(igtl::MessageBase::Pointer source, HeaderData *header, PolyDataConverter::ContentData *dest, bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo)
+int PolyDataConverter::fromIGTL(igtl::MessageBase::Pointer source, 
+                                HeaderData *header, 
+                                PolyDataConverter::ContentData *dest, 
+                                bool checkCRC, 
+                                igtl::MessageBase::MetaDataMap& outMetaInfo)
 {
  // Create a message buffer to receive image data
  igtl::PolyDataMessage::Pointer polyDataMsg;
@@ -47,7 +51,7 @@ int PolyDataConverter::fromIGTL(igtl::MessageBase::Pointer source, HeaderData *h
    }
 
  // get header
- if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(polyDataMsg), header, metaInfo))
+ if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(polyDataMsg), header, outMetaInfo))
    return 0;
 
  vtkSmartPointer<vtkPolyData> poly = vtkSmartPointer<vtkPolyData>::New();
@@ -219,7 +223,7 @@ int PolyDataConverter::IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyData
 }
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::toIGTL(const HeaderData &header, const PolyDataConverter::ContentData &source, igtl::PolyDataMessage::Pointer *dest, igtl::MessageBase::MetaDataMap* metaInfo)
+int PolyDataConverter::toIGTL(const HeaderData &header, const PolyDataConverter::ContentData &source, igtl::PolyDataMessage::Pointer *dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
    if (source.polydata.GetPointer() == NULL)
      {
@@ -232,8 +236,10 @@ int PolyDataConverter::toIGTL(const HeaderData &header, const PolyDataConverter:
    (*dest)->Clear();
    (*dest)->InitPack();
    igtl::PolyDataMessage::Pointer outMessage = *dest;
-   if (metaInfo!=NULL)
-    outMessage->SetHeaderVersion(IGTL_HEADER_VERSION_2);
+   if (!metaInfo.empty())
+     {
+     outMessage->SetHeaderVersion(IGTL_HEADER_VERSION_2);
+     }
 
    igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(outMessage);
    HeadertoIGTL(header, &basemsg, metaInfo);

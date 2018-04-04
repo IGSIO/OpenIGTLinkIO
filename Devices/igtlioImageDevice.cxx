@@ -80,7 +80,7 @@ ImageConverter::ContentData ImageDevice::GetContent()
 //---------------------------------------------------------------------------
 int ImageDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (ImageConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, &this->metaInfo))
+ if (ImageConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
    {
    this->Modified();
    this->InvokeEvent(ImageModifiedEvent, this);
@@ -101,7 +101,7 @@ igtl::MessageBase::Pointer ImageDevice::GetIGTLMessage()
   return 0;
   }
 
- if (!ImageConverter::toIGTL(HeaderData, Content, &this->OutImageMessage, &this->metaInfo))
+ if (!ImageConverter::toIGTL(HeaderData, Content, &this->OutImageMessage, this->metaInfo))
    {
    return 0;
    }

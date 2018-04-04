@@ -24,9 +24,10 @@ static std::string stream_id_from_name = "STREAM_ID_FROM";
 
 //---------------------------------------------------------------------------
 int TransformConverter::fromIGTL(igtl::MessageBase::Pointer source,
-                             HeaderData* header,
-                             ContentData* dest,
-                             bool checkCRC, igtl::MessageBase::MetaDataMap* metaInfo)
+                                 HeaderData* header,
+                                 ContentData* dest,
+                                 bool checkCRC, 
+                                 igtl::MessageBase::MetaDataMap& outMetaInfo)
 {
     // Create a message buffer to receive image data
     igtl::TransformMessage::Pointer transMsg;
@@ -44,7 +45,7 @@ int TransformConverter::fromIGTL(igtl::MessageBase::Pointer source,
       }
 
 	// get header
-	if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(transMsg), header, metaInfo))
+	if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(transMsg), header, outMetaInfo))
 	  return 0;
 
 	// get additional transform header info
@@ -102,6 +103,7 @@ int TransformConverter::fromIGTL(igtl::MessageBase::Pointer source,
 
 }
 
+//---------------------------------------------------------------------------
 int TransformConverter::IGTLHeaderToTransformInfo(igtl::MessageBase::Pointer source, ContentData* dest)
 {
   source->GetMetaDataElement(stream_id_to_name, dest->streamIdTo);
@@ -120,14 +122,17 @@ int TransformConverter::IGTLHeaderToTransformInfo(igtl::MessageBase::Pointer sou
 }
 
 //---------------------------------------------------------------------------
-int TransformConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::TransformMessage::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo)
+int TransformConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::TransformMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
   if (dest->IsNull())
     *dest = igtl::TransformMessage::New();
   (*dest)->InitPack();  
   igtl::TransformMessage::Pointer msg = *dest;
-  if (metaInfo!=NULL)
+
+  if (!metaInfo.empty())
+    {
     msg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
+    }
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
   HeadertoIGTL(header, &basemsg, metaInfo);
   TransformMetaDataToIGTL(source, &basemsg);

@@ -40,8 +40,8 @@ public:
   double timestamp;
   };
 
-  static int IGTLtoHeader(igtl::MessageBase::Pointer source, HeaderData* header, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
-  static int HeadertoIGTL(const HeaderData& header, igtl::MessageBase::Pointer* dest, igtl::MessageBase::MetaDataMap* metaInfo = NULL);
+  static int IGTLtoHeader(igtl::MessageBase::Pointer source, HeaderData* header, igtl::MessageBase::MetaDataMap& outMetaInfo);
+  static int HeadertoIGTL(const HeaderData& header, igtl::MessageBase::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo = igtl::MessageBase::MetaDataMap());
 
   static int IGTLToTimestamp(igtl::MessageBase::Pointer msg, HeaderData *dest);
 };
