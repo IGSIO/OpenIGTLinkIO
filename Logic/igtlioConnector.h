@@ -101,7 +101,7 @@ public:
   /// Suggested timeout 5ms.
   void PeriodicProcess();
 
-  CommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content, double timeout_s= 5);
+  CommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content, double timeout_s= 5, igtl::MessageBase::MetaDataMap* metaData=NULL);
   DevicePointer AddDeviceIfNotPresent(DeviceKeyType key);
 
  /// Add a new Device.

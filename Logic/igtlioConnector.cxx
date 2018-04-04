@@ -717,10 +717,18 @@ void Connector::PeriodicProcess()
 }
 
 //----------------------------------------------------------------------------
-CommandDevicePointer Connector::SendCommand(std::string device_id, std::string command, std::string content, double timeout_s/*=5*/)
+CommandDevicePointer Connector::SendCommand(std::string device_id, std::string command, std::string content, double timeout_s/*=5*/, igtl::MessageBase::MetaDataMap* metaData)
 {
   DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
   vtkSmartPointer<CommandDevice> device = CommandDevice::SafeDownCast( AddDeviceIfNotPresent(key) );
+
+  if (metaData)
+    {
+    for (igtl::MessageBase::MetaDataMap::iterator metaDataIt = metaData->begin(); metaDataIt != metaData->end(); ++metaDataIt)
+      {
+      device->SetMetaDataElement((*metaDataIt).first, (*metaDataIt).second.first, (*metaDataIt).second.second);
+      }
+    }
 
   igtlio::CommandConverter::ContentData contentdata = device->GetContent();
   contentdata.id +=1;
