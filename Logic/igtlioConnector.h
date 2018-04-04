@@ -214,6 +214,8 @@ public:
   vtkSetMacro( Persistent, int );
   vtkGetMacro( Persistent, int );
 
+  vtkSetMacro( ServerStopFlag, int );
+
   const char* GetServerHostname();
   void SetServerHostname(std::string str);
 
