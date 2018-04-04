@@ -299,69 +299,65 @@ private:
   bool ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg);
 
  protected:
-
   //----------------------------------------------------------------
   // Devices
   //----------------------------------------------------------------
-  std::vector<DevicePointer> Devices;
+  std::vector<DevicePointer>              Devices;
 
   //----------------------------------------------------------------
   // Connector configuration
   //----------------------------------------------------------------
-  std::string Name;
-  int UID; /// unique ID for this connector
-  int Type;
-  int State;
-  int Persistent;
+  std::string                             Name;
+  int                                     UID; /// unique ID for this connector
+  int                                     Type;
+  int                                     State;
+  int                                     Persistent;
 
   //----------------------------------------------------------------
   // Thread and Socket
   //----------------------------------------------------------------
-
-  vtkMultiThreaderPointer Thread;
-  vtkMutexLockPointer     Mutex;
-  igtl::ServerSocket::Pointer  ServerSocket;
-  igtl::ClientSocket::Pointer  Socket;
-  int               ThreadID;
-  int               ServerPort;
-  int               ServerStopFlag;
-
-  std::string       ServerHostname;
+  vtkMultiThreaderPointer                 Thread;
+  vtkMutexLockPointer                     Mutex;
+  igtl::ServerSocket::Pointer             ServerSocket;
+  igtl::ClientSocket::Pointer             Socket;
+  int                                     ThreadID;
+  std::string                             ServerHostname;
+  int                                     ServerPort;
+  int                                     ServerStopFlag;
 
   //----------------------------------------------------------------
   // Data
   //----------------------------------------------------------------
-
-
   typedef std::map<DeviceKeyType, CircularSectionBufferPointer> CircularSectionBufferMap;
-  CircularSectionBufferMap SectionBuffer;
+  CircularSectionBufferMap                SectionBuffer;
 
-  vtkMutexLockPointer CircularBufferMutex;
-  int           RestrictDeviceName;  // Flag to restrict incoming and outgoing data by device names
+  vtkMutexLockPointer                     CircularBufferMutex;
+  int                                     RestrictDeviceName;  // Flag to restrict incoming and outgoing data by device names
 
   // Event queueing mechanism is needed to send all event notifications from the main thread.
   // Events can be pushed to the end of the EventQueue by calling RequestInvoke from any thread,
   // and they will be Invoked in the main thread.
-  std::list<unsigned long> EventQueue;
-  vtkMutexLockPointer EventQueueMutex;
+  std::list<unsigned long>                EventQueue;
+  vtkMutexLockPointer                     EventQueueMutex;
 
   // Collect commands before they enter the circular buffer, in order to make sure that they are not overwritten
-  std::queue<igtl::MessageBase::Pointer> CommandQueue;
-  vtkMutexLockPointer CommandQueueMutex;
+  std::queue<igtl::MessageBase::Pointer>  CommandQueue;
+  vtkMutexLockPointer                     CommandQueueMutex;
 
   // Flag for the push outoing message request
   // If the flag is ON, the external timer will update the outgoing nodes with 
   // "OpenIGTLinkIF.pushOnConnection" attribute to push the nodes to the network.
-  int PushOutgoingMessageFlag;
-  vtkMutexLockPointer PushOutgoingMessageMutex;
+  int                                     PushOutgoingMessageFlag;
+  vtkMutexLockPointer                     PushOutgoingMessageMutex;
 
-  DeviceFactoryPointer DeviceFactory;
+  DeviceFactoryPointer                    DeviceFactory;
 
-  bool CheckCRC;
+  bool                                    CheckCRC;
+
+  int                                     NextCommandID;
 
 };
 
-} // namespace  igtlio
+} // namespace igtlio
 
 #endif
-

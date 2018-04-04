@@ -59,30 +59,26 @@ const char *Connector::ConnectorStateStr[Connector::NUM_STATE] =
 
 //----------------------------------------------------------------------------
 Connector::Connector()
+  : Type(TYPE_CLIENT)
+  , State(STATE_OFF)
+  , Persistent(PERSISTENT_OFF)
+  , Thread(vtkMultiThreaderPointer::New())
+  , ServerStopFlag(false)
+  , ThreadID(-1)
+  , ServerHostname("localhost")
+  , ServerPort(18944)
+  , Mutex(vtkMutexLockPointer::New())
+  , CircularBufferMutex(vtkMutexLockPointer::New())
+  , RestrictDeviceName(0)
+  , EventQueueMutex(vtkMutexLockPointer::New())
+  , CommandQueueMutex(vtkMutexLockPointer::New())
+  , PushOutgoingMessageFlag(0)
+  , PushOutgoingMessageMutex(vtkMutexLockPointer::New())
+  , CheckCRC(true)
+  , DeviceFactory(DeviceFactoryPointer::New())
+  , NextCommandID(1)
 {
-  this->Type   = TYPE_CLIENT;
-  this->State  = STATE_OFF;
-  this->Persistent = PERSISTENT_OFF;
 
-  this->Thread = vtkMultiThreaderPointer::New();
-  this->ServerStopFlag = false;
-  this->ThreadID = -1;
-  this->ServerHostname = "localhost";
-  this->ServerPort = 18944;
-  this->Mutex = vtkMutexLockPointer::New();
-  this->CircularBufferMutex = vtkMutexLockPointer::New();
-  this->RestrictDeviceName = 0;
-
-  this->EventQueueMutex = vtkMutexLockPointer::New();
-
-  this->CommandQueueMutex = vtkMutexLockPointer::New();
-
-  this->PushOutgoingMessageFlag = 0;
-  this->PushOutgoingMessageMutex = vtkMutexLockPointer::New();
-
-  this->CheckCRC = 1;
-
-  DeviceFactory = DeviceFactoryPointer::New();
 }
 
 //----------------------------------------------------------------------------
@@ -123,8 +119,9 @@ void Connector::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Persistent: " << this->Persistent << "\n";
   os << indent << "Restrict Device Name: " << this->RestrictDeviceName << "\n";
   os << indent << "Push Outgoing Message Flag: " << this->PushOutgoingMessageFlag << "\n";
-  os << indent << "Check CRC: " << this->CheckCRC << "\n";
+  os << indent << "Check CRC: " << (this->CheckCRC ? "true" : "false") << "\n";
   os << indent << "Number of devices: " << this->GetNumberOfDevices() << "\n";
+  os << indent << "NextCommandID: " << this->NextCommandID << "\n";
 }
 
 //----------------------------------------------------------------------------
@@ -731,7 +728,7 @@ CommandDevicePointer Connector::SendCommand(std::string device_id, std::string c
     }
 
   igtlio::CommandConverter::ContentData contentdata = device->GetContent();
-  contentdata.id +=1;
+  contentdata.id += this->NextCommandID++;
   contentdata.name = command;
   contentdata.content = content;
   device->SetContent(contentdata);
