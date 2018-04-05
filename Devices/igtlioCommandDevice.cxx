@@ -254,9 +254,8 @@ int CommandDevice::CheckQueryExpiration()
 
 	}
 
-  //Never used? Why a responsevent???
   if (expired)
-	this->InvokeEvent(ResponseEvent);
+    this->InvokeEvent(CommandExpiredEvent, this);
 
   return 0;
 }

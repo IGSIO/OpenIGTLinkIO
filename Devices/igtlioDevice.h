@@ -58,7 +58,8 @@ public:
    ModifiedEvent         = vtkCommand::ModifiedEvent,
 
    CommandReceivedEvent    = 119001, // COMMAND device got a query, COMMAND received
-   CommandResponseReceivedEvent = 119002  // COMMAND device got a response, RTS_COMMAND received
+   CommandResponseReceivedEvent = 119002,  // COMMAND device got a response, RTS_COMMAND received
+   CommandExpiredEvent = 119003 // COMMAND device did not receive a response before timeout
  };
 
 
