@@ -7,18 +7,16 @@
 #include "igtlioDevice.h"
 
 class vtkImageData;
-namespace igtlio
-{
 
-typedef vtkSmartPointer<class StringDevice> StringDevicePointer;
+typedef vtkSmartPointer<class igtlioStringDevice> igtlioStringDevicePointer;
 
-class OPENIGTLINKIO_DEVICES_EXPORT StringDevice : public Device
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioStringDevice : public igtlioDevice
 {
 public:
   enum {
     StringModifiedEvent         = 118960,
   };
-  
+
  virtual unsigned int GetDeviceContentModifiedEvent() const VTK_OVERRIDE;
  virtual std::string GetDeviceType() const VTK_OVERRIDE;
  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC) VTK_OVERRIDE;
@@ -26,38 +24,36 @@ public:
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix) VTK_OVERRIDE;
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const VTK_OVERRIDE;
 
-  void SetContent(StringConverter::ContentData content);
-  StringConverter::ContentData GetContent();
+  void SetContent(igtlioStringConverter::ContentData content);
+  igtlioStringConverter::ContentData GetContent();
 
  public:
-  static StringDevice *New();
-  vtkTypeMacro(StringDevice,Device);
+  static igtlioStringDevice *New();
+  vtkTypeMacro(igtlioStringDevice,igtlioDevice);
 
   void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
  protected:
-  StringDevice();
-  ~StringDevice();
+  igtlioStringDevice();
+  ~igtlioStringDevice();
 
  protected:
   igtl::StringMessage::Pointer OutMessage;
   //igtl::GetStatusMessage::Pointer GetMessage;
 
-  StringConverter::ContentData Content;
+  igtlioStringConverter::ContentData Content;
 };
 
 
 //---------------------------------------------------------------------------
-class OPENIGTLINKIO_DEVICES_EXPORT StringDeviceCreator : public DeviceCreator
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioStringDeviceCreator : public igtlioDeviceCreator
 {
 public:
-  virtual DevicePointer Create(std::string device_name) VTK_OVERRIDE;
+  virtual igtlioDevicePointer Create(std::string device_name) VTK_OVERRIDE;
   virtual std::string GetDeviceType() const VTK_OVERRIDE;
 
-  static StringDeviceCreator *New();
-  vtkTypeMacro(StringDeviceCreator,vtkObject);
+  static igtlioStringDeviceCreator *New();
+  vtkTypeMacro(igtlioStringDeviceCreator,vtkObject);
 };
-
-} // namespace igtlio
 
 #endif // STRINGDEVICE_H

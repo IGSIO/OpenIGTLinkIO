@@ -21,40 +21,37 @@
 
 class vtkImageData;
 
-namespace igtlio
-{
-
-typedef vtkSmartPointer<class VideoDevice> VideoDevicePointer;
+typedef vtkSmartPointer<class igtlioVideoDevice> igtlioVideoDevicePointer;
 
 /// A Device supporting the Video igtl Message.
-class OPENIGTLINKIO_DEVICES_EXPORT VideoDevice : public Device
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioVideoDevice : public igtlioDevice
 {
 public:
-  
+
   enum {
     VideoModifiedEvent         = 118961,
   };
-  
+
  virtual unsigned int GetDeviceContentModifiedEvent() const VTK_OVERRIDE;
  virtual std::string GetDeviceType() const VTK_OVERRIDE;
  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC) VTK_OVERRIDE;
  virtual igtl::MessageBase::Pointer GetIGTLMessage() VTK_OVERRIDE;
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix) VTK_OVERRIDE ;
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const VTK_OVERRIDE;
- 
+
  igtl::VideoMessage::Pointer GetCompressedIGTLMessage();
- 
+
  igtl::VideoMessage::Pointer GetKeyFrameMessage();
-  
-  void SetContent(VideoConverter::ContentData content);
-  
-  VideoConverter::ContentData  GetContent();
-  
+
+  void SetContent(igtlioVideoConverter::ContentData content);
+
+  igtlioVideoConverter::ContentData  GetContent();
+
   std::string GetCurrentCodecType()
   {
     return CurrentCodecType;
   };
-  
+
   int SetCurrentCodecType(std::string codecType)
   {
   if (strncmp(codecType.c_str(), IGTL_VIDEO_CODEC_NAME_X265, IGTL_VIDEO_CODEC_NAME_SIZE)==0 ||
@@ -70,59 +67,57 @@ public:
     return -1;
     }
   };
-  
+
 
 public:
-  static VideoDevice *New();
-  vtkTypeMacro(VideoDevice,Device);
+  static igtlioVideoDevice *New();
+  vtkTypeMacro(igtlioVideoDevice,igtlioDevice);
   void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
 protected:
-  VideoDevice();
-  ~VideoDevice();
+  igtlioVideoDevice();
+  ~igtlioVideoDevice();
 
  protected:
   igtl::StartVideoMessage::Pointer StartVideoMessage;
-  
+
   igtl::StopVideoMessage::Pointer StopVideoMessage;
 
-  VideoConverter::ContentData Content;
-  
+  igtlioVideoConverter::ContentData Content;
+
   igtl::GenericDecoder* VideoStreamDecoderVPX;
-  
+
   igtl::GenericDecoder* VideoStreamDecoderX265;
-  
+
   igtl::GenericDecoder* VideoStreamDecoderH264;
-  
+
   igtl::GenericDecoder* VideoStreamDecoderAV1;
-  
+
   std::map<std::string, igtl::GenericDecoder*> DecodersMap;
-  
+
   igtl::SourcePicture* DecodedPic;
-  
+
   std::string CurrentCodecType;
-  
+
   igtl::GenericEncoder* VideoStreamEncoderVPX;
-  
+
   igtl::GenericEncoder* VideoStreamEncoderX265;
-  
+
   igtl::GenericEncoder* VideoStreamEncoderH264;
-  
+
   igtl::GenericEncoder* VideoStreamEncoderAV1;
-  
+
 };
 
 //---------------------------------------------------------------------------
-class OPENIGTLINKIO_DEVICES_EXPORT VideoDeviceCreator : public DeviceCreator
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioVideoDeviceCreator : public igtlioDeviceCreator
 {
 public:
-  virtual DevicePointer Create(std::string device_name) VTK_OVERRIDE;
+  virtual igtlioDevicePointer Create(std::string device_name) VTK_OVERRIDE;
   virtual std::string GetDeviceType() const VTK_OVERRIDE;
 
-  static VideoDeviceCreator *New();
-  vtkTypeMacro(VideoDeviceCreator,vtkObject);
+  static igtlioVideoDeviceCreator *New();
+  vtkTypeMacro(igtlioVideoDeviceCreator,vtkObject);
 };
-
-} //namespace igtlio
 
 #endif //IGTLIOVIDEODEVICE_H

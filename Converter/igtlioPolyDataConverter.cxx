@@ -24,14 +24,10 @@
 #include <vtkPointData.h>
 #include <vtkCellData.h>
 
-
-namespace igtlio
-{
-
 //---------------------------------------------------------------------------
-int PolyDataConverter::fromIGTL(igtl::MessageBase::Pointer source, 
+int igtlioPolyDataConverter::fromIGTL(igtl::MessageBase::Pointer source, 
                                 HeaderData *header, 
-                                PolyDataConverter::ContentData *dest, 
+                                igtlioPolyDataConverter::ContentData *dest, 
                                 bool checkCRC, 
                                 igtl::MessageBase::MetaDataMap& outMetaInfo)
 {
@@ -71,7 +67,7 @@ int PolyDataConverter::fromIGTL(igtl::MessageBase::Pointer source,
 }
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyDataMsg, vtkSmartPointer<vtkPolyData> poly)
+int igtlioPolyDataConverter::IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyDataMsg, vtkSmartPointer<vtkPolyData> poly)
 {
  // Points
  igtl::PolyDataPointArray::Pointer pointsArray = polyDataMsg->GetPoints();
@@ -223,7 +219,7 @@ int PolyDataConverter::IGTLToVTKPolyData(igtl::PolyDataMessage::Pointer polyData
 }
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::toIGTL(const HeaderData &header, const PolyDataConverter::ContentData &source, igtl::PolyDataMessage::Pointer *dest, igtl::MessageBase::MetaDataMap metaInfo)
+int igtlioPolyDataConverter::toIGTL(const HeaderData &header, const igtlioPolyDataConverter::ContentData &source, igtl::PolyDataMessage::Pointer *dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
    if (source.polydata.GetPointer() == NULL)
      {
@@ -257,7 +253,7 @@ int PolyDataConverter::toIGTL(const HeaderData &header, const PolyDataConverter:
 }
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, igtl::PolyDataMessage::Pointer outMessage)
+int igtlioPolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, igtl::PolyDataMessage::Pointer outMessage)
 {
    // Points
    vtkSmartPointer<vtkPoints> points = poly->GetPoints();
@@ -357,7 +353,7 @@ int PolyDataConverter::VTKPolyDataToIGTL(vtkSmartPointer<vtkPolyData> poly, igtl
 }
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::VTKToIGTLCellArray(vtkCellArray* src, igtl::PolyDataCellArray* dest)
+int igtlioPolyDataConverter::VTKToIGTLCellArray(vtkCellArray* src, igtl::PolyDataCellArray* dest)
 {
 
   if (src && dest)
@@ -389,7 +385,7 @@ int PolyDataConverter::VTKToIGTLCellArray(vtkCellArray* src, igtl::PolyDataCellA
 
 
 //---------------------------------------------------------------------------
-int PolyDataConverter::VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl::PolyDataAttribute* dest)
+int igtlioPolyDataConverter::VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl::PolyDataAttribute* dest)
 {
 
   //vtkSmartPointer<vtkPointData> src = poly->GetPointData();
@@ -473,5 +469,3 @@ int PolyDataConverter::VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl
   return 1;
 
 }
-
-} // namespace igtlio

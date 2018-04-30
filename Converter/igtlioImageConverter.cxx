@@ -64,12 +64,8 @@ int swapCopy64(igtlUint64 * dst, igtlUint64 * src, int n)
 }
 } // unnamed namespace
 
-
-namespace igtlio
-{
-
 //---------------------------------------------------------------------------
-int ImageConverter::fromIGTL(igtl::MessageBase::Pointer source,
+int igtlioImageConverter::fromIGTL(igtl::MessageBase::Pointer source,
                              HeaderData* header,
                              ContentData* dest,
                              bool checkCRC,
@@ -109,7 +105,7 @@ int ImageConverter::fromIGTL(igtl::MessageBase::Pointer source,
 
 
 //---------------------------------------------------------------------------
-int ImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, ContentData *dest)
+int igtlioImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, ContentData *dest)
 {
   if (!dest->image)
     dest->image = vtkSmartPointer<vtkImageData>::New();
@@ -293,7 +289,7 @@ int ImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg, Conte
 }
 
 //---------------------------------------------------------------------------
-int ImageConverter::IGTLImageToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras)
+int igtlioImageConverter::IGTLImageToVTKTransform(igtl::ImageMessage::Pointer imgMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras)
 {
   // Retrieve the image data
   int   size[3];          // image dimension
@@ -369,7 +365,7 @@ int ImageConverter::IGTLImageToVTKTransform(igtl::ImageMessage::Pointer imgMsg, 
 }
 
 //----------------------------------------------------------------------------
-int ImageConverter::VTKTransformToIGTLImage(const vtkMatrix4x4& ijk2ras, int imageSize[3], double spacing[3], double origin[3], igtl::ImageMessage::Pointer imgMsg)
+int igtlioImageConverter::VTKTransformToIGTLImage(const vtkMatrix4x4& ijk2ras, int imageSize[3], double spacing[3], double origin[3], igtl::ImageMessage::Pointer imgMsg)
 {
   // VTK: corner image origin
   // OpenIGTLink image message: center image origin
@@ -436,7 +432,7 @@ int ImageConverter::VTKTransformToIGTLImage(const vtkMatrix4x4& ijk2ras, int ima
 }
 
 //---------------------------------------------------------------------------
-int ImageConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::ImageMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
+int igtlioImageConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::ImageMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
   if (dest->IsNull())
     *dest = igtl::ImageMessage::New();
@@ -542,7 +538,7 @@ int ImageConverter::toIGTL(const HeaderData& header, const ContentData& source, 
 }
 
 //---------------------------------------------------------------------------
-int ImageConverter::IGTLToVTKScalarType(int igtlType)
+int igtlioImageConverter::IGTLToVTKScalarType(int igtlType)
 {
   switch (igtlType)
     {
@@ -560,4 +556,3 @@ int ImageConverter::IGTLToVTKScalarType(int igtlType)
     }
 }
 
-} //namespace igtlio

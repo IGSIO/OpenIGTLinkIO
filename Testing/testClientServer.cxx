@@ -8,10 +8,10 @@
 
 int main(int argc, char **argv)
 {
-  ClientServerFixture fixture;
+  igtlioClientServerFixture fixture;
 
   if (!fixture.ConnectClientToServer())
-	return TEST_FAILED;
+    return TEST_FAILED;
 
   return TEST_SUCCESS;
 }

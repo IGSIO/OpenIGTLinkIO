@@ -1,33 +1,30 @@
 #include "igtlioUtilities.h"
 #include "igtlioDevice.h"
 
-namespace igtlio
+std::string igtlioDeviceKeyType::GetBaseTypeName() const
 {
-
-std::string DeviceKeyType::GetBaseTypeName() const
-{
-  int pos = type.find("_");
+  int pos = (int)type.find("_");
   if (pos>=0)
     return type.substr(pos+1);
   return type;
 }
 
-DeviceKeyType CreateDeviceKey(igtl::MessageBase::Pointer message)
+igtlioDeviceKeyType igtlioDeviceKeyType::CreateDeviceKey(igtl::MessageBase::Pointer message)
 {
   if (!message)
-    return DeviceKeyType();
-  return DeviceKeyType(message->GetDeviceType(), message->GetDeviceName());
+    return igtlioDeviceKeyType();
+  return igtlioDeviceKeyType(message->GetDeviceType(), message->GetDeviceName());
 }
 
-DeviceKeyType CreateDeviceKey(DevicePointer device)
+igtlioDeviceKeyType igtlioDeviceKeyType::CreateDeviceKey(igtlioDevicePointer device)
 {
   if (!device)
-    return DeviceKeyType();
-  return DeviceKeyType(device->GetDeviceType(), device->GetDeviceName());
+    return igtlioDeviceKeyType();
+  return igtlioDeviceKeyType(device->GetDeviceType(), device->GetDeviceName());
 }
 
 
-bool operator<(const DeviceKeyType &lhs, const DeviceKeyType &rhs)
+bool operator<(const igtlioDeviceKeyType &lhs, const igtlioDeviceKeyType &rhs)
 {
   if (lhs.GetBaseTypeName() > rhs.GetBaseTypeName())
       return false;
@@ -36,13 +33,8 @@ bool operator<(const DeviceKeyType &lhs, const DeviceKeyType &rhs)
   return (lhs.name < rhs.name);
 }
 
-bool operator==(const DeviceKeyType &lhs, const DeviceKeyType &rhs)
+bool operator==(const igtlioDeviceKeyType &lhs, const igtlioDeviceKeyType &rhs)
 {
   return (lhs.GetBaseTypeName()==rhs.GetBaseTypeName()) &&
       (lhs.name==rhs.name);
 }
-
-
-
-
-} // namespace igtlio

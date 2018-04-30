@@ -5,12 +5,11 @@
 #include "igtlioCommandConverter.h"
 #include "igtlioDevice.h"
 
-namespace igtlio
-{
-typedef vtkSmartPointer<class CommandDevice> CommandDevicePointer;
+
+typedef vtkSmartPointer<class igtlioCommandDevice> igtlioCommandDevicePointer;
 
 /// A Device supporting the COMMAND igtl Message.
-class OPENIGTLINKIO_DEVICES_EXPORT CommandDevice : public Device
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioCommandDevice : public igtlioDevice
 {
 public:
   enum {
@@ -36,12 +35,12 @@ public:
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix) VTK_OVERRIDE;
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const VTK_OVERRIDE;
 
-  void SetContent(CommandConverter::ContentData content);
-  CommandConverter::ContentData GetContent();
+  void SetContent(igtlioCommandConverter::ContentData content);
+  igtlioCommandConverter::ContentData GetContent();
   std::vector<std::string> GetAvailableCommandNames() const;
 
   igtl::MessageBase::Pointer GetIGTLResponseMessage();
-  CommandDevicePointer GetResponseFromCommandID(int id);
+  igtlioCommandDevicePointer GetResponseFromCommandID(int id);
 
   /// Query handling:
   /// Each device has a list of queries (GET_, STT_, STP_) that has been sent
@@ -60,8 +59,8 @@ public:
   ///
   struct QueryType
   {
-  DevicePointer Query;
-  DevicePointer Response;
+  igtlioDevicePointer Query;
+  igtlioDevicePointer Response;
   QUERY_STATUS status;
   };
 
@@ -77,20 +76,20 @@ public:
    int CancelQuery(int index);
 
  public:
-  static CommandDevice *New();
-  vtkTypeMacro(CommandDevice,Device);
+  static igtlioCommandDevice *New();
+  vtkTypeMacro(igtlioCommandDevice, igtlioDevice);
 
   void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
  protected:
-  CommandDevice();
-  ~CommandDevice();
+  igtlioCommandDevice();
+  ~igtlioCommandDevice();
 
  protected:
   std::vector<QueryType> Queries;
   igtl::CommandMessage::Pointer OutMessage;
   igtl::RTSCommandMessage::Pointer ResponseMessage;
-  CommandConverter::ContentData Content;
+  igtlioCommandConverter::ContentData Content;
 
 private:
   double QueryTimeOut;
@@ -98,16 +97,14 @@ private:
 
 //---------------------------------------------------------------------------
 
-class OPENIGTLINKIO_DEVICES_EXPORT CommandDeviceCreator : public DeviceCreator
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioCommandDeviceCreator : public igtlioDeviceCreator
 {
 public:
-  virtual DevicePointer Create(std::string device_name) VTK_OVERRIDE;
+  virtual igtlioDevicePointer Create(std::string device_name) VTK_OVERRIDE;
   virtual std::string GetDeviceType() const VTK_OVERRIDE;
 
-  static CommandDeviceCreator *New();
-  vtkTypeMacro(CommandDeviceCreator,vtkObject);
+  static igtlioCommandDeviceCreator *New();
+  vtkTypeMacro(igtlioCommandDeviceCreator,vtkObject);
 };
-
-} // namespace igtlio
 
 #endif // IGTLIOCOMMANDDEVICE_H

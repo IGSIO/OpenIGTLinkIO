@@ -18,10 +18,8 @@ class qIGTLIODeviceAddWidget;
 
 class QTreeView;
 #include <vtkSmartPointer.h>
-namespace  igtlio
-{
-typedef vtkSmartPointer<class Logic> LogicPointer;
-}
+
+typedef vtkSmartPointer<class igtlioLogic> igtlioLogicPointer;
 
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIODevicesWidget : public QWidget
 {
@@ -29,7 +27,7 @@ class OPENIGTLINKIO_GUI_EXPORT qIGTLIODevicesWidget : public QWidget
   IGTLIO_QVTK_OBJECT
 public:
   qIGTLIODevicesWidget();
-  void setLogic(igtlio::LogicPointer logic);
+  void setLogic(igtlioLogicPointer logic);
 
 signals:
 
@@ -37,7 +35,7 @@ private slots:
   void onConnectionsChanged(vtkObject *caller, unsigned long event, void *b, void *connector );
   void onCurrentDeviceChanged(const QModelIndex &current, const QModelIndex &previous);
 private:
-  igtlio::LogicPointer Logic;
+  igtlioLogicPointer Logic;
   qIGTLIODevicesModel* DevicesModel;
   QItemSelectionModel* SelectionModel;
   qIGTLIODeviceButtonsWidget* ButtonsWidget;

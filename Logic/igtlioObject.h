@@ -14,9 +14,6 @@
 // IGTLIO includes
 #include "igtlioLogicExport.h"
 
-
-namespace igtlio
-{
 ///
 /// Extracted from the Slicer/MRML class vtkMRMLAbstractLogic
 ///
@@ -36,6 +33,5 @@ private:
     int ModifiedEventPending;
 };
 
-} //namespace igtlio
 #endif
 

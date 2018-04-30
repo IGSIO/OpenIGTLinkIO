@@ -20,14 +20,11 @@
 // STD includes
 #include <string>
 
-namespace igtlio
-{
+//---------------------------------------------------------------------------
+vtkStandardNewMacro(igtlioCircularSectionBuffer);
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(CircularSectionBuffer);
-
-//---------------------------------------------------------------------------
-CircularSectionBuffer::CircularSectionBuffer()
+igtlioCircularSectionBuffer::igtlioCircularSectionBuffer()
 {
 #if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   this->BufferSize = IGTLCB_CIRC_BUFFER_SIZE_VIDEOSTREAM;
@@ -37,7 +34,7 @@ CircularSectionBuffer::CircularSectionBuffer()
   this->Initialization();
 }
 
-int CircularSectionBuffer::Initialization()
+int igtlioCircularSectionBuffer::Initialization()
 {
   this->Mutex = vtkMutexLock::New();
   this->Mutex->Lock();
@@ -55,19 +52,19 @@ int CircularSectionBuffer::Initialization()
     }
   this->UpdateFlag = 0;
   this->Mutex->Unlock();
-  
+
   return 1;
 }
 
 //---------------------------------------------------------------------------
-CircularSectionBuffer::~CircularSectionBuffer()
+igtlioCircularSectionBuffer::~igtlioCircularSectionBuffer()
 {
   this->Mutex->Delete();
 }
 
 
 //---------------------------------------------------------------------------
-void CircularSectionBuffer::PrintSelf(ostream& os, vtkIndent indent)
+void igtlioCircularSectionBuffer::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkObject::PrintSelf(os, indent);
 }
@@ -84,7 +81,7 @@ void CircularSectionBuffer::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
-int CircularSectionBuffer::StartPush()
+int igtlioCircularSectionBuffer::StartPush()
 {
   this->Mutex->Lock();
   this->InPush = (this->Last + 1) % this->BufferSize;
@@ -97,19 +94,19 @@ int CircularSectionBuffer::StartPush()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer CircularSectionBuffer::GetPushBuffer()
+igtl::MessageBase::Pointer igtlioCircularSectionBuffer::GetPushBuffer()
 {
   return this->Messages[this->InPush];
 }
 
 //---------------------------------------------------------------------------
-void CircularSectionBuffer::EndPush()
+void igtlioCircularSectionBuffer::EndPush()
 {
   this->Mutex->Lock();
   this->Last = this->InPush;
   this->DataStatus[this->InPush] = DataFilled;
   // If the Inpush location is in the section that is currently been used. jump to the end of the section.
-  
+
   if (this->First == -1)
     {
     this->First = 0;
@@ -146,7 +143,7 @@ void CircularSectionBuffer::EndPush()
 
 
 //---------------------------------------------------------------------------
-int CircularSectionBuffer::StartPull()
+int igtlioCircularSectionBuffer::StartPull()
 {
   this->Mutex->Lock();
   this->InUseBegin = this->First;
@@ -157,7 +154,7 @@ int CircularSectionBuffer::StartPull()
 
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer CircularSectionBuffer::GetPullBuffer()
+igtl::MessageBase::Pointer igtlioCircularSectionBuffer::GetPullBuffer()
 {
   int currentIndex = this->InUseBegin;
   this->DataStatus[currentIndex] = DataProcessed;
@@ -175,7 +172,7 @@ igtl::MessageBase::Pointer CircularSectionBuffer::GetPullBuffer()
 
 
 //---------------------------------------------------------------------------
-void CircularSectionBuffer::EndPull()
+void igtlioCircularSectionBuffer::EndPull()
 {
   this->Mutex->Lock();
   this->UpdateFlag = 0;
@@ -192,12 +189,9 @@ void CircularSectionBuffer::EndPull()
 }
 
 
-bool CircularSectionBuffer::IsSectionBufferInProcess()
+bool igtlioCircularSectionBuffer::IsSectionBufferInProcess()
 {
   if (InUseBegin>=0)
     return true;
   return false;
 }
-
-} // namespace igtlio
-

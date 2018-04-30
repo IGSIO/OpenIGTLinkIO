@@ -21,13 +21,10 @@ igtl::SmartPointer<T> dynamic_pointer_cast(const igtl::SmartPointer<U>& sp) //no
 }
 //---------------------------------------------------------------------------
 
-namespace igtlio
-{
-
 /** Conversion between igtl::ImageMessage and vtk classes.
  *
  */
-class OPENIGTLINKIO_CONVERTER_EXPORT BaseConverter
+class OPENIGTLINKIO_CONVERTER_EXPORT igtlioBaseConverter
 {
 public:
   /**
@@ -45,7 +42,5 @@ public:
 
   static int IGTLToTimestamp(igtl::MessageBase::Pointer msg, HeaderData *dest);
 };
-
-} // namespace igtlio
 
 #endif // IGTLIOBASECONVERTER_H

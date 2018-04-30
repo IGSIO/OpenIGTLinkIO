@@ -21,44 +21,44 @@
 
 int main(int argc, char **argv)
 {
-  ClientServerFixture fixture;
+  igtlioClientServerFixture fixture;
 
   if (!fixture.ConnectClientToServer())
-	return TEST_FAILED;
+    return TEST_FAILED;
 
   if (fixture.Client.Logic->GetNumberOfDevices() != 0)
   {
     std::cout << "ERROR: Client has devices before they have been added or fundamental error!" << std::endl;
-	return TEST_FAILED;
+    return TEST_FAILED;
   }
 
   std::cout << "*** Connection done" << std::endl;
   //---------------------------------------------------------------------------
 
   std::string device_name = "TestDevice";
-  igtlio::CommandDevicePointer clientDevice;
+  igtlioCommandDevicePointer clientDevice;
   clientDevice = fixture.Client.Session->SendCommand(device_name,
                                                           "Get",
                                                           "<Command>\n"
                                                           "  <Parameter Name=\"Depth\" />\n"
                                                           "</Command>",
-                                                          igtlio::ASYNCHRONOUS);
+                                                          IGTLIO_ASYNCHRONOUS);
 
   std::cout << "*** COMMAND query sent from Client" << std::endl;
   //---------------------------------------------------------------------------
 
-  if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlio::Logic::CommandReceivedEvent))
-	return TEST_FAILED;
+  if (!fixture.LoopUntilEventDetected(&fixture.Server, igtlioLogic::CommandReceivedEvent))
+    return TEST_FAILED;
 
   std::cout << "*** COMMAND query received by Server" << std::endl;
   //---------------------------------------------------------------------------
 
   if(device_name != clientDevice->GetDeviceName())
   {
-	  return TEST_FAILED;
+    return TEST_FAILED;
   }
 
-  igtlio::CommandDevicePointer serverDevice;
+  igtlioCommandDevicePointer serverDevice;
   serverDevice = fixture.Server.Session->SendCommandResponse(clientDevice->GetDeviceName(),
                                                              "Get",
                                                              "<Command>\n"
@@ -73,28 +73,28 @@ int main(int argc, char **argv)
   std::cout << "*** RTS_COMMAND response sent from Server" << std::endl;
   //---------------------------------------------------------------------------
 
-  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::CommandResponseReceivedEvent))
-	return TEST_FAILED;
+  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlioLogic::CommandResponseReceivedEvent))
+    return TEST_FAILED;
 
   std::cout << "*** RTS_COMMAND response received by Client" << std::endl;
   //---------------------------------------------------------------------------
 
-  igtlio::CommandDevice::QueryType query;
+  igtlioCommandDevice::QueryType query;
   if (!clientDevice->GetQueries().empty())
     query = clientDevice->GetQueries()[0];
 
-  if (!igtlio::compareID(igtlio::CommandDevice::SafeDownCast(query.Query),
-               igtlio::CommandDevice::SafeDownCast(query.Response)))
+  if (!compareID(igtlioCommandDevice::SafeDownCast(query.Query),
+               igtlioCommandDevice::SafeDownCast(query.Response)))
   {
     std::cout << "FAILURE: Query and response dont match." << std::endl;
-	return TEST_FAILED;
+    return TEST_FAILED;
   }
 
-  if (!igtlio::compare(serverDevice,
-               igtlio::CommandDevice::SafeDownCast(query.Response)))
+  if (!compare(serverDevice,
+               igtlioCommandDevice::SafeDownCast(query.Response)))
   {
     std::cout << "FAILURE: Received response not equal to what the Server sent." << std::endl;
-	return TEST_FAILED;
+    return TEST_FAILED;
   }
 
   std::cout << "*** Client query/response match found." << std::endl;

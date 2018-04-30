@@ -16,57 +16,54 @@
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 
-namespace igtlio
-{
-
 //---------------------------------------------------------------------------
-DevicePointer PolyDataDeviceCreator::Create(std::string device_name)
+igtlioDevicePointer igtlioPolyDataDeviceCreator::Create(std::string device_name)
 {
- PolyDataDevicePointer retval = PolyDataDevicePointer::New();
- retval->SetDeviceName(device_name);
- return retval;
+  igtlioPolyDataDevicePointer retval = igtlioPolyDataDevicePointer::New();
+  retval->SetDeviceName(device_name);
+  return retval;
 }
 
 //---------------------------------------------------------------------------
-std::string PolyDataDeviceCreator::GetDeviceType() const
+std::string igtlioPolyDataDeviceCreator::GetDeviceType() const
 {
- return PolyDataConverter::GetIGTLTypeName();
+  return igtlioPolyDataConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(PolyDataDeviceCreator);
+vtkStandardNewMacro(igtlioPolyDataDeviceCreator);
 
 
 
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(PolyDataDevice);
+vtkStandardNewMacro(igtlioPolyDataDevice);
 //---------------------------------------------------------------------------
-PolyDataDevice::PolyDataDevice()
-{
-}
-
-//---------------------------------------------------------------------------
-PolyDataDevice::~PolyDataDevice()
+igtlioPolyDataDevice::igtlioPolyDataDevice()
 {
 }
 
 //---------------------------------------------------------------------------
-unsigned int PolyDataDevice::GetDeviceContentModifiedEvent() const
+igtlioPolyDataDevice::~igtlioPolyDataDevice()
+{
+}
+
+//---------------------------------------------------------------------------
+unsigned int igtlioPolyDataDevice::GetDeviceContentModifiedEvent() const
 {
   return PolyDataModifiedEvent;
 }
 
 //---------------------------------------------------------------------------
-std::string PolyDataDevice::GetDeviceType() const
+std::string igtlioPolyDataDevice::GetDeviceType() const
 {
-  return PolyDataConverter::GetIGTLTypeName();
+  return igtlioPolyDataConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-int PolyDataDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+int igtlioPolyDataDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (PolyDataConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
+ if (igtlioPolyDataConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
  {
    this->Modified();
    this->InvokeEvent(ReceiveEvent);
@@ -78,7 +75,7 @@ int PolyDataDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool c
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer PolyDataDevice::GetIGTLMessage()
+igtl::MessageBase::Pointer igtlioPolyDataDevice::GetIGTLMessage()
 {
     /*
  // cannot send a non-existent status (?)
@@ -88,7 +85,7 @@ igtl::MessageBase::Pointer PolyDataDevice::GetIGTLMessage()
   }
   */
 
- if (!PolyDataConverter::toIGTL(HeaderData, Content, &this->OutMessage, this->metaInfo))
+  if (!igtlioPolyDataConverter::toIGTL(HeaderData, Content, &this->OutMessage, this->metaInfo))
    {
    return 0;
    }
@@ -97,7 +94,7 @@ igtl::MessageBase::Pointer PolyDataDevice::GetIGTLMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer PolyDataDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
+igtl::MessageBase::Pointer igtlioPolyDataDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
 
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
@@ -109,32 +106,29 @@ igtl::MessageBase::Pointer PolyDataDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 }
 
 //---------------------------------------------------------------------------
-std::set<Device::MESSAGE_PREFIX> PolyDataDevice::GetSupportedMessagePrefixes() const
+std::set<igtlioDevice::MESSAGE_PREFIX> igtlioPolyDataDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
  retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
  return retval;
 }
 
-void PolyDataDevice::SetContent(PolyDataConverter::ContentData content)
+void igtlioPolyDataDevice::SetContent(igtlioPolyDataConverter::ContentData content)
 {
   Content = content;
   this->Modified();
   this->InvokeEvent(PolyDataModifiedEvent, this);
 }
 
-PolyDataConverter::ContentData PolyDataDevice::GetContent()
+igtlioPolyDataConverter::ContentData igtlioPolyDataDevice::GetContent()
 {
   return Content;
 }
 
 //---------------------------------------------------------------------------
-void PolyDataDevice::PrintSelf(ostream& os, vtkIndent indent)
+void igtlioPolyDataDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
-  Device::PrintSelf(os, indent);
+  igtlioDevice::PrintSelf(os, indent);
 
   os << indent << "deviceName:\t" << Content.deviceName << "\n";
 }
-
-} //namespace igtlio
-

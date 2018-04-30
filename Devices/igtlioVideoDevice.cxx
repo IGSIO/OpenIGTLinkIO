@@ -18,31 +18,28 @@
 #include <vtkObjectFactory.h>
 #include "vtkMatrix4x4.h"
 
-namespace igtlio
-{
-
 //---------------------------------------------------------------------------
-DevicePointer VideoDeviceCreator::Create(std::string device_name)
+igtlioDevicePointer igtlioVideoDeviceCreator::Create(std::string device_name)
 {
- VideoDevicePointer retval = VideoDevicePointer::New();
+ igtlioVideoDevicePointer retval = igtlioVideoDevicePointer::New();
  retval->SetDeviceName(device_name);
  return retval;
 }
 
 //---------------------------------------------------------------------------
-std::string VideoDeviceCreator::GetDeviceType() const
+std::string igtlioVideoDeviceCreator::GetDeviceType() const
 {
-  return VideoConverter::GetIGTLTypeName();
+  return igtlioVideoConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(VideoDeviceCreator);
+vtkStandardNewMacro(igtlioVideoDeviceCreator);
 
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(VideoDevice);
+vtkStandardNewMacro(igtlioVideoDevice);
 //---------------------------------------------------------------------------
-VideoDevice::VideoDevice()
+igtlioVideoDevice::igtlioVideoDevice()
 {
   VideoStreamDecoderH264 = NULL;
   VideoStreamEncoderH264 = NULL;
@@ -92,37 +89,37 @@ VideoDevice::VideoDevice()
 }
 
 //---------------------------------------------------------------------------
-VideoDevice::~VideoDevice()
+igtlioVideoDevice::~igtlioVideoDevice()
 {
   DecodersMap.clear();
 }
 
 //---------------------------------------------------------------------------
-unsigned int VideoDevice::GetDeviceContentModifiedEvent() const
+unsigned int igtlioVideoDevice::GetDeviceContentModifiedEvent() const
 {
   return VideoModifiedEvent;
 }
-  
-  
+
+
 //---------------------------------------------------------------------------
-std::string VideoDevice::GetDeviceType() const
+std::string igtlioVideoDevice::GetDeviceType() const
 {
-  return VideoConverter::GetIGTLTypeName();
+  return igtlioVideoConverter::GetIGTLTypeName();
 }
 
-void VideoDevice::SetContent(VideoConverter::ContentData content)
+void igtlioVideoDevice::SetContent(igtlioVideoConverter::ContentData content)
 {
   Content = content;
   this->Modified();
   this->InvokeEvent(VideoModifiedEvent, this);
 }
 
-VideoConverter::ContentData VideoDevice::GetContent()
+igtlioVideoConverter::ContentData igtlioVideoDevice::GetContent()
 {
   return Content;
 }
 
-igtl::VideoMessage::Pointer  VideoDevice::GetCompressedIGTLMessage()
+igtl::VideoMessage::Pointer  igtlioVideoDevice::GetCompressedIGTLMessage()
 {
   igtl::VideoMessage::Pointer videoMessage = igtl::VideoMessage::New();
   videoMessage->InitPack();
@@ -130,7 +127,7 @@ igtl::VideoMessage::Pointer  VideoDevice::GetCompressedIGTLMessage()
   return videoMessage;
 }
 
-igtl::VideoMessage::Pointer  VideoDevice::GetKeyFrameMessage()
+igtl::VideoMessage::Pointer  igtlioVideoDevice::GetKeyFrameMessage()
 {
   igtl::VideoMessage::Pointer videoMessage = igtl::VideoMessage::New();
   videoMessage->InitPack();
@@ -139,18 +136,18 @@ igtl::VideoMessage::Pointer  VideoDevice::GetKeyFrameMessage()
 }
 
 //---------------------------------------------------------------------------
-int VideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+int igtlioVideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
   igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
   headerMsg->Copy(buffer);
   if(strcmp(headerMsg->GetDeviceName(), this->GetDeviceName().c_str())==0)
     {
     // Copy the current received video message
-    
+
     int returnValue = 0;
     //To Do, we need to unpack the buffer to know the codec type, which is done in the converter
     // So the user need to set the correct CurrentCodecType before hand.
-    returnValue = VideoConverter::fromIGTL(buffer, &HeaderData, &Content, this->DecodersMap, checkCRC, this->metaInfo);
+    returnValue = igtlioVideoConverter::fromIGTL(buffer, &HeaderData, &Content, this->DecodersMap, checkCRC, this->metaInfo);
 
     if (returnValue)
      {
@@ -165,7 +162,7 @@ int VideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool chec
 
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
+igtl::MessageBase::Pointer igtlioVideoDevice::GetIGTLMessage()
 {
  if (!Content.image)
   {
@@ -196,7 +193,7 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
     //newEncoder->SetKeyFrameDistance(25);
     VideoStreamEncoderVPX->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
     Content.videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_VP9);
-    iReturn = VideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderVPX, this->metaInfo);
+    iReturn = igtlioVideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderVPX, this->metaInfo);
     }
 #endif
 #if defined(OpenIGTLink_USE_X265)
@@ -220,7 +217,7 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
+igtl::MessageBase::Pointer igtlioVideoDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
@@ -231,7 +228,7 @@ igtl::MessageBase::Pointer VideoDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 }
 
 //---------------------------------------------------------------------------
-std::set<Device::MESSAGE_PREFIX> VideoDevice::GetSupportedMessagePrefixes() const
+std::set<igtlioDevice::MESSAGE_PREFIX> igtlioVideoDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
  retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
@@ -239,12 +236,10 @@ std::set<Device::MESSAGE_PREFIX> VideoDevice::GetSupportedMessagePrefixes() cons
 }
 
 //---------------------------------------------------------------------------
-void VideoDevice::PrintSelf(ostream& os, vtkIndent indent)
+void igtlioVideoDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
-  Device::PrintSelf(os, indent);
+  igtlioDevice::PrintSelf(os, indent);
 
   os << indent << "Video:\t" <<"\n";
   Content.image->PrintSelf(os, indent.GetNextIndent());
 }
-} // namespace igtlio
-

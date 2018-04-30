@@ -26,7 +26,7 @@ qIGTLIODeviceWidget* vtkIGTLIOCommandDeviceWidgetCreator::Create()
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOCommandDeviceWidgetCreator::GetDeviceType() const
 {
- return igtlio::CommandConverter::GetIGTLTypeName();
+ return igtlioCommandConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
@@ -85,11 +85,11 @@ void qIGTLIOCommandDeviceWidget::AddCaptionedLineEdit(QGridLayout *layout, QLine
 
 void qIGTLIOCommandDeviceWidget::onGUIModified()
 {
-  igtlio::CommandDevice* device = dynamic_cast<igtlio::CommandDevice*>(Device.GetPointer());
+  igtlioCommandDevice* device = dynamic_cast<igtlioCommandDevice*>(Device.GetPointer());
   if (!device)
     return;
 
-  igtlio::CommandConverter::ContentData content = device->GetContent();
+  igtlioCommandConverter::ContentData content = device->GetContent();
   content.id = IdEdit->text().toInt();
   content.name = NameEdit->currentText().toStdString();
   content.content = ContentEdit->toPlainText().toStdString();
@@ -123,7 +123,7 @@ void qIGTLIOCommandDeviceWidget::onDeviceModified()
   QDateTime timestamp = QDateTime::fromMSecsSinceEpoch(Device->GetTimestamp()*1000);
   TimestampEdit->setText(timestamp.toString("hh:mm:ss.zzz"));
 
-  igtlio::CommandDevice* device = dynamic_cast<igtlio::CommandDevice*>(Device.GetPointer());
+  igtlioCommandDevice* device = dynamic_cast<igtlioCommandDevice*>(Device.GetPointer());
 
   if (!device)
     return;

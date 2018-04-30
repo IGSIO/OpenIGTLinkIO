@@ -6,10 +6,7 @@
 #include <igtlStringMessage.h>
 #include "igtlioBaseConverter.h"
 
-namespace igtlio
-{
-
-class OPENIGTLINKIO_CONVERTER_EXPORT StringConverter : public BaseConverter
+class OPENIGTLINKIO_CONVERTER_EXPORT igtlioStringConverter : public igtlioBaseConverter
 {
 public:
   /**
@@ -28,7 +25,5 @@ public:
   static int toIGTL(const HeaderData& header, const ContentData& source, igtl::StringMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo = igtl::MessageBase::MetaDataMap());
 
 };
-
-} //namespace igtlio
 
 #endif // STRINGCONVERTER_H

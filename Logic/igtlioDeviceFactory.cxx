@@ -17,50 +17,48 @@
 #if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   #include "igtlioVideoDevice.h"
 #endif
-namespace igtlio
-{
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(DeviceFactory);
+vtkStandardNewMacro(igtlioDeviceFactory);
 //---------------------------------------------------------------------------
-DeviceFactory::DeviceFactory()
+igtlioDeviceFactory::igtlioDeviceFactory()
 {
-  this->registerCreator<ImageDeviceCreator>();
-  this->registerCreator<StatusDeviceCreator>();
-  this->registerCreator<CommandDeviceCreator>();
-  this->registerCreator<TransformDeviceCreator>();
-  this->registerCreator<StringDeviceCreator>();
-  this->registerCreator<PolyDataDeviceCreator>();
+  this->registerCreator<igtlioImageDeviceCreator>();
+  this->registerCreator<igtlioStatusDeviceCreator>();
+  this->registerCreator<igtlioCommandDeviceCreator>();
+  this->registerCreator<igtlioTransformDeviceCreator>();
+  this->registerCreator<igtlioStringDeviceCreator>();
+  this->registerCreator<igtlioPolyDataDeviceCreator>();
 #if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
-  this->registerCreator<VideoDeviceCreator>();
+  this->registerCreator<igtlioVideoDeviceCreator>();
 #endif
 }
 
 //---------------------------------------------------------------------------
-DeviceFactory::~DeviceFactory()
+igtlioDeviceFactory::~igtlioDeviceFactory()
 {
 }
 
 //---------------------------------------------------------------------------
-void DeviceFactory::PrintSelf(ostream &os, vtkIndent indent)
+void igtlioDeviceFactory::PrintSelf(ostream &os, vtkIndent indent)
 {
 }
 
 //---------------------------------------------------------------------------
-DeviceCreatorPointer DeviceFactory::GetCreator(std::string device_type) const
+igtlioDeviceCreatorPointer igtlioDeviceFactory::GetCreator(std::string device_type) const
 {
-  std::map<std::string, DeviceCreatorPointer>::const_iterator iter = Creators.find(device_type);
+  std::map<std::string, igtlioDeviceCreatorPointer>::const_iterator iter = Creators.find(device_type);
   if (iter==Creators.end())
     {
-	return DeviceCreatorPointer();
+    return igtlioDeviceCreatorPointer();
     }
   return iter->second;
 }
 
-std::vector<std::string> DeviceFactory::GetAvailableDeviceTypes() const
+std::vector<std::string> igtlioDeviceFactory::GetAvailableDeviceTypes() const
 {
   std::vector<std::string> retval;
-  for (std::map<std::string, DeviceCreatorPointer>::const_iterator iter=Creators.begin();
+  for (std::map<std::string, igtlioDeviceCreatorPointer>::const_iterator iter=Creators.begin();
        iter!=Creators.end();
        ++iter)
     {
@@ -70,23 +68,20 @@ std::vector<std::string> DeviceFactory::GetAvailableDeviceTypes() const
 }
 
 //---------------------------------------------------------------------------
-DevicePointer DeviceFactory::create(std::string device_type, std::string device_name) const
+igtlioDevicePointer igtlioDeviceFactory::create(std::string device_type, std::string device_name) const
 {
-  DeviceCreatorPointer creator = this->GetCreator(device_type);
+  igtlioDeviceCreatorPointer creator = this->GetCreator(device_type);
   if (!creator)
   {
-	return DevicePointer();
+    return igtlioDevicePointer();
   }
   return creator->Create(device_name);
 }
 
 //---------------------------------------------------------------------------
 template<class CREATOR_TYPE>
-void DeviceFactory::registerCreator()
+void igtlioDeviceFactory::registerCreator()
 {
-  DeviceCreatorPointer creator = vtkSmartPointer<CREATOR_TYPE>::New();
+  igtlioDeviceCreatorPointer creator = vtkSmartPointer<CREATOR_TYPE>::New();
   Creators[creator->GetDeviceType()] = creator;
 }
-
-} // namespace igtlio
-

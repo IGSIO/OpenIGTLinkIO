@@ -3,14 +3,11 @@
 #include <igtl_util.h>
 #include <igtlStringMessage.h>
 
-namespace igtlio
-{
-
 //---------------------------------------------------------------------------
-int StringConverter::fromIGTL(igtl::MessageBase::Pointer source,
+int igtlioStringConverter::fromIGTL(igtl::MessageBase::Pointer source,
                               HeaderData* header,
                               ContentData* dest,
-                              bool checkCRC, 
+                              bool checkCRC,
                               igtl::MessageBase::MetaDataMap& outMetaInfo)
 {
   // Create a message buffer to receive  data
@@ -39,7 +36,7 @@ int StringConverter::fromIGTL(igtl::MessageBase::Pointer source,
 }
 
 //---------------------------------------------------------------------------
-int StringConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::StringMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
+int igtlioStringConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::StringMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
   if (dest->IsNull())
     *dest = igtl::StringMessage::New();
@@ -59,8 +56,3 @@ int StringConverter::toIGTL(const HeaderData& header, const ContentData& source,
 
   return 1;
 }
-
-
-} // namespace igtlio
-
-

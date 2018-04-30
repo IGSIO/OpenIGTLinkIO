@@ -5,19 +5,14 @@
 
 #include "igtlioToolsExport.h"
 
-namespace igtlio
-{
-
-class OPENIGTLINKIO_TOOLS_EXPORT Translator
+class OPENIGTLINKIO_TOOLS_EXPORT igtlioTranslator
 {
 public:
-    Translator();
+    igtlioTranslator();
 
     std::string GetToolNameFromDeviceName(std::string device_name);
     std::string DetermineTypeBasedOnToolName(std::string tool_name);
 
 };
-
-} //namespace igtlio
 
 #endif // IGTLIOTRANSLATOR_H

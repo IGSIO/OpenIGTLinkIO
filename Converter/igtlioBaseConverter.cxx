@@ -1,11 +1,7 @@
 #include "igtlioBaseConverter.h"
 
-
-namespace igtlio
-{
-
 //---------------------------------------------------------------------------
-int BaseConverter::IGTLtoHeader(igtl::MessageBase::Pointer source, BaseConverter::HeaderData *header, igtl::MessageBase::MetaDataMap& outMetaInfo)
+int igtlioBaseConverter::IGTLtoHeader(igtl::MessageBase::Pointer source, HeaderData *header, igtl::MessageBase::MetaDataMap& outMetaInfo)
 {
   header->deviceName = source->GetDeviceName();
   // get timestamp
@@ -25,7 +21,7 @@ int BaseConverter::IGTLtoHeader(igtl::MessageBase::Pointer source, BaseConverter
 }
 
 //---------------------------------------------------------------------------
-int BaseConverter::HeadertoIGTL(const BaseConverter::HeaderData &header, igtl::MessageBase::Pointer *dest, igtl::MessageBase::MetaDataMap metaInfo)
+int igtlioBaseConverter::HeadertoIGTL(const HeaderData &header, igtl::MessageBase::Pointer *dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
   (*dest)->SetDeviceName(header.deviceName.c_str());
   for (igtl::MessageBase::MetaDataMap::const_iterator it = metaInfo.begin(); it != metaInfo.end(); ++it)
@@ -39,7 +35,7 @@ int BaseConverter::HeadertoIGTL(const BaseConverter::HeaderData &header, igtl::M
 }
 
 //---------------------------------------------------------------------------
-int BaseConverter::IGTLToTimestamp(igtl::MessageBase::Pointer msg, HeaderData *dest)
+int igtlioBaseConverter::IGTLToTimestamp(igtl::MessageBase::Pointer msg, HeaderData *dest)
 {
   // Save OpenIGTLink time stamp
   igtl::TimeStamp::Pointer ts = igtl::TimeStamp::New();
@@ -47,5 +43,3 @@ int BaseConverter::IGTLToTimestamp(igtl::MessageBase::Pointer msg, HeaderData *d
   dest->timestamp = ts->GetTimeStamp();
   return 1;
 }
-
-} // namespace igtlio

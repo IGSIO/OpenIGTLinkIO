@@ -11,22 +11,20 @@
 
 #include <vtkTimerLog.h>
 
-namespace igtlio
-{
 //---------------------------------------------------------------------------
-Device::Device()
+igtlioDevice::igtlioDevice()
 {
   PushOnConnect = false;
   MessageDirection = MESSAGE_DIRECTION_IN;
 }
 
 //---------------------------------------------------------------------------
-Device::~Device()
+igtlioDevice::~igtlioDevice()
 {
 }
 
 //---------------------------------------------------------------------------
-void Device::PrintSelf(ostream& os, vtkIndent indent)
+void igtlioDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->vtkObject::PrintSelf(os, indent);
 
@@ -36,29 +34,31 @@ void Device::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-std::string Device::GetDeviceName() const
+std::string igtlioDevice::GetDeviceName() const
 {
   return HeaderData.deviceName;
 }
 
 //---------------------------------------------------------------------------
-std::string Device::GetDeviceType() const
+std::string igtlioDevice::GetDeviceType() const
 {
   return NULL;
 }
 
-const igtl::MessageBase::MetaDataMap& Device::GetMetaData() const
+//---------------------------------------------------------------------------
+const igtl::MessageBase::MetaDataMap& igtlioDevice::GetMetaData() const
 {
   return this->metaInfo;
 }
 
-void Device::ClearMetaData()
+//---------------------------------------------------------------------------
+void igtlioDevice::ClearMetaData()
 {
   this->metaInfo.clear();
 }
 
-  
-bool Device::SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE encodingScheme, std::string value)
+//---------------------------------------------------------------------------
+bool igtlioDevice::SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE encodingScheme, std::string value)
 {
   igtl_metadata_header_entry entry;
   if (key.length() > std::numeric_limits<igtl_uint16>::max())
@@ -73,13 +73,15 @@ bool Device::SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE encod
   return true;
 }
 
-bool Device::GetMetaDataElement(const std::string& key, std::string& value) const
+//---------------------------------------------------------------------------
+bool igtlioDevice::GetMetaDataElement(const std::string& key, std::string& value) const
 {
   IANA_ENCODING_TYPE type;
   return GetMetaDataElement(key, type, value);
 }
 
-bool Device::GetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE& encoding, std::string& value) const
+//---------------------------------------------------------------------------
+bool igtlioDevice::GetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE& encoding, std::string& value) const
 {
   if (this->metaInfo.find(key) != this->metaInfo.end())
     {
@@ -91,27 +93,27 @@ bool Device::GetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE& enco
   return false;
 }
 
-unsigned int Device::GetDeviceContentModifiedEvent() const
+//---------------------------------------------------------------------------
+unsigned int igtlioDevice::GetDeviceContentModifiedEvent() const
 {
   return vtkCommand::ModifiedEvent;
 }
-  
-  
+
 //---------------------------------------------------------------------------
-void Device::SetDeviceName(std::string name)
+void igtlioDevice::SetDeviceName(std::string name)
 {
   HeaderData.deviceName = name;
   this->Modified();
 }
 
 //---------------------------------------------------------------------------
-double Device::GetTimestamp() const
+double igtlioDevice::GetTimestamp() const
 {
   return HeaderData.timestamp;
 }
 
 //---------------------------------------------------------------------------
-void Device::SetTimestamp(double val)
+void igtlioDevice::SetTimestamp(double val)
 {
   HeaderData.timestamp = val;
   this->Modified();
@@ -119,17 +121,15 @@ void Device::SetTimestamp(double val)
 
 
 //---------------------------------------------------------------------------
-void Device::SetHeader(BaseConverter::HeaderData header)
+void igtlioDevice::SetHeader(igtlioBaseConverter::HeaderData header)
 {
   HeaderData = header;
   this->Modified();
 }
 
 //---------------------------------------------------------------------------
-BaseConverter::HeaderData Device::GetHeader()
+igtlioBaseConverter::HeaderData igtlioDevice::GetHeader()
 {
   return HeaderData;
 }
-
-} //namespace igtlio
 

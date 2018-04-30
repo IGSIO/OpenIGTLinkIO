@@ -7,7 +7,7 @@ qIGTLIODeviceWidget::qIGTLIODeviceWidget(QWidget *parent) : QWidget(parent)
 
 }
 
-void qIGTLIODeviceWidget::SetDevice(igtlio::DevicePointer device)
+void qIGTLIODeviceWidget::SetDevice(igtlioDevicePointer device)
 {
   qvtkReconnect(Device, device, vtkCommand::ModifiedEvent,
                 this, SLOT(onDeviceModified()));

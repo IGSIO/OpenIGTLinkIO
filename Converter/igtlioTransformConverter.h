@@ -23,13 +23,10 @@
 
 class vtkMatrix4x4;
 
-namespace igtlio
-{
-
 /** Conversion between igtl::TransformMessage and vtk classes.
  *
  */
-class OPENIGTLINKIO_CONVERTER_EXPORT TransformConverter : public BaseConverter
+class OPENIGTLINKIO_CONVERTER_EXPORT igtlioTransformConverter : public igtlioBaseConverter
 {
 public:
   /**
@@ -58,8 +55,5 @@ private:
   static int TransformMetaDataToIGTL(const ContentData& source, igtl::MessageBase::Pointer *dest);
 
 };
-
-} //namespace igtlio
-
 
 #endif //IGTLIOTRANSFORMCONVERTER_H

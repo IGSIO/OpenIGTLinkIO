@@ -6,10 +6,7 @@
 #include <igtlStatusMessage.h>
 #include "igtlioBaseConverter.h"
 
-namespace igtlio
-{
-
-class OPENIGTLINKIO_CONVERTER_EXPORT StatusConverter : public BaseConverter
+class OPENIGTLINKIO_CONVERTER_EXPORT igtlioStatusConverter : public igtlioBaseConverter
 {
 public:
   /**
@@ -30,7 +27,5 @@ public:
   static int toIGTL(const HeaderData& header, const ContentData& source, igtl::StatusMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo = igtl::MessageBase::MetaDataMap());
 
 };
-
-} // namespace igtlio
 
 #endif // IGTLIOSTATUSCONVERTER_H

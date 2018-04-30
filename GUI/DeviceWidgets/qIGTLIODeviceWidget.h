@@ -11,10 +11,7 @@
 
 #include "qIGTLIOVtkConnectionMacro.h"
 
-namespace igtlio
-{
-typedef vtkSmartPointer<class Device> DevicePointer;
-}
+typedef vtkSmartPointer<class igtlioDevice> igtlioDevicePointer;
 
 class qIGTLIODeviceWidget;
 
@@ -36,10 +33,10 @@ class OPENIGTLINKIO_GUI_EXPORT qIGTLIODeviceWidget : public QWidget
   IGTLIO_QVTK_OBJECT
 public:
   qIGTLIODeviceWidget(QWidget* parent=NULL);
-  virtual void SetDevice(igtlio::DevicePointer device);
+  virtual void SetDevice(igtlioDevicePointer device);
 
 protected:
-  igtlio::DevicePointer Device;
+  igtlioDevicePointer Device;
 
   virtual void setupUi() = 0;
 

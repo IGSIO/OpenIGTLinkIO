@@ -22,18 +22,16 @@
 
 class vtkImageData;
 
-namespace igtlio {
-
-typedef vtkSmartPointer<class TransformDevice> TransformDevicePointer;
+typedef vtkSmartPointer<class igtlioTransformDevice> igtlioTransformDevicePointer;
 
 /// A Device supporting the IMAGE igtl Message.
-class OPENIGTLINKIO_DEVICES_EXPORT TransformDevice : public Device
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioTransformDevice : public igtlioDevice
 {
 public:
   enum {
     TransformModifiedEvent         = 118957,
   };
-  
+
  virtual unsigned int GetDeviceContentModifiedEvent() const VTK_OVERRIDE;
  virtual std::string GetDeviceType() const VTK_OVERRIDE;
  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC) VTK_OVERRIDE;
@@ -41,37 +39,34 @@ public:
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix) VTK_OVERRIDE;
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const VTK_OVERRIDE;
 
-  void SetContent(TransformConverter::ContentData content);
-  TransformConverter::ContentData GetContent();
+  void SetContent(igtlioTransformConverter::ContentData content);
+  igtlioTransformConverter::ContentData GetContent();
 
 public:
-  static TransformDevice *New();
-  vtkTypeMacro(TransformDevice,Device);
+  static igtlioTransformDevice *New();
+  vtkTypeMacro(igtlioTransformDevice,igtlioDevice);
   void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
 protected:
-  TransformDevice();
-  ~TransformDevice();
+  igtlioTransformDevice();
+  ~igtlioTransformDevice();
 
  protected:
   igtl::TransformMessage::Pointer OutTransformMessage;
   igtl::GetTransformMessage::Pointer GetTransformMessage;
 
-  TransformConverter::ContentData Content;
+  igtlioTransformConverter::ContentData Content;
 };
 
 //---------------------------------------------------------------------------
-class OPENIGTLINKIO_DEVICES_EXPORT TransformDeviceCreator : public DeviceCreator
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioTransformDeviceCreator : public igtlioDeviceCreator
 {
 public:
-  virtual DevicePointer Create(std::string device_name) VTK_OVERRIDE;
+  virtual igtlioDevicePointer Create(std::string device_name) VTK_OVERRIDE;
   virtual std::string GetDeviceType() const VTK_OVERRIDE;
 
-  static TransformDeviceCreator *New();
-  vtkTypeMacro(TransformDeviceCreator,vtkObject);
+  static igtlioTransformDeviceCreator *New();
+  vtkTypeMacro(igtlioTransformDeviceCreator,vtkObject);
 };
-
-}
-
 
 #endif //IGTLIOTRANSFORMDEVICE_H
