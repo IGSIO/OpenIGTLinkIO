@@ -4,35 +4,32 @@
 #include <sstream>
 
 
-namespace igtlio
-{
-
-CommandMessageCodec::CommandMessageCodec() : m_isReply( false ), m_result( false )
+igtlioCommandMessageCodec::igtlioCommandMessageCodec() : m_isReply(false), m_result(false)
 {
 }
 
-CommandMessageCodec::CommandMessageCodec( bool isReply ) : m_isReply( isReply ), m_result( false )
+igtlioCommandMessageCodec::igtlioCommandMessageCodec( bool isReply ) : m_isReply( isReply ), m_result( false )
 {
 }
 
-void CommandMessageCodec::SetResult( bool res )
+void igtlioCommandMessageCodec::SetResult( bool res )
 {
     m_result = res;
 }
 
-void CommandMessageCodec::AddParameter( std::string paramName, std::string value )
+void igtlioCommandMessageCodec::AddParameter( std::string paramName, std::string value )
 {
     m_parameters.push_back( std::pair<std::string,std::string>(paramName, value ) );
 }
 
-void CommandMessageCodec::AddParameter( std::string paramName, double value )
+void igtlioCommandMessageCodec::AddParameter( std::string paramName, double value )
 {
     std::stringstream ss;
     ss << value;
     AddParameter( paramName, ss.str() );
 }
 
-std::string CommandMessageCodec::GetContent()
+std::string igtlioCommandMessageCodec::GetContent()
 {
     std::stringstream os;
     os << "<Command>" << std::endl;
@@ -49,7 +46,7 @@ std::string CommandMessageCodec::GetContent()
     return os.str();
 }
 
-void CommandMessageCodec::SetContent( std::string content )
+void igtlioCommandMessageCodec::SetContent( std::string content )
 {
     vtkXMLDataElement * root = vtkXMLUtilities::ReadElementFromString( content.c_str() );
     for( int i = 0; i < root->GetNumberOfNestedElements(); ++i )
@@ -71,17 +68,15 @@ void CommandMessageCodec::SetContent( std::string content )
     root->Delete();
 }
 
-bool CommandMessageCodec::GetResult()
+bool igtlioCommandMessageCodec::GetResult()
 {
     return m_result;
 }
 
-std::string CommandMessageCodec::GetParameter( std::string paramName )
+std::string igtlioCommandMessageCodec::GetParameter( std::string paramName )
 {
     for(unsigned int i = 0; i < m_parameters.size(); ++i )
         if( m_parameters[i].first == paramName )
             return m_parameters[i].second;
     return std::string();
 }
-
-} //namespace igtlio

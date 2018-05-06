@@ -2,57 +2,54 @@
 #include "igtlioStatusDevice.h"
 #include <vtkObjectFactory.h>
 
-namespace igtlio
-{
-
 //---------------------------------------------------------------------------
-DevicePointer StatusDeviceCreator::Create(std::string device_name)
+igtlioDevicePointer igtlioStatusDeviceCreator::Create(std::string device_name)
 {
- StatusDevicePointer retval = StatusDevicePointer::New();
+ igtlioStatusDevicePointer retval = igtlioStatusDevicePointer::New();
  retval->SetDeviceName(device_name);
  return retval;
 }
 
 //---------------------------------------------------------------------------
-std::string StatusDeviceCreator::GetDeviceType() const
+std::string igtlioStatusDeviceCreator::GetDeviceType() const
 {
- return StatusConverter::GetIGTLTypeName();
+ return igtlioStatusConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(StatusDeviceCreator);
+vtkStandardNewMacro(igtlioStatusDeviceCreator);
 
 
 
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(StatusDevice);
+vtkStandardNewMacro(igtlioStatusDevice);
 //---------------------------------------------------------------------------
-StatusDevice::StatusDevice()
-{
-}
-
-//---------------------------------------------------------------------------
-StatusDevice::~StatusDevice()
+igtlioStatusDevice::igtlioStatusDevice()
 {
 }
 
 //---------------------------------------------------------------------------
-unsigned int StatusDevice::GetDeviceContentModifiedEvent() const
+igtlioStatusDevice::~igtlioStatusDevice()
+{
+}
+
+//---------------------------------------------------------------------------
+unsigned int igtlioStatusDevice::GetDeviceContentModifiedEvent() const
 {
   return StatusModifiedEvent;
 }
 
 //---------------------------------------------------------------------------
-std::string StatusDevice::GetDeviceType() const
+std::string igtlioStatusDevice::GetDeviceType() const
 {
-  return StatusConverter::GetIGTLTypeName();
+  return igtlioStatusConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-int StatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+int igtlioStatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (StatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
+ if (igtlioStatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
  {
    this->Modified();
    this->InvokeEvent(StatusModifiedEvent, this);
@@ -64,9 +61,9 @@ int StatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool che
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
+igtl::MessageBase::Pointer igtlioStatusDevice::GetIGTLMessage()
 {
-	/*
+    /*
  // cannot send a non-existent status (?)
  if (Content.errorname.empty())
   {
@@ -74,7 +71,7 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
   }
   */
 
- if (!StatusConverter::toIGTL(HeaderData, Content, &this->OutMessage, this->metaInfo))
+  if (!igtlioStatusConverter::toIGTL(HeaderData, Content, &this->OutMessage, this->metaInfo))
    {
    return 0;
    }
@@ -83,9 +80,9 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
+igtl::MessageBase::Pointer igtlioStatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
-	/*
+    /*
  if (prefix==MESSAGE_PREFIX_GET)
   {
    if (this->GetMessage.IsNull())
@@ -106,34 +103,32 @@ igtl::MessageBase::Pointer StatusDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 }
 
 //---------------------------------------------------------------------------
-std::set<Device::MESSAGE_PREFIX> StatusDevice::GetSupportedMessagePrefixes() const
+std::set<igtlioDevice::MESSAGE_PREFIX> igtlioStatusDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
  retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
  return retval;
 }
 
-void StatusDevice::SetContent(StatusConverter::ContentData content)
+void igtlioStatusDevice::SetContent(igtlioStatusConverter::ContentData content)
 {
   Content = content;
   this->Modified();
   this->InvokeEvent(StatusModifiedEvent, this);
 }
 
-StatusConverter::ContentData StatusDevice::GetContent()
+igtlioStatusConverter::ContentData igtlioStatusDevice::GetContent()
 {
   return Content;
 }
 
 //---------------------------------------------------------------------------
-void StatusDevice::PrintSelf(ostream& os, vtkIndent indent)
+void igtlioStatusDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
-  Device::PrintSelf(os, indent);
+  igtlioDevice::PrintSelf(os, indent);
 
   os << indent << "ErrorCode:\t" << Content.code << "\n";
   os << indent << "ErrorSubCode:\t" << Content.subcode << "\n";
   os << indent << "ErrorName:\t" << Content.errorname << "\n";
   os << indent << "StatusString:\t" << Content.statusstring << "\n";
 }
-
-} //namespace igtlio

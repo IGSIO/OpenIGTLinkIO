@@ -3,11 +3,8 @@
 #include <igtl_util.h>
 #include <igtlStatusMessage.h>
 
-namespace igtlio
-{
-
 //---------------------------------------------------------------------------
-int StatusConverter::fromIGTL(igtl::MessageBase::Pointer source,
+int igtlioStatusConverter::fromIGTL(igtl::MessageBase::Pointer source,
                               HeaderData* header,
                               ContentData* dest,
                               bool checkCRC, 
@@ -41,7 +38,7 @@ int StatusConverter::fromIGTL(igtl::MessageBase::Pointer source,
 }
 
 //---------------------------------------------------------------------------
-int StatusConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::StatusMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
+int igtlioStatusConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::StatusMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
   if (dest->IsNull())
     *dest = igtl::StatusMessage::New();
@@ -62,7 +59,3 @@ int StatusConverter::toIGTL(const HeaderData& header, const ContentData& source,
 
   return 1;
 }
-
-
-} // namespace igtlio
-

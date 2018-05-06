@@ -10,36 +10,36 @@
 //---------------------------------------------------------------------------
 void onReceivedEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
 {
-  LogicFixture* self = reinterpret_cast<LogicFixture*>(clientdata);
+  igtlioLogicFixture* self = reinterpret_cast<igtlioLogicFixture*>(clientdata);
   self->Session->PrintSelf(std::cout, vtkIndent(1));
   self->ReceivedEvents.push_back(eid);
 }
 
-LogicFixture::LogicFixture()
+igtlioLogicFixture::igtlioLogicFixture()
 {
-  Logic = igtlio::LogicPointer::New();
+  Logic = igtlioLogicPointer::New();
   ReceivedEvents = std::vector<int>(1000);
   ReceivedEvents.clear();
   LogicEventCallback = vtkSmartPointer<vtkCallbackCommand>::New();
   LogicEventCallback->SetCallback(onReceivedEventFunc);
   LogicEventCallback->SetClientData(this);
 
-  Logic->AddObserver(igtlio::Logic::NewDeviceEvent, LogicEventCallback);
-  Logic->AddObserver(igtlio::Logic::RemovedDeviceEvent, LogicEventCallback);
-  Logic->AddObserver(igtlio::Logic::CommandReceivedEvent, LogicEventCallback);
-  Logic->AddObserver(igtlio::Logic::CommandResponseReceivedEvent, LogicEventCallback);
-  Logic->AddObserver(igtlio::Logic::DeviceModifiedEvent, LogicEventCallback);
+  Logic->AddObserver(igtlioLogic::NewDeviceEvent, LogicEventCallback);
+  Logic->AddObserver(igtlioLogic::RemovedDeviceEvent, LogicEventCallback);
+  Logic->AddObserver(igtlioLogic::CommandReceivedEvent, LogicEventCallback);
+  Logic->AddObserver(igtlioLogic::CommandResponseReceivedEvent, LogicEventCallback);
+  Logic->AddObserver(igtlioLogic::DeviceModifiedEvent, LogicEventCallback);
 }
 
-void LogicFixture::startClient()
+void igtlioLogicFixture::startClient()
 {
-  Session = Logic->ConnectToServer("localhost", -1, igtlio::ASYNCHRONOUS);
+  Session = Logic->ConnectToServer("localhost", -1, IGTLIO_ASYNCHRONOUS);
   Connector = Session->GetConnector();
 }
 
-void LogicFixture::startServer()
+void igtlioLogicFixture::startServer()
 {
-  Session = Logic->StartServer(-1, igtlio::ASYNCHRONOUS);
+  Session = Logic->StartServer(-1, IGTLIO_ASYNCHRONOUS);
   Connector = Session->GetConnector();
 }
 
@@ -48,7 +48,7 @@ void LogicFixture::startServer()
 //-----------------------------------------------------------------------------
 
 
-bool ClientServerFixture::ConnectClientToServer()
+bool igtlioClientServerFixture::ConnectClientToServer()
 {
   Server.startServer();
   Client.startClient();
@@ -63,12 +63,12 @@ bool ClientServerFixture::ConnectClientToServer()
     Client.Logic->PeriodicProcess();
     vtksys::SystemTools::Delay(5);
 
-    if (Client.Connector->GetState() == igtlio::Connector::STATE_CONNECTED)
+    if (Client.Connector->GetState() == igtlioConnector::STATE_CONNECTED)
     {
       std::cout << "SUCCESS: connected to server" << std::endl;
       return true;
     }
-    if (Client.Connector->GetState() == igtlio::Connector::STATE_OFF)
+    if (Client.Connector->GetState() == igtlioConnector::STATE_OFF)
     {
       std::cout << "FAILURE to connect to server" << std::endl;
       return false;
@@ -79,7 +79,7 @@ bool ClientServerFixture::ConnectClientToServer()
   return false;
 }
 
-bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventId, int count)
+bool igtlioClientServerFixture::LoopUntilEventDetected(igtlioLogicFixture* logic, int eventId, int count)
 {
 
   double timeout = 2000;
@@ -92,7 +92,7 @@ bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventI
     Client.Logic->PeriodicProcess();
     vtksys::SystemTools::Delay(5);
 
-    if (igtlio::contains(logic->ReceivedEvents, eventId, count))
+    if (contains(logic->ReceivedEvents, eventId, count))
     {
       return true;
     }
@@ -103,7 +103,7 @@ bool ClientServerFixture::LoopUntilEventDetected(LogicFixture* logic, int eventI
   return false;
 }
 
-vtkSmartPointer<vtkImageData> ClientServerFixture::CreateTestImage()
+vtkSmartPointer<vtkImageData> igtlioClientServerFixture::CreateTestImage()
 {
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
   image->SetSpacing(1.5, 1.2, 1);
@@ -120,17 +120,17 @@ vtkSmartPointer<vtkImageData> ClientServerFixture::CreateTestImage()
 
 
 
-int ClientServerFixture::CreateTestFrame(vtkImageData* image )
+int igtlioClientServerFixture::CreateTestFrame(vtkImageData* image )
 {
   int width = 512, height = 512;
   image->Delete();
   image->SetSpacing(1, 1, 1);
   image->SetExtent(0, width-1, 0, height-1, 0, 0);
   image->AllocateScalars(VTK_UNSIGNED_CHAR, 3);
-  
+
   unsigned char* ptr = reinterpret_cast<unsigned char*>(image->GetScalarPointer());
   unsigned char color = 108;
-  
+
   for(int i = 0 ; i< width*height*3; i++)
   {
     *ptr = color%256;
@@ -140,7 +140,7 @@ int ClientServerFixture::CreateTestFrame(vtkImageData* image )
   return 1;
 }
 
-vtkSmartPointer<vtkMatrix4x4> ClientServerFixture::CreateTestTransform()
+vtkSmartPointer<vtkMatrix4x4> igtlioClientServerFixture::CreateTestTransform()
 {
   vtkSmartPointer<vtkMatrix4x4> transform = vtkSmartPointer<vtkMatrix4x4>::New();
   transform->Identity();

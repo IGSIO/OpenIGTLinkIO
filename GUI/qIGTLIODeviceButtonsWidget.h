@@ -11,18 +11,15 @@ class qIGTLIODevicesModel;
 class QItemSelectionModel;
 #include <QPointer>
 #include <vtkSmartPointer.h>
-namespace igtlio
-{
-typedef vtkSmartPointer<class Logic> LogicPointer;
-}
 
+typedef vtkSmartPointer<class igtlioLogic> igtlioLogicPointer;
 
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIODeviceButtonsWidget : public QWidget
 {
   Q_OBJECT
 public:
   qIGTLIODeviceButtonsWidget();
-  void setLogic(igtlio::LogicPointer logic);
+  void setLogic(igtlioLogicPointer logic);
   void setModel(qIGTLIODevicesModel* model);
 
 private slots:
@@ -30,7 +27,7 @@ private slots:
   void onActionClicked();
 
 private:
-  igtlio::LogicPointer Logic;
+  igtlioLogicPointer Logic;
   QPointer<qIGTLIODevicesModel> DevicesModel;
   QList<QAction*> Actions;
 

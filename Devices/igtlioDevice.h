@@ -22,10 +22,7 @@
 #include "igtlioDevicesExport.h"
 #include "igtlioBaseConverter.h"
 
-
-namespace igtlio
-{
-typedef vtkSmartPointer<class Device> DevicePointer;
+typedef vtkSmartPointer<class igtlioDevice> igtlioDevicePointer;
 
 /// A vtkIGTLIODevice represents one device connected over OpenIGTLink.
 ///
@@ -34,7 +31,7 @@ typedef vtkSmartPointer<class Device> DevicePointer;
 ///
 /// One Device is bound to a device name, corresponding to an igtl device name.
 ///
-class OPENIGTLINKIO_DEVICES_EXPORT Device : public vtkObject
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioDevice : public vtkObject
 {
 public:
   enum MESSAGE_DIRECTION {
@@ -64,18 +61,18 @@ public:
 
 
 public:
- 
+
  virtual unsigned int GetDeviceContentModifiedEvent() const;
-  
+
  virtual std::string GetDeviceType() const;
 
  virtual std::string GetDeviceName() const;
-  /// Set device name.
-  /// Caution: Changing the device name of a device registered in
-  /// a vtkIGTLIOConnector will cause undefined behaviour.
-  virtual void SetDeviceName(std::string name);
+ /// Set device name.
+ /// Caution: Changing the device name of a device registered in
+ /// a vtkIGTLIOConnector will cause undefined behaviour.
+ virtual void SetDeviceName(std::string name);
 
-  BaseConverter::HeaderData GetHeader();
+ igtlioBaseConverter::HeaderData GetHeader();
 
  vtkSetMacro( PushOnConnect, bool );
  vtkGetMacro( PushOnConnect, bool );
@@ -113,10 +110,10 @@ public:
  // TODO: add old features from Connector:
  //       - lock (means dont accept incoming messages),
  //       - gettimestamp (of last incoming message)
- 
+
  // Return Meta information
  const igtl::MessageBase::MetaDataMap& GetMetaData() const;
- 
+
  /// Add Meta data element
  bool SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE encodingScheme, std::string value);
 
@@ -127,27 +124,27 @@ public:
    ss << value;
    return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
  }
- 
+
  /// Get meta data element
  bool GetMetaDataElement(const std::string& key, std::string& value) const;
  bool GetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE& encoding, std::string& value) const;
- 
+
  /// Clear all data elements
  void ClearMetaData();
 
 public:
-  vtkAbstractTypeMacro(Device,vtkObject);
+  vtkAbstractTypeMacro(igtlioDevice,vtkObject);
 
 protected:
-  void SetHeader(BaseConverter::HeaderData header);
+  void SetHeader(igtlioBaseConverter::HeaderData header);
 
-  BaseConverter::HeaderData HeaderData;
-  
+  igtlioBaseConverter::HeaderData HeaderData;
+
   igtl::MessageBase::MetaDataMap metaInfo;
 
 protected:
- Device();
- virtual ~Device();
+  igtlioDevice();
+  virtual ~igtlioDevice();
 
 private:
  MESSAGE_DIRECTION MessageDirection;
@@ -158,17 +155,14 @@ private:
 
 //---------------------------------------------------------------------------
 
-class OPENIGTLINKIO_DEVICES_EXPORT DeviceCreator : public vtkObject
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioDeviceCreator : public vtkObject
 {
 public:
   // Create an instance of the specific device, with the given device_id
-  virtual DevicePointer Create(std::string device_name) = 0;
+  virtual igtlioDevicePointer Create(std::string device_name) = 0;
   // Return the device_type this factory creates devices for.
   virtual std::string GetDeviceType() const = 0;
-  vtkAbstractTypeMacro(DeviceCreator,vtkObject);
+  vtkAbstractTypeMacro(igtlioDeviceCreator,vtkObject);
 };
-
-} // namespace igtlio
-
 
 #endif //IGTLIODEVICE_H

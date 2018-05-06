@@ -3,99 +3,93 @@
 #include <vtkObjectFactory.h>
 #include <vtkTimerLog.h>
 
-namespace  igtlio
-{
-
 //---------------------------------------------------------------------------
-DevicePointer CommandDeviceCreator::Create(std::string device_name)
+igtlioDevicePointer igtlioCommandDeviceCreator::Create(std::string device_name)
 {
- CommandDevicePointer retval = CommandDevicePointer::New();
+ igtlioCommandDevicePointer retval = igtlioCommandDevicePointer::New();
  retval->SetDeviceName(device_name);
  return retval;
 }
 
 //---------------------------------------------------------------------------
-std::string CommandDeviceCreator::GetDeviceType() const
+std::string igtlioCommandDeviceCreator::GetDeviceType() const
 {
- return CommandConverter::GetIGTLTypeName();
+ return igtlioCommandConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(CommandDeviceCreator);
-
-
-
+vtkStandardNewMacro(igtlioCommandDeviceCreator);
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(CommandDevice);
+vtkStandardNewMacro(igtlioCommandDevice);
 //---------------------------------------------------------------------------
-CommandDevice::CommandDevice()
+igtlioCommandDevice::igtlioCommandDevice()
 {
-	QueryTimeOut = 0;
+    QueryTimeOut = 0;
 }
 
 //---------------------------------------------------------------------------
-CommandDevice::~CommandDevice()
+igtlioCommandDevice::~igtlioCommandDevice()
 {
 }
 
 //---------------------------------------------------------------------------
-unsigned int CommandDevice::GetDeviceContentModifiedEvent() const
+unsigned int igtlioCommandDevice::GetDeviceContentModifiedEvent() const
 {
   return CommandModifiedEvent;
 }
-  
+
 //---------------------------------------------------------------------------
-std::string CommandDevice::GetDeviceType() const
+std::string igtlioCommandDevice::GetDeviceType() const
 {
-  return CommandConverter::GetIGTLTypeName();
+  return igtlioCommandConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-int CommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+int igtlioCommandDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
   // RTS_COMMAND received:
   //    - look in the query queue for anyone waiting for it.
-  if (buffer->GetDeviceType()==std::string(CommandConverter::GetIGTLResponseName()))
-	{
-	CommandDevicePointer response = CommandDevicePointer::New();
-	if (!CommandConverter::fromIGTLResponse(buffer, &response->HeaderData, &response->Content, checkCRC, this->metaInfo))
-	  return 0;
+  if (buffer->GetDeviceType()==std::string(igtlioCommandConverter::GetIGTLResponseName()))
+    {
+    igtlioCommandDevicePointer response = igtlioCommandDevicePointer::New();
+  if (!igtlioCommandConverter::fromIGTLResponse(buffer, &response->HeaderData, &response->Content, checkCRC, this->metaInfo))
+    return 0;
 
-	// search among the queries for a command with an identical ID:
-	for (unsigned i=0; i<Queries.size(); ++i)
-	  {
-	  CommandDevicePointer query = CommandDevice::SafeDownCast(Queries[i].Query.GetPointer());
-	  if (query && query->GetContent().id == response->GetContent().id)
-		{
-		Queries[i].Response = response;
-		Queries[i].status = QUERY_STATUS_SUCCESS;
-		this->Modified();
-		this->InvokeEvent(CommandResponseReceivedEvent, this);
-		}
-	  }
+    // search among the queries for a command with an identical ID:
+    for (unsigned i=0; i<Queries.size(); ++i)
+      {
+      igtlioCommandDevicePointer query = igtlioCommandDevice::SafeDownCast(Queries[i].Query.GetPointer());
+      if (query && query->GetContent().id == response->GetContent().id)
+        {
+        Queries[i].Response = response;
+        Queries[i].status = QUERY_STATUS_SUCCESS;
+        this->Modified();
+        this->InvokeEvent(CommandResponseReceivedEvent, this);
+        }
+      }
 
-	return 1;
-	}
+    return 1;
+    }
 
   // COMMAND received
   //   - store the incoming message, emit event
   //     No response is created - this is the responsibility of the application.
-  if (buffer->GetDeviceType()==std::string(CommandConverter::GetIGTLTypeName()))
-	{
-	if (CommandConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
-	  {
-	  this->Modified();
-	  this->InvokeEvent(CommandReceivedEvent, this);
-	  return 1;
-	  }
-	}
+  if (buffer->GetDeviceType()==std::string(igtlioCommandConverter::GetIGTLTypeName()))
+    {
+    if (igtlioCommandConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
+      {
+      this->Modified();
+      this->InvokeEvent(CommandReceivedEvent, this);
+      return 1;
+      }
+    }
 
  return 0;
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer CommandDevice::GetIGTLMessage()
+igtl::MessageBase::Pointer igtlioCommandDevice::GetIGTLMessage()
 {
  // cannot send a non-existent Command (?)
  if (Content.name.empty())
@@ -105,7 +99,7 @@ igtl::MessageBase::Pointer CommandDevice::GetIGTLMessage()
 
  this->SetTimestamp(vtkTimerLog::GetUniversalTime());
 
- if (!CommandConverter::toIGTL(HeaderData, Content, &this->OutMessage, this->metaInfo))
+ if (!igtlioCommandConverter::toIGTL(HeaderData, Content, &this->OutMessage, this->metaInfo))
    {
    return 0;
    }
@@ -113,7 +107,7 @@ igtl::MessageBase::Pointer CommandDevice::GetIGTLMessage()
 
  // store the current device state as a query
  QueryType query;
- CommandDevicePointer queryDevice = CommandDevicePointer::New();
+ igtlioCommandDevicePointer queryDevice = igtlioCommandDevicePointer::New();
  queryDevice->SetContent(this->GetContent());
  queryDevice->SetHeader(this->GetHeader()); // NOTE: requires timestamp to be current
  query.Query = queryDevice;
@@ -129,7 +123,7 @@ igtl::MessageBase::Pointer CommandDevice::GetIGTLMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer CommandDevice::GetIGTLResponseMessage()
+igtl::MessageBase::Pointer igtlioCommandDevice::GetIGTLResponseMessage()
 {
  // cannot send a non-existent Command (?)
  if (Content.name.empty())
@@ -143,7 +137,7 @@ igtl::MessageBase::Pointer CommandDevice::GetIGTLResponseMessage()
    this->ResponseMessage = igtl::RTSCommandMessage::New();
 
  igtl::CommandMessage::Pointer response = dynamic_pointer_cast<igtl::CommandMessage>(this->ResponseMessage);
- if (!CommandConverter::toIGTL(HeaderData, Content, &response, this->metaInfo))
+ if (!igtlioCommandConverter::toIGTL(HeaderData, Content, &response, this->metaInfo))
    {
    return 0;
    }
@@ -152,13 +146,13 @@ igtl::MessageBase::Pointer CommandDevice::GetIGTLResponseMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer CommandDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
+igtl::MessageBase::Pointer igtlioCommandDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
   if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
    }
-  if (prefix==Device::MESSAGE_PREFIX_RTS)
+  if (prefix==igtlioDevice::MESSAGE_PREFIX_RTS)
    {
      return this->GetIGTLResponseMessage();
    }
@@ -168,34 +162,34 @@ igtl::MessageBase::Pointer CommandDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 }
 
 //---------------------------------------------------------------------------
-std::set<Device::MESSAGE_PREFIX> CommandDevice::GetSupportedMessagePrefixes() const
+std::set<igtlioDevice::MESSAGE_PREFIX> igtlioCommandDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
  retval.insert(MESSAGE_PREFIX_RTS);
  return retval;
 }
 
-void CommandDevice::SetContent(CommandConverter::ContentData content)
+void igtlioCommandDevice::SetContent(igtlioCommandConverter::ContentData content)
 {
   Content = content;
   this->Modified();
   this->InvokeEvent(CommandModifiedEvent, this);
 }
 
-CommandConverter::ContentData CommandDevice::GetContent()
+igtlioCommandConverter::ContentData igtlioCommandDevice::GetContent()
 {
   return Content;
 }
 
-std::vector<std::string> CommandDevice::GetAvailableCommandNames() const
+std::vector<std::string> igtlioCommandDevice::GetAvailableCommandNames() const
 {
-  return CommandConverter::GetAvailableCommandNames();
+  return igtlioCommandConverter::GetAvailableCommandNames();
 }
 
 //---------------------------------------------------------------------------
-void CommandDevice::PrintSelf(ostream& os, vtkIndent indent)
+void igtlioCommandDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
-  Device::PrintSelf(os, indent);
+  igtlioDevice::PrintSelf(os, indent);
 
   os << indent << "CommandID:\t" << Content.id << "\n";
   os << indent << "CommandName:\t" << Content.name << "\n";
@@ -204,28 +198,28 @@ void CommandDevice::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //---------------------------------------------------------------------------
-CommandDevicePointer CommandDevice::GetResponseFromCommandID(int id)
+igtlioCommandDevicePointer igtlioCommandDevice::GetResponseFromCommandID(int id)
 {
   // search among the queries for a command with an identical ID:
   for (unsigned i=0; i<Queries.size(); ++i)
   {
-	CommandDevicePointer response = CommandDevice::SafeDownCast(Queries[i].Response);
+    igtlioCommandDevicePointer response = igtlioCommandDevice::SafeDownCast(Queries[i].Response);
     if (response && response->GetContent().id == id)
     {
       return response;
     }
   }
 
-  return CommandDevicePointer();
+  return igtlioCommandDevicePointer();
 }
 //---------------------------------------------------------------------------
-std::vector<CommandDevice::QueryType> CommandDevice::GetQueries() const
+std::vector<igtlioCommandDevice::QueryType> igtlioCommandDevice::GetQueries() const
 {
   return Queries;
 }
 
 //---------------------------------------------------------------------------
-int CommandDevice::CheckQueryExpiration()
+int igtlioCommandDevice::CheckQueryExpiration()
 {
   double currentTime = vtkTimerLog::GetUniversalTime();
 //  if (this->QueryWaitingQueue.size() > 0)
@@ -242,17 +236,17 @@ int CommandDevice::CheckQueryExpiration()
   bool expired = false;
 
   for (unsigned i=0; i<Queries.size(); ++i)
-	{
-	  double timeout = this->GetQueryTimeOut();
-	  if ((timeout>0)
-		  && (currentTime-Queries[i].Query->GetTimestamp()>timeout)
-		  && (Queries[i].status==QUERY_STATUS_WAITING))
-		{
-		Queries[i].status=QUERY_STATUS_EXPIRED;
-		expired = true;
-		}
+    {
+      double timeout = this->GetQueryTimeOut();
+      if ((timeout>0)
+          && (currentTime-Queries[i].Query->GetTimestamp()>timeout)
+          && (Queries[i].status==QUERY_STATUS_WAITING))
+        {
+        Queries[i].status=QUERY_STATUS_EXPIRED;
+        expired = true;
+        }
 
-	}
+    }
 
   if (expired)
     this->InvokeEvent(CommandExpiredEvent, this);
@@ -261,26 +255,24 @@ int CommandDevice::CheckQueryExpiration()
 }
 
 //---------------------------------------------------------------------------
-int CommandDevice::PruneCompletedQueries()
+int igtlioCommandDevice::PruneCompletedQueries()
 {
   std::vector<QueryType> pruned;
 
   for (unsigned int i=0; i<Queries.size(); ++i)
-	if (Queries[i].status == QUERY_STATUS_WAITING)
-	  pruned.push_back(Queries[i]);
+    if (Queries[i].status == QUERY_STATUS_WAITING)
+      pruned.push_back(Queries[i]);
 
   if (pruned.size()!=Queries.size())
-	this->Modified();
+    this->Modified();
 
   Queries = pruned;
   return 0;
 }
 
 //---------------------------------------------------------------------------
-int CommandDevice::CancelQuery(int index)
+int igtlioCommandDevice::CancelQuery(int index)
 {
   Queries.erase(Queries.begin()+index);
   return 0;
 }
-
-} // namespace igtlio

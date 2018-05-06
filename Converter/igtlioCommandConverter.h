@@ -7,13 +7,10 @@
 #include "igtlioConverterExport.h"
 #include "igtlioBaseConverter.h"
 
-namespace igtlio
-{
-
 /** Conversion between igtl::StatusMessage and vtk classes.
  *
  */
-class OPENIGTLINKIO_CONVERTER_EXPORT CommandConverter : public BaseConverter
+class OPENIGTLINKIO_CONVERTER_EXPORT igtlioCommandConverter : public igtlioBaseConverter
 {
 public:
 
@@ -40,7 +37,5 @@ public:
 
   static std::vector<std::string> GetAvailableCommandNames();
 };
-
-} // namespace igtlio
 
 #endif // IGTLIOCOMMANDCONVERTER_H

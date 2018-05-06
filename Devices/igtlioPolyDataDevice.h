@@ -21,19 +21,17 @@
 #include "igtlioPolyDataConverter.h"
 #include "igtlioDevice.h"
 
-namespace igtlio
-{
 class vtkPolyDataData;
-typedef vtkSmartPointer<class PolyDataDevice> PolyDataDevicePointer;
+typedef vtkSmartPointer<class igtlioPolyDataDevice> igtlioPolyDataDevicePointer;
 
-class OPENIGTLINKIO_DEVICES_EXPORT PolyDataDevice : public Device
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioPolyDataDevice : public igtlioDevice
 {
 public:
 
   enum {
     PolyDataModifiedEvent         = 118959,
   };
-  
+
  virtual unsigned int GetDeviceContentModifiedEvent() const VTK_OVERRIDE;
  virtual std::string GetDeviceType() const VTK_OVERRIDE;
  virtual int ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC) VTK_OVERRIDE;
@@ -41,39 +39,37 @@ public:
  virtual igtl::MessageBase::Pointer GetIGTLMessage(MESSAGE_PREFIX prefix) VTK_OVERRIDE;
  virtual std::set<MESSAGE_PREFIX> GetSupportedMessagePrefixes() const VTK_OVERRIDE;
 
-  void SetContent(PolyDataConverter::ContentData content);
-  PolyDataConverter::ContentData GetContent();
+  void SetContent(igtlioPolyDataConverter::ContentData content);
+  igtlioPolyDataConverter::ContentData GetContent();
 
  public:
-  static PolyDataDevice *New();
-  vtkTypeMacro(PolyDataDevice,Device);
+  static igtlioPolyDataDevice *New();
+  vtkTypeMacro(igtlioPolyDataDevice,igtlioDevice);
 
   void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
  protected:
-  PolyDataDevice();
-  ~PolyDataDevice();
+   igtlioPolyDataDevice();
+   ~igtlioPolyDataDevice();
 
  protected:
   igtl::PolyDataMessage::Pointer OutMessage;
   igtl::GetPolyDataMessage::Pointer GetMessage;
 
-  PolyDataConverter::ContentData Content;
+  igtlioPolyDataConverter::ContentData Content;
 };
 
 
 //---------------------------------------------------------------------------
-class OPENIGTLINKIO_DEVICES_EXPORT PolyDataDeviceCreator : public DeviceCreator
+class OPENIGTLINKIO_DEVICES_EXPORT igtlioPolyDataDeviceCreator : public igtlioDeviceCreator
 {
 public:
-  virtual DevicePointer Create(std::string device_name) VTK_OVERRIDE;
+  virtual igtlioDevicePointer Create(std::string device_name) VTK_OVERRIDE;
   virtual std::string GetDeviceType() const VTK_OVERRIDE;
 
-  static PolyDataDeviceCreator *New();
-  vtkTypeMacro(PolyDataDeviceCreator,vtkObject);
+  static igtlioPolyDataDeviceCreator *New();
+  vtkTypeMacro(igtlioPolyDataDeviceCreator,vtkObject);
 
 };
-
-} // namespace igtlio
 
 #endif // IGTLIOPOLYDATADEVICE_H

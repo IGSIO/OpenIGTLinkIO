@@ -1,13 +1,13 @@
 /*==========================================================================
- 
+
  Portions (c) Copyright 2008-2009 Brigham and Women's Hospital (BWH) All Rights Reserved.
- 
+
  See Doc/copyright/copyright.txt
  or http://www.slicer.org/copyright/copyright.txt for details.
- 
+
  Date:      $Date: 2010-11-23 00:58:13 -0500 (Tue, 23 Nov 2010) $
  Version:   $Revision: 15552 $
- 
+
  ==========================================================================*/
 
 #ifndef IGTLIOVIDEOCONVERTER_H
@@ -45,44 +45,38 @@ class vtkMatrix4x4;
 
 using namespace igtl;
 
-namespace igtlio
+/** Conversion between igtl::VideoMessage and vtk classes.
+ *
+ */
+class OPENIGTLINKIO_CONVERTER_EXPORT igtlioVideoConverter : public igtlioBaseConverter
 {
-  
-  /** Conversion between igtl::VideoMessage and vtk classes.
-   *
+public:
+  igtlioVideoConverter();
+  /**
+   * This structure contains everything that igtl::VideoMessage is able to contain,
+   * in a vtk-friendly format.
    */
-  class OPENIGTLINKIO_CONVERTER_EXPORT VideoConverter : public BaseConverter
+  struct ContentData
   {
-  public:
-    VideoConverter();
-    /**
-     * This structure contains everything that igtl::VideoMessage is able to contain,
-     * in a vtk-friendly format.
-     */
-    struct ContentData
-    {
-      vtkSmartPointer<vtkImageData> image;
-      VideoFrameType frameType;
-      char codecName[IGTL_VIDEO_CODEC_NAME_SIZE];
-      VideoMessage::Pointer videoMessage; // for saving the compressed data.
-      VideoMessage::Pointer keyFrameMessage; // for saving the compressed data.
-      bool keyFrameUpdated;
-    };
-    
-    static const char*  GetIGTLName() { return GetIGTLTypeName(); }
-    static const char* GetIGTLTypeName() { return "VIDEO"; }
-    
-    static int fromIGTL(MessageBase::Pointer source, HeaderData* header, ContentData* content, std::map<std::string, GenericDecoder*> decoders, bool checkCRC, igtl::MessageBase::MetaDataMap& outMetaInfo);
-    static int toIGTL(const HeaderData& header, const ContentData& source, GenericEncoder* encoder, igtl::MessageBase::MetaDataMap metaInfo = igtl::MessageBase::MetaDataMap());
-
-  protected:
-    
-    static int IGTLToVTKScalarType(int igtlType);
-    static int IGTLToVTKImageData(ContentData *dest, VideoMessage::Pointer videoMessage, GenericDecoder * videoStreamDecoder);
-
+    vtkSmartPointer<vtkImageData> image;
+    VideoFrameType frameType;
+    char codecName[IGTL_VIDEO_CODEC_NAME_SIZE];
+    VideoMessage::Pointer videoMessage; // for saving the compressed data.
+    VideoMessage::Pointer keyFrameMessage; // for saving the compressed data.
+    bool keyFrameUpdated;
   };
-  
-} //namespace igtlio
 
+  static const char*  GetIGTLName() { return GetIGTLTypeName(); }
+  static const char* GetIGTLTypeName() { return "VIDEO"; }
+
+  static int fromIGTL(MessageBase::Pointer source, HeaderData* header, ContentData* content, std::map<std::string, GenericDecoder*> decoders, bool checkCRC, igtl::MessageBase::MetaDataMap& outMetaInfo);
+  static int toIGTL(const HeaderData& header, const ContentData& source, GenericEncoder* encoder, igtl::MessageBase::MetaDataMap metaInfo = igtl::MessageBase::MetaDataMap());
+
+protected:
+
+  static int IGTLToVTKScalarType(int igtlType);
+  static int IGTLToVTKImageData(ContentData *dest, VideoMessage::Pointer videoMessage, GenericDecoder * videoStreamDecoder);
+
+};
 
 #endif //IGTLIOVIDEOCONVERTER_H

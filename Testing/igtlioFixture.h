@@ -12,29 +12,29 @@
 
 class vtkImageData;
 
-struct LogicFixture
+struct igtlioLogicFixture
 {
-  LogicFixture();
+  igtlioLogicFixture();
 
   void startClient();
   void startServer();
 
-  igtlio::LogicPointer Logic;
-  igtlio::ConnectorPointer Connector;
-  igtlio::SessionPointer Session;
+  igtlioLogicPointer Logic;
+  igtlioConnectorPointer Connector;
+  igtlioSessionPointer Session;
 
   vtkSmartPointer<class vtkCallbackCommand> LogicEventCallback;
   std::vector<int> ReceivedEvents;
 };
 
-struct ClientServerFixture
+struct igtlioClientServerFixture
 {
-  LogicFixture Server;
-  LogicFixture Client;
-  igtlio::Translator Translator;
+  igtlioLogicFixture Server;
+  igtlioLogicFixture Client;
+  igtlioTranslator Translator;
 
   bool ConnectClientToServer();
-  bool LoopUntilEventDetected(LogicFixture *logic, int eventId, int count=1);
+  bool LoopUntilEventDetected(igtlioLogicFixture *logic, int eventId, int count=1);
 
 public:
   vtkSmartPointer<vtkMatrix4x4> CreateTestTransform();

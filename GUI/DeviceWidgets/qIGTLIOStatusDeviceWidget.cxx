@@ -23,7 +23,7 @@ qIGTLIODeviceWidget* vtkIGTLIOStatusDeviceWidgetCreator::Create()
 //---------------------------------------------------------------------------
 std::string vtkIGTLIOStatusDeviceWidgetCreator::GetDeviceType() const
 {
- return igtlio::StatusConverter::GetIGTLTypeName();
+ return igtlioStatusConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
@@ -86,7 +86,7 @@ void qIGTLIOStatusDeviceWidget::onDeviceModified()
   //mTimestampEdit->setText(timestamp.toString(Qt::ISODate));
   TimestampEdit->setText(timestamp.toString("hh:mm:ss.zzz"));
 
-  igtlio::StatusDevice* device = dynamic_cast<igtlio::StatusDevice*>(Device.GetPointer());
+  igtlioStatusDevice* device = dynamic_cast<igtlioStatusDevice*>(Device.GetPointer());
 
   if (!device)
     return;

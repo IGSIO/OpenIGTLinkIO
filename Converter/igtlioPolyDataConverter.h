@@ -24,13 +24,10 @@ class vtkPolyData;
 class vtkCellArray;
 class vtkDataSetAttributes;
 
-namespace igtlio
-{
-
 /** Conversion between igtl::PolyDataMessage and vtk classes.
  *
  */
-class OPENIGTLINKIO_CONVERTER_EXPORT PolyDataConverter : public BaseConverter
+class OPENIGTLINKIO_CONVERTER_EXPORT igtlioPolyDataConverter : public igtlioBaseConverter
 {
 public:
   /**
@@ -62,8 +59,5 @@ public:
   // to igtl::PolyDataAttribute
   static int VTKToIGTLAttribute(vtkDataSetAttributes* src, int i, igtl::PolyDataAttribute* dest);
 };
-
-} // namespace igtlio
-
 
 #endif //IGTLIOPOLYDATACONVERTER_H

@@ -50,13 +50,11 @@
 
 typedef vtkSmartPointer<class vtkMutexLock> vtkMutexLockPointer;
 typedef vtkSmartPointer<class vtkMultiThreader> vtkMultiThreaderPointer;
-typedef std::vector< vtkSmartPointer<igtlio::Device> >   MessageDeviceListType;
+typedef std::vector< vtkSmartPointer<igtlioDevice> >   igtlioMessageDeviceListType;
 
-namespace igtlio
-{
-typedef vtkSmartPointer<class Connector> ConnectorPointer;
-typedef vtkSmartPointer<class CircularBuffer> CircularBufferPointer;
-typedef vtkSmartPointer<class CircularSectionBuffer> CircularSectionBufferPointer;
+typedef vtkSmartPointer<class igtlioConnector> igtlioConnectorPointer;
+typedef vtkSmartPointer<class igtlioCircularBuffer> igtlioCircularBufferPointer;
+typedef vtkSmartPointer<class igtlioCircularSectionBuffer> igtlioCircularSectionBufferPointer;
 
 
 enum CONNECTION_ROLE
@@ -91,41 +89,41 @@ enum CONNECTION_ROLE
 ///    main thread processing. This should be handled externally by a timer
 ///    or similar.
 ///
-class OPENIGTLINKIO_LOGIC_EXPORT Connector : public vtkIGTLIOObject
+class OPENIGTLINKIO_LOGIC_EXPORT igtlioConnector : public vtkIGTLIOObject
 {
 public:
-//added methods:
- //TODO: Notifications: New/Remove/Modify Device, message received?
+  //added methods:
+  //TODO: Notifications: New/Remove/Modify Device, message received?
 
   /// Call periodically to perform processing in the main thread.
   /// Suggested timeout 5ms.
   void PeriodicProcess();
 
-  CommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content, double timeout_s= 5, igtl::MessageBase::MetaDataMap* metaData=NULL);
-  DevicePointer AddDeviceIfNotPresent(DeviceKeyType key);
+  igtlioCommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content, double timeout_s= 5, igtl::MessageBase::MetaDataMap* metaData=NULL);
+  igtlioDevicePointer AddDeviceIfNotPresent(igtlioDeviceKeyType key);
 
- /// Add a new Device.
- /// If a Device with an identical device_id already exist, the method will fail.
- int AddDevice(DevicePointer device); // TODO look at OnNodeReferenceAdded
- unsigned int GetNumberOfDevices() const;
- void RemoveDevice(int index); //TODO: look at OnNodeReferenceRemoved
-  int RemoveDevice(DevicePointer device);
- /// Get the given Device. This can be used to modify the Device contents.
- 
- /// invoke event if device content modified
- void DeviceContentModified(vtkObject *caller, unsigned long event, void *callData );
- DevicePointer GetDevice(int index);
- DevicePointer GetDevice(DeviceKeyType key);
- bool HasDevice( DevicePointer d );
+  /// Add a new Device.
+  /// If a Device with an identical device_id already exist, the method will fail.
+  int AddDevice(igtlioDevicePointer device); // TODO look at OnNodeReferenceAdded
+  unsigned int GetNumberOfDevices() const;
+  void RemoveDevice(int index); //TODO: look at OnNodeReferenceRemoved
+  int RemoveDevice(igtlioDevicePointer device);
+  /// Get the given Device. This can be used to modify the Device contents.
 
- /// Request the given Device to send a message with the given prefix.
- /// An undefined prefix means sending the normal message.
- int SendMessage(DeviceKeyType device_id, Device::MESSAGE_PREFIX=Device::MESSAGE_PREFIX_NOT_DEFINED);
+  /// invoke event if device content modified
+  void DeviceContentModified(vtkObject *caller, unsigned long event, void *callData );
+  igtlioDevicePointer GetDevice(int index);
+  igtlioDevicePointer GetDevice(igtlioDeviceKeyType key);
+  bool HasDevice( igtlioDevicePointer d );
 
- DeviceFactoryPointer GetDeviceFactory();
- void SetDeviceFactory(DeviceFactoryPointer val);
+  /// Request the given Device to send a message with the given prefix.
+  /// An undefined prefix means sending the normal message.
+  int SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::MESSAGE_PREFIX=igtlioDevice::MESSAGE_PREFIX_NOT_DEFINED);
 
- public:
+  igtlioDeviceFactoryPointer GetDeviceFactory();
+  void SetDeviceFactory(igtlioDeviceFactoryPointer val);
+
+public:
 
   // Events
   enum {
@@ -146,7 +144,7 @@ public:
     NUM_TYPE
   };
 
-  static const char* ConnectorTypeStr[Connector::NUM_TYPE];
+  static const char* ConnectorTypeStr[igtlioConnector::NUM_TYPE];
 
   enum {
     STATE_OFF,
@@ -155,14 +153,14 @@ public:
     NUM_STATE
   };
 
-  static const char* ConnectorStateStr[Connector::NUM_STATE];
-  
+  static const char* ConnectorStateStr[igtlioConnector::NUM_STATE];
+
   enum {
     IO_UNSPECIFIED = 0x00,
     IO_INCOMING   = 0x01,
     IO_OUTGOING   = 0x02,
   };
-  
+
   enum {
     PERSISTENT_OFF,
     PERSISTENT_ON,
@@ -180,20 +178,20 @@ public:
     int           nanosecond;
   } NodeInfoType;
 
- public:
+public:
 
-  static Connector *New();
-  vtkTypeMacro(Connector,vtkIGTLIOObject);
+  static igtlioConnector *New();
+  vtkTypeMacro(igtlioConnector, vtkIGTLIOObject);
 
   void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
- protected:
-  Connector();
-  ~Connector();
-  Connector(const Connector&);
-  void operator=(const Connector&);
+protected:
+  igtlioConnector();
+  ~igtlioConnector();
+  igtlioConnector(const igtlioConnector&);
+  void operator=(const igtlioConnector&);
 
- public:
+public:
   vtkGetMacro( Name, std::string );
   vtkSetMacro( Name, std::string );
   vtkGetMacro( UID, int );
@@ -208,7 +206,7 @@ public:
   vtkGetMacro( RestrictDeviceName, int );
   vtkSetMacro( PushOutgoingMessageFlag, int );
   vtkGetMacro( PushOutgoingMessageFlag, int );
-  
+
   // Controls if active connection will be resumed when
   // scene is loaded (cf: PERSISTENT_ON/_OFF)
   vtkSetMacro( Persistent, int );
@@ -248,9 +246,9 @@ private:
   // Circular Buffer
   //----------------------------------------------------------------
 
-  typedef std::vector<DeviceKeyType> NameListType;
+  typedef std::vector<igtlioDeviceKeyType> NameListType;
   unsigned int GetUpdatedSectionBuffersList(NameListType& nameList); // TODO: this will be moved to private
-  CircularSectionBufferPointer GetCircularSectionBuffer(const DeviceKeyType& key);     // TODO: Is it OK to use device name as a key?
+  igtlioCircularSectionBufferPointer GetCircularSectionBuffer(const igtlioDeviceKeyType& key);     // TODO: Is it OK to use device name as a key?
 
   //----------------------------------------------------------------
   // Device Lists
@@ -273,15 +271,15 @@ private:
   // Description:
   // Push all outgoing messages to the network stream, if permitted.
   // This function is used, when the connection is established. To permit the OpenIGTLink IF
-  // to push individual "outgoing" MRML nodes, set "OpenIGTLinkIF.pushOnConnection" attribute to 1. 
+  // to push individual "outgoing" MRML nodes, set "OpenIGTLinkIF.pushOnConnection" attribute to 1.
   void PushOutgoingMessages();
 
-//  // Description:
-//  // A function to explicitly push node to OpenIGTLink. The function is called either by
-//  // external nodes or MRML event hander in the connector node.
-  int PushNode(DevicePointer node, int event=-1);
+  // Description:
+  // A function to explicitly push node to OpenIGTLink. The function is called either by
+  // external nodes or MRML event hander in the connector node.
+  int PushNode(igtlioDevicePointer node, int event=-1);
 
- protected:
+protected:
   // Description:
   // Inserts the eventId to the EventQueue, and the event will be invoked from the main thread
   void RequestInvokeEvent(unsigned long eventId); // might be called from Thread
@@ -289,7 +287,7 @@ private:
   // Description:
   // Reeust to push all outgoing messages to the network stream, if permitted.
   // This function is used, when the connection is established. To permit the OpenIGTLink IF
-  // to push individual "outgoing" MRML nodes, set "OpenIGTLinkIF.pushOnConnection" attribute to 1. 
+  // to push individual "outgoing" MRML nodes, set "OpenIGTLinkIF.pushOnConnection" attribute to 1.
   // The request will be processed in PushOutgonigMessages().
   void RequestPushOutgoingMessages(); // called from Thread
 
@@ -298,11 +296,11 @@ private:
   // Adds the commands to a queue that is parsed during periodic process
   bool ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg);
 
- protected:
+protected:
   //----------------------------------------------------------------
   // Devices
   //----------------------------------------------------------------
-  std::vector<DevicePointer>              Devices;
+  std::vector<igtlioDevicePointer>              Devices;
 
   //----------------------------------------------------------------
   // Connector configuration
@@ -328,8 +326,8 @@ private:
   //----------------------------------------------------------------
   // Data
   //----------------------------------------------------------------
-  typedef std::map<DeviceKeyType, CircularSectionBufferPointer> CircularSectionBufferMap;
-  CircularSectionBufferMap                SectionBuffer;
+  typedef std::map<igtlioDeviceKeyType, igtlioCircularSectionBufferPointer> igtlioCircularSectionBufferMap;
+  igtlioCircularSectionBufferMap                SectionBuffer;
 
   vtkMutexLockPointer                     CircularBufferMutex;
   int                                     RestrictDeviceName;  // Flag to restrict incoming and outgoing data by device names
@@ -345,19 +343,17 @@ private:
   vtkMutexLockPointer                     CommandQueueMutex;
 
   // Flag for the push outoing message request
-  // If the flag is ON, the external timer will update the outgoing nodes with 
+  // If the flag is ON, the external timer will update the outgoing nodes with
   // "OpenIGTLinkIF.pushOnConnection" attribute to push the nodes to the network.
   int                                     PushOutgoingMessageFlag;
   vtkMutexLockPointer                     PushOutgoingMessageMutex;
 
-  DeviceFactoryPointer                    DeviceFactory;
+  igtlioDeviceFactoryPointer              DeviceFactory;
 
   bool                                    CheckCRC;
 
   int                                     NextCommandID;
 
 };
-
-} // namespace igtlio
 
 #endif

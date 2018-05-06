@@ -20,15 +20,12 @@
 
 class vtkMutexLock;
 
-namespace igtlio
-{
-  
-class OPENIGTLINKIO_LOGIC_EXPORT CircularSectionBuffer : public vtkObject
+class OPENIGTLINKIO_LOGIC_EXPORT igtlioCircularSectionBuffer : public vtkObject
 {
  public:
 
-  static CircularSectionBuffer *New();
-  vtkTypeMacro(CircularSectionBuffer,vtkObject);
+  static igtlioCircularSectionBuffer *New();
+  vtkTypeMacro(igtlioCircularSectionBuffer, vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
@@ -37,44 +34,44 @@ class OPENIGTLINKIO_LOGIC_EXPORT CircularSectionBuffer : public vtkObject
   int            StartPush();
   void           EndPush();
   igtl::MessageBase::Pointer GetPushBuffer();
-  
+
   int            StartPull();
   void           EndPull();
   igtl::MessageBase::Pointer GetPullBuffer();
-  
+
   int            StartSectionPull();
   igtl::MessageBase::Pointer GetPullSectionBuffer();
   void           EndSectionPull();
 
   int            IsUpdated() { return this->UpdateFlag; };
-  
+
   int            Initialization();
-  
+
   enum
   {
   SinglePacketMode = 0,
   MultiplePacketsMode = 1
   };
-  
+
   enum
   {
   DataFilled = 2,
   DataEmpty = 3,
   DataProcessed =4
   };
-  
+
   vtkSetMacro( PacketMode, int);
   vtkGetMacro( PacketMode, int);
-  
+
   vtkSetMacro( BufferSize, int);
   vtkGetMacro( BufferSize, int);
-  
+
   bool IsSectionBufferInProcess();
-  
+
 
  protected:
-  CircularSectionBuffer();
-  virtual ~CircularSectionBuffer();
+   igtlioCircularSectionBuffer();
+   virtual ~igtlioCircularSectionBuffer();
 
  protected:
 
@@ -86,11 +83,11 @@ class OPENIGTLINKIO_LOGIC_EXPORT CircularSectionBuffer : public vtkObject
   int                InUseEnd;       // updated by main thread
 
   int                UpdateFlag;  // non-zero if updated since StartPull() has called
-  
+
   int                PacketMode;
-  
+
   int                BufferSize;
-  
+
 #if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   std::string       DeviceType[IGTLCB_CIRC_BUFFER_SIZE_VIDEOSTREAM];
   unsigned short     DataStatus[IGTLCB_CIRC_BUFFER_SIZE_VIDEOSTREAM];
@@ -102,7 +99,5 @@ class OPENIGTLINKIO_LOGIC_EXPORT CircularSectionBuffer : public vtkObject
 #endif
 
 };
-
-} // namespace igtlio
 
 #endif //IGTLIOCIRCULARSECTIONBUFFER_H

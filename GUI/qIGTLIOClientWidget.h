@@ -7,24 +7,21 @@
 #include "igtlioGUIExport.h"
 
 #include <vtkSmartPointer.h>
-namespace igtlio
-{
-typedef vtkSmartPointer<class Logic> LogicPointer;
-}
 
+typedef vtkSmartPointer<class igtlioLogic> igtlioLogicPointer;
 
 class OPENIGTLINKIO_GUI_EXPORT qIGTLIOClientWidget : public QWidget
 {
   Q_OBJECT
 public:
   qIGTLIOClientWidget();
-  void setLogic(igtlio::LogicPointer logic);
+  void setLogic(igtlioLogicPointer logic);
 
 signals:
 
 public slots:
 private:
-  igtlio::LogicPointer Logic;
+  igtlioLogicPointer Logic;
 
   class qIGTLIOConnectorListWidget* ConnectorListWidget;
   class qIGTLIODevicesWidget* DevicesWidget;

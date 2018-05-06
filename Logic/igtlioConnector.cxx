@@ -34,15 +34,12 @@ Version:   $Revision: 1.2 $
 #include "igtlioCircularBuffer.h"
 #include "igtlioCircularSectionBuffer.h"
 
-namespace igtlio
-{
-
 //------------------------------------------------------------------------------
-vtkStandardNewMacro(Connector);
+vtkStandardNewMacro(igtlioConnector);
 //----------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------
-const char *Connector::ConnectorTypeStr[Connector::NUM_TYPE] =
+const char *igtlioConnector::ConnectorTypeStr[igtlioConnector::NUM_TYPE] =
 {
   "?", // TYPE_NOT_DEFINED
   "S", // TYPE_SERVER
@@ -50,7 +47,7 @@ const char *Connector::ConnectorTypeStr[Connector::NUM_TYPE] =
 };
 
 //----------------------------------------------------------------------------
-const char *Connector::ConnectorStateStr[Connector::NUM_STATE] =
+const char *igtlioConnector::ConnectorStateStr[igtlioConnector::NUM_STATE] =
 {
   "OFF",       // OFF
   "WAIT",      // WAIT_CONNECTION
@@ -58,7 +55,7 @@ const char *Connector::ConnectorStateStr[Connector::NUM_STATE] =
 };
 
 //----------------------------------------------------------------------------
-Connector::Connector()
+igtlioConnector::igtlioConnector()
   : Type(TYPE_CLIENT)
   , State(STATE_OFF)
   , Persistent(PERSISTENT_OFF)
@@ -75,20 +72,20 @@ Connector::Connector()
   , PushOutgoingMessageFlag(0)
   , PushOutgoingMessageMutex(vtkMutexLockPointer::New())
   , CheckCRC(true)
-  , DeviceFactory(DeviceFactoryPointer::New())
+  , DeviceFactory(igtlioDeviceFactoryPointer::New())
   , NextCommandID(1)
 {
 
 }
 
 //----------------------------------------------------------------------------
-Connector::~Connector()
+igtlioConnector::~igtlioConnector()
 {
   this->Stop();
 }
 
 //----------------------------------------------------------------------------
-void Connector::PrintSelf(ostream& os, vtkIndent indent)
+void igtlioConnector::PrintSelf(ostream& os, vtkIndent indent)
 {
   Superclass::PrintSelf(os,indent);
 
@@ -125,13 +122,13 @@ void Connector::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-const char* Connector::GetServerHostname()
+const char* igtlioConnector::GetServerHostname()
 {
   return this->ServerHostname.c_str();
 }
 
 //----------------------------------------------------------------------------
-void Connector::SetServerHostname(std::string str)
+void igtlioConnector::SetServerHostname(std::string str)
 {
   if (this->ServerHostname.compare(str) == 0)
     {
@@ -142,7 +139,7 @@ void Connector::SetServerHostname(std::string str)
 }
 
 //----------------------------------------------------------------------------
-int Connector::SetTypeServer(int port)
+int igtlioConnector::SetTypeServer(int port)
 {
   if (this->Type == TYPE_SERVER
       && this->ServerPort == port)
@@ -156,7 +153,7 @@ int Connector::SetTypeServer(int port)
 }
 
 //----------------------------------------------------------------------------
-int Connector::SetTypeClient(std::string hostname, int port)
+int igtlioConnector::SetTypeClient(std::string hostname, int port)
 {
   if (this->Type == TYPE_CLIENT
       && this->ServerPort == port
@@ -172,16 +169,16 @@ int Connector::SetTypeClient(std::string hostname, int port)
 }
 
 //----------------------------------------------------------------------------
-void Connector::SetCheckCRC(bool c)
+void igtlioConnector::SetCheckCRC(bool c)
 {
   this->CheckCRC = c;
 }
 
 //---------------------------------------------------------------------------
-int Connector::Start()
+int igtlioConnector::Start()
 {
   // Check if type is defined.
-  if (this->Type == Connector::TYPE_NOT_DEFINED)
+  if (this->Type == igtlioConnector::TYPE_NOT_DEFINED)
     {
       //vtkErrorMacro("Connector type is not defined.");
     return 0;
@@ -195,7 +192,7 @@ int Connector::Start()
     }
 
   this->ServerStopFlag = false;
-  this->ThreadID = this->Thread->SpawnThread((vtkThreadFunctionType) &Connector::ThreadFunction, this);
+  this->ThreadID = this->Thread->SpawnThread((vtkThreadFunctionType) &igtlioConnector::ThreadFunction, this);
 
   // Following line is necessary in some Linux environment,
   // since it takes for a while for the thread to update
@@ -203,13 +200,13 @@ int Connector::Start()
   // after calling vtkMRMLIGTLConnectorNode::Start() in ProcessGUIEvent()
   // in vtkOpenIGTLinkIFGUI class.
   this->State = STATE_WAIT_CONNECTION;
-  this->InvokeEvent(Connector::ActivatedEvent);
+  this->InvokeEvent(igtlioConnector::ActivatedEvent);
 
   return 1;
 }
 
 //---------------------------------------------------------------------------
-int Connector::Stop()
+int igtlioConnector::Stop()
 {
   // Check if thread exists
   if (this->ThreadID >= 0)
@@ -233,10 +230,10 @@ int Connector::Stop()
 }
 
 //---------------------------------------------------------------------------
-void* Connector::ThreadFunction(void* ptr)
+void* igtlioConnector::ThreadFunction(void* ptr)
 {
   vtkMultiThreader::ThreadInfo* vinfo = static_cast<vtkMultiThreader::ThreadInfo*>(ptr);
-  Connector* connector = static_cast<Connector*>(vinfo->UserData);
+  igtlioConnector* connector = static_cast<igtlioConnector*>(vinfo->UserData);
 
   connector->State = STATE_WAIT_CONNECTION;
 
@@ -262,12 +259,12 @@ void* Connector::ThreadFunction(void* ptr)
       {
       connector->State = STATE_CONNECTED;
       // need to Request the InvokeEvent, because we are not on the main thread now
-      connector->RequestInvokeEvent(Connector::ConnectedEvent);
+      connector->RequestInvokeEvent(igtlioConnector::ConnectedEvent);
       //vtkErrorMacro("vtkOpenIGTLinkIFLogic::ThreadFunction(): Client Connected.");
       connector->RequestPushOutgoingMessages();
       connector->ReceiveController();
       connector->State = STATE_WAIT_CONNECTION;
-      connector->RequestInvokeEvent(Connector::DisconnectedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
+      connector->RequestInvokeEvent(igtlioConnector::DisconnectedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
       }
     }
 
@@ -283,13 +280,13 @@ void* Connector::ThreadFunction(void* ptr)
 
   connector->ThreadID = -1;
   connector->State = STATE_OFF;
-  connector->RequestInvokeEvent(Connector::DeactivatedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
+  connector->RequestInvokeEvent(igtlioConnector::DeactivatedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
 
   return NULL; //why???
 }
 
 //----------------------------------------------------------------------------
-void Connector::RequestInvokeEvent(unsigned long eventId)
+void igtlioConnector::RequestInvokeEvent(unsigned long eventId)
 {
   this->EventQueueMutex->Lock();
   this->EventQueue.push_back(eventId);
@@ -297,7 +294,7 @@ void Connector::RequestInvokeEvent(unsigned long eventId)
 }
 
 //----------------------------------------------------------------------------
-void Connector::RequestPushOutgoingMessages()
+void igtlioConnector::RequestPushOutgoingMessages()
 {
   this->PushOutgoingMessageMutex->Lock();
   this->PushOutgoingMessageFlag = 1;
@@ -305,7 +302,7 @@ void Connector::RequestPushOutgoingMessages()
 }
 
 //----------------------------------------------------------------------------
-int Connector::WaitForConnection()
+int igtlioConnector::WaitForConnection()
 {
   //igtl::ClientSocket::Pointer socket;
 
@@ -358,7 +355,7 @@ int Connector::WaitForConnection()
 }
 
 //----------------------------------------------------------------------------
-int Connector::ReceiveController()
+int igtlioConnector::ReceiveController()
 {
   //igtl_header header;
   igtl::MessageHeader::Pointer headerMsg;
@@ -419,7 +416,7 @@ int Connector::ReceiveController()
       {
       // Check if the node has already been registered.
         //TODO: Cannot call GetDevice in Thread!!!!
-        DeviceKeyType key = CreateDeviceKey(headerMsg);
+        igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(headerMsg);
       int registered = this->GetDevice(key).GetPointer() != NULL;
       if (registered == 0)
         {
@@ -433,7 +430,7 @@ int Connector::ReceiveController()
 
     //----------------------------------------------------------------
     // Search Circular Buffer
-    DeviceKeyType key = CreateDeviceKey(headerMsg);
+    igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(headerMsg);
 
     // Intercept command devices before they are added to the circular buffer, and add them to the command queue
     if (std::strcmp(headerMsg->GetDeviceType(), "COMMAND") == 0 || std::strcmp(headerMsg->GetDeviceType(), "RTS_COMMAND") == 0)
@@ -444,15 +441,15 @@ int Connector::ReceiveController()
         }
       }
 
-    CircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
+    igtlioCircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
     if (iter == this->SectionBuffer.end()) // First time to refer the device name
       {
       this->CircularBufferMutex->Lock();
-      this->SectionBuffer[key] = CircularSectionBufferPointer::New();
-      this->SectionBuffer[key]->SetPacketMode(igtlio::CircularSectionBuffer::SinglePacketMode);
+      this->SectionBuffer[key] = igtlioCircularSectionBufferPointer::New();
+      this->SectionBuffer[key]->SetPacketMode(igtlioCircularSectionBuffer::SinglePacketMode);
       if (strcmp(headerMsg->GetDeviceType(), "VIDEO")==0)
         {
-        this->SectionBuffer[key]->SetPacketMode(igtlio::CircularSectionBuffer::MultiplePacketsMode);
+        this->SectionBuffer[key]->SetPacketMode(igtlioCircularSectionBuffer::MultiplePacketsMode);
         }
       this->CircularBufferMutex->Unlock();
       }
@@ -460,7 +457,7 @@ int Connector::ReceiveController()
     //----------------------------------------------------------------
     // Load to the circular buffer
 
-    CircularSectionBufferPointer circBuffer = this->SectionBuffer[key];
+    igtlioCircularSectionBufferPointer circBuffer = this->SectionBuffer[key];
 
     if (circBuffer && circBuffer->StartPush() != -1)
       {
@@ -501,9 +498,9 @@ int Connector::ReceiveController()
 }
 
 //----------------------------------------------------------------------------
-bool Connector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg)
+bool igtlioConnector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg)
 {
-  DeviceKeyType key = CreateDeviceKey(headerMsg);
+  igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(headerMsg);
 
   igtl::MessageBase::Pointer buffer = igtl::MessageBase::New();
   buffer->InitBuffer();
@@ -530,7 +527,7 @@ bool Connector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg)
 }
 
 //----------------------------------------------------------------------------
-int Connector::SendData(int size, unsigned char* data)
+int igtlioConnector::SendData(int size, unsigned char* data)
 {
   if (this->Socket.IsNull())
     {
@@ -547,7 +544,7 @@ int Connector::SendData(int size, unsigned char* data)
 }
 
 //----------------------------------------------------------------------------
-int Connector::Skip(int length, int skipFully)
+int igtlioConnector::Skip(int length, int skipFully)
 {
   unsigned char dummy[256];
   int block  = 256;
@@ -570,11 +567,11 @@ int Connector::Skip(int length, int skipFully)
 }
 
 //----------------------------------------------------------------------------
-unsigned int Connector::GetUpdatedSectionBuffersList(NameListType& nameList)
+unsigned int igtlioConnector::GetUpdatedSectionBuffersList(NameListType& nameList)
 {
   nameList.clear();
 
-  CircularSectionBufferMap::iterator iter;
+  igtlioCircularSectionBufferMap::iterator iter;
   for (iter = this->SectionBuffer.begin(); iter != this->SectionBuffer.end(); iter ++)
     {
     if (iter->second != NULL && iter->second->IsUpdated())
@@ -586,9 +583,9 @@ unsigned int Connector::GetUpdatedSectionBuffersList(NameListType& nameList)
 }
 
 //----------------------------------------------------------------------------
-CircularSectionBufferPointer Connector::GetCircularSectionBuffer(const DeviceKeyType &key)
+igtlioCircularSectionBufferPointer igtlioConnector::GetCircularSectionBuffer(const igtlioDeviceKeyType &key)
 {
-  CircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
+  igtlioCircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
   if (iter != this->SectionBuffer.end())
     {
     return this->SectionBuffer[key]; // the key has been found in the list
@@ -600,33 +597,33 @@ CircularSectionBufferPointer Connector::GetCircularSectionBuffer(const DeviceKey
 }
 
 //---------------------------------------------------------------------------
-void Connector::ImportDataFromCircularBuffer()
+void igtlioConnector::ImportDataFromCircularBuffer()
 {
-  Connector::NameListType nameList;
+  igtlioConnector::NameListType nameList;
   this->GetUpdatedSectionBuffersList(nameList);
 
-  Connector::NameListType::iterator nameIter;
+  igtlioConnector::NameListType::iterator nameIter;
   for (nameIter = nameList.begin(); nameIter != nameList.end(); nameIter ++)
     {
-    DeviceKeyType key = *nameIter;
-    CircularSectionBuffer* circBuffer = this->GetCircularSectionBuffer(key);
+    igtlioDeviceKeyType key = *nameIter;
+    igtlioCircularSectionBuffer* circBuffer = this->GetCircularSectionBuffer(key);
     circBuffer->StartPull();
-    DevicePointer device = NULL;
+    igtlioDevicePointer device = NULL;
     while(circBuffer->IsSectionBufferInProcess())
     {
     igtl::MessageBase::Pointer messageFromBuffer = circBuffer->GetPullBuffer();
 
-    DeviceCreatorPointer deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
+    igtlioDeviceCreatorPointer deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
 
     if (!deviceCreator)
       {
-	  vtkErrorMacro(<< "Received unknown device type " << messageFromBuffer->GetDeviceType() << ", device=" << messageFromBuffer->GetDeviceName());
+      vtkErrorMacro(<< "Received unknown device type " << messageFromBuffer->GetDeviceType() << ", device=" << messageFromBuffer->GetDeviceName());
       continue;
       }
 
     device = this->GetDevice(key);
 
-    if ((device.GetPointer()!=NULL) && !(CreateDeviceKey(device)==CreateDeviceKey(messageFromBuffer)))
+    if ((device.GetPointer()!=NULL) && !(igtlioDeviceKeyType::CreateDeviceKey(device)==igtlioDeviceKeyType::CreateDeviceKey(messageFromBuffer)))
         {
           vtkErrorMacro(
               << "Received an IGTL message of the wrong type, device=" << key.name
@@ -639,11 +636,11 @@ void Connector::ImportDataFromCircularBuffer()
     if (!device && !this->RestrictDeviceName)
       {
         device = deviceCreator->Create(key.name);
-        device->SetMessageDirection(Device::MESSAGE_DIRECTION_IN);
+        device->SetMessageDirection(igtlioDevice::MESSAGE_DIRECTION_IN);
         this->AddDevice(device);
       }
 
-	  device->ReceiveIGTLMessage(messageFromBuffer, this->CheckCRC);
+      device->ReceiveIGTLMessage(messageFromBuffer, this->CheckCRC);
     }
     //this->InvokeEvent(Connector::DeviceModifiedEvent, device.GetPointer());
     device->Modified();
@@ -652,14 +649,14 @@ void Connector::ImportDataFromCircularBuffer()
 
   for (unsigned int i=0; i<Devices.size(); ++i)
     {
-	  CommandDevicePointer device = CommandDevice::SafeDownCast(Devices[i].GetPointer());
-	  if(device)
-		device->CheckQueryExpiration();
+      igtlioCommandDevicePointer device = igtlioCommandDevice::SafeDownCast(Devices[i].GetPointer());
+      if(device)
+        device->CheckQueryExpiration();
     }
 }
 
 //---------------------------------------------------------------------------
-void Connector::ImportEventsFromEventBuffer()
+void igtlioConnector::ImportEventsFromEventBuffer()
 {
   // Invoke all events in the EventQueue
 
@@ -684,7 +681,7 @@ void Connector::ImportEventsFromEventBuffer()
 }
 
 //---------------------------------------------------------------------------
-void Connector::PushOutgoingMessages()
+void igtlioConnector::PushOutgoingMessages()
 {
   int push = 0;
 
@@ -705,7 +702,7 @@ void Connector::PushOutgoingMessages()
 }
 
 //----------------------------------------------------------------------------
-void Connector::PeriodicProcess()
+void igtlioConnector::PeriodicProcess()
 {
   this->ParseCommands();
   this->ImportDataFromCircularBuffer();
@@ -714,10 +711,10 @@ void Connector::PeriodicProcess()
 }
 
 //----------------------------------------------------------------------------
-CommandDevicePointer Connector::SendCommand(std::string device_id, std::string command, std::string content, double timeout_s/*=5*/, igtl::MessageBase::MetaDataMap* metaData)
+igtlioCommandDevicePointer igtlioConnector::SendCommand(std::string device_id, std::string command, std::string content, double timeout_s/*=5*/, igtl::MessageBase::MetaDataMap* metaData)
 {
-  DeviceKeyType key(igtlio::CommandConverter::GetIGTLTypeName(), device_id);
-  vtkSmartPointer<CommandDevice> device = CommandDevice::SafeDownCast( AddDeviceIfNotPresent(key) );
+  igtlioDeviceKeyType key(igtlioCommandConverter::GetIGTLTypeName(), device_id);
+  vtkSmartPointer<igtlioCommandDevice> device = igtlioCommandDevice::SafeDownCast( AddDeviceIfNotPresent(key) );
 
   if (metaData)
     {
@@ -727,7 +724,7 @@ CommandDevicePointer Connector::SendCommand(std::string device_id, std::string c
       }
     }
 
-  igtlio::CommandConverter::ContentData contentdata = device->GetContent();
+  igtlioCommandConverter::ContentData contentdata = device->GetContent();
   contentdata.id += this->NextCommandID++;
   contentdata.name = command;
   contentdata.content = content;
@@ -736,22 +733,22 @@ CommandDevicePointer Connector::SendCommand(std::string device_id, std::string c
 
   device->PruneCompletedQueries();
 
-  SendMessage(CreateDeviceKey(device));
+  SendMessage(igtlioDeviceKeyType::CreateDeviceKey(device));
 
   return device;
 }
 
 //----------------------------------------------------------------------------
-void Connector::ParseCommands()
+void igtlioConnector::ParseCommands()
 {
   this->CommandQueueMutex->Lock();
 
   while (!this->CommandQueue.empty())
     {
     igtl::MessageBase::Pointer commandBuffer = this->CommandQueue.front();
-    igtlio::DeviceKeyType key = igtlio::CreateDeviceKey(commandBuffer);
+    igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(commandBuffer);
 
-    DeviceCreatorPointer deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
+    igtlioDeviceCreatorPointer deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
 
     if (!deviceCreator)
       {
@@ -762,10 +759,10 @@ void Connector::ParseCommands()
       continue;
       }
 
-    DevicePointer device = NULL;
+    igtlioDevicePointer device = NULL;
     device = this->GetDevice(key);
 
-    if ((device.GetPointer() != NULL) && !(CreateDeviceKey(device) == CreateDeviceKey(commandBuffer)))
+    if ((device.GetPointer() != NULL) && !(igtlioDeviceKeyType::CreateDeviceKey(device) == igtlioDeviceKeyType::CreateDeviceKey(commandBuffer)))
       {
       vtkErrorMacro(
         << "Received an IGTL message of the wrong type, device=" << key.name
@@ -778,7 +775,7 @@ void Connector::ParseCommands()
     if (!device && !this->RestrictDeviceName)
       {
       device = deviceCreator->Create(key.name);
-      device->SetMessageDirection(Device::MESSAGE_DIRECTION_IN);
+      device->SetMessageDirection(igtlioDevice::MESSAGE_DIRECTION_IN);
       this->AddDevice(device);
       }
 
@@ -790,9 +787,9 @@ void Connector::ParseCommands()
 }
 
 //----------------------------------------------------------------------------
-DevicePointer Connector::AddDeviceIfNotPresent(DeviceKeyType key)
+igtlioDevicePointer igtlioConnector::AddDeviceIfNotPresent(igtlioDeviceKeyType key)
 {
-  DevicePointer device = GetDevice(key);
+  igtlioDevicePointer device = GetDevice(key);
 
   if (!device)
   {
@@ -804,9 +801,9 @@ DevicePointer Connector::AddDeviceIfNotPresent(DeviceKeyType key)
 }
 
 //----------------------------------------------------------------------------
-int Connector::AddDevice(DevicePointer device)
+int igtlioConnector::AddDevice(igtlioDevicePointer device)
 {
-  if (this->GetDevice(CreateDeviceKey(device))!=NULL)
+  if (this->GetDevice(igtlioDeviceKeyType::CreateDeviceKey(device))!=NULL)
     {
     vtkErrorMacro("Failed to add igtl device: " << device->GetDeviceName() << " already present");
     return 0;
@@ -816,31 +813,31 @@ int Connector::AddDevice(DevicePointer device)
   Devices.push_back(device);
   //TODO: listen to device events?
   unsigned int deviceEvent = device->GetDeviceContentModifiedEvent();
-  device->AddObserver((unsigned long)deviceEvent, this, &Connector::DeviceContentModified);
-  this->InvokeEvent(Connector::NewDeviceEvent, device.GetPointer());
+  device->AddObserver((unsigned long)deviceEvent, this, &igtlioConnector::DeviceContentModified);
+  this->InvokeEvent(igtlioConnector::NewDeviceEvent, device.GetPointer());
   return 1;
 }
 
 //----------------------------------------------------------------------------
-void Connector::DeviceContentModified(vtkObject *caller, unsigned long event, void *callData )
+void igtlioConnector::DeviceContentModified(vtkObject *caller, unsigned long event, void *callData )
 {
-  igtlio::Device* modifiedDevice = reinterpret_cast<igtlio::Device*>(callData);
+  igtlioDevice* modifiedDevice = reinterpret_cast<igtlioDevice*>(callData);
   if (modifiedDevice)
     {
-    this->InvokeEvent(Connector::DeviceContentModifiedEvent, modifiedDevice);
+      this->InvokeEvent(igtlioConnector::DeviceContentModifiedEvent, modifiedDevice);
     }
 }
 
 //----------------------------------------------------------------------------
-int Connector::RemoveDevice(DevicePointer device)
+int igtlioConnector::RemoveDevice(igtlioDevicePointer device)
 {
-  DeviceKeyType key = CreateDeviceKey(device);
+  igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(device);
   for (unsigned i=0; i<Devices.size(); ++i)
   {
-    if (CreateDeviceKey(Devices[i])==key)
+    if (igtlioDeviceKeyType::CreateDeviceKey(Devices[i])==key)
     {
       Devices.erase(Devices.begin()+i);
-      this->InvokeEvent(Connector::RemovedDeviceEvent, device.GetPointer());
+      this->InvokeEvent(igtlioConnector::RemovedDeviceEvent, device.GetPointer());
       return 1;
     }
   }
@@ -849,37 +846,37 @@ int Connector::RemoveDevice(DevicePointer device)
 }
 
 //---------------------------------------------------------------------------
-unsigned int Connector::GetNumberOfDevices() const
+unsigned int igtlioConnector::GetNumberOfDevices() const
 {
   return Devices.size();
 }
 
 //---------------------------------------------------------------------------
-void Connector::RemoveDevice(int index)
+void igtlioConnector::RemoveDevice(int index)
 {
   //TODO: disconnect listen to device events?
-  DevicePointer device = Devices[index]; // ensure object lives until event has completed
+  igtlioDevicePointer device = Devices[index]; // ensure object lives until event has completed
   Devices.erase(Devices.begin()+index);
-  this->InvokeEvent(Connector::RemovedDeviceEvent, device.GetPointer());
+  this->InvokeEvent(igtlioConnector::RemovedDeviceEvent, device.GetPointer());
 }
 
 //---------------------------------------------------------------------------
-DevicePointer Connector::GetDevice(int index)
+igtlioDevicePointer igtlioConnector::GetDevice(int index)
 {
   return Devices[index];
 }
 
 //---------------------------------------------------------------------------
-DevicePointer Connector::GetDevice(DeviceKeyType key)
+igtlioDevicePointer igtlioConnector::GetDevice(igtlioDeviceKeyType key)
 {
   for (unsigned i=0; i<Devices.size(); ++i)
-    if (CreateDeviceKey(Devices[i])==key)
+    if (igtlioDeviceKeyType::CreateDeviceKey(Devices[i])==key)
       return Devices[i];
-  return DevicePointer();
+  return igtlioDevicePointer();
 }
 
 //---------------------------------------------------------------------------
-bool Connector::HasDevice( DevicePointer d )
+bool igtlioConnector::HasDevice(igtlioDevicePointer d )
 {
     for(unsigned i=0; i<Devices.size(); ++i)
         if( Devices[i] == d )
@@ -888,9 +885,9 @@ bool Connector::HasDevice( DevicePointer d )
 }
 
 //---------------------------------------------------------------------------
-int Connector::SendMessage(DeviceKeyType device_id, Device::MESSAGE_PREFIX prefix)
+int igtlioConnector::SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::MESSAGE_PREFIX prefix)
 {
-  DevicePointer device = this->GetDevice(device_id);
+  igtlioDevicePointer device = this->GetDevice(device_id);
   if (!device)
     {
       vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id.type << "/" << device_id.name<< ", device not found");
@@ -921,13 +918,13 @@ int Connector::SendMessage(DeviceKeyType device_id, Device::MESSAGE_PREFIX prefi
 }
 
 //----------------------------------------------------------------------------
-DeviceFactoryPointer Connector::GetDeviceFactory()
+igtlioDeviceFactoryPointer igtlioConnector::GetDeviceFactory()
 {
   return DeviceFactory;
 }
 
 //----------------------------------------------------------------------------
-void Connector::SetDeviceFactory(DeviceFactoryPointer val)
+void igtlioConnector::SetDeviceFactory(igtlioDeviceFactoryPointer val)
 {
   if (val==DeviceFactory)
     return;
@@ -936,16 +933,14 @@ void Connector::SetDeviceFactory(DeviceFactoryPointer val)
 }
 
 //---------------------------------------------------------------------------
-int Connector::PushNode(DevicePointer node, int event)
+int igtlioConnector::PushNode(igtlioDevicePointer node, int event)
 {
   // TODO: verify that removed event argument is OK
-  return this->SendMessage(CreateDeviceKey(node), Device::MESSAGE_PREFIX_NOT_DEFINED);
+  return this->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(node), igtlioDevice::MESSAGE_PREFIX_NOT_DEFINED);
 }
 
 //---------------------------------------------------------------------------
-bool Connector::IsConnected()
+bool igtlioConnector::IsConnected()
 {
   return this->Socket.IsNotNull() && this->Socket->GetConnected();
 }
-
-} // namespace igtlio

@@ -6,14 +6,12 @@
 #include "igtlMessageBase.h"
 #include "vtkSmartPointer.h"
 
-namespace igtlio
-{
-typedef vtkSmartPointer<class Device> DevicePointer;
+typedef vtkSmartPointer<class igtlioDevice> igtlioDevicePointer;
 
-enum OPENIGTLINKIO_LOGIC_EXPORT SYNCHRONIZATION_TYPE
+enum OPENIGTLINKIO_LOGIC_EXPORT IGTLIO_SYNCHRONIZATION_TYPE
 {
-  BLOCKING,
-  ASYNCHRONOUS
+  IGTLIO_BLOCKING,
+  IGTLIO_ASYNCHRONOUS
 };
 
 ///
@@ -21,25 +19,22 @@ enum OPENIGTLINKIO_LOGIC_EXPORT SYNCHRONIZATION_TYPE
 /// This enables broadcast Devices (with empty name) of different types
 /// to be stored in the same structures.
 ///
-struct OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType
+struct OPENIGTLINKIO_LOGIC_EXPORT igtlioDeviceKeyType
 {
-  explicit DeviceKeyType() {}
-  explicit DeviceKeyType(const std::string& type_, const std::string& name_) :
+  explicit igtlioDeviceKeyType() {}
+  explicit igtlioDeviceKeyType(const std::string& type_, const std::string& name_) :
     type(type_), name(name_) {}
   std::string type;
   std::string name;
 
 public:
   std::string GetBaseTypeName() const;
+
+  static igtlioDeviceKeyType CreateDeviceKey(igtl::MessageBase::Pointer message);
+  static igtlioDeviceKeyType CreateDeviceKey(igtlioDevicePointer device);
 };
 
-OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(igtl::MessageBase::Pointer message);
-OPENIGTLINKIO_LOGIC_EXPORT DeviceKeyType CreateDeviceKey(DevicePointer device);
-bool operator==(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
-bool operator<(const DeviceKeyType& lhs, const DeviceKeyType& rhs);
-
-} // namespace igtlio
-
-
+bool operator==(const igtlioDeviceKeyType& lhs, const igtlioDeviceKeyType& rhs);
+bool operator<(const igtlioDeviceKeyType& lhs, const igtlioDeviceKeyType& rhs);
 
 #endif // IGTLIOUTILITIES_H

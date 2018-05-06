@@ -73,7 +73,7 @@ QVariant qIGTLIOConnectorModel::data(const QModelIndex &index, int role) const
   if (role!=Qt::DisplayRole)
     return QVariant();
 
-  igtlio::Connector* cnode = this->getNodeFromIndex(index);
+  igtlioConnector* cnode = this->getNodeFromIndex(index);
 
   if (!cnode)
     {
@@ -88,19 +88,19 @@ QVariant qIGTLIOConnectorModel::data(const QModelIndex &index, int role) const
       }
     case qIGTLIOConnectorModel::TypeColumn:
       {
-      Q_ASSERT(cnode->GetType() < igtlio::Connector::NUM_TYPE);
-      return QString::fromStdString(igtlio::Connector::ConnectorTypeStr[cnode->GetType()]);
+      Q_ASSERT(cnode->GetType() < igtlioConnector::NUM_TYPE);
+      return QString::fromStdString(igtlioConnector::ConnectorTypeStr[cnode->GetType()]);
       break;
       }
     case qIGTLIOConnectorModel::StatusColumn:
       {
-      Q_ASSERT(cnode->GetState() < igtlio::Connector::NUM_STATE);
-      return QString::fromStdString(igtlio::Connector::ConnectorStateStr[cnode->GetState()]);
+      Q_ASSERT(cnode->GetState() < igtlioConnector::NUM_STATE);
+      return QString::fromStdString(igtlioConnector::ConnectorStateStr[cnode->GetState()]);
       break;
       }
     case qIGTLIOConnectorModel::HostnameColumn:
       {
-      if (cnode->GetType() == igtlio::Connector::TYPE_CLIENT)
+      if (cnode->GetType() == igtlioConnector::TYPE_CLIENT)
         {
         return QString::fromStdString(cnode->GetServerHostname());
         }
@@ -168,11 +168,11 @@ void qIGTLIOConnectorModel::resetModel()
 
 
 //-----------------------------------------------------------------------------
-void qIGTLIOConnectorModel::setLogic(igtlio::LogicPointer logic)
+void qIGTLIOConnectorModel::setLogic(igtlioLogicPointer logic)
 {
   foreach(int evendId, QList<int>()
-          << igtlio::Logic::ConnectionAddedEvent
-          << igtlio::Logic::ConnectionAboutToBeRemovedEvent)
+          << igtlioLogic::ConnectionAddedEvent
+          << igtlioLogic::ConnectionAboutToBeRemovedEvent)
     {
     qvtkReconnect(this->Logic, logic, evendId,
                   this, SLOT(onConnectionEvent(vtkObject*, unsigned long, void*, void* )));
@@ -182,13 +182,13 @@ void qIGTLIOConnectorModel::setLogic(igtlio::LogicPointer logic)
 }
 
 //-----------------------------------------------------------------------------
-void qIGTLIOConnectorModel::ReconnectConnector(igtlio::Connector* oldConnector, igtlio::Connector* newConnector)
+void qIGTLIOConnectorModel::ReconnectConnector(igtlioConnector* oldConnector, igtlioConnector* newConnector)
 {
   foreach(int evendId, QList<int>()
-          << igtlio::Connector::ConnectedEvent
-          << igtlio::Connector::DisconnectedEvent
-          << igtlio::Connector::ActivatedEvent
-          << igtlio::Connector::DeactivatedEvent)
+          << igtlioConnector::ConnectedEvent
+          << igtlioConnector::DisconnectedEvent
+          << igtlioConnector::ActivatedEvent
+          << igtlioConnector::DeactivatedEvent)
     {
     qvtkReconnect(oldConnector, newConnector, evendId,
                   this, SLOT(onConnectorEvent(vtkObject*, unsigned long, void*, void* )));
@@ -198,15 +198,15 @@ void qIGTLIOConnectorModel::ReconnectConnector(igtlio::Connector* oldConnector, 
 //-----------------------------------------------------------------------------
 void qIGTLIOConnectorModel::onConnectionEvent(vtkObject* caller, unsigned long event, void * , void* connector )
 {
-  if (event==igtlio::Logic::ConnectionAddedEvent)
+  if (event==igtlioLogic::ConnectionAddedEvent)
     {
-      igtlio::Connector* c = static_cast<igtlio::Connector*>(connector);
+      igtlioConnector* c = static_cast<igtlioConnector*>(connector);
       this->ReconnectConnector(NULL, c);
       this->resetModel();
     }
-  if (event==igtlio::Logic::ConnectionAboutToBeRemovedEvent)
+  if (event==igtlioLogic::ConnectionAboutToBeRemovedEvent)
     {
-      igtlio::Connector* c = static_cast<igtlio::Connector*>(connector);
+      igtlioConnector* c = static_cast<igtlioConnector*>(connector);
       this->ReconnectConnector(c, NULL);
       this->resetModel();
     }
@@ -219,9 +219,9 @@ void qIGTLIOConnectorModel::onConnectorEvent(vtkObject* caller, unsigned long ev
 }
 
 //-----------------------------------------------------------------------------
-igtlio::Connector* qIGTLIOConnectorModel::getNodeFromIndex(const QModelIndex &index) const
+igtlioConnector* qIGTLIOConnectorModel::getNodeFromIndex(const QModelIndex &index) const
 {
   if (!index.isValid())
     return NULL;
-  return static_cast<igtlio::Connector*>(index.internalPointer());
+  return static_cast<igtlioConnector*>(index.internalPointer());
 }

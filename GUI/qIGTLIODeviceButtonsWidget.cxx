@@ -44,7 +44,7 @@ qIGTLIODeviceButtonsWidget::qIGTLIODeviceButtonsWidget()
   this->onCurrentConnectorChanged();
 }
 
-void qIGTLIODeviceButtonsWidget::setLogic(igtlio::LogicPointer logic)
+void qIGTLIODeviceButtonsWidget::setLogic(igtlioLogicPointer logic)
 {
   Logic = logic;
 }
@@ -73,10 +73,10 @@ void qIGTLIODeviceButtonsWidget::onCurrentConnectorChanged()
 
   for (int i=0; i<Actions.size(); ++i)
     {
-      igtlio::Device::MESSAGE_PREFIX prefix = static_cast<igtlio::Device::MESSAGE_PREFIX>(Actions[i]->data().toInt());
+      igtlioDevice::MESSAGE_PREFIX prefix = static_cast<igtlioDevice::MESSAGE_PREFIX>(Actions[i]->data().toInt());
       bool e = node && node->isDevice() &&
           (node->device->GetSupportedMessagePrefixes().count(prefix) ||
-           (prefix==igtlio::Device::MESSAGE_PREFIX_NOT_DEFINED));
+           (prefix==igtlioDevice::MESSAGE_PREFIX_NOT_DEFINED));
       Actions[i]->setEnabled(e);
     }
 }
@@ -87,12 +87,12 @@ void qIGTLIODeviceButtonsWidget::onActionClicked()
   if (!action)
     return;
 
-  igtlio::Device::MESSAGE_PREFIX prefix = static_cast<igtlio::Device::MESSAGE_PREFIX>(action->data().toInt());
+  igtlioDevice::MESSAGE_PREFIX prefix = static_cast<igtlioDevice::MESSAGE_PREFIX>(action->data().toInt());
 
   qIGTLIODevicesModelNode* node = this->getSelectedNode();
   if (!node || !node->isDevice())
     return;
 
-  node->connector->SendMessage(CreateDeviceKey(node->device), prefix);
+  node->connector->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(node->device), prefix);
 
 }

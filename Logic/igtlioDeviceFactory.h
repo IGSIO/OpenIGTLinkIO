@@ -19,38 +19,33 @@
 #include "igtlioLogicExport.h"
 #include "igtlioDevice.h"
 
-namespace igtlio
-{
+typedef vtkSmartPointer<class igtlioDeviceCreator> igtlioDeviceCreatorPointer;
+typedef vtkSmartPointer<class igtlioDeviceFactory> igtlioDeviceFactoryPointer;
 
-typedef vtkSmartPointer<class DeviceCreator> DeviceCreatorPointer;
-typedef vtkSmartPointer<class DeviceFactory> DeviceFactoryPointer;
-
-class OPENIGTLINKIO_LOGIC_EXPORT DeviceFactory : public vtkObject
+class OPENIGTLINKIO_LOGIC_EXPORT igtlioDeviceFactory : public vtkObject
 {
  public:
-  static DeviceFactory *New();
-  vtkTypeMacro(DeviceFactory,vtkObject);
+  static igtlioDeviceFactory *New();
+  vtkTypeMacro(igtlioDeviceFactory,vtkObject);
 
   void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
 
-  DeviceCreatorPointer GetCreator(std::string device_type) const;
+  igtlioDeviceCreatorPointer GetCreator(std::string device_type) const;
   std::vector<std::string> GetAvailableDeviceTypes() const;
 
   // Create a Device object based on an input device_type
   // TODO: Should we accept prefixed message types as well?
-  DevicePointer create(std::string device_type, std::string device_name) const;
+  igtlioDevicePointer create(std::string device_type, std::string device_name) const;
 
 protected:
-  DeviceFactory();
-  virtual ~DeviceFactory();
+  igtlioDeviceFactory();
+  virtual ~igtlioDeviceFactory();
 
   // Register a factory for a specific Device Type.
   template<class CREATOR_TYPE>
   void registerCreator();
 
-  std::map<std::string, DeviceCreatorPointer> Creators;
+  std::map<std::string, igtlioDeviceCreatorPointer> Creators;
 };
-
-} // namespace igtlio
 
 #endif /* IGTLIODEVICEFACTORY_H_ */

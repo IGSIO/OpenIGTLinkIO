@@ -24,13 +24,10 @@
 class vtkImageData;
 class vtkMatrix4x4;
 
-namespace igtlio
-{
-
 /** Conversion between igtl::ImageMessage and vtk classes.
  *
  */
-class OPENIGTLINKIO_CONVERTER_EXPORT ImageConverter : public BaseConverter
+class OPENIGTLINKIO_CONVERTER_EXPORT igtlioImageConverter : public igtlioBaseConverter
 {
 public:
   /**
@@ -56,8 +53,5 @@ public:
   static int VTKTransformToIGTLImage(const vtkMatrix4x4& ijk2ras, int imageSize[3], double spacing[3], double origin[3], igtl::ImageMessage::Pointer imgMsg);
 
 };
-
-} //namespace igtlio
-
 
 #endif //IGTLIOIMAGECONVERTER_H

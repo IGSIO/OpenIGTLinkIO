@@ -24,12 +24,9 @@
 #include "igtlioConnector.h"
 #include "igtlioUtilities.h"
 
-namespace igtlio
-{
-
-typedef vtkSmartPointer<class Logic> LogicPointer;
-typedef vtkSmartPointer<class Connector> ConnectorPointer;
-typedef vtkSmartPointer<class Session> SessionPointer;
+typedef vtkSmartPointer<class igtlioLogic> igtlioLogicPointer;
+typedef vtkSmartPointer<class igtlioConnector> igtlioConnectorPointer;
+typedef vtkSmartPointer<class igtlioSession> igtlioSessionPointer;
 
 
 /// Logic is the manager for the IGTLIO module.
@@ -52,7 +49,7 @@ typedef vtkSmartPointer<class Session> SessionPointer;
 ///    main thread processing. This should be handled externally by a timer
 ///    or similar.
 ///
-class OPENIGTLINKIO_LOGIC_EXPORT Logic : public vtkObject
+class OPENIGTLINKIO_LOGIC_EXPORT igtlioLogic : public vtkObject
 {
 public:
   enum {
@@ -61,29 +58,29 @@ public:
     ConnectionAboutToBeRemovedEvent      = 118971,
 
     NewDeviceEvent        = 118949,
-    DeviceModifiedEvent   = Connector::DeviceContentModifiedEvent, // listen to the custom event invoked from connector.
+    DeviceModifiedEvent   = igtlioConnector::DeviceContentModifiedEvent, // listen to the custom event invoked from connector.
     RemovedDeviceEvent    = 118951,
-    CommandReceivedEvent = Device::CommandReceivedEvent, // one of the connected COMMAND devices got a query
-    CommandResponseReceivedEvent = Device::CommandResponseReceivedEvent // one of the connected COMMAND devices got a response
+    CommandReceivedEvent = igtlioDevice::CommandReceivedEvent, // one of the connected COMMAND devices got a query
+    CommandResponseReceivedEvent = igtlioDevice::CommandResponseReceivedEvent // one of the connected COMMAND devices got a response
   };
 
- static Logic *New();
- vtkTypeMacro(Logic, vtkObject);
+ static igtlioLogic *New();
+ vtkTypeMacro(igtlioLogic, vtkObject);
  void PrintSelf(ostream&, vtkIndent) VTK_OVERRIDE;
 
- ConnectorPointer CreateConnector();
+ igtlioConnectorPointer CreateConnector();
  int RemoveConnector(unsigned int index);
- int RemoveConnector(ConnectorPointer connector);
+ int RemoveConnector(igtlioConnectorPointer connector);
  int GetNumberOfConnectors() const;
- ConnectorPointer GetConnector(unsigned int index);
+ igtlioConnectorPointer GetConnector(unsigned int index);
 
  /// Start a server and return a Session representing the connection.
  /// If sync is BLOCKING, the call blocks until at client has connected to the server.
- SessionPointer StartServer(int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
+ igtlioSessionPointer StartServer(int serverPort=-1, IGTLIO_SYNCHRONIZATION_TYPE sync=IGTLIO_BLOCKING, double timeout_s=5);
 
  /// Connect to the given server and return Session representing the connection.
  /// if sync is BLOCKING, the call blocks until the server responds or until timeout.
- SessionPointer ConnectToServer(std::string serverHost, int serverPort=-1, igtlio::SYNCHRONIZATION_TYPE sync=igtlio::BLOCKING, double timeout_s=5);
+ igtlioSessionPointer ConnectToServer(std::string serverHost, int serverPort=-1, IGTLIO_SYNCHRONIZATION_TYPE sync=IGTLIO_BLOCKING, double timeout_s=5);
 
  /// Call timer-driven routines for each connector
  void PeriodicProcess();
@@ -91,24 +88,24 @@ public:
  //TODO: interface for accessing Devices
  unsigned int GetNumberOfDevices() const;
  void RemoveDevice(unsigned int index);
- DevicePointer GetDevice(unsigned int index);
- int ConnectorIndexFromDevice( DevicePointer d );
+ igtlioDevicePointer GetDevice(unsigned int index);
+ int ConnectorIndexFromDevice( igtlioDevicePointer d );
 
 
 protected:
- Logic();
- virtual ~Logic();
+  igtlioLogic();
+ virtual ~igtlioLogic();
 
 private:
- std::vector<ConnectorPointer> Connectors;
+ std::vector<igtlioConnectorPointer> Connectors;
 
 private:
-  Logic(const Logic&); // Not implemented
-  void operator=(const Logic&); // Not implemented
+  igtlioLogic(const igtlioLogic&); // Not implemented
+  void operator=(const igtlioLogic&); // Not implemented
 
   int CreateUniqueConnectorID() const;
-  std::vector<DevicePointer> CreateDeviceList() const;
-  int RemoveConnector(std::vector<ConnectorPointer>::iterator toRemove);
+  std::vector<igtlioDevicePointer> CreateDeviceList() const;
+  int RemoveConnector(std::vector<igtlioConnectorPointer>::iterator toRemove);
 
   vtkSmartPointer<class vtkCallbackCommand> NewDeviceCallback;
   vtkSmartPointer<class vtkCallbackCommand> RemovedDeviceCallback;
@@ -117,6 +114,5 @@ public:
   vtkSmartPointer<class vtkCallbackCommand> DeviceEventCallback;
 
 };
-} // namespace igtlio
 
 #endif // IGTLIOLOGIC_H

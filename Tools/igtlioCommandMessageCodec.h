@@ -6,16 +6,13 @@
 #include <utility>
 #include <string>
 
-namespace igtlio
-{
-
-class OPENIGTLINKIO_TOOLS_EXPORT CommandMessageCodec
+class OPENIGTLINKIO_TOOLS_EXPORT igtlioCommandMessageCodec
 {
 
 public:
 
-    CommandMessageCodec();
-    CommandMessageCodec( bool isReply );
+  igtlioCommandMessageCodec();
+  igtlioCommandMessageCodec(bool isReply);
 
     // Build the content of the command to send
     void SetResult( bool res );
@@ -39,7 +36,5 @@ protected:
     bool m_result;
     ParamContainer m_parameters;
 };
-
-} // namespace igtlio
 
 #endif

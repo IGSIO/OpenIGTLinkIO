@@ -2,9 +2,6 @@
 
 #include <vtkImageDifference.h>
 
-namespace igtlio
-{
-
 vtkSmartPointer<vtkImageData> CreateTestImage()
 {
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
@@ -52,7 +49,7 @@ bool compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
   return true;
 }
 
-bool compare(igtlio::ImageDevicePointer a, igtlio::ImageDevicePointer b)
+bool compare(igtlioImageDevicePointer a, igtlioImageDevicePointer b)
 {
   if (a->GetDeviceName() != b->GetDeviceName())
     return false;
@@ -68,7 +65,7 @@ bool compare(igtlio::ImageDevicePointer a, igtlio::ImageDevicePointer b)
   return true;
 }
 
-bool compare(igtlio::CommandDevicePointer a, igtlio::CommandDevicePointer b)
+bool compare(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b)
 {
   if (!a || !b)
     {
@@ -97,7 +94,7 @@ bool compare(igtlio::CommandDevicePointer a, igtlio::CommandDevicePointer b)
   return true;
 }
 
-bool compareID(igtlio::CommandDevicePointer a, igtlio::CommandDevicePointer b)
+bool compareID(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b)
 {
   if (!a || !b)
     {
@@ -130,6 +127,3 @@ bool contains(std::vector<int> input, int value, int count)
     }
   return (found_times >= count) ? true : false;
 }
-
-}
-

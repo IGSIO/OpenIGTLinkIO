@@ -17,68 +17,65 @@
 #include <vtkObjectFactory.h>
 #include "vtkMatrix4x4.h"
 
-namespace igtlio
-{
-
 //---------------------------------------------------------------------------
-DevicePointer TransformDeviceCreator::Create(std::string device_name)
+igtlioDevicePointer igtlioTransformDeviceCreator::Create(std::string device_name)
 {
- TransformDevicePointer retval = TransformDevicePointer::New();
+ igtlioTransformDevicePointer retval = igtlioTransformDevicePointer::New();
  retval->SetDeviceName(device_name);
  return retval;
 }
 
 //---------------------------------------------------------------------------
-std::string TransformDeviceCreator::GetDeviceType() const
+std::string igtlioTransformDeviceCreator::GetDeviceType() const
 {
-  return TransformConverter::GetIGTLTypeName();
+  return igtlioTransformConverter::GetIGTLTypeName();
 }
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(TransformDeviceCreator);
+vtkStandardNewMacro(igtlioTransformDeviceCreator);
 
 
 //---------------------------------------------------------------------------
-vtkStandardNewMacro(TransformDevice);
+vtkStandardNewMacro(igtlioTransformDevice);
 //---------------------------------------------------------------------------
-TransformDevice::TransformDevice()
-{
-}
-
-//---------------------------------------------------------------------------
-TransformDevice::~TransformDevice()
+igtlioTransformDevice::igtlioTransformDevice()
 {
 }
 
 //---------------------------------------------------------------------------
-unsigned int TransformDevice::GetDeviceContentModifiedEvent() const
+igtlioTransformDevice::~igtlioTransformDevice()
+{
+}
+
+//---------------------------------------------------------------------------
+unsigned int igtlioTransformDevice::GetDeviceContentModifiedEvent() const
 {
   return TransformModifiedEvent;
 }
 
 //---------------------------------------------------------------------------
-std::string TransformDevice::GetDeviceType() const
+std::string igtlioTransformDevice::GetDeviceType() const
 {
-  return TransformConverter::GetIGTLTypeName();
+  return igtlioTransformConverter::GetIGTLTypeName();
 }
 
-void TransformDevice::SetContent(TransformConverter::ContentData content)
+void igtlioTransformDevice::SetContent(igtlioTransformConverter::ContentData content)
 {
   Content = content;
   this->Modified();
   this->InvokeEvent(TransformModifiedEvent, this);
 }
 
-TransformConverter::ContentData TransformDevice::GetContent()
+igtlioTransformConverter::ContentData igtlioTransformDevice::GetContent()
 {
   return Content;
 }
 
 
 //---------------------------------------------------------------------------
-int TransformDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
+int igtlioTransformDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (TransformConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
+ if (igtlioTransformConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
  {
    this->Modified();
    this->InvokeEvent(TransformModifiedEvent, this);
@@ -91,7 +88,7 @@ int TransformDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool 
 
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer TransformDevice::GetIGTLMessage()
+igtl::MessageBase::Pointer igtlioTransformDevice::GetIGTLMessage()
 {
   // cannot send a non-existent image
   if (!Content.transform)
@@ -99,7 +96,7 @@ igtl::MessageBase::Pointer TransformDevice::GetIGTLMessage()
   return 0;
   }
 
- if (!TransformConverter::toIGTL(HeaderData, Content, &this->OutTransformMessage, this->metaInfo))
+ if (!igtlioTransformConverter::toIGTL(HeaderData, Content, &this->OutTransformMessage, this->metaInfo))
    {
    return 0;
    }
@@ -108,10 +105,10 @@ igtl::MessageBase::Pointer TransformDevice::GetIGTLMessage()
 }
 
 //---------------------------------------------------------------------------
-igtl::MessageBase::Pointer TransformDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
+igtl::MessageBase::Pointer igtlioTransformDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
 
-	/*
+    /*
   if (prefix==MESSAGE_PREFIX_GET)
   {
    if (this->GetTransformMessage.IsNull())
@@ -132,7 +129,7 @@ igtl::MessageBase::Pointer TransformDevice::GetIGTLMessage(MESSAGE_PREFIX prefix
 }
 
 //---------------------------------------------------------------------------
-std::set<Device::MESSAGE_PREFIX> TransformDevice::GetSupportedMessagePrefixes() const
+std::set<igtlioDevice::MESSAGE_PREFIX> igtlioTransformDevice::GetSupportedMessagePrefixes() const
 {
  std::set<MESSAGE_PREFIX> retval;
  retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
@@ -140,9 +137,9 @@ std::set<Device::MESSAGE_PREFIX> TransformDevice::GetSupportedMessagePrefixes() 
 }
 
 //---------------------------------------------------------------------------
-void TransformDevice::PrintSelf(ostream& os, vtkIndent indent)
+void igtlioTransformDevice::PrintSelf(ostream& os, vtkIndent indent)
 {
-  Device::PrintSelf(os, indent);
+  igtlioDevice::PrintSelf(os, indent);
 
     // not sure what to do here.
   //os << indent << "CommandID:\t" <<"\n";
@@ -150,5 +147,3 @@ void TransformDevice::PrintSelf(ostream& os, vtkIndent indent)
   //os << indent << "CommandName:\t" << "\n";
   //Content.transform->PrintSelf(os, indent.GetNextIndent());
 }
-
-} // namespace igtlio

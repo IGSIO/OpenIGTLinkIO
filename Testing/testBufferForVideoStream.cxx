@@ -13,7 +13,7 @@
 #include "igtlioSession.h"
 #include "igtlMessageDebugFunction.h"
 
-bool compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
+bool a_compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
 {
   VP9Encoder * encoder = new VP9Encoder();
   VP9Decoder * decoder = new VP9Decoder();
@@ -36,13 +36,13 @@ bool compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
   return false;
 }
 
-bool compare(igtlio::VideoDevicePointer a, igtlio::VideoDevicePointer b)
+bool compare(igtlioVideoDevicePointer a, igtlioVideoDevicePointer b)
 {
   if (a->GetDeviceName() != b->GetDeviceName())
     return false;
   if (a->GetDeviceType() != b->GetDeviceType())
     return false;
-  if (!compare(a->GetContent().image, b->GetContent().image))
+  if (!a_compare(a->GetContent().image, b->GetContent().image))
     return false;
   
   return true;
@@ -51,7 +51,7 @@ bool compare(igtlio::VideoDevicePointer a, igtlio::VideoDevicePointer b)
 
 int main(int argc, char **argv)
 {
-  ClientServerFixture fixture;
+  igtlioClientServerFixture fixture;
   
   for (int i =0 ; i <100; i++)
   {
@@ -74,14 +74,14 @@ int main(int argc, char **argv)
 
   std::cout << "*** Connection done" << std::endl;
   //---------------------------------------------------------------------------
-  igtlio::VideoDevicePointer videoDevice;
+  igtlioVideoDevicePointer videoDevice;
   vtkSmartPointer<vtkImageData> image = vtkImageData::New();
   fixture.CreateTestFrame(image);
   videoDevice = fixture.Server.Session->SendFrame("TestDevice_Image",image);
   std::cout << "*** Sent message from Server to Client" << std::endl;
   //---------------------------------------------------------------------------
 
-  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlio::Logic::NewDeviceEvent))
+  if (!fixture.LoopUntilEventDetected(&fixture.Client, igtlioLogic::NewDeviceEvent))
     {
     return 1;
     }
@@ -92,8 +92,8 @@ int main(int argc, char **argv)
     return 1;
     }
 
-  igtlio::VideoDevicePointer receivedDevice;
-  receivedDevice = igtlio::VideoDevice::SafeDownCast(fixture.Client.Logic->GetDevice(0));
+  igtlioVideoDevicePointer receivedDevice;
+  receivedDevice = igtlioVideoDevice::SafeDownCast(fixture.Client.Logic->GetDevice(0));
   if (!receivedDevice)
     {
     std::cout << "FAILURE: Non-video device received." << std::endl;
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
   
   
   // Normal buffer testing
-  igtlio::ImageDevicePointer imageDevice;
+  igtlioImageDevicePointer imageDevice;
   while(loop++ < 5)
     {
     int frameNum = (float)(std::rand())/RAND_MAX * 20 + 8;

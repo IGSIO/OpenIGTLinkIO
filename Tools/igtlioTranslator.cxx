@@ -1,8 +1,5 @@
 #include "igtlioTranslator.h"
 
-namespace igtlio
-{
-
 std::string extractStringBeforeCharacter(std::string const& s, char character)
 {
     std::string::size_type pos = s.find(character);
@@ -16,17 +13,17 @@ std::string extractStringBeforeCharacter(std::string const& s, char character)
     }
 }
 
-Translator::Translator()
+igtlioTranslator::igtlioTranslator()
 {
 }
 
-std::string Translator::GetToolNameFromDeviceName(std::string device_name)
+std::string igtlioTranslator::GetToolNameFromDeviceName(std::string device_name)
 {
     std::string retval = extractStringBeforeCharacter(device_name, '_');
     return retval;
 }
 
-std::string Translator::DetermineTypeBasedOnToolName(std::string tool_name)
+std::string igtlioTranslator::DetermineTypeBasedOnToolName(std::string tool_name)
 {
   if (tool_name.find("probe") != std::string::npos) {
       return "probe";
@@ -36,6 +33,3 @@ std::string Translator::DetermineTypeBasedOnToolName(std::string tool_name)
   }
   return "unknown";
 }
-
-} // namespace igtlio
-

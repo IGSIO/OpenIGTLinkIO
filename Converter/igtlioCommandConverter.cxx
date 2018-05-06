@@ -4,10 +4,7 @@
 #include <algorithm>
 #include <locale>
 
-namespace igtlio
-{
-
-std::vector<std::string> CommandConverter::GetAvailableCommandNames()
+std::vector<std::string> igtlioCommandConverter::GetAvailableCommandNames()
 {
   std::vector<std::string> retval;
   retval.push_back("Set");
@@ -18,7 +15,7 @@ std::vector<std::string> CommandConverter::GetAvailableCommandNames()
 }
 
 //---------------------------------------------------------------------------
-int CommandConverter::fromIGTL(igtl::MessageBase::Pointer source,
+int igtlioCommandConverter::fromIGTL(igtl::MessageBase::Pointer source,
                              HeaderData* header,
                              ContentData* dest,
                              bool checkCRC, 
@@ -50,7 +47,7 @@ int CommandConverter::fromIGTL(igtl::MessageBase::Pointer source,
   return 1;
 }
 
-int CommandConverter::fromIGTLResponse(igtl::MessageBase::Pointer source,
+int igtlioCommandConverter::fromIGTLResponse(igtl::MessageBase::Pointer source,
                              HeaderData* header,
                              ContentData* dest,
                              bool checkCRC,
@@ -92,7 +89,7 @@ int CommandConverter::fromIGTLResponse(igtl::MessageBase::Pointer source,
 
 
 //---------------------------------------------------------------------------
-int CommandConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::CommandMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
+int igtlioCommandConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::CommandMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
   if (dest->IsNull())
     *dest = igtl::CommandMessage::New();
@@ -114,6 +111,4 @@ int CommandConverter::toIGTL(const HeaderData& header, const ContentData& source
 
   return 1;
 }
-
-} // namespace igtlio
 
