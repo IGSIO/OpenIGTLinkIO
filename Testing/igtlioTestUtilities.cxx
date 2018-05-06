@@ -2,7 +2,7 @@
 
 #include <vtkImageDifference.h>
 
-vtkSmartPointer<vtkImageData> CreateTestImage()
+vtkSmartPointer<vtkImageData> igtlioCreateTestImage()
 {
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
   image->SetSpacing(1.5, 1.2, 1);
@@ -12,32 +12,34 @@ vtkSmartPointer<vtkImageData> CreateTestImage()
   int scalarSize = image->GetScalarSize();
   unsigned char* ptr = reinterpret_cast<unsigned char*>(image->GetScalarPointer());
   unsigned char color = 0;
-  std::fill(ptr, ptr+scalarSize, color++);
+  std::fill(ptr, ptr + scalarSize, color++);
 
   return image;
 }
 
-vtkSmartPointer<vtkMatrix4x4> CreateTestTransform()
+vtkSmartPointer<vtkMatrix4x4> igtlioCreateTestTransform()
 {
   vtkSmartPointer<vtkMatrix4x4> transform = vtkSmartPointer<vtkMatrix4x4>::New();
   transform->Identity();
   return transform;
 }
 
-bool compare(vtkSmartPointer<vtkMatrix4x4> a, vtkSmartPointer<vtkMatrix4x4> b)
+bool igtlioCompare(vtkSmartPointer<vtkMatrix4x4> a, vtkSmartPointer<vtkMatrix4x4> b)
 {
-  for (int x=0; x<4; ++x)
+  for (int x = 0; x < 4; ++x)
+  {
+    for (int y = 0; y < 4; ++y)
     {
-      for (int y=0; y<4; ++y)
-        {
-          if (fabs(b->Element[x][y] - a->Element[x][y]) > 1E-3)
-            return false;
-        }
+      if (fabs(b->Element[x][y] - a->Element[x][y]) > 1E-3)
+      {
+        return false;
+      }
     }
+  }
   return true;
 }
 
-bool compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
+bool igtlioCompare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
 {
   vtkSmartPointer<vtkImageDifference> differenceFilter = vtkSmartPointer<vtkImageDifference>::New();
   differenceFilter->SetInputData(a);
@@ -45,85 +47,99 @@ bool compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b)
   differenceFilter->Update();
   double imageError = differenceFilter->GetError();
   if (fabs(imageError) > 1E-3)
+  {
     return false;
+  }
   return true;
 }
 
-bool compare(igtlioImageDevicePointer a, igtlioImageDevicePointer b)
+bool igtlioCompare(igtlioImageDevicePointer a, igtlioImageDevicePointer b)
 {
   if (a->GetDeviceName() != b->GetDeviceName())
+  {
     return false;
-  if (fabs(a->GetTimestamp()-b->GetTimestamp()) < 1E-3)
+  }
+  if (fabs(a->GetTimestamp() - b->GetTimestamp()) < 1E-3)
+  {
     return false;
+  }
   if (a->GetDeviceType() != b->GetDeviceType())
+  {
     return false;
-  if (!compare(a->GetContent().image, b->GetContent().image))
+  }
+  if (!igtlioCompare(a->GetContent().image, b->GetContent().image))
+  {
     return false;
-  if (!compare(a->GetContent().transform, b->GetContent().transform))
+  }
+  if (!igtlioCompare(a->GetContent().transform, b->GetContent().transform))
+  {
     return false;
+  }
 
   return true;
 }
 
-bool compare(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b)
+bool igtlioCompare(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b)
 {
   if (!a || !b)
-    {
-      std::cout << "FAILURE: empty device" << std::endl;
-      return false;
-    }
+  {
+    std::cout << "FAILURE: empty device" << std::endl;
+    return false;
+  }
 
   if (a->GetContent().name != b->GetContent().name)
-    {
-      std::cout << "FAILURE: Command names dont match." << std::endl;
-      return false;
-    }
+  {
+    std::cout << "FAILURE: Command names dont match." << std::endl;
+    return false;
+  }
 
   if (a->GetContent().id != b->GetContent().id)
-    {
-      std::cout << "FAILURE: Command IDs dont match." << std::endl;
-      return false;
-    }
+  {
+    std::cout << "FAILURE: Command IDs dont match." << std::endl;
+    return false;
+  }
 
   if (a->GetContent().content != b->GetContent().content)
-    {
-      std::cout << "FAILURE: Command content dont match." << std::endl;
-      return false;
-    }
+  {
+    std::cout << "FAILURE: Command content dont match." << std::endl;
+    return false;
+  }
 
   return true;
 }
 
-bool compareID(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b)
+bool igtlioCompareID(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b)
 {
   if (!a || !b)
-    {
-      std::cout << "FAILURE: empty device" << std::endl;
-      return false;
-    }
+  {
+    std::cout << "FAILURE: empty device" << std::endl;
+    return false;
+  }
 
   if (a->GetContent().id != b->GetContent().id)
-    {
-      std::cout << "FAILURE: Command IDs dont match." << std::endl;
-      return false;
-    }
+  {
+    std::cout << "FAILURE: Command IDs dont match." << std::endl;
+    return false;
+  }
 
   return true;
 }
 
-std::string boolToString(bool b)
+std::string igtlioBoolToString(bool b)
 {
   std::string ret = b ? "true" : "false";
   return ret;
 }
 
-bool contains(std::vector<int> input, int value, int count)
+bool igtlioContains(std::vector<int> input, int value, int count)
 {
   int found_times = 0;
-  for(int i=0; i<input.size(); ++i)
+  for (int i = 0; i < input.size(); ++i)
+  {
+    if (input[i] == value)
     {
-      if(input[i] == value)
-        found_times+=1;
+      found_times += 1;
     }
+  }
   return (found_times >= count) ? true : false;
 }

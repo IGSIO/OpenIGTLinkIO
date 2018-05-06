@@ -92,7 +92,7 @@ bool igtlioClientServerFixture::LoopUntilEventDetected(igtlioLogicFixture* logic
     Client.Logic->PeriodicProcess();
     vtksys::SystemTools::Delay(5);
 
-    if (contains(logic->ReceivedEvents, eventId, count))
+    if (igtlioContains(logic->ReceivedEvents, eventId, count))
     {
       return true;
     }

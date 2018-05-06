@@ -83,14 +83,14 @@ int main(int argc, char **argv)
   if (!clientDevice->GetQueries().empty())
     query = clientDevice->GetQueries()[0];
 
-  if (!compareID(igtlioCommandDevice::SafeDownCast(query.Query),
+  if (!igtlioCompareID(igtlioCommandDevice::SafeDownCast(query.Query),
                igtlioCommandDevice::SafeDownCast(query.Response)))
   {
     std::cout << "FAILURE: Query and response dont match." << std::endl;
     return TEST_FAILED;
   }
 
-  if (!compare(serverDevice,
+  if (!igtlioCompare(serverDevice,
                igtlioCommandDevice::SafeDownCast(query.Response)))
   {
     std::cout << "FAILURE: Received response not equal to what the Server sent." << std::endl;

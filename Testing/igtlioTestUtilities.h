@@ -13,16 +13,16 @@
 #define TEST_FAILED 1;
 #define TEST_SUCCESS 0;
 
-vtkSmartPointer<vtkMatrix4x4> CreateTestTransform();
-vtkSmartPointer<vtkImageData> CreateTestImage();
+vtkSmartPointer<vtkMatrix4x4> igtlioCreateTestTransform();
+vtkSmartPointer<vtkImageData> igtlioCreateTestImage();
 
-bool contains(std::vector<int> input, int value, int count);
-bool compare(vtkSmartPointer<vtkMatrix4x4> a, vtkSmartPointer<vtkMatrix4x4> b);
-bool compare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b);
-bool compare(igtlioImageDevicePointer a, igtlioImageDevicePointer b);
-bool compareID(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b);
-bool compare(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b);
+bool igtlioContains(std::vector<int> input, int value, int count);
+bool igtlioCompare(vtkSmartPointer<vtkMatrix4x4> a, vtkSmartPointer<vtkMatrix4x4> b);
+bool igtlioCompare(vtkSmartPointer<vtkImageData> a, vtkSmartPointer<vtkImageData> b);
+bool igtlioCompare(igtlioImageDevicePointer a, igtlioImageDevicePointer b);
+bool igtlioCompareID(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b);
+bool igtlioCompare(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b);
 
-std::string boolToString( bool b );
+std::string igtlioBoolToString(bool b);
 
 #endif // TESTUTILITIES_H

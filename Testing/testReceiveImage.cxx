@@ -68,7 +68,7 @@ int main(int argc, char **argv)
   std::cout << "*** Client received IMAGE device." << std::endl;
   //---------------------------------------------------------------------------
 
-  if (!compare(imageDevice, receivedDevice))
+  if (!igtlioCompare(imageDevice, receivedDevice))
   {
     std::cout << "FAILURE: Image differs from the one sent from server." << std::endl;
     return TEST_FAILED;
