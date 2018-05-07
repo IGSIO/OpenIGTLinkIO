@@ -26,10 +26,12 @@ public:
     bool status;
   };
 
-  static const char*  GetIGTLName() { return GetIGTLTypeName(); }
+  static const char* GetIGTLName() { return GetIGTLTypeName(); }
   static const char* GetIGTLTypeName() { return "COMMAND"; }
   static const char* GetIGTLResponseName() { return "RTS_COMMAND"; }
 
+  static const char* GetComandStatusAttributeName() { return "Status"; }
+  static const char* GetComandErrorMessageAttributeName() { return "ErrorMessage"; }
 
   static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC, igtl::MessageBase::MetaDataMap& outMetaInfo);
   static int fromIGTLResponse(igtl::MessageBase::Pointer source, HeaderData *header, ContentData *dest, bool checkCRC, igtl::MessageBase::MetaDataMap& outMetaInfo);

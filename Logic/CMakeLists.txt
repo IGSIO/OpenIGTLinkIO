@@ -33,6 +33,7 @@ set(${PROJECT_NAME}_SRCS
   igtlioConnector.cxx
   igtlioSession.cxx
   igtlioLogic.cxx
+  igtlioCommand.cxx
   )
 
 set(${PROJECT_NAME}_HDRS
@@ -43,6 +44,7 @@ set(${PROJECT_NAME}_HDRS
   igtlioCircularSectionBuffer.h
   igtlioConnector.h
   igtlioSession.h
+  igtlioCommand.h
   )
 
 set(${PROJECT_NAME}_TARGET_LIBRARIES

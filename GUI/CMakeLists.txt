@@ -86,12 +86,12 @@ set(${PROJECT_NAME}_SRCS
   qIGTLIODeviceButtonsWidget.cxx
   qIGTLIODeviceAddWidget.cxx
   qIGTLIODevicePropertiesWidget.cxx
+  qIGTLIOCommandWidget.cxx
   DeviceWidgets/qIGTLIODeviceWidgetFactory.cxx
   DeviceWidgets/qIGTLIODeviceWidget.cxx
   DeviceWidgets/qIGTLIOGenericDeviceWidget.cxx
   DeviceWidgets/qIGTLIOStatusDeviceWidget.cxx
   DeviceWidgets/qIGTLIOStringDeviceWidget.cxx
-  DeviceWidgets/qIGTLIOCommandDeviceWidget.cxx
   )
 
 set(${PROJECT_NAME}_MOC_SRCS
@@ -105,10 +105,10 @@ set(${PROJECT_NAME}_MOC_SRCS
   qIGTLIODeviceButtonsWidget.h
   qIGTLIODeviceAddWidget.h
   qIGTLIODevicePropertiesWidget.h
+  qIGTLIOCommandWidget.h
   DeviceWidgets/qIGTLIODeviceWidget.h
   DeviceWidgets/qIGTLIOStatusDeviceWidget.h
   DeviceWidgets/qIGTLIOStringDeviceWidget.h
-  DeviceWidgets/qIGTLIOCommandDeviceWidget.h
   )
   
 set(${PROJECT_NAME}_HDRS

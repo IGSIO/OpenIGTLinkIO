@@ -31,10 +31,6 @@ void onNewDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata
 {
   igtlioLogic* logic = reinterpret_cast<igtlioLogic*>(clientdata);
   logic->InvokeEvent(igtlioLogic::NewDeviceEvent, calldata);
-
-  igtlioDevice* device = reinterpret_cast<igtlioDevice*>(calldata);
-  device->AddObserver(igtlioDevice::CommandReceivedEvent, logic->DeviceEventCallback);
-  device->AddObserver(igtlioDevice::CommandResponseReceivedEvent, logic->DeviceEventCallback);
 }
 
 //---------------------------------------------------------------------------
@@ -52,14 +48,26 @@ void onDeviceEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, v
 {
   igtlioLogic* logic = reinterpret_cast<igtlioLogic*>(clientdata);
 
-  if ((eid==igtlioDevice::CommandReceivedEvent) ||
-      (eid==igtlioConnector::DeviceContentModifiedEvent) ||
-      (eid==igtlioDevice::CommandResponseReceivedEvent))
+  if (eid==igtlioConnector::DeviceContentModifiedEvent)
   {
     logic->InvokeEvent(eid, calldata);
   }
 }
 
+//---------------------------------------------------------------------------
+void onCommandEventFunc(vtkObject* caller, unsigned long eid, void* clientdata, void *calldata)
+{
+  igtlioLogic* logic = reinterpret_cast<igtlioLogic*>(clientdata);
+
+  if ((eid == igtlioCommand::CommandResponseEvent)  ||
+      (eid == igtlioCommand::CommandExpiredEvent)   ||
+      (eid == igtlioCommand::CommandReceivedEvent)  ||
+      (eid == igtlioCommand::CommandCancelledEvent) ||
+      (eid == igtlioCommand::CommandCompletedEvent))
+  {
+    logic->InvokeEvent(eid, calldata);
+  }
+}
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(igtlioLogic);
@@ -71,15 +79,19 @@ igtlioLogic::igtlioLogic()
   , NewDeviceCallback(vtkSmartPointer<vtkCallbackCommand>::New())
   , RemovedDeviceCallback(vtkSmartPointer<vtkCallbackCommand>::New())
   , DeviceEventCallback(vtkSmartPointer<vtkCallbackCommand>::New())
+  , CommandEventCallback(vtkSmartPointer<vtkCallbackCommand>::New())
 {
-  NewDeviceCallback->SetCallback(onNewDeviceEventFunc);
-  NewDeviceCallback->SetClientData(this);
+  this->NewDeviceCallback->SetCallback(onNewDeviceEventFunc);
+  this->NewDeviceCallback->SetClientData(this);
 
-  RemovedDeviceCallback->SetCallback(onRemovedDeviceEventFunc);
-  RemovedDeviceCallback->SetClientData(this);
+  this->RemovedDeviceCallback->SetCallback(onRemovedDeviceEventFunc);
+  this->RemovedDeviceCallback->SetClientData(this);
 
-  DeviceEventCallback->SetCallback(onDeviceEventFunc);
-  DeviceEventCallback->SetClientData(this);
+  this->DeviceEventCallback->SetCallback(onDeviceEventFunc);
+  this->DeviceEventCallback->SetClientData(this);
+
+  this->CommandEventCallback->SetCallback(onCommandEventFunc);
+  this->CommandEventCallback->SetClientData(this);
 }
 
 //---------------------------------------------------------------------------
@@ -107,6 +119,11 @@ igtlioConnectorPointer igtlioLogic::CreateConnector()
   connector->AddObserver(igtlioConnector::NewDeviceEvent, NewDeviceCallback);
   connector->AddObserver(igtlioConnector::DeviceContentModifiedEvent, DeviceEventCallback);
   connector->AddObserver(igtlioConnector::RemovedDeviceEvent, RemovedDeviceCallback);
+  connector->AddObserver(igtlioCommand::CommandResponseEvent, CommandEventCallback);
+  connector->AddObserver(igtlioCommand::CommandExpiredEvent, CommandEventCallback);
+  connector->AddObserver(igtlioCommand::CommandReceivedEvent, CommandEventCallback);
+  connector->AddObserver(igtlioCommand::CommandCancelledEvent, CommandEventCallback);
+  connector->AddObserver(igtlioCommand::CommandCompletedEvent, CommandEventCallback);
 
   this->InvokeEvent(ConnectionAddedEvent, connector.GetPointer());
   return connector;
@@ -152,6 +169,8 @@ int igtlioLogic::RemoveConnector(std::vector<igtlioConnectorPointer>::iterator t
 
   toRemove->GetPointer()->RemoveObserver(NewDeviceCallback);
   toRemove->GetPointer()->RemoveObserver(RemovedDeviceCallback);
+  toRemove->GetPointer()->RemoveObserver(DeviceEventCallback);
+  toRemove->GetPointer()->RemoveObserver(CommandEventCallback);
 
   this->InvokeEvent(ConnectionAboutToBeRemovedEvent, toRemove->GetPointer());
   Connectors.erase(toRemove);

@@ -37,4 +37,36 @@ public:
 bool operator==(const igtlioDeviceKeyType& lhs, const igtlioDeviceKeyType& rhs);
 bool operator<(const igtlioDeviceKeyType& lhs, const igtlioDeviceKeyType& rhs);
 
+///
+/// A class for automatically unlocking objects
+/// This class is used for locking a objects (buffers, mutexes, etc.)
+/// and releasing the lock automatically when the guard object is deleted
+/// (typically by getting out of scope).
+///
+/// Example:
+/// \code
+/// igtlioLockGuard<vtkMutexLock> updateMutexGuardedLock(this->UpdateMutex);
+/// \endcode
+///
+template <typename T>
+class igtlioLockGuard
+{
+public:
+  igtlioLockGuard(T* lockableObject)
+  {
+    m_LockableObject = lockableObject;
+    m_LockableObject->Lock();
+  }
+  ~igtlioLockGuard()
+  {
+    m_LockableObject->Unlock();
+    m_LockableObject = NULL;
+  }
+private:
+  igtlioLockGuard(igtlioLockGuard&);
+  void operator=(igtlioLockGuard&);
+
+  T* m_LockableObject;
+};
+
 #endif // IGTLIOUTILITIES_H

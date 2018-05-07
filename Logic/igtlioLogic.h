@@ -60,8 +60,6 @@ public:
     NewDeviceEvent        = 118949,
     DeviceModifiedEvent   = igtlioConnector::DeviceContentModifiedEvent, // listen to the custom event invoked from connector.
     RemovedDeviceEvent    = 118951,
-    CommandReceivedEvent = igtlioDevice::CommandReceivedEvent, // one of the connected COMMAND devices got a query
-    CommandResponseReceivedEvent = igtlioDevice::CommandResponseReceivedEvent // one of the connected COMMAND devices got a response
   };
 
  static igtlioLogic *New();
@@ -109,6 +107,7 @@ private:
 
   vtkSmartPointer<class vtkCallbackCommand> NewDeviceCallback;
   vtkSmartPointer<class vtkCallbackCommand> RemovedDeviceCallback;
+  vtkSmartPointer<class vtkCallbackCommand> CommandEventCallback;
 
 public:
   vtkSmartPointer<class vtkCallbackCommand> DeviceEventCallback;

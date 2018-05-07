@@ -26,9 +26,10 @@ igtlioLogicFixture::igtlioLogicFixture()
 
   Logic->AddObserver(igtlioLogic::NewDeviceEvent, LogicEventCallback);
   Logic->AddObserver(igtlioLogic::RemovedDeviceEvent, LogicEventCallback);
-  Logic->AddObserver(igtlioLogic::CommandReceivedEvent, LogicEventCallback);
-  Logic->AddObserver(igtlioLogic::CommandResponseReceivedEvent, LogicEventCallback);
   Logic->AddObserver(igtlioLogic::DeviceModifiedEvent, LogicEventCallback);
+  Logic->AddObserver(igtlioCommand::CommandReceivedEvent, LogicEventCallback);
+  Logic->AddObserver(igtlioCommand::CommandResponseEvent, LogicEventCallback);
+
 }
 
 void igtlioLogicFixture::startClient()
@@ -53,11 +54,11 @@ bool igtlioClientServerFixture::ConnectClientToServer()
   Server.startServer();
   Client.startClient();
 
-  double timeout = 2;
+  double timeoutSec = 2.0;
   double starttime = vtkTimerLog::GetUniversalTime();
 
   // Client connects to server.
-  while (vtkTimerLog::GetUniversalTime() - starttime < timeout)
+  while (vtkTimerLog::GetUniversalTime() - starttime < timeoutSec)
   {
     Server.Logic->PeriodicProcess();
     Client.Logic->PeriodicProcess();
@@ -82,11 +83,11 @@ bool igtlioClientServerFixture::ConnectClientToServer()
 bool igtlioClientServerFixture::LoopUntilEventDetected(igtlioLogicFixture* logic, int eventId, int count)
 {
 
-  double timeout = 2000;
+  double timeoutSec = 2.0;
   double starttime = vtkTimerLog::GetUniversalTime();
 
   // Client waits for an image to be sent from the server.
-  while (vtkTimerLog::GetUniversalTime() - starttime < timeout)
+  while (vtkTimerLog::GetUniversalTime() - starttime < timeoutSec)
   {
     Server.Logic->PeriodicProcess();
     Client.Logic->PeriodicProcess();

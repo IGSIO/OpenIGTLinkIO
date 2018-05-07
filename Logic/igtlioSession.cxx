@@ -5,7 +5,6 @@
 #include <vtkNew.h>
 #include "vtkTimerLog.h"
 #include "igtlioConnector.h"
-#include "igtlioCommandDevice.h"
 #include "igtlioImageDevice.h"
 #include "igtlioTransformDevice.h"
 #include "igtlioStringDevice.h"
@@ -29,57 +28,17 @@ igtlioSession::igtlioSession()
 {
 }
 
-
-
 //----------------------------------------------------------------------
-igtlioCommandDevicePointer igtlioSession::SendCommand(std::string device_id, std::string command, std::string content, IGTLIO_SYNCHRONIZATION_TYPE synchronized, double timeout_s)
+igtlioCommandPointer igtlioSession::SendCommand(std::string name, std::string content, IGTLIO_SYNCHRONIZATION_TYPE synchronized, double timeout_s/*=5.0*/, igtl::MessageBase::MetaDataMap* metaData/*=NULL*/)
 {
-  igtlioCommandDevicePointer device = Connector->SendCommand( device_id, command, content );
-
-  if (synchronized==IGTLIO_BLOCKING)
-  {
-    double starttime = vtkTimerLog::GetUniversalTime();
-    while (vtkTimerLog::GetUniversalTime() - starttime < timeout_s)
-    {
-      Connector->PeriodicProcess();
-      vtksys::SystemTools::Delay(5);
-
-      igtlioCommandDevicePointer response = device->GetResponseFromCommandID(device->GetContent().id);
-
-      if (response)
-      {
-        return response;
-      }
-    }
-  }
-  else
-  {
-    return device;
-  }
-
-  return vtkSmartPointer<igtlioCommandDevice>();
+  igtlioCommandPointer command = Connector->SendCommand(name, content, synchronized, timeout_s, metaData);
+  return command;
 }
 
 //----------------------------------------------------------------------
-igtlioCommandDevicePointer igtlioSession::SendCommandResponse(std::string device_id, std::string command, std::string content)
+int igtlioSession::SendCommandResponse(igtlioCommandPointer command)
 {
-  igtlioDeviceKeyType key(igtlioCommandConverter::GetIGTLTypeName(), device_id);
-  igtlioCommandDevicePointer device = igtlioCommandDevice::SafeDownCast(Connector->GetDevice(key));
-
-  igtlioCommandConverter::ContentData contentdata = device->GetContent();
-
-  if (command != contentdata.name)
-  {
-    vtkErrorMacro("Requested command response " << command << " does not match the existing query: " << contentdata.name);
-    return igtlioCommandDevicePointer();
-  }
-
-  contentdata.name = command;
-  contentdata.content = content;
-  device->SetContent(contentdata);
-
-  Connector->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(device), igtlioDevice::MESSAGE_PREFIX_RTS);
-  return device;
+  return Connector->SendCommandResponse(command);
 }
 
 //----------------------------------------------------------------------

@@ -6,7 +6,6 @@
 #include "igtlioImageDevice.h"
 #include "qIGTLIOStatusDeviceWidget.h"
 #include "qIGTLIOStringDeviceWidget.h"
-#include "qIGTLIOCommandDeviceWidget.h"
 
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(vtkIGTLIODeviceWidgetFactory);
@@ -15,7 +14,6 @@ vtkIGTLIODeviceWidgetFactory::vtkIGTLIODeviceWidgetFactory()
 {
   this->registerCreator<vtkIGTLIOStatusDeviceWidgetCreator>();
   this->registerCreator<vtkIGTLIOStringDeviceWidgetCreator>();
-  this->registerCreator<vtkIGTLIOCommandDeviceWidgetCreator>();
 }
 
 //---------------------------------------------------------------------------

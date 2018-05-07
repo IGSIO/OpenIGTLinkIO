@@ -17,6 +17,9 @@
 // OpenIGTLink includes
 #include <igtlMessageBase.h>
 
+// OpenIGTLinkIO includes
+#include "igtlioUtilities.h"
+
 // STD includes
 #include <string>
 
@@ -34,10 +37,11 @@ igtlioCircularSectionBuffer::igtlioCircularSectionBuffer()
   this->Initialization();
 }
 
+//---------------------------------------------------------------------------
 int igtlioCircularSectionBuffer::Initialization()
 {
   this->Mutex = vtkMutexLock::New();
-  this->Mutex->Lock();
+  igtlioLockGuard<vtkMutexLock>(this->Mutex);
   // Allocate Circular buffer for the new device
   this->InUseBegin = -1;
   this->InUseEnd = -1;
@@ -51,7 +55,6 @@ int igtlioCircularSectionBuffer::Initialization()
     this->Messages[i]->InitPack();
     }
   this->UpdateFlag = 0;
-  this->Mutex->Unlock();
 
   return 1;
 }
@@ -83,13 +86,12 @@ void igtlioCircularSectionBuffer::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 int igtlioCircularSectionBuffer::StartPush()
 {
-  this->Mutex->Lock();
+  igtlioLockGuard<vtkMutexLock>(this->Mutex);
   this->InPush = (this->Last + 1) % this->BufferSize;
   if (this->InPush == this->InUseBegin)
     {
     this->InPush = (this->InUseEnd + 1) % this->BufferSize;
     }
-  this->Mutex->Unlock();
   return this->InPush;
 }
 
@@ -102,7 +104,7 @@ igtl::MessageBase::Pointer igtlioCircularSectionBuffer::GetPushBuffer()
 //---------------------------------------------------------------------------
 void igtlioCircularSectionBuffer::EndPush()
 {
-  this->Mutex->Lock();
+  igtlioLockGuard<vtkMutexLock>(this->Mutex);
   this->Last = this->InPush;
   this->DataStatus[this->InPush] = DataFilled;
   // If the Inpush location is in the section that is currently been used. jump to the end of the section.
@@ -127,7 +129,6 @@ void igtlioCircularSectionBuffer::EndPush()
     this->First = this->Last;
     }
   this->UpdateFlag = 1;
-  this->Mutex->Unlock();
 }
 
 
@@ -145,10 +146,9 @@ void igtlioCircularSectionBuffer::EndPush()
 //---------------------------------------------------------------------------
 int igtlioCircularSectionBuffer::StartPull()
 {
-  this->Mutex->Lock();
+  igtlioLockGuard<vtkMutexLock>(this->Mutex);
   this->InUseBegin = this->First;
   this->InUseEnd = this->Last;
-  this->Mutex->Unlock();
   return this->First;
 }
 
@@ -174,7 +174,7 @@ igtl::MessageBase::Pointer igtlioCircularSectionBuffer::GetPullBuffer()
 //---------------------------------------------------------------------------
 void igtlioCircularSectionBuffer::EndPull()
 {
-  this->Mutex->Lock();
+  igtlioLockGuard<vtkMutexLock>(this->Mutex);
   this->UpdateFlag = 0;
   int nextIndex = (this->InUseEnd+1) % this->BufferSize;
   if (this->DataStatus[nextIndex] == DataFilled)
@@ -185,7 +185,6 @@ void igtlioCircularSectionBuffer::EndPull()
     {
     this->First = InUseEnd;
     }
-  this->Mutex->Unlock();
 }
 
 
