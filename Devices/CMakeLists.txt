@@ -2,10 +2,19 @@ project(igtlioDevices)
 
 set(${PROJECT_NAME}_EXPORT_DIRECTIVE "OPENIGTLINKIO_DEVICES_EXPORT")
 
-find_package(VTK REQUIRED NO_MODULE
-  COMPONENTS
+set(VTK_MODULES
   vtkIOImage
   vtkImagingMath
+)
+if(VTK_WRAP_PYTHON)
+  list(APPEND VTK_MODULES
+    vtkWrappingPythonCore
+    )
+endif()
+
+find_package(VTK REQUIRED NO_MODULE
+  COMPONENTS
+  ${VTK_MODULES}
   )
 include(${VTK_USE_FILE})
 
@@ -55,6 +64,19 @@ target_link_libraries(${PROJECT_NAME} ${${PROJECT_NAME}_TARGET_LIBRARIES})
 target_include_directories(${PROJECT_NAME} ${${PROJECT_NAME}_INCLUDE_DIRECTORIES})
 
 generate_export_header(${PROJECT_NAME} EXPORT_FILE_NAME ${PROJECT_NAME}Export.h EXPORT_MACRO_NAME ${${PROJECT_NAME}_EXPORT_DIRECTIVE})
+
+# --------------------------------------------------------------------------
+# Python Wrapping
+# --------------------------------------------------------------------------
+if(VTK_WRAP_PYTHON)
+  vtkMacroPythonWrap(
+    KIT_NAME ${PROJECT_NAME}
+    KIT_SRCS ${${PROJECT_NAME}_SRCS} ${${PROJECT_NAME}_HDRS} 
+    KIT_INSTALL_BIN_DIR "${OpenIGTLinkIO_BINARY_INSTALL}"
+    KIT_INSTALL_LIB_DIR "${OpenIGTLinkIO_LIBRARY_INSTALL}"
+    )
+endif()
+# --------------------------------------------------------------------------
 
 INSTALL(TARGETS ${PROJECT_NAME} EXPORT OpenIGTLinkIO 
   RUNTIME DESTINATION "${OpenIGTLinkIO_BINARY_INSTALL}" COMPONENT RuntimeLibraries

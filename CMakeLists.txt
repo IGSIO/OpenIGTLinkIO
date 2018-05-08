@@ -27,6 +27,7 @@ include(GenerateExportHeader)
 ###########################################################
 # Find dependencies
 find_package(OpenIGTLink REQUIRED NO_MODULE)
+find_package(VTK REQUIRED NO_MODULE)
 include(${OpenIGTLink_USE_FILE})
 
 ###########################################################
@@ -68,6 +69,10 @@ set (OpenIGTLinkIO_INCLUDE_DIRS
   ${CMAKE_CURRENT_SOURCE_DIR}/Devices
   ${CMAKE_CURRENT_SOURCE_DIR}/Tools
   )
+
+if (VTK_WRAP_PYTHON)
+  include(CMake/vtkMacroPythonWrap.cmake)
+endif()
 
 add_subdirectory(Converter)
 add_subdirectory(Devices)
