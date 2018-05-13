@@ -39,9 +39,7 @@ class OPENIGTLINKIO_LOGIC_EXPORT igtlioCircularSectionBuffer : public vtkObject
   void           EndPull();
   igtl::MessageBase::Pointer GetPullBuffer();
 
-  int            StartSectionPull();
   igtl::MessageBase::Pointer GetPullSectionBuffer();
-  void           EndSectionPull();
 
   int            IsUpdated() { return this->UpdateFlag; };
 
