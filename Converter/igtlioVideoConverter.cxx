@@ -137,11 +137,11 @@ int igtlioVideoConverter::IGTLToVTKImageData(ContentData *dest, igtl::VideoMessa
     }
   if (isGrayImage)
     {
-    videoStreamDecoder->ConvertYUVToGrayImage(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(), Height, Width);
+    GenericDecoder::ConvertYUVToGrayImage(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(), Height, Width);
     }
   else
     {
-    videoStreamDecoder->ConvertYUVToRGB(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(),Height, Width);
+    GenericDecoder::ConvertYUVToRGB(pDecodedPic->data[0], (uint8_t*)imageData->GetScalarPointer(),Height, Width);
     }
   imageData->Modified();
   if (pDecodedPic->data[0]!=NULL)
@@ -195,7 +195,7 @@ int igtlioVideoConverter::toIGTL(const HeaderData& header, const ContentData& so
 
   unsigned char* YUV420ImagePointer = new unsigned char[imageSizePixels[0] * imageSizePixels[1]*3/2];
 
-  encoder->ConvertRGBToYUV((igtlUint8*)frameImage->GetScalarPointer(), YUV420ImagePointer, imageSizePixels[0], imageSizePixels[1]);
+  GenericEncoder::ConvertRGBToYUV((igtlUint8*)frameImage->GetScalarPointer(), YUV420ImagePointer, imageSizePixels[0], imageSizePixels[1]);
   int iSourceWidth = imageSizePixels[0];
   int iSourceHeight = imageSizePixels[1];
   SourcePicture* pSrcPic = new SourcePicture();

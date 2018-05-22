@@ -110,7 +110,13 @@ igtlioVideoDevicePointer igtlioSession::SendFrame(std::string device_id, vtkSmar
   igtlioVideoConverter::ContentData contentdata = device->GetContent();
   contentdata.image = image;
   device->SetContent(contentdata);
+  #if defined(OpenIGTLink_USE_VP9)
   device->SetCurrentCodecType(IGTL_VIDEO_CODEC_NAME_VP9);
+  #elif defined(OpenIGTLink_USE_H264) 
+  device->SetCurrentCodecType(IGTL_VIDEO_CODEC_NAME_H264);
+  #elif defined(OpenIGTLink_USE_X265)
+  device->SetCurrentCodecType(IGTL_VIDEO_CODEC_NAME_X265);
+  #endif
   Connector->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(device));
 
   return device;

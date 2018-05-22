@@ -183,7 +183,7 @@ igtl::MessageBase::Pointer igtlioVideoDevice::GetIGTLMessage()
     //newEncoder->SetKeyFrameDistance(25);
     VideoStreamEncoderH264->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
     Content.videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_H264);
-    iReturn = VideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderH264, &this->metaInfo);
+    iReturn = igtlioVideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderH264, this->metaInfo);
     }
 #endif
 #if defined(OpenIGTLink_USE_VP9)
@@ -203,7 +203,7 @@ igtl::MessageBase::Pointer igtlioVideoDevice::GetIGTLMessage()
     int bitRateFactor = 7;
     VideoStreamEncoderX265->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent)*bitRateFactor);
     Content.videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_X265);
-    iReturn = VideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderX265, &this->metaInfo);
+    iReturn = igtlioVideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderX265, this->metaInfo);
     }
 #endif
   int frameType = Content.videoMessage->GetFrameType();
