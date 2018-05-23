@@ -642,8 +642,10 @@ void igtlioConnector::ImportDataFromCircularBuffer()
 
       device->ReceiveIGTLMessage(messageFromBuffer, this->CheckCRC);
     }
-    //this->InvokeEvent(Connector::DeviceModifiedEvent, device.GetPointer());
-    device->Modified();
+    if (device)
+      {
+      device->Modified();
+      }
     circBuffer->EndPull();
     }
 
