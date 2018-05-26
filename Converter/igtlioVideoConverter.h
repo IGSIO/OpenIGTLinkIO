@@ -18,6 +18,7 @@
 
 // OpenIGTLink includes
 #include "igtlVideoMessage.h"
+#include "igtlCodecCommonClasses.h"
 #include "igtlConfigure.h"
 #include "igtl_util.h"
 #if defined(OpenIGTLink_USE_H264)
