@@ -12,16 +12,22 @@ Version:   $Revision: 1.2 $
 
 =========================================================================auto=*/
 
+// std includes
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <map>
+
+// OpenIGTLink includes
 #include <igtl_header.h>
 #include <igtlServerSocket.h>
 #include <igtlClientSocket.h>
 #include <igtlOSUtil.h>
 #include <igtlMessageBase.h>
 #include <igtlMessageHeader.h>
+#include <igtlCommandMessage.h>
+
+// VTK includes
 #include <vtkCommand.h>
 #include <vtkCollection.h>
 #include <vtkImageData.h>
@@ -30,9 +36,13 @@ Version:   $Revision: 1.2 $
 #include <vtkMutexLock.h>
 #include <vtkObjectFactory.h>
 #include <vtkTimerLog.h>
+#include <vtksys/SystemTools.hxx>
+
+// OpenIGTLinkIO includes
 #include "igtlioConnector.h"
 #include "igtlioCircularBuffer.h"
 #include "igtlioCircularSectionBuffer.h"
+#include "igtlioCommandConverter.h"
 
 //------------------------------------------------------------------------------
 vtkStandardNewMacro(igtlioConnector);
@@ -68,7 +78,8 @@ igtlioConnector::igtlioConnector()
   , CircularBufferMutex(vtkMutexLockPointer::New())
   , RestrictDeviceName(0)
   , EventQueueMutex(vtkMutexLockPointer::New())
-  , CommandQueueMutex(vtkMutexLockPointer::New())
+  , IncomingCommandQueueMutex(vtkMutexLockPointer::New())
+  , OutgoingCommandDequeMutex(vtkMutexLockPointer::New())
   , PushOutgoingMessageFlag(0)
   , PushOutgoingMessageMutex(vtkMutexLockPointer::New())
   , DeviceFactory(igtlioDeviceFactoryPointer::New())
@@ -210,15 +221,16 @@ int igtlioConnector::Stop()
 {
   // Check if thread exists
   if (this->ThreadID >= 0)
-    {
+  {
     // NOTE: Thread should be killed by activating ServerStopFlag.
     this->ServerStopFlag = true;
-    this->Mutex->Lock();
-    if (this->Socket.IsNotNull())
-      {
-      this->Socket->CloseSocket();
-      }
-    this->Mutex->Unlock();
+    {
+      igtlioLockGuard<vtkMutexLock>(this->Mutex);
+      if (this->Socket.IsNotNull())
+        {
+        this->Socket->CloseSocket();
+        }
+    }
     this->Thread->TerminateThread(this->ThreadID);
     this->ThreadID = -1;
     return 1;
@@ -251,10 +263,11 @@ void* igtlioConnector::ThreadFunction(void* ptr)
   while (!connector->ServerStopFlag)
     {
     //vtkErrorMacro("vtkOpenIGTLinkIFLogic::ThreadFunction(): alive.");
-    connector->Mutex->Lock();
-    //igtlcon->Socket = igtlcon->WaitForConnection();
-    connector->WaitForConnection();
-    connector->Mutex->Unlock();
+    {
+      igtlioLockGuard<vtkMutexLock>(connector->Mutex);
+      //igtlcon->Socket = igtlcon->WaitForConnection();
+      connector->WaitForConnection();
+    }
     if (connector->Socket.IsNotNull() && connector->Socket->GetConnected())
       {
       connector->State = STATE_CONNECTED;
@@ -286,19 +299,33 @@ void* igtlioConnector::ThreadFunction(void* ptr)
 }
 
 //----------------------------------------------------------------------------
+igtlioCommandPointer igtlioConnector::GetOutgoingCommand(int commandId)
+{
+  igtlioLockGuard<vtkMutexLock>(this->OutgoingCommandDequeMutex);
+  igtlioCommandPointer command = NULL;
+  if (!this->OutgoingCommandDeque.empty())
+    {
+    command = (*std::find_if(
+      this->OutgoingCommandDeque.begin(),
+      this->OutgoingCommandDeque.end(),
+      [this, commandId](const igtlioCommandPointer& entry)
+      { return entry->GetCommandId() == commandId; }));
+    }
+  return command;
+}
+
+//----------------------------------------------------------------------------
 void igtlioConnector::RequestInvokeEvent(unsigned long eventId)
 {
-  this->EventQueueMutex->Lock();
+  igtlioLockGuard<vtkMutexLock>(this->EventQueueMutex);
   this->EventQueue.push_back(eventId);
-  this->EventQueueMutex->Unlock();
 }
 
 //----------------------------------------------------------------------------
 void igtlioConnector::RequestPushOutgoingMessages()
 {
-  this->PushOutgoingMessageMutex->Lock();
+  igtlioLockGuard<vtkMutexLock>(this->PushOutgoingMessageMutex);
   this->PushOutgoingMessageFlag = 1;
-  this->PushOutgoingMessageMutex->Unlock();
 }
 
 //----------------------------------------------------------------------------
@@ -444,14 +471,13 @@ int igtlioConnector::ReceiveController()
     igtlioCircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
     if (iter == this->SectionBuffer.end()) // First time to refer the device name
       {
-      this->CircularBufferMutex->Lock();
+      igtlioLockGuard<vtkMutexLock>(this->CircularBufferMutex);
       this->SectionBuffer[key] = igtlioCircularSectionBufferPointer::New();
       this->SectionBuffer[key]->SetPacketMode(igtlioCircularSectionBuffer::SinglePacketMode);
       if (strcmp(headerMsg->GetDeviceType(), "VIDEO")==0)
         {
         this->SectionBuffer[key]->SetPacketMode(igtlioCircularSectionBuffer::MultiplePacketsMode);
         }
-      this->CircularBufferMutex->Unlock();
       }
 
     //----------------------------------------------------------------
@@ -521,7 +547,9 @@ bool igtlioConnector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerM
     }
     return false;
   }
-  this->CommandQueue.push(buffer);
+
+  igtlioLockGuard<vtkMutexLock>(this->IncomingCommandQueueMutex);
+  this->IncomingCommandQueue.push(IncomingCommandType(0, buffer));
 
   return true;
 }
@@ -648,13 +676,6 @@ void igtlioConnector::ImportDataFromCircularBuffer()
       }
     circBuffer->EndPull();
     }
-
-  for (unsigned int i=0; i<Devices.size(); ++i)
-    {
-      igtlioCommandDevicePointer device = igtlioCommandDevice::SafeDownCast(Devices[i].GetPointer());
-      if(device)
-        device->CheckQueryExpiration();
-    }
 }
 
 //---------------------------------------------------------------------------
@@ -667,7 +688,7 @@ void igtlioConnector::ImportEventsFromEventBuffer()
   do
   {
     emptyQueue=true;
-    this->EventQueueMutex->Lock();
+    igtlioLockGuard<vtkMutexLock>(this->EventQueueMutex);
     if (this->EventQueue.size()>0)
     {
       eventId=this->EventQueue.front();
@@ -677,7 +698,6 @@ void igtlioConnector::ImportEventsFromEventBuffer()
       // Invoke the event
       this->InvokeEvent(eventId);
     }
-    this->EventQueueMutex->Unlock();
 
   } while (!emptyQueue);
 }
@@ -688,10 +708,11 @@ void igtlioConnector::PushOutgoingMessages()
   int push = 0;
 
   // Read PushOutgoingMessageFlag and reset it.
-  this->PushOutgoingMessageMutex->Lock();
-  push = this->PushOutgoingMessageFlag;
-  this->PushOutgoingMessageFlag = 0;
-  this->PushOutgoingMessageMutex->Unlock();
+  {
+    igtlioLockGuard<vtkMutexLock>(this->PushOutgoingMessageMutex);
+    push = this->PushOutgoingMessageFlag;
+    this->PushOutgoingMessageFlag = 0;
+  }
 
   if (push)
     {
@@ -707,85 +728,228 @@ void igtlioConnector::PushOutgoingMessages()
 void igtlioConnector::PeriodicProcess()
 {
   this->ParseCommands();
+  this->PruneCompletedCommands();
+
   this->ImportDataFromCircularBuffer();
   this->ImportEventsFromEventBuffer();
   this->PushOutgoingMessages();
 }
 
 //----------------------------------------------------------------------------
-igtlioCommandDevicePointer igtlioConnector::SendCommand(std::string device_id, std::string command, std::string content, double timeout_s/*=5*/, igtl::MessageBase::MetaDataMap* metaData)
+igtlioCommandPointer igtlioConnector::SendCommand(std::string name, std::string content, IGTLIO_SYNCHRONIZATION_TYPE synchronized, double timeout_s/*=5*/, igtl::MessageBase::MetaDataMap* metaData/*=NULL*/, int clientID/*=-1*/)
 {
-  igtlioDeviceKeyType key(igtlioCommandConverter::GetIGTLTypeName(), device_id);
-  vtkSmartPointer<igtlioCommandDevice> device = igtlioCommandDevice::SafeDownCast( AddDeviceIfNotPresent(key) );
-
+  igtlioCommandPointer command = igtlioCommandPointer::New();
+  command->SetClientId(clientID);
+  command->SetName(name);
+  command->SetCommandContent(content);
+  command->SetTimeoutSec(timeout_s);
+  command->SetBlocking(synchronized == IGTLIO_BLOCKING);
   if (metaData)
     {
-    for (igtl::MessageBase::MetaDataMap::iterator metaDataIt = metaData->begin(); metaDataIt != metaData->end(); ++metaDataIt)
-      {
-      device->SetMetaDataElement((*metaDataIt).first, (*metaDataIt).second.first, (*metaDataIt).second.second);
-      }
+    command->SetCommandMetaData(*metaData);
     }
 
-  igtlioCommandConverter::ContentData contentdata = device->GetContent();
-  contentdata.id += this->NextCommandID++;
-  contentdata.name = command;
-  contentdata.content = content;
-  device->SetContent(contentdata);
-  device->SetQueryTimeOut(timeout_s);
+  int success = this->SendCommand(command);
+  if (!success)
+    {
+    return NULL;
+    }
+  return command;
+}
 
-  device->PruneCompletedQueries();
+//----------------------------------------------------------------------------
+int igtlioConnector::SendCommand(igtlioCommandPointer command)
+{
+  if (command->IsInProgress())
+    {
+    vtkWarningMacro("SendCommand: Command " << command->GetCommandId() << "-" << command->GetName() << " is already in progress! Attempting to cancel and resend.")
+    this->CancelCommand(command);
+    }
 
-  SendMessage(igtlioDeviceKeyType::CreateDeviceKey(device));
+  command->SetCommandId(this->NextCommandID++);
+  command->SetDirectionOut();
 
-  return device;
+  igtlioBaseConverter::HeaderData headerData = igtlioBaseConverter::HeaderData();
+  headerData.deviceName = "command";
+  headerData.timestamp = vtkTimerLog::GetUniversalTime();
+
+  igtlioCommandConverter::ContentData content = igtlioCommandConverter::ContentData();
+  content.id = command->GetCommandId();
+  content.name = command->GetName();
+  content.content = command->GetCommandContent();
+
+  igtl::CommandMessage::Pointer commandMessage = igtl::CommandMessage::New();
+  igtl::MessageBase::MetaDataMap metaData = command->GetCommandMetaData();
+  igtlioCommandConverter::toIGTL(headerData, content, &commandMessage, metaData);
+
+  int success = this->SendData(commandMessage->GetPackSize(), (unsigned char*)commandMessage->GetPackPointer());
+  if (success)
+    {
+
+    {
+      igtlioLockGuard<vtkMutexLock>(this->OutgoingCommandDequeMutex);
+      this->OutgoingCommandDeque.push_back(command);
+    }
+    command->SetStatus(igtlioCommandStatus::CommandWaiting);
+    command->SetSentTimestamp(vtkTimerLog::GetUniversalTime());
+
+    while (command->GetBlocking() && !command->IsCompleted())
+      {
+      this->PeriodicProcess();
+      vtksys::SystemTools::Delay(5);
+      }
+    }
+  else
+    {
+    vtkErrorMacro("Could not send command " << command->GetCommandId() << ": \"" << command->GetName() << "\"to client");
+    command->SetStatus(igtlioCommandStatus::CommandFailed);
+    }
+  return success;
+}
+
+//----------------------------------------------------------------------------
+int igtlioConnector::SendCommandResponse(int commandId, int clientId/*=-1*/)
+{
+  igtlioCommandPointer response = igtlioCommandPointer::New();
+  response->SetCommandId(commandId);
+
+  return this->SendCommandResponse(response);
+}
+
+//----------------------------------------------------------------------------
+int igtlioConnector::SendCommandResponse(igtlioCommandPointer command)
+{
+
+  if (command->GetStatus() != igtlioCommandStatus::CommandWaiting)
+    {
+    return 0;
+    }
+
+  igtl::RTSCommandMessage::Pointer responseMessage = igtl::RTSCommandMessage::New();
+  igtlioBaseConverter::HeaderData headerData = igtlioBaseConverter::HeaderData();
+  igtlioCommandConverter::ContentData content = igtlioCommandConverter::ContentData();
+  content.id = command->GetCommandId();
+  content.name = command->GetName();
+  content.content = command->GetResponseContent();
+
+  igtl::MessageBase::MetaDataMap metaData = command->GetResponseMetaData();
+  igtl::CommandMessage::Pointer commandMessage = responseMessage;
+  igtlioCommandConverter::toIGTL(headerData, content, &commandMessage, metaData);
+
+  int success = this->SendData(responseMessage->GetPackSize(), (unsigned char*)responseMessage->GetPackPointer());
+  command->SetStatus(igtlioCommandStatus::CommandResponseSent);
+  return success;
+}
+
+//----------------------------------------------------------------------------
+void igtlioConnector::CancelCommand(int commandId, int clientId/*=-1*/)
+{
+  igtlioCommandPointer command = this->GetOutgoingCommand(commandId);
+  this->CancelCommand(command);
+}
+
+//----------------------------------------------------------------------------
+void igtlioConnector::CancelCommand(igtlioCommandPointer command)
+{
+  if (!command)
+    {
+    return;
+    }
+
+  command->SetStatus(igtlioCommandStatus::CommandCancelled);
+  this->PruneCompletedCommands();
+
+  this->InvokeEvent(igtlioCommand::CommandCancelledEvent, command.GetPointer());
+  command->InvokeEvent(igtlioCommand::CommandCancelledEvent);
 }
 
 //----------------------------------------------------------------------------
 void igtlioConnector::ParseCommands()
 {
-  this->CommandQueueMutex->Lock();
+  igtlioLockGuard<vtkMutexLock>(this->IncomingCommandQueueMutex);
 
-  while (!this->CommandQueue.empty())
+  while (!this->IncomingCommandQueue.empty())
     {
-    igtl::MessageBase::Pointer commandBuffer = this->CommandQueue.front();
-    igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(commandBuffer);
+    int clientID = this->IncomingCommandQueue.front().ClientID;
+    igtl::MessageBase::Pointer message = this->IncomingCommandQueue.front().CommandMessage;
+    this->IncomingCommandQueue.pop();
 
-    igtlioDeviceCreatorPointer deviceCreator = DeviceFactory->GetCreator(key.GetBaseTypeName());
-
-    if (!deviceCreator)
+    if (message->GetMessageType() == "COMMAND")
       {
-      vtkErrorMacro(
-        << "Received unknown device type " << commandBuffer->GetDeviceType()
-        << ", device=" << commandBuffer->GetDeviceName()
-        );
-      continue;
+      igtlioCommandConverter::ContentData content = igtlioCommandConverter::ContentData();
+      igtlioBaseConverter::HeaderData headerData = igtlioBaseConverter::HeaderData();
+      igtl::MessageBase::MetaDataMap metaData = igtl::MessageBase::MetaDataMap();
+      igtlioCommandConverter::fromIGTL(message, &headerData, &content, false, metaData);
+
+      igtlioCommandPointer command = igtlioCommandPointer::New();
+      command->SetClientId(clientID);
+      command->SetCommandId(content.id);
+      command->SetName(content.name);
+      command->SetCommandContent(content.content);
+      command->SetCommandMetaData(metaData);
+      command->SetStatus(igtlioCommandStatus::CommandWaiting);
+      command->SetDirectionIn();
+
+      this->InvokeEvent(igtlioCommand::CommandReceivedEvent, command.GetPointer());
       }
-
-    igtlioDevicePointer device = NULL;
-    device = this->GetDevice(key);
-
-    if ((device.GetPointer() != NULL) && !(igtlioDeviceKeyType::CreateDeviceKey(device) == igtlioDeviceKeyType::CreateDeviceKey(commandBuffer)))
+    else if (message->GetMessageType() == "RTS_COMMAND")
       {
-      vtkErrorMacro(
-        << "Received an IGTL message of the wrong type, device=" << key.name
-        << " has type " << device->GetDeviceType()
-        << " got type " << commandBuffer->GetDeviceType()
-        );
-      continue;
-      }
+      igtl::RTSCommandMessage::Pointer responseMessage = static_cast<igtl::RTSCommandMessage*>(message.GetPointer());
+      igtlioCommandConverter::ContentData content = igtlioCommandConverter::ContentData();
+      igtlioBaseConverter::HeaderData headerData = igtlioBaseConverter::HeaderData();
+      igtl::MessageBase::MetaDataMap metaData = igtl::MessageBase::MetaDataMap();
+      igtlioCommandConverter::fromIGTLResponse(message, &headerData, &content, false, metaData);
 
-    if (!device && !this->RestrictDeviceName)
+      igtlioCommandPointer command = this->GetOutgoingCommand(content.id);
+      if (!command)
+        {
+        vtkWarningMacro("Response matches no outgoing commands!");
+        continue;
+        }
+      command->SetResponseContent(content.content);
+      command->SetResponseMetaData(metaData);
+      command->SetStatus(igtlioCommandStatus::CommandResponseReceived);
+
+      this->InvokeEvent(igtlioCommand::CommandResponseEvent, command.GetPointer());
+      command->InvokeEvent(igtlioCommand::CommandResponseEvent);
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
+void igtlioConnector::PruneCompletedCommands()
+{
+  igtlioLockGuard<vtkMutexLock>(this->OutgoingCommandDequeMutex);
+
+  igtlioCommandDequeType completedCommands = igtlioCommandDequeType();
+  for (igtlioCommandDequeType::iterator outgoingCommandIt = this->OutgoingCommandDeque.begin();
+       outgoingCommandIt != this->OutgoingCommandDeque.end(); ++outgoingCommandIt)
+    {
+    igtlioCommandPointer command = (*outgoingCommandIt);
+    double currentTimestamp = vtkTimerLog::GetUniversalTime();
+    double elapsedTimeSec = currentTimestamp - command->GetSentTimestamp();
+    if (command->GetStatus() == CommandWaiting && elapsedTimeSec > command->GetTimeoutSec())
       {
-      device = deviceCreator->Create(key.name);
-      device->SetMessageDirection(igtlioDevice::MESSAGE_DIRECTION_IN);
-      this->AddDevice(device);
+      completedCommands.push_back(command);
+      command->SetStatus(CommandExpired);
+      this->InvokeEvent(igtlioCommand::CommandExpiredEvent, command.GetPointer());
+      command->InvokeEvent(igtlioCommand::CommandExpiredEvent);
       }
-
-    device->ReceiveIGTLMessage(commandBuffer, this->CheckCRC);
-    this->CommandQueue.pop();
+    else if (command->GetStatus() == CommandResponseReceived || command->GetStatus() == CommandCancelled)
+      {
+      completedCommands.push_back(command);
+      }
     }
 
-  this->CommandQueueMutex->Unlock();
+  // Invoke igtlioCommand::CommandCompletedEvent on all pruned commands and remove them from the deque
+  for (igtlioCommandDequeType::iterator completedCommandIt = completedCommands.begin();
+       completedCommandIt != completedCommands.end(); ++completedCommandIt)
+    {
+    igtlioCommandPointer command = (*completedCommandIt);
+    this->InvokeEvent(igtlioCommand::CommandCompletedEvent, command.GetPointer());
+    command->InvokeEvent(igtlioCommand::CommandCompletedEvent);
+    this->OutgoingCommandDeque.erase(std::remove(this->OutgoingCommandDeque.begin(), this->OutgoingCommandDeque.end(), command));
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -887,13 +1051,13 @@ bool igtlioConnector::HasDevice(igtlioDevicePointer d )
 }
 
 //---------------------------------------------------------------------------
-int igtlioConnector::SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::MESSAGE_PREFIX prefix)
+int igtlioConnector::SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::MESSAGE_PREFIX prefix/*=Device::MESSAGE_PREFIX_NOT_DEFINED*/)
 {
   igtlioDevicePointer device = this->GetDevice(device_id);
   if (!device)
     {
       vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id.type << "/" << device_id.name<< ", device not found");
-      return 1;
+      return 0;
     }
 
   //TODO replace prefix with message-type or similar - giving the basic message same status as the queries
@@ -902,7 +1066,7 @@ int igtlioConnector::SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::ME
   if (!msg)
     {
       vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id.type << "/" << device_id.name << ", message not available from device");
-      return 1;
+      return 0;
     }
 
   int r = this->SendData(msg->GetPackSize(), (unsigned char*)msg->GetPackPointer());

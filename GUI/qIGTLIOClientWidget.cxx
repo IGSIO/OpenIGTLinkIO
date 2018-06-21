@@ -4,6 +4,7 @@
 #include <QSplitter>
 #include "qIGTLIOConnectorListWidget.h"
 #include "qIGTLIODevicesWidget.h"
+#include "qIGTLIOCommandWidget.h"
 
 qIGTLIOClientWidget::qIGTLIOClientWidget()
 {
@@ -18,6 +19,9 @@ qIGTLIOClientWidget::qIGTLIOClientWidget()
 
   DevicesWidget = new qIGTLIODevicesWidget;
   splitter->addWidget(DevicesWidget);
+
+  CommandWidget = new qIGTLIOCommandWidget;
+  splitter->addWidget(CommandWidget);
 }
 
 void qIGTLIOClientWidget::setLogic(igtlioLogicPointer logic)
@@ -25,6 +29,7 @@ void qIGTLIOClientWidget::setLogic(igtlioLogicPointer logic)
   this->Logic = logic;
   ConnectorListWidget->setLogic(Logic);
   DevicesWidget->setLogic(Logic);
+  CommandWidget->setLogic(Logic);
 }
 
 

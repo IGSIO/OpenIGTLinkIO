@@ -14,11 +14,6 @@
 #ifndef IGTLIOCONNECTOR_H
 #define IGTLIOCONNECTOR_H
 
-//// OpenIGTLinkIF MRML includes
-//#include "vtkIGTLToMRMLBase.h"
-//#include "vtkMRMLIGTLQueryNode.h"
-//#include "vtkSlicerOpenIGTLinkIFModuleMRMLExport.h"
-
 // OpenIGTLink includes
 #include <igtlServerSocket.h>
 #include <igtlClientSocket.h>
@@ -29,12 +24,7 @@
 #include "igtlioDeviceFactory.h"
 #include "igtlioObject.h"
 #include "igtlioUtilities.h"
-#include "igtlioCommandDevice.h"
-
-//// MRML includes
-//#include <vtkMRML.h>
-//#include <vtkMRMLNode.h>
-//#include <vtkMRMLStorageNode.h>
+#include "igtlioCommand.h"
 
 // VTK includes
 #include <vtkObject.h>
@@ -51,6 +41,7 @@
 typedef vtkSmartPointer<class vtkMutexLock> vtkMutexLockPointer;
 typedef vtkSmartPointer<class vtkMultiThreader> vtkMultiThreaderPointer;
 typedef std::vector< vtkSmartPointer<igtlioDevice> >   igtlioMessageDeviceListType;
+typedef std::deque<igtlioCommandPointer> igtlioCommandDequeType;
 
 typedef vtkSmartPointer<class igtlioConnector> igtlioConnectorPointer;
 typedef vtkSmartPointer<class igtlioCircularBuffer> igtlioCircularBufferPointer;
@@ -99,7 +90,21 @@ public:
   /// Suggested timeout 5ms.
   void PeriodicProcess();
 
-  igtlioCommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content, double timeout_s= 5, igtl::MessageBase::MetaDataMap* metaData=NULL);
+  int SendCommand(igtlioCommandPointer command);
+  igtlioCommandPointer SendCommand(std::string command, std::string content, IGTLIO_SYNCHRONIZATION_TYPE synchronized, double timeout_s = 5.0, igtl::MessageBase::MetaDataMap* metaData = NULL, int clientID = -1);
+
+  // Currently each connector can only connect to one client
+  //igtlioCommandDequeType SendCommandToAllClients(std::string name, std::string content, double timeout_s=5.0, igtl::MessageBase::MetaDataMap* metaData=NULL);
+
+  int SendCommandResponse(int commandId, int clientId=-1);
+  int SendCommandResponse(igtlioCommandPointer command);
+
+  /// Cancel the command
+  /// Note: This does not send anything to the original recipient of the command.
+  /// It simply removes the command from the list of outgoing commands so that a response event will not be invoked
+  void CancelCommand(int commandId, int clientId);
+  void CancelCommand(igtlioCommandPointer);
+
   igtlioDevicePointer AddDeviceIfNotPresent(igtlioDeviceKeyType key);
 
   /// Add a new Device.
@@ -254,9 +259,14 @@ private:
   // Device Lists
   //----------------------------------------------------------------
 
-  // Description"
-  // Command and response devices that have been received are added to the appropriate devices
+  // Description:
+  // Decode command and response messages, creating an igtlioCommand if neccessary
+  // Invoke a corresponding event
   void ParseCommands();
+
+  // Description:
+  // Remove commands from the deque of outgoing commands if they are not currently pending
+  void PruneCompletedCommands();
 
   // Description:
   // Import received data from the circular buffer to the MRML scne.
@@ -296,7 +306,12 @@ protected:
   // Adds the commands to a queue that is parsed during periodic process
   bool ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg);
 
-protected:
+  // Description:
+  // Get the command pointer for the command with the matching id
+  // Returns NULL if there is no matching command
+  igtlioCommandPointer GetOutgoingCommand(int commandID);
+
+ protected:
   //----------------------------------------------------------------
   // Devices
   //----------------------------------------------------------------
@@ -339,8 +354,19 @@ protected:
   vtkMutexLockPointer                     EventQueueMutex;
 
   // Collect commands before they enter the circular buffer, in order to make sure that they are not overwritten
-  std::queue<igtl::MessageBase::Pointer>  CommandQueue;
-  vtkMutexLockPointer                     CommandQueueMutex;
+  //typedef int ClientIDType;
+  struct IncomingCommandType
+  {
+    int ClientID;
+    igtl::MessageBase::Pointer CommandMessage;
+    IncomingCommandType(int clientID, igtl::MessageBase::Pointer commandMessage)
+      : ClientID(clientID),
+        CommandMessage(commandMessage){}
+  };
+  typedef std::queue<IncomingCommandType> IncomingCommandQueueType;
+
+  IncomingCommandQueueType                IncomingCommandQueue;
+  vtkMutexLockPointer                     IncomingCommandQueueMutex;
 
   // Flag for the push outoing message request
   // If the flag is ON, the external timer will update the outgoing nodes with
@@ -351,6 +377,9 @@ protected:
   igtlioDeviceFactoryPointer              DeviceFactory;
 
   bool                                    CheckCRC;
+
+  igtlioCommandDequeType                  OutgoingCommandDeque;
+  vtkMutexLockPointer                     OutgoingCommandDequeMutex;
 
   int                                     NextCommandID;
 

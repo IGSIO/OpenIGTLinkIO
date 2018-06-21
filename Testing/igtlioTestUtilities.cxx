@@ -79,52 +79,6 @@ bool igtlioCompare(igtlioImageDevicePointer a, igtlioImageDevicePointer b)
   return true;
 }
 
-bool igtlioCompare(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b)
-{
-  if (!a || !b)
-  {
-    std::cout << "FAILURE: empty device" << std::endl;
-    return false;
-  }
-
-  if (a->GetContent().name != b->GetContent().name)
-  {
-    std::cout << "FAILURE: Command names dont match." << std::endl;
-    return false;
-  }
-
-  if (a->GetContent().id != b->GetContent().id)
-  {
-    std::cout << "FAILURE: Command IDs dont match." << std::endl;
-    return false;
-  }
-
-  if (a->GetContent().content != b->GetContent().content)
-  {
-    std::cout << "FAILURE: Command content dont match." << std::endl;
-    return false;
-  }
-
-  return true;
-}
-
-bool igtlioCompareID(igtlioCommandDevicePointer a, igtlioCommandDevicePointer b)
-{
-  if (!a || !b)
-  {
-    std::cout << "FAILURE: empty device" << std::endl;
-    return false;
-  }
-
-  if (a->GetContent().id != b->GetContent().id)
-  {
-    std::cout << "FAILURE: Command IDs dont match." << std::endl;
-    return false;
-  }
-
-  return true;
-}
-
 std::string igtlioBoolToString(bool b)
 {
   std::string ret = b ? "true" : "false";

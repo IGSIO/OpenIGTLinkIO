@@ -3,8 +3,7 @@
 
 #include "igtlioUtilities.h"
 #include "igtlioDevice.h"
-#include "igtlioCommandDevice.h"
-
+#include "igtlioCommand.h"
 #include "igtlioLogicExport.h"
 
 class vtkMatrix4x4;
@@ -25,15 +24,14 @@ typedef vtkSmartPointer<class igtlioStatusDevice> igtlioStatusDevicePointer;
 ///     vtkIGTLIOLogicPointer root = vtkIGTLIOLogicPointer::New();
 ///     vtkIGTLIOSessionPointer session = root->ConnectToServer(example.org, 18333);
 ///
-///     CommandDevicePointer command;
-///     command = session->SendCommandQuery("device_id",
-///                                         "GetDeviceParameters",
-///                                         "<Command><Parameter Name=\"Depth\"/></Command>",
-///                                         IGTLIO_BLOCKING, 5);
+///     igtlioCommand command;
+///     command = session->SendCommand("GetDeviceParameters",
+///                                    "<Command><Parameter Name=\"Depth\"/></Command>",
+///                                    IGTLIO_BLOCKING, 5.0
+///                                    MetaDataMap);
 ///
 ///     STATUS status = command->GetStatus();
 ///     std::string response = command->GetResponse(); // empty on failure.
-///
 ///
 ///
 class OPENIGTLINKIO_LOGIC_EXPORT igtlioSession : public vtkObject
@@ -43,12 +41,12 @@ public:
   /// - If using BLOCKING, the call blocks until a response appears or timeout. Return response.
   /// - If using ASYNCHRONOUS, wait for the CommandResponseReceivedEvent event. Return device.
   ///
-  igtlioCommandDevicePointer SendCommand(std::string device_id, std::string command, std::string content, IGTLIO_SYNCHRONIZATION_TYPE synchronized = IGTLIO_BLOCKING, double timeout_s = 5);
+  igtlioCommandPointer SendCommand(std::string command, std::string content, IGTLIO_SYNCHRONIZATION_TYPE synchronized = IGTLIO_BLOCKING, double timeout_s = 5.0, igtl::MessageBase::MetaDataMap* metaData = NULL);
 
   ///  Send a command response from the given device. Asynchronous.
   /// Precondition: The given device has received a query that is not yet responded to.
   /// Return device.
-  igtlioCommandDevicePointer SendCommandResponse(std::string device_id, std::string command, std::string content);
+  int SendCommandResponse(igtlioCommandPointer command);
 
   ///  Send the given image from the given device. Asynchronous.
   igtlioImageDevicePointer SendImage(std::string device_id,

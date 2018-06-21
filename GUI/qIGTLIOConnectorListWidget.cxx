@@ -145,4 +145,3 @@ void qIGTLIOConnectorListWidget::onRemoveConnectorButtonClicked()
   Logic->RemoveConnector(row);
   this->selectRow(row);
 }
-

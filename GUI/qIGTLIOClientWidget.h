@@ -25,7 +25,7 @@ private:
 
   class qIGTLIOConnectorListWidget* ConnectorListWidget;
   class qIGTLIODevicesWidget* DevicesWidget;
-
+  class qIGTLIOCommandWidget* CommandWidget;
 };
 
 #endif // QIGTLIOCLIENTWIDGET_H
