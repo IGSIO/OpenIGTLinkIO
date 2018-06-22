@@ -833,8 +833,7 @@ int igtlioConnector::SendCommandResponse(igtlioCommandPointer command)
   content.content = command->GetResponseContent();
 
   igtl::MessageBase::MetaDataMap metaData = command->GetResponseMetaData();
-  igtl::CommandMessage::Pointer commandMessage = responseMessage;
-  igtlioCommandConverter::toIGTL(headerData, content, &commandMessage, metaData);
+  igtlioCommandConverter::toIGTLResponse(headerData, content, &responseMessage, metaData);
 
   int success = this->SendData(responseMessage->GetPackSize(), (unsigned char*)responseMessage->GetPackPointer());
   command->SetStatus(igtlioCommandStatus::CommandResponseSent);
