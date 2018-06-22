@@ -112,3 +112,26 @@ int igtlioCommandConverter::toIGTL(const HeaderData& header, const ContentData& 
   return 1;
 }
 
+//---------------------------------------------------------------------------
+int igtlioCommandConverter::toIGTLResponse(const HeaderData& header, const ContentData& source, igtl::RTSCommandMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
+{
+  if (dest->IsNull())
+    *dest = igtl::RTSCommandMessage::New();
+  (*dest)->InitPack();
+  igtl::RTSCommandMessage::Pointer msg = *dest;
+
+  if (!metaInfo.empty())
+    {
+    msg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
+    }
+  igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
+  HeadertoIGTL(header, &basemsg, metaInfo);
+
+  msg->SetCommandId(source.id);
+  msg->SetCommandName(source.name);
+  msg->SetCommandContent(source.content);
+  msg->SetMetaDataElement("Status", IANA_TYPE_US_ASCII, source.status ? "SUCCESS" : "FAIL");
+  msg->Pack();
+
+  return 1;
+}
