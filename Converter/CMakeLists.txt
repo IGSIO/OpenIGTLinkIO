@@ -40,6 +40,7 @@ set(${PROJECT_NAME}_HDRS
   igtlioStatusConverter.h
   igtlioTransformConverter.h
   igtlioStringConverter.h
+  igtlioUsSectorDefinitions.h
   )
 
 IF(OpenIGTLink_ENABLE_VIDEOSTREAMING)
