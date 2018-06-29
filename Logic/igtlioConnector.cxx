@@ -1,14 +1,14 @@
 /*==========================================================================
 
-Portions (c) Copyright 2009 Brigham and Women's Hospital (BWH) All Rights Reserved.
+Portions (c) Copyright 2018 IGSIO
 
 See Doc/copyright/copyright.txt
 or http://www.slicer.org/copyright/copyright.txt for details.
 
-Program:   3D Slicer
-Module:    $RCSfile: vtkMRMLGradientAnisotropicDiffusionFilterNode.cxx,v $
-Date:      $Date: 2006/03/17 15:10:10 $
-Version:   $Revision: 1.2 $
+Program:   igtlio
+Module:    $RCSfile: igtlioConnector.cxx,v $
+Date:      $Date: 2018/06/28 11:34:29 $
+Version:   $Revision: 1.4 $
 
 =========================================================================auto=*/
 
@@ -85,6 +85,7 @@ igtlioConnector::igtlioConnector()
   , DeviceFactory(igtlioDeviceFactoryPointer::New())
   , CheckCRC(true)
   , NextCommandID(1)
+  , NextClientID(1)
 {
 
 }
@@ -226,10 +227,14 @@ int igtlioConnector::Stop()
     this->ServerStopFlag = true;
     {
       igtlioLockGuard<vtkMutexLock>(this->Mutex);
-      if (this->Socket.IsNotNull())
+      for (auto& client : Sockets)
         {
-        this->Socket->CloseSocket();
+        if (client.Socket.IsNotNull())
+          {
+          client.Socket->CloseSocket();
+          }
         }
+      this->Sockets.clear();
     }
     this->Thread->TerminateThread(this->ThreadID);
     this->ThreadID = -1;
@@ -262,18 +267,17 @@ void* igtlioConnector::ThreadFunction(void* ptr)
   // Communication -- common to both Server and Client
   while (!connector->ServerStopFlag)
     {
-    //vtkErrorMacro("vtkOpenIGTLinkIFLogic::ThreadFunction(): alive.");
+
     {
       igtlioLockGuard<vtkMutexLock>(connector->Mutex);
-      //igtlcon->Socket = igtlcon->WaitForConnection();
       connector->WaitForConnection();
     }
-    if (connector->Socket.IsNotNull() && connector->Socket->GetConnected())
+
+    if (connector->IsConnected())
       {
       connector->State = STATE_CONNECTED;
       // need to Request the InvokeEvent, because we are not on the main thread now
       connector->RequestInvokeEvent(igtlioConnector::ConnectedEvent);
-      //vtkErrorMacro("vtkOpenIGTLinkIFLogic::ThreadFunction(): Client Connected.");
       connector->RequestPushOutgoingMessages();
       connector->ReceiveController();
       connector->State = STATE_WAIT_CONNECTION;
@@ -281,10 +285,14 @@ void* igtlioConnector::ThreadFunction(void* ptr)
       }
     }
 
-  if (connector->Socket.IsNotNull())
+  for (auto& client : connector->Sockets)
     {
-    connector->Socket->CloseSocket();
+    if (client.Socket.IsNotNull())
+      {
+      client.Socket->CloseSocket();
+      }
     }
+  connector->Sockets.clear();
 
   if (connector->Type == TYPE_SERVER && connector->ServerSocket.IsNotNull())
     {
@@ -299,7 +307,7 @@ void* igtlioConnector::ThreadFunction(void* ptr)
 }
 
 //----------------------------------------------------------------------------
-igtlioCommandPointer igtlioConnector::GetOutgoingCommand(int commandId)
+igtlioCommandPointer igtlioConnector::GetOutgoingCommand(int commandId, int clientId)
 {
   igtlioLockGuard<vtkMutexLock>(this->OutgoingCommandDequeMutex);
   igtlioCommandPointer command = NULL;
@@ -308,8 +316,8 @@ igtlioCommandPointer igtlioConnector::GetOutgoingCommand(int commandId)
     command = (*std::find_if(
       this->OutgoingCommandDeque.begin(),
       this->OutgoingCommandDeque.end(),
-      [this, commandId](const igtlioCommandPointer& entry)
-      { return entry->GetCommandId() == commandId; }));
+      [this, commandId, clientId](const igtlioCommandPointer& entry)
+      { return entry->GetCommandId() == commandId && entry->GetClientId() == clientId; }));
     }
   return command;
 }
@@ -331,30 +339,26 @@ void igtlioConnector::RequestPushOutgoingMessages()
 //----------------------------------------------------------------------------
 int igtlioConnector::WaitForConnection()
 {
-  //igtl::ClientSocket::Pointer socket;
-
   if (this->Type == TYPE_CLIENT)
     {
-    //socket = igtl::ClientSocket::New();
-    this->Socket = igtl::ClientSocket::New();
+    this->Sockets.push_back(Client(0, igtl::ClientSocket::New()));
     }
 
   while (!this->ServerStopFlag)
     {
     if (this->Type == TYPE_SERVER)
       {
-      //vtkErrorMacro("vtkMRMLIGTLConnectorNode: Waiting for client @ port #" << this->ServerPort);
-      this->Socket = this->ServerSocket->WaitForConnection(1000);
-      if (this->Socket.IsNotNull()) // if client connected
+      igtl::ClientSocket::Pointer client = this->ServerSocket->WaitForConnection(1000);
+      if (client.IsNotNull()) // if client connected
         {
-        //vtkErrorMacro("vtkMRMLIGTLConnectorNode: connected.");
+        Sockets.push_back(Client(NextClientID++, client));
         return 1;
         }
       }
     else if (this->Type == TYPE_CLIENT) // if this->Type == TYPE_CLIENT
       {
-      //vtkErrorMacro("vtkMRMLIGTLConnectorNode: Connecting to server...");
-      int r = this->Socket->ConnectToServer(this->ServerHostname.c_str(), this->ServerPort);
+      assert(this->Sockets.size() > 0);
+      int r = this->Sockets[0].Socket->ConnectToServer(this->ServerHostname.c_str(), this->ServerPort);
       if (r == 0) // if connected to server
         {
         return 1;
@@ -371,160 +375,162 @@ int igtlioConnector::WaitForConnection()
       }
     }
 
-  if (this->Socket.IsNotNull())
-    {
-    //vtkErrorMacro("vtkOpenIGTLinkLogic::WaitForConnection(): Socket Closed.");
-    this->Socket->CloseSocket();
-    }
 
-  //return NULL;
+  for (auto& client : this->Sockets)
+    {
+    if (client.Socket.IsNotNull())
+      {
+      client.Socket->CloseSocket();
+      }
+    }
+  this->Sockets.clear();
+
   return 0;
 }
 
 //----------------------------------------------------------------------------
 int igtlioConnector::ReceiveController()
 {
-  //igtl_header header;
   igtl::MessageHeader::Pointer headerMsg;
   headerMsg = igtl::MessageHeader::New();
 
-  if (this->Socket.IsNull())
-    {
-    return 0;
-    }
-
   while (!this->ServerStopFlag)
+  {
+    for (auto& client : Sockets)
     {
-    // check if connection is alive
-    if (!this->Socket->GetConnected())
+      // check if connection is alive
+      if (!client.Socket->GetConnected())
       {
-      break;
+        continue;
       }
 
-    //----------------------------------------------------------------
-    // Receive Header
-    headerMsg->InitPack();
+      //----------------------------------------------------------------
+      // Receive Header
+      headerMsg->InitPack();
 
+      vtkDebugMacro("Waiting for header of size: " << headerMsg->GetPackSize());
 
-    vtkDebugMacro("Waiting for header of size: " << headerMsg->GetPackSize());
+      // This may need to be parallelized so that other socket aren't waiting on timeouts
+      int r = client.Socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
 
-    int r = this->Socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+      vtkDebugMacro("Received header of size: " << headerMsg->GetPackSize());
 
-    vtkDebugMacro("Received header of size: " << headerMsg->GetPackSize());
-
-
-    if (r != headerMsg->GetPackSize())
+      if (r != headerMsg->GetPackSize())
       {
-      //vtkErrorMacro("Irregluar size.");
-      //vtkErrorMacro("Irregluar size " << r << " expecting " << headerMsg->GetPackSize() );
-      vtkDebugMacro("ignoring header, breaking. received=" << r);
-      break;
+        vtkDebugMacro("ignoring header, breaking. received=" << r);
+        break;
       }
 
-    // Deserialize the header
-    headerMsg->Unpack();
+      // Deserialize the header
+      headerMsg->Unpack();
 
-    //----------------------------------------------------------------
-    // Check Device Name
-    // Nov 16, 2010: Currently the following code only checks
-    // if the device name is defined in the message.
-    const char* devName = headerMsg->GetDeviceName();
-    if (devName[0] == '\0')
+      //----------------------------------------------------------------
+      // Check Device Name
+      // Nov 16, 2010: Currently the following code only checks
+      // if the device name is defined in the message.
+      const char* devName = headerMsg->GetDeviceName();
+      if (devName[0] == '\0')
       {
-      /// Dec 7, 2010: Removing the following code, since message without
-      /// device name should be handled in the MRML scene as well.
-      //// If no device name is defined, skip processing the message.
-      //this->Skip(headerMsg->GetBodySizeToRead());
-      //continue; //  while (!this->ServerStopFlag)
+        /// Dec 7, 2010: Removing the following code, since message without
+        /// device name should be handled in the MRML scene as well.
+        //// If no device name is defined, skip processing the message.
+        //this->Skip(headerMsg->GetBodySizeToRead());
+        //continue; //  while (!this->ServerStopFlag)
       }
-    //----------------------------------------------------------------
-    // If device name is restricted
-    else if (this->RestrictDeviceName)
+      //----------------------------------------------------------------
+      // If device name is restricted
+      else if (this->RestrictDeviceName)
       {
-      // Check if the node has already been registered.
-        //TODO: Cannot call GetDevice in Thread!!!!
+        // Check if the node has already been registered.
+          //TODO: Cannot call GetDevice in Thread!!!!
         igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(headerMsg);
-      int registered = this->GetDevice(key).GetPointer() != NULL;
-      if (registered == 0)
+        int registered = this->GetDevice(key).GetPointer() != NULL;
+        if (registered == 0)
         {
-        this->Skip(headerMsg->GetBodySizeToRead());
-        continue; //  while (!this->ServerStopFlag)
+          this->Skip(headerMsg->GetBodySizeToRead(), client);
+          continue; //  while (!this->ServerStopFlag)
         }
       }
 
-    vtkDebugMacro("completed read header : " << headerMsg->GetDeviceName() << " body size to read: " << headerMsg->GetBodySizeToRead());
+      vtkDebugMacro("completed read header : " << headerMsg->GetDeviceName() << " body size to read: " << headerMsg->GetBodySizeToRead());
 
+      //----------------------------------------------------------------
+      // Search Circular Buffer
+      igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(headerMsg);
 
-    //----------------------------------------------------------------
-    // Search Circular Buffer
-    igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(headerMsg);
-
-    // Intercept command devices before they are added to the circular buffer, and add them to the command queue
-    if (std::strcmp(headerMsg->GetDeviceType(), "COMMAND") == 0 || std::strcmp(headerMsg->GetDeviceType(), "RTS_COMMAND") == 0)
+      // Intercept command devices before they are added to the circular buffer, and add them to the command queue
+      if (std::strcmp(headerMsg->GetDeviceType(), "COMMAND") == 0 || std::strcmp(headerMsg->GetDeviceType(), "RTS_COMMAND") == 0)
       {
-      if (this->ReceiveCommandMessage(headerMsg))
+        if (this->ReceiveCommandMessage(headerMsg, client))
         {
-        continue;
+          continue;
         }
       }
 
-    igtlioCircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
-    if (iter == this->SectionBuffer.end()) // First time to refer the device name
+      igtlioCircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
+      if (iter == this->SectionBuffer.end()) // First time to refer the device name
       {
-      igtlioLockGuard<vtkMutexLock>(this->CircularBufferMutex);
-      this->SectionBuffer[key] = igtlioCircularSectionBufferPointer::New();
-      this->SectionBuffer[key]->SetPacketMode(igtlioCircularSectionBuffer::SinglePacketMode);
-      if (strcmp(headerMsg->GetDeviceType(), "VIDEO")==0)
+        igtlioLockGuard<vtkMutexLock>(this->CircularBufferMutex);
+        this->SectionBuffer[key] = igtlioCircularSectionBufferPointer::New();
+        this->SectionBuffer[key]->SetPacketMode(igtlioCircularSectionBuffer::SinglePacketMode);
+        if (strcmp(headerMsg->GetDeviceType(), "VIDEO") == 0)
         {
-        this->SectionBuffer[key]->SetPacketMode(igtlioCircularSectionBuffer::MultiplePacketsMode);
+          this->SectionBuffer[key]->SetPacketMode(igtlioCircularSectionBuffer::MultiplePacketsMode);
         }
       }
 
-    //----------------------------------------------------------------
-    // Load to the circular buffer
+      //----------------------------------------------------------------
+      // Load to the circular buffer
 
-    igtlioCircularSectionBufferPointer circBuffer = this->SectionBuffer[key];
+      igtlioCircularSectionBufferPointer circBuffer = this->SectionBuffer[key];
 
-    if (circBuffer && circBuffer->StartPush() != -1)
+      if (circBuffer && circBuffer->StartPush() != -1)
       {
-      //std::cerr << "Pushing into the circular buffer." << std::endl;
-      circBuffer->StartPush();
-      igtl::MessageBase::Pointer buffer = circBuffer->GetPushBuffer();
-      buffer->SetMessageHeader(headerMsg);
-      buffer->AllocatePack();
+        //std::cerr << "Pushing into the circular buffer." << std::endl;
+        circBuffer->StartPush();
+        igtl::MessageBase::Pointer buffer = circBuffer->GetPushBuffer();
+        buffer->SetMessageHeader(headerMsg);
+        buffer->AllocatePack();
 
-      vtkDebugMacro("Waiting to receive body:  size=" << buffer->GetPackBodySize()
-                    << ", GetBodySizeToRead=" << buffer->GetBodySizeToRead()
-                    << ", GetPackSize=" << buffer->GetPackSize());
-      int read = this->Socket->Receive(buffer->GetPackBodyPointer(), buffer->GetPackBodySize());
-      vtkDebugMacro("Received body: " << read);
-      if (read != buffer->GetPackBodySize())
+        vtkDebugMacro("Waiting to receive body:  size=" << buffer->GetPackBodySize()
+          << ", GetBodySizeToRead=" << buffer->GetBodySizeToRead()
+          << ", GetPackSize=" << buffer->GetPackSize());
+        int read = client.Socket->Receive(buffer->GetPackBodyPointer(), buffer->GetPackBodySize());
+        vtkDebugMacro("Received body: " << read);
+        if (read != buffer->GetPackBodySize())
         {
-        if(!this->ServerStopFlag)
-        {
-          vtkErrorMacro ("Only read " << read << " but expected to read "
-                         << buffer->GetPackBodySize() << "\n");
-        }
-        continue;
+          if (!this->ServerStopFlag)
+          {
+            vtkErrorMacro("Only read " << read << " but expected to read "
+              << buffer->GetPackBodySize() << "\n");
+          }
+          continue;
         }
 
-      circBuffer->EndPush();
+        circBuffer->EndPush();
 
       }
-    else
+      else
       {
-      break;
+        break;
       }
+    }
+  } // while (!this->ServerStopFlag)
 
-    } // while (!this->ServerStopFlag)
-
-  this->Socket->CloseSocket();
+  for (auto& client : Sockets)
+  {
+    if (client.Socket.IsNotNull())
+    {
+      client.Socket->CloseSocket();
+    }
+  }
+  this->Sockets.clear();
 
   return 0;
 }
 
 //----------------------------------------------------------------------------
-bool igtlioConnector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg)
+bool igtlioConnector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg, Client& client)
 {
   igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(headerMsg);
 
@@ -533,46 +539,45 @@ bool igtlioConnector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerM
   buffer->SetMessageHeader(headerMsg);
   buffer->AllocateBuffer();
 
-  vtkDebugMacro("Waiting to receive body:  size=" << buffer->GetPackBodySize()
+  vtkDebugMacro("Waiting to receive body:  size=" << buffer->GetBufferBodySize()
     << ", GetBodySizeToRead=" << buffer->GetBodySizeToRead()
     << ", GetPackSize=" << buffer->GetPackSize());
-  int read = this->Socket->Receive(buffer->GetPackBodyPointer(), buffer->GetPackBodySize());
+  int read = client.Socket->Receive(buffer->GetBufferBodyPointer(), buffer->GetBufferBodySize());
   vtkDebugMacro("Received body: " << read);
-  if (read != buffer->GetPackBodySize())
+  if (read != buffer->GetBufferBodySize())
   {
     if (!this->ServerStopFlag)
     {
-      vtkErrorMacro("Only read " << read << " but expected to read "
-        << buffer->GetPackBodySize() << "\n");
+      vtkErrorMacro("Only read " << read << " but expected to read " << buffer->GetBufferBodySize() << "\n");
     }
     return false;
   }
 
   igtlioLockGuard<vtkMutexLock>(this->IncomingCommandQueueMutex);
-  this->IncomingCommandQueue.push(IncomingCommandType(0, buffer));
+  this->IncomingCommandQueue.push(IncomingCommandType(client.ID, buffer));
 
   return true;
 }
 
 //----------------------------------------------------------------------------
-int igtlioConnector::SendData(int size, unsigned char* data)
+int igtlioConnector::SendData(int size, unsigned char* data, Client& client)
 {
-  if (this->Socket.IsNull())
+  if (client.Socket.IsNull())
     {
     return 0;
     }
 
   // check if connection is alive
-  if (!this->Socket->GetConnected())
+  if (!client.Socket->GetConnected())
     {
     return 0;
     }
 
-  return this->Socket->Send(data, size);  // return 1 on success, otherwise 0.
+  return client.Socket->Send(data, size);  // return 1 on success, otherwise 0.
 }
 
 //----------------------------------------------------------------------------
-int igtlioConnector::Skip(int length, int skipFully)
+int igtlioConnector::Skip(int length, Client& client, int skipFully /* = 1 */)
 {
   unsigned char dummy[256];
   int block  = 256;
@@ -586,12 +591,26 @@ int igtlioConnector::Skip(int length, int skipFully)
       block = remain;
       }
 
-    n = this->Socket->Receive(dummy, block, skipFully);
+    n = client.Socket->Receive(dummy, block, skipFully);
     remain -= n;
     }
   while (remain > 0 || (skipFully && n < block));
 
   return (length - remain);
+}
+
+//----------------------------------------------------------------------------
+igtlioConnector::Client igtlioConnector::GetClient(int clientId)
+{
+  for (auto& client : this->Sockets)
+  {
+    if (client.ID == clientId)
+    {
+      return client;
+    }
+  }
+
+  return Client(-1, nullptr);
 }
 
 //----------------------------------------------------------------------------
@@ -758,7 +777,7 @@ igtlioCommandPointer igtlioConnector::SendCommand(std::string name, std::string 
 }
 
 //----------------------------------------------------------------------------
-int igtlioConnector::SendCommand(igtlioCommandPointer command)
+int igtlioConnector::SendCommand(igtlioCommandPointer command, int clientId)
 {
   if (command->IsInProgress())
     {
@@ -782,29 +801,77 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command)
   igtl::MessageBase::MetaDataMap metaData = command->GetCommandMetaData();
   igtlioCommandConverter::toIGTL(headerData, content, &commandMessage, metaData);
 
-  int success = this->SendData(commandMessage->GetPackSize(), (unsigned char*)commandMessage->GetPackPointer());
-  if (success)
+  Client client = GetClient(clientId);
+  if (client.ID == -1)
+  {
+    bool result = true;
+    for (auto& clientIter : this->Sockets)
     {
-
-    {
-      igtlioLockGuard<vtkMutexLock>(this->OutgoingCommandDequeMutex);
-      this->OutgoingCommandDeque.push_back(command);
-    }
-    command->SetStatus(igtlioCommandStatus::CommandWaiting);
-    command->SetSentTimestamp(vtkTimerLog::GetUniversalTime());
-
-    while (command->GetBlocking() && !command->IsCompleted())
+      int success = this->SendData(commandMessage->GetBufferSize(), (unsigned char*)commandMessage->GetBufferPointer(), clientIter);
+      if (success)
       {
-      this->PeriodicProcess();
-      vtksys::SystemTools::Delay(5);
+        {
+          igtlioLockGuard<vtkMutexLock>(this->OutgoingCommandDequeMutex);
+          this->OutgoingCommandDeque.push_back(command);
+        }
+        command->SetStatus(igtlioCommandStatus::CommandWaiting);
+        command->SetSentTimestamp(vtkTimerLog::GetUniversalTime());
+
+        while (command->GetBlocking() && !command->IsCompleted())
+        {
+          this->PeriodicProcess();
+          vtksys::SystemTools::Delay(5);
+        }
+      }
+      else
+      {
+        vtkErrorMacro("Could not send command " << command->GetCommandId() << ": \"" << command->GetName() << "\"to client");
+        command->SetStatus(igtlioCommandStatus::CommandFailed);
+      }
+      result &= success == 1;
+    }
+    return result ? 1 : 0;
+  }
+  else
+  {
+    int success = this->SendData(commandMessage->GetBufferSize(), (unsigned char*)commandMessage->GetBufferPointer(), client);
+    if (success)
+    {
+      {
+        igtlioLockGuard<vtkMutexLock>(this->OutgoingCommandDequeMutex);
+        this->OutgoingCommandDeque.push_back(command);
+      }
+      command->SetStatus(igtlioCommandStatus::CommandWaiting);
+      command->SetSentTimestamp(vtkTimerLog::GetUniversalTime());
+
+      while (command->GetBlocking() && !command->IsCompleted())
+      {
+        this->PeriodicProcess();
+        vtksys::SystemTools::Delay(5);
       }
     }
-  else
+    else
     {
-    vtkErrorMacro("Could not send command " << command->GetCommandId() << ": \"" << command->GetName() << "\"to client");
-    command->SetStatus(igtlioCommandStatus::CommandFailed);
+      vtkErrorMacro("Could not send command " << command->GetCommandId() << ": \"" << command->GetName() << "\"to client");
+      command->SetStatus(igtlioCommandStatus::CommandFailed);
     }
-  return success;
+    return success;
+  }
+}
+
+//----------------------------------------------------------------------------
+int igtlioConnector::ConnectedClientsCount() const
+{
+  int total(0);
+  for (auto& client : this->Sockets)
+  {
+    if (client.Socket->GetConnected())
+    {
+      total++;
+    }
+  }
+
+  return total;
 }
 
 //----------------------------------------------------------------------------
@@ -835,7 +902,13 @@ int igtlioConnector::SendCommandResponse(igtlioCommandPointer command)
   igtl::MessageBase::MetaDataMap metaData = command->GetResponseMetaData();
   igtlioCommandConverter::toIGTLResponse(headerData, content, &responseMessage, metaData);
 
-  int success = this->SendData(responseMessage->GetPackSize(), (unsigned char*)responseMessage->GetPackPointer());
+  Client client = GetClient(command->GetClientId());
+  if (client.ID == -1)
+  {
+    return 0;
+  }
+
+  int success = this->SendData(responseMessage->GetBufferSize(), (unsigned char*)responseMessage->GetBufferPointer(), client);
   command->SetStatus(igtlioCommandStatus::CommandResponseSent);
   return success;
 }
@@ -843,7 +916,7 @@ int igtlioConnector::SendCommandResponse(igtlioCommandPointer command)
 //----------------------------------------------------------------------------
 void igtlioConnector::CancelCommand(int commandId, int clientId/*=-1*/)
 {
-  igtlioCommandPointer command = this->GetOutgoingCommand(commandId);
+  igtlioCommandPointer command = this->GetOutgoingCommand(commandId, clientId);
   this->CancelCommand(command);
 }
 
@@ -899,7 +972,7 @@ void igtlioConnector::ParseCommands()
       igtl::MessageBase::MetaDataMap metaData = igtl::MessageBase::MetaDataMap();
       igtlioCommandConverter::fromIGTLResponse(message, &headerData, &content, false, metaData);
 
-      igtlioCommandPointer command = this->GetOutgoingCommand(content.id);
+      igtlioCommandPointer command = this->GetOutgoingCommand(content.id, clientID);
       if (!command)
         {
         vtkWarningMacro("Response matches no outgoing commands!");
@@ -1050,7 +1123,7 @@ bool igtlioConnector::HasDevice(igtlioDevicePointer d )
 }
 
 //---------------------------------------------------------------------------
-int igtlioConnector::SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::MESSAGE_PREFIX prefix/*=Device::MESSAGE_PREFIX_NOT_DEFINED*/)
+int igtlioConnector::SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::MESSAGE_PREFIX prefix/*=Device::MESSAGE_PREFIX_NOT_DEFINED*/, int clientId)
 {
   igtlioDevicePointer device = this->GetDevice(device_id);
   if (!device)
@@ -1068,18 +1141,35 @@ int igtlioConnector::SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::ME
       return 0;
     }
 
-  int r = this->SendData(msg->GetPackSize(), (unsigned char*)msg->GetPackPointer());
-  if (r == 0)
+  Client client = GetClient(clientId);
+  if (client.ID == -1)
+  {
+    bool result = true;
+    for (auto& client : this->Sockets)
+    {
+      int r = this->SendData(msg->GetPackSize(), (unsigned char*)msg->GetPackPointer(), client);
+      if (r == 0)
+      {
+        vtkDebugMacro("Sending OpenIGTLinkMessage: " << device_id.type << "/" << device_id.name << " failed.");
+        result &= false;
+      }
+      else
+      {
+        result &= true;
+      }
+    }
+    return result ? 1 : 0;
+  }
+  else
+  {
+    int r = this->SendData(msg->GetPackSize(), (unsigned char*)msg->GetPackPointer(), client);
+    if (r == 0)
     {
       vtkDebugMacro("Sending OpenIGTLinkMessage: " << device_id.type << "/" << device_id.name << " failed.");
       return 0;
     }
-  return r;
-
-//TODO: push the device_id Device to igtl,
-// IF prefixed, i.e. send a query, also add to the query queue.
-//
-//  return 0;
+    return r;
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -1097,15 +1187,32 @@ void igtlioConnector::SetDeviceFactory(igtlioDeviceFactoryPointer val)
   this->Modified();
 }
 
-//---------------------------------------------------------------------------
-int igtlioConnector::PushNode(igtlioDevicePointer node, int event)
+//----------------------------------------------------------------------------
+bool igtlioConnector::IsConnected()
 {
-  // TODO: verify that removed event argument is OK
-  return this->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(node), igtlioDevice::MESSAGE_PREFIX_NOT_DEFINED);
+  for (auto& client : Sockets)
+    {
+    if (client.Socket.IsNotNull())
+      {
+      if (client.Socket->GetConnected())
+        {
+        return true;
+        }
+      }
+    }
+
+  return false;
 }
 
 //---------------------------------------------------------------------------
-bool igtlioConnector::IsConnected()
+int igtlioConnector::PushNode(igtlioDevicePointer node, int event, int clientId /*=-1*/)
 {
-  return this->Socket.IsNotNull() && this->Socket->GetConnected();
+  // TODO: verify that removed event argument is OK
+  // TODO: clientId doesn't make sense (whole function doesn't make sense), remove as parameter?
+  bool result = true;
+  for (auto& client : this->Sockets)
+  {
+    result &= (this->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(node), igtlioDevice::MESSAGE_PREFIX_NOT_DEFINED, clientId) == 1);
+  }
+  return result ? 1 : 0;
 }

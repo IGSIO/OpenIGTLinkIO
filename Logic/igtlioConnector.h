@@ -1,14 +1,14 @@
 /*=auto=========================================================================
 
-  Portions (c) Copyright 2009 Brigham and Women's Hospital (BWH) All Rights Reserved.
+  Portions (c) Copyright 2018 IGSIO
 
   See Doc/copyright/copyright.txt
   or http://www.slicer.org/copyright/copyright.txt for details.
 
-  Program:   3D Slicer
-  Module:    $RCSfile: vtkMRMLCurveAnalysisNode.h,v $
-  Date:      $Date: 2006/03/19 17:12:29 $
-  Version:   $Revision: 1.3 $
+  Program:   igtlio
+  Module:    $RCSfile: igtlioConnector.h,v $
+  Date:      $Date: 2018/06/28 11:34:29 $
+  Version:   $Revision: 1.4 $
 
 =========================================================================auto=*/
 #ifndef IGTLIOCONNECTOR_H
@@ -83,18 +83,15 @@ enum CONNECTION_ROLE
 class OPENIGTLINKIO_LOGIC_EXPORT igtlioConnector : public vtkIGTLIOObject
 {
 public:
-  //added methods:
-  //TODO: Notifications: New/Remove/Modify Device, message received?
-
   /// Call periodically to perform processing in the main thread.
   /// Suggested timeout 5ms.
   void PeriodicProcess();
 
-  int SendCommand(igtlioCommandPointer command);
+  // ClientId of -1 means to all connected client
+  int SendCommand(igtlioCommandPointer command, int clientId = -1);
   igtlioCommandPointer SendCommand(std::string command, std::string content, IGTLIO_SYNCHRONIZATION_TYPE synchronized, double timeout_s = 5.0, igtl::MessageBase::MetaDataMap* metaData = NULL, int clientID = -1);
 
-  // Currently each connector can only connect to one client
-  //igtlioCommandDequeType SendCommandToAllClients(std::string name, std::string content, double timeout_s=5.0, igtl::MessageBase::MetaDataMap* metaData=NULL);
+  int ConnectedClientsCount() const;
 
   int SendCommandResponse(int commandId, int clientId=-1);
   int SendCommandResponse(igtlioCommandPointer command);
@@ -123,23 +120,23 @@ public:
 
   /// Request the given Device to send a message with the given prefix.
   /// An undefined prefix means sending the normal message.
-  int SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::MESSAGE_PREFIX=igtlioDevice::MESSAGE_PREFIX_NOT_DEFINED);
+  /// ClientId of -1 means to all connected client
+  int SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::MESSAGE_PREFIX=igtlioDevice::MESSAGE_PREFIX_NOT_DEFINED, int clientId=-1);
 
   igtlioDeviceFactoryPointer GetDeviceFactory();
   void SetDeviceFactory(igtlioDeviceFactoryPointer val);
 
 public:
-
   // Events
   enum {
-    ConnectedEvent        = 118944,
-    DisconnectedEvent     = 118945,
-    ActivatedEvent        = 118946,
-    DeactivatedEvent      = 118947,
-//    ReceiveEvent          = 118948,
-    NewDeviceEvent        = 118949,
-    DeviceContentModifiedEvent   = 118950, // invoked by the devices
-    RemovedDeviceEvent    = 118951,
+    ConnectedEvent              = 118944,
+    DisconnectedEvent           = 118945,
+    ActivatedEvent              = 118946,
+    DeactivatedEvent            = 118947,
+//  ReceiveEvent                = 118948,
+    NewDeviceEvent              = 118949,
+    DeviceContentModifiedEvent  = 118950, // invoked by the devices
+    RemovedDeviceEvent          = 118951,
   };
 
   enum {
@@ -184,7 +181,6 @@ public:
   } NodeInfoType;
 
 public:
-
   static igtlioConnector *New();
   vtkTypeMacro(igtlioConnector, vtkIGTLIOObject);
 
@@ -195,6 +191,15 @@ protected:
   ~igtlioConnector();
   igtlioConnector(const igtlioConnector&);
   void operator=(const igtlioConnector&);
+
+  struct Client
+  {
+    int                           ID;
+    igtl::ClientSocket::Pointer   Socket;
+    Client(int id, igtl::ClientSocket::Pointer socket)
+      : ID(id)
+      , Socket(socket) {}
+  };
 
 public:
   vtkGetMacro( Name, std::string );
@@ -236,7 +241,6 @@ public:
   int Stop();
 
 private:
-
   static void* ThreadFunction(void* ptr);
 
   //----------------------------------------------------------------
@@ -244,13 +248,17 @@ private:
   //----------------------------------------------------------------
   int WaitForConnection(); // called from Thread
   int ReceiveController(); // called from Thread
-  int SendData(int size, unsigned char* data);
-  int Skip(int length, int skipFully=1);
+  int SendData(int size, unsigned char* data, Client& client);
+  int Skip(int length, Client& client, int skipFully=1);
+
+  //----------------------------------------------------------------
+  // Clients
+  //----------------------------------------------------------------
+  Client GetClient(int clientId);
 
   //----------------------------------------------------------------
   // Circular Buffer
   //----------------------------------------------------------------
-
   typedef std::vector<igtlioDeviceKeyType> NameListType;
   unsigned int GetUpdatedSectionBuffersList(NameListType& nameList); // TODO: this will be moved to private
   igtlioCircularSectionBufferPointer GetCircularSectionBuffer(const igtlioDeviceKeyType& key);     // TODO: Is it OK to use device name as a key?
@@ -260,7 +268,7 @@ private:
   //----------------------------------------------------------------
 
   // Description:
-  // Decode command and response messages, creating an igtlioCommand if neccessary
+  // Decode command and response messages, creating an igtlioCommand if necessary
   // Invoke a corresponding event
   void ParseCommands();
 
@@ -269,7 +277,7 @@ private:
   void PruneCompletedCommands();
 
   // Description:
-  // Import received data from the circular buffer to the MRML scne.
+  // Import received data from the circular buffer to the MRML scene.
   // This is currently called by vtkOpenIGTLinkIFLogic class.
   void ImportDataFromCircularBuffer();
 
@@ -287,7 +295,7 @@ private:
   // Description:
   // A function to explicitly push node to OpenIGTLink. The function is called either by
   // external nodes or MRML event hander in the connector node.
-  int PushNode(igtlioDevicePointer node, int event=-1);
+  int PushNode(igtlioDevicePointer node, int event=-1, int clientId=-1);
 
 protected:
   // Description:
@@ -295,7 +303,7 @@ protected:
   void RequestInvokeEvent(unsigned long eventId); // might be called from Thread
 
   // Description:
-  // Reeust to push all outgoing messages to the network stream, if permitted.
+  // Request to push all outgoing messages to the network stream, if permitted.
   // This function is used, when the connection is established. To permit the OpenIGTLink IF
   // to push individual "outgoing" MRML nodes, set "OpenIGTLinkIF.pushOnConnection" attribute to 1.
   // The request will be processed in PushOutgonigMessages().
@@ -304,84 +312,85 @@ protected:
   // Description:
   // Used when receiving command or command response messages.
   // Adds the commands to a queue that is parsed during periodic process
-  bool ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg);
+  bool ReceiveCommandMessage(igtl::MessageHeader::Pointer headerMsg, Client& client);
 
   // Description:
   // Get the command pointer for the command with the matching id
   // Returns NULL if there is no matching command
-  igtlioCommandPointer GetOutgoingCommand(int commandID);
+  igtlioCommandPointer GetOutgoingCommand(int commandID, int clientID);
 
  protected:
   //----------------------------------------------------------------
   // Devices
   //----------------------------------------------------------------
-  std::vector<igtlioDevicePointer>              Devices;
+  std::vector<igtlioDevicePointer>          Devices;
 
   //----------------------------------------------------------------
   // Connector configuration
   //----------------------------------------------------------------
-  std::string                             Name;
-  int                                     UID; /// unique ID for this connector
-  int                                     Type;
-  int                                     State;
-  int                                     Persistent;
+  std::string                               Name;
+  int                                       UID; /// unique ID for this connector
+  int                                       Type;
+  int                                       State;
+  int                                       Persistent;
 
   //----------------------------------------------------------------
   // Thread and Socket
   //----------------------------------------------------------------
-  vtkMultiThreaderPointer                 Thread;
-  vtkMutexLockPointer                     Mutex;
-  igtl::ServerSocket::Pointer             ServerSocket;
-  igtl::ClientSocket::Pointer             Socket;
-  int                                     ThreadID;
-  std::string                             ServerHostname;
-  int                                     ServerPort;
-  int                                     ServerStopFlag;
+  vtkMultiThreaderPointer                   Thread;
+  vtkMutexLockPointer                       Mutex;
+  igtl::ServerSocket::Pointer               ServerSocket;
+  std::vector<Client>                       Sockets;
+  unsigned int                              NextClientID;
+  int                                       ThreadID;
+  std::string                               ServerHostname;
+  int                                       ServerPort;
+  int                                       ServerStopFlag;
 
   //----------------------------------------------------------------
   // Data
   //----------------------------------------------------------------
   typedef std::map<igtlioDeviceKeyType, igtlioCircularSectionBufferPointer> igtlioCircularSectionBufferMap;
-  igtlioCircularSectionBufferMap                SectionBuffer;
+  igtlioCircularSectionBufferMap            SectionBuffer;
 
-  vtkMutexLockPointer                     CircularBufferMutex;
-  int                                     RestrictDeviceName;  // Flag to restrict incoming and outgoing data by device names
+  vtkMutexLockPointer                       CircularBufferMutex;
+  int                                       RestrictDeviceName;  // Flag to restrict incoming and outgoing data by device names
 
   // Event queueing mechanism is needed to send all event notifications from the main thread.
   // Events can be pushed to the end of the EventQueue by calling RequestInvoke from any thread,
   // and they will be Invoked in the main thread.
-  std::list<unsigned long>                EventQueue;
-  vtkMutexLockPointer                     EventQueueMutex;
+  std::list<unsigned long>                  EventQueue;
+  vtkMutexLockPointer                       EventQueueMutex;
 
   // Collect commands before they enter the circular buffer, in order to make sure that they are not overwritten
   //typedef int ClientIDType;
   struct IncomingCommandType
   {
-    int ClientID;
-    igtl::MessageBase::Pointer CommandMessage;
+    unsigned int                ClientID;
+    igtl::MessageBase::Pointer  CommandMessage;
     IncomingCommandType(int clientID, igtl::MessageBase::Pointer commandMessage)
       : ClientID(clientID),
         CommandMessage(commandMessage){}
   };
-  typedef std::queue<IncomingCommandType> IncomingCommandQueueType;
+  typedef std::queue<IncomingCommandType>   IncomingCommandQueueType;
 
-  IncomingCommandQueueType                IncomingCommandQueue;
-  vtkMutexLockPointer                     IncomingCommandQueueMutex;
+  IncomingCommandQueueType                  IncomingCommandQueue;
+  vtkMutexLockPointer                       IncomingCommandQueueMutex;
 
-  // Flag for the push outoing message request
+  // Flag for the push outgoing message request
   // If the flag is ON, the external timer will update the outgoing nodes with
   // "OpenIGTLinkIF.pushOnConnection" attribute to push the nodes to the network.
-  int                                     PushOutgoingMessageFlag;
-  vtkMutexLockPointer                     PushOutgoingMessageMutex;
+  int                                       PushOutgoingMessageFlag;
+  vtkMutexLockPointer                       PushOutgoingMessageMutex;
 
-  igtlioDeviceFactoryPointer              DeviceFactory;
+  igtlioDeviceFactoryPointer                DeviceFactory;
 
-  bool                                    CheckCRC;
+  bool                                      CheckCRC;
 
-  igtlioCommandDequeType                  OutgoingCommandDeque;
-  vtkMutexLockPointer                     OutgoingCommandDequeMutex;
+  igtlioCommandDequeType                    OutgoingCommandDeque;
+  vtkMutexLockPointer                       OutgoingCommandDequeMutex;
 
-  int                                     NextCommandID;
+  int                                       NextCommandID;
 
 };
 
