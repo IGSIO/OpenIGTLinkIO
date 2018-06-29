@@ -313,11 +313,15 @@ igtlioCommandPointer igtlioConnector::GetOutgoingCommand(int commandId, int clie
   igtlioCommandPointer command = NULL;
   if (!this->OutgoingCommandDeque.empty())
     {
-    command = (*std::find_if(
+    igtlioCommandDequeType::iterator outgoingCommandIt = (std::find_if(
       this->OutgoingCommandDeque.begin(),
       this->OutgoingCommandDeque.end(),
       [this, commandId, clientId](const igtlioCommandPointer& entry)
-      { return entry->GetCommandId() == commandId && entry->GetClientId() == clientId; }));
+      { return entry->GetCommandId() == commandId && (entry->GetClientId() == clientId || entry->GetClientId() == -1); }));
+    if (outgoingCommandIt != this->OutgoingCommandDeque.end())
+      {
+      command = *outgoingCommandIt;
+      }
     }
   return command;
 }
@@ -928,11 +932,13 @@ void igtlioConnector::CancelCommand(igtlioCommandPointer command)
     return;
     }
 
-  command->SetStatus(igtlioCommandStatus::CommandCancelled);
-  this->PruneCompletedCommands();
-
-  this->InvokeEvent(igtlioCommand::CommandCancelledEvent, command.GetPointer());
-  command->InvokeEvent(igtlioCommand::CommandCancelledEvent);
+  if (command->IsInProgress())
+    {
+    command->SetStatus(igtlioCommandStatus::CommandCancelled);
+    this->PruneCompletedCommands();
+    this->InvokeEvent(igtlioCommand::CommandCancelledEvent, command.GetPointer());
+    command->InvokeEvent(igtlioCommand::CommandCancelledEvent);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -1020,7 +1026,7 @@ void igtlioConnector::PruneCompletedCommands()
     igtlioCommandPointer command = (*completedCommandIt);
     this->InvokeEvent(igtlioCommand::CommandCompletedEvent, command.GetPointer());
     command->InvokeEvent(igtlioCommand::CommandCompletedEvent);
-    this->OutgoingCommandDeque.erase(std::remove(this->OutgoingCommandDeque.begin(), this->OutgoingCommandDeque.end(), command));
+    this->OutgoingCommandDeque.erase(std::remove(this->OutgoingCommandDeque.begin(), this->OutgoingCommandDeque.end(), command), this->OutgoingCommandDeque.end());
     }
 }
 
