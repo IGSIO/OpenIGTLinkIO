@@ -226,7 +226,7 @@ int igtlioConnector::Stop()
     // NOTE: Thread should be killed by activating ServerStopFlag.
     this->ServerStopFlag = true;
     {
-      igtlioLockGuard<vtkMutexLock>(this->Mutex);
+      igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
       for (auto& client : Sockets)
         {
         if (client.Socket.IsNotNull())

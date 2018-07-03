@@ -30,7 +30,7 @@ vtkStandardNewMacro(igtlioCircularBuffer);
 igtlioCircularBuffer::igtlioCircularBuffer()
 {
 this->Mutex = vtkMutexLock::New();
-igtlioLockGuard<vtkMutexLock>(this->Mutex);
+igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
 // Allocate Circular buffer for the new device
 this->InUse = -1;
 this->Last  = -1;
@@ -52,7 +52,7 @@ igtlioCircularBuffer::~igtlioCircularBuffer()
 {
 
 {
-  igtlioLockGuard<vtkMutexLock>(this->Mutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
   this->InUse = -1;
   this->Last = -1;
 }
@@ -88,7 +88,7 @@ this->vtkObject::PrintSelf(os, indent);
 //---------------------------------------------------------------------------
 int igtlioCircularBuffer::StartPush()
 {
-igtlioLockGuard<vtkMutexLock>(this->Mutex);
+igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
 this->InPush = (this->Last + 1) % IGTLCB_CIRC_BUFFER_SIZE;
 if (this->InPush == this->InUse)
   {
@@ -107,7 +107,7 @@ return this->Messages[this->InPush];
 //---------------------------------------------------------------------------
 void igtlioCircularBuffer::EndPush()
 {
-igtlioLockGuard<vtkMutexLock>(this->Mutex);
+igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
 this->Last = this->InPush;
 this->UpdateFlag = 1;
 }
@@ -125,7 +125,7 @@ this->UpdateFlag = 1;
 //---------------------------------------------------------------------------
 int igtlioCircularBuffer::StartPull()
 {
-igtlioLockGuard<vtkMutexLock>(this->Mutex);
+igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
 this->InUse = this->Last;
 this->UpdateFlag = 0;
 return this->Last;   // return -1 if it is not available
@@ -142,6 +142,6 @@ return this->Messages[this->InUse];
 //---------------------------------------------------------------------------
 void igtlioCircularBuffer::EndPull()
 {
-igtlioLockGuard<vtkMutexLock>(this->Mutex);
+igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
 this->InUse = -1;
 }

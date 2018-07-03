@@ -41,7 +41,7 @@ igtlioCircularSectionBuffer::igtlioCircularSectionBuffer()
 int igtlioCircularSectionBuffer::Initialization()
 {
   this->Mutex = vtkMutexLock::New();
-  igtlioLockGuard<vtkMutexLock>(this->Mutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
   // Allocate Circular buffer for the new device
   this->InUseBegin = -1;
   this->InUseEnd = -1;
@@ -86,7 +86,7 @@ void igtlioCircularSectionBuffer::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 int igtlioCircularSectionBuffer::StartPush()
 {
-  igtlioLockGuard<vtkMutexLock>(this->Mutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
   this->InPush = (this->Last + 1) % this->BufferSize;
   if (this->InPush == this->InUseBegin)
     {
@@ -104,7 +104,7 @@ igtl::MessageBase::Pointer igtlioCircularSectionBuffer::GetPushBuffer()
 //---------------------------------------------------------------------------
 void igtlioCircularSectionBuffer::EndPush()
 {
-  igtlioLockGuard<vtkMutexLock>(this->Mutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
   this->Last = this->InPush;
   this->DataStatus[this->InPush] = DataFilled;
   // If the Inpush location is in the section that is currently been used. jump to the end of the section.
@@ -146,7 +146,7 @@ void igtlioCircularSectionBuffer::EndPush()
 //---------------------------------------------------------------------------
 int igtlioCircularSectionBuffer::StartPull()
 {
-  igtlioLockGuard<vtkMutexLock>(this->Mutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
   this->InUseBegin = this->First;
   this->InUseEnd = this->Last;
   return this->First;
@@ -174,7 +174,7 @@ igtl::MessageBase::Pointer igtlioCircularSectionBuffer::GetPullBuffer()
 //---------------------------------------------------------------------------
 void igtlioCircularSectionBuffer::EndPull()
 {
-  igtlioLockGuard<vtkMutexLock>(this->Mutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
   this->UpdateFlag = 0;
   int nextIndex = (this->InUseEnd+1) % this->BufferSize;
   if (this->DataStatus[nextIndex] == DataFilled)
