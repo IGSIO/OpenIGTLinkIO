@@ -227,11 +227,11 @@ int igtlioConnector::Stop()
     this->ServerStopFlag = true;
     {
       igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
-      for (auto& client : Sockets)
+      for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
         {
-        if (client.Socket.IsNotNull())
+        if (clientIt->Socket.IsNotNull())
           {
-          client.Socket->CloseSocket();
+          clientIt->Socket->CloseSocket();
           }
         }
       this->Sockets.clear();
@@ -285,11 +285,11 @@ void* igtlioConnector::ThreadFunction(void* ptr)
       }
     }
 
-  for (auto& client : connector->Sockets)
+  for (std::vector<Client>::iterator clientIt = connector->Sockets.begin(); clientIt != connector->Sockets.end(); ++clientIt)
     {
-    if (client.Socket.IsNotNull())
+    if (clientIt->Socket.IsNotNull())
       {
-      client.Socket->CloseSocket();
+      clientIt->Socket->CloseSocket();
       }
     }
   connector->Sockets.clear();
@@ -380,11 +380,11 @@ int igtlioConnector::WaitForConnection()
     }
 
 
-  for (auto& client : this->Sockets)
+for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
     {
-    if (client.Socket.IsNotNull())
+    if (clientIt->Socket.IsNotNull())
       {
-      client.Socket->CloseSocket();
+      clientIt->Socket->CloseSocket();
       }
     }
   this->Sockets.clear();
@@ -400,10 +400,10 @@ int igtlioConnector::ReceiveController()
 
   while (!this->ServerStopFlag)
   {
-    for (auto& client : Sockets)
+for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
     {
       // check if connection is alive
-      if (!client.Socket->GetConnected())
+      if (!clientIt->Socket->GetConnected())
       {
         continue;
       }
@@ -415,7 +415,7 @@ int igtlioConnector::ReceiveController()
       vtkDebugMacro("Waiting for header of size: " << headerMsg->GetPackSize());
 
       // This may need to be parallelized so that other socket aren't waiting on timeouts
-      int r = client.Socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+      int r = clientIt->Socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
 
       vtkDebugMacro("Received header of size: " << headerMsg->GetPackSize());
 
@@ -451,7 +451,7 @@ int igtlioConnector::ReceiveController()
         int registered = this->GetDevice(key).GetPointer() != NULL;
         if (registered == 0)
         {
-          this->Skip(headerMsg->GetBodySizeToRead(), client);
+          this->Skip(headerMsg->GetBodySizeToRead(), *clientIt);
           continue; //  while (!this->ServerStopFlag)
         }
       }
@@ -465,7 +465,7 @@ int igtlioConnector::ReceiveController()
       // Intercept command devices before they are added to the circular buffer, and add them to the command queue
       if (std::strcmp(headerMsg->GetDeviceType(), "COMMAND") == 0 || std::strcmp(headerMsg->GetDeviceType(), "RTS_COMMAND") == 0)
       {
-        if (this->ReceiveCommandMessage(headerMsg, client))
+        if (this->ReceiveCommandMessage(headerMsg, *clientIt))
         {
           continue;
         }
@@ -499,7 +499,7 @@ int igtlioConnector::ReceiveController()
         vtkDebugMacro("Waiting to receive body:  size=" << buffer->GetPackBodySize()
           << ", GetBodySizeToRead=" << buffer->GetBodySizeToRead()
           << ", GetPackSize=" << buffer->GetPackSize());
-        int read = client.Socket->Receive(buffer->GetPackBodyPointer(), buffer->GetPackBodySize());
+        int read = clientIt->Socket->Receive(buffer->GetPackBodyPointer(), buffer->GetPackBodySize());
         vtkDebugMacro("Received body: " << read);
         if (read != buffer->GetPackBodySize())
         {
@@ -521,11 +521,11 @@ int igtlioConnector::ReceiveController()
     }
   } // while (!this->ServerStopFlag)
 
-  for (auto& client : Sockets)
+  for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
   {
-    if (client.Socket.IsNotNull())
+    if (clientIt->Socket.IsNotNull())
     {
-      client.Socket->CloseSocket();
+      clientIt->Socket->CloseSocket();
     }
   }
   this->Sockets.clear();
@@ -606,11 +606,11 @@ int igtlioConnector::Skip(int length, Client& client, int skipFully /* = 1 */)
 //----------------------------------------------------------------------------
 igtlioConnector::Client igtlioConnector::GetClient(int clientId)
 {
-  for (auto& client : this->Sockets)
+  for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
   {
-    if (client.ID == clientId)
+    if (clientIt->ID == clientId)
     {
-      return client;
+      return *clientIt;
     }
   }
 
@@ -809,9 +809,9 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command, int clientId)
   if (client.ID == -1)
   {
     bool result = true;
-    for (auto& clientIter : this->Sockets)
+    for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
     {
-      int success = this->SendData(commandMessage->GetBufferSize(), (unsigned char*)commandMessage->GetBufferPointer(), clientIter);
+      int success = this->SendData(commandMessage->GetBufferSize(), (unsigned char*)commandMessage->GetBufferPointer(), *clientIt);
       if (success)
       {
         {
@@ -867,9 +867,9 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command, int clientId)
 int igtlioConnector::ConnectedClientsCount() const
 {
   int total(0);
-  for (auto& client : this->Sockets)
+  for (std::vector<Client>::const_iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
   {
-    if (client.Socket->GetConnected())
+    if (clientIt->Socket->GetConnected())
     {
       total++;
     }
@@ -1151,7 +1151,7 @@ int igtlioConnector::SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::ME
   if (client.ID == -1)
   {
     bool result = true;
-    for (auto& client : this->Sockets)
+    for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
     {
       int r = this->SendData(msg->GetPackSize(), (unsigned char*)msg->GetPackPointer(), client);
       if (r == 0)
@@ -1196,11 +1196,11 @@ void igtlioConnector::SetDeviceFactory(igtlioDeviceFactoryPointer val)
 //----------------------------------------------------------------------------
 bool igtlioConnector::IsConnected()
 {
-  for (auto& client : Sockets)
+  for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
     {
-    if (client.Socket.IsNotNull())
+    if (clientIt->Socket.IsNotNull())
       {
-      if (client.Socket->GetConnected())
+      if (clientIt->Socket->GetConnected())
         {
         return true;
         }
@@ -1216,7 +1216,7 @@ int igtlioConnector::PushNode(igtlioDevicePointer node, int event, int clientId 
   // TODO: verify that removed event argument is OK
   // TODO: clientId doesn't make sense (whole function doesn't make sense), remove as parameter?
   bool result = true;
-  for (auto& client : this->Sockets)
+  for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
   {
     result &= (this->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(node), igtlioDevice::MESSAGE_PREFIX_NOT_DEFINED, clientId) == 1);
   }
