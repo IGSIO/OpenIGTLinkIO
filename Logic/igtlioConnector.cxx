@@ -369,10 +369,10 @@ int igtlioConnector::WaitForConnection()
       {
       igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
       assert(this->Sockets.size() > 0);
-      this->Sockets[0].Socket->SetTimeout(SOCKET_TIMEOUT_MILLISECONDS);
       int r = this->Sockets[0].Socket->ConnectToServer(this->ServerHostname.c_str(), this->ServerPort);
       if (r == 0) // if connected to server
         {
+        this->Sockets[0].Socket->SetTimeout(SOCKET_TIMEOUT_MILLISECONDS);
         return 1;
         }
       else
