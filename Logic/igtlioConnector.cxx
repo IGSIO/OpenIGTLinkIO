@@ -48,7 +48,7 @@ Version:   $Revision: 1.4 $
 vtkStandardNewMacro(igtlioConnector);
 //----------------------------------------------------------------------------
 
-int SOCKET_TIMEOUT_MILLISECONDS = 1;
+int SOCKET_TIMEOUT_MILLISECONDS = 5;
 
 //----------------------------------------------------------------------------
 const char *igtlioConnector::ConnectorTypeStr[igtlioConnector::NUM_TYPE] =
