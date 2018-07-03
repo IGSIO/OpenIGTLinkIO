@@ -269,7 +269,7 @@ void* igtlioConnector::ThreadFunction(void* ptr)
     {
 
     {
-      igtlioLockGuard<vtkMutexLock>(connector->Mutex);
+      igtlioLockGuard<vtkMutexLock> lock(connector->Mutex);
       connector->WaitForConnection();
     }
 
@@ -309,7 +309,7 @@ void* igtlioConnector::ThreadFunction(void* ptr)
 //----------------------------------------------------------------------------
 igtlioCommandPointer igtlioConnector::GetOutgoingCommand(int commandId, int clientId)
 {
-  igtlioLockGuard<vtkMutexLock>(this->OutgoingCommandDequeMutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->OutgoingCommandDequeMutex);
   igtlioCommandPointer command = NULL;
   if (!this->OutgoingCommandDeque.empty())
     {
@@ -329,14 +329,14 @@ igtlioCommandPointer igtlioConnector::GetOutgoingCommand(int commandId, int clie
 //----------------------------------------------------------------------------
 void igtlioConnector::RequestInvokeEvent(unsigned long eventId)
 {
-  igtlioLockGuard<vtkMutexLock>(this->EventQueueMutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->EventQueueMutex);
   this->EventQueue.push_back(eventId);
 }
 
 //----------------------------------------------------------------------------
 void igtlioConnector::RequestPushOutgoingMessages()
 {
-  igtlioLockGuard<vtkMutexLock>(this->PushOutgoingMessageMutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->PushOutgoingMessageMutex);
   this->PushOutgoingMessageFlag = 1;
 }
 
@@ -474,7 +474,7 @@ int igtlioConnector::ReceiveController()
       igtlioCircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
       if (iter == this->SectionBuffer.end()) // First time to refer the device name
       {
-        igtlioLockGuard<vtkMutexLock>(this->CircularBufferMutex);
+        igtlioLockGuard<vtkMutexLock> lock(this->CircularBufferMutex);
         this->SectionBuffer[key] = igtlioCircularSectionBufferPointer::New();
         this->SectionBuffer[key]->SetPacketMode(igtlioCircularSectionBuffer::SinglePacketMode);
         if (strcmp(headerMsg->GetDeviceType(), "VIDEO") == 0)
@@ -557,7 +557,7 @@ bool igtlioConnector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerM
     return false;
   }
 
-  igtlioLockGuard<vtkMutexLock>(this->IncomingCommandQueueMutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->IncomingCommandQueueMutex);
   this->IncomingCommandQueue.push(IncomingCommandType(client.ID, buffer));
 
   return true;
@@ -711,7 +711,7 @@ void igtlioConnector::ImportEventsFromEventBuffer()
   do
   {
     emptyQueue=true;
-    igtlioLockGuard<vtkMutexLock>(this->EventQueueMutex);
+    igtlioLockGuard<vtkMutexLock> lock(this->EventQueueMutex);
     if (this->EventQueue.size()>0)
     {
       eventId=this->EventQueue.front();
@@ -732,7 +732,7 @@ void igtlioConnector::PushOutgoingMessages()
 
   // Read PushOutgoingMessageFlag and reset it.
   {
-    igtlioLockGuard<vtkMutexLock>(this->PushOutgoingMessageMutex);
+    igtlioLockGuard<vtkMutexLock> lock(this->PushOutgoingMessageMutex);
     push = this->PushOutgoingMessageFlag;
     this->PushOutgoingMessageFlag = 0;
   }
@@ -815,7 +815,7 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command, int clientId)
       if (success)
       {
         {
-          igtlioLockGuard<vtkMutexLock>(this->OutgoingCommandDequeMutex);
+          igtlioLockGuard<vtkMutexLock> lock(this->OutgoingCommandDequeMutex);
           this->OutgoingCommandDeque.push_back(command);
         }
         command->SetStatus(igtlioCommandStatus::CommandWaiting);
@@ -842,7 +842,7 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command, int clientId)
     if (success)
     {
       {
-        igtlioLockGuard<vtkMutexLock>(this->OutgoingCommandDequeMutex);
+        igtlioLockGuard<vtkMutexLock> lock(this->OutgoingCommandDequeMutex);
         this->OutgoingCommandDeque.push_back(command);
       }
       command->SetStatus(igtlioCommandStatus::CommandWaiting);
@@ -944,7 +944,7 @@ void igtlioConnector::CancelCommand(igtlioCommandPointer command)
 //----------------------------------------------------------------------------
 void igtlioConnector::ParseCommands()
 {
-  igtlioLockGuard<vtkMutexLock>(this->IncomingCommandQueueMutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->IncomingCommandQueueMutex);
 
   while (!this->IncomingCommandQueue.empty())
     {
@@ -997,7 +997,7 @@ void igtlioConnector::ParseCommands()
 //----------------------------------------------------------------------------
 void igtlioConnector::PruneCompletedCommands()
 {
-  igtlioLockGuard<vtkMutexLock>(this->OutgoingCommandDequeMutex);
+  igtlioLockGuard<vtkMutexLock> lock(this->OutgoingCommandDequeMutex);
 
   igtlioCommandDequeType completedCommands = igtlioCommandDequeType();
   for (igtlioCommandDequeType::iterator outgoingCommandIt = this->OutgoingCommandDeque.begin();
