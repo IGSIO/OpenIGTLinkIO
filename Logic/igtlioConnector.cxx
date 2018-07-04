@@ -270,10 +270,7 @@ void* igtlioConnector::ThreadFunction(void* ptr)
   while (!connector->ServerStopFlag)
     {
 
-    {
-      igtlioLockGuard<vtkMutexLock> lock(connector->Mutex);
-      connector->WaitForConnection();
-    }
+    connector->WaitForConnection();
 
     if (connector->IsConnected())
       {
@@ -408,11 +405,17 @@ int igtlioConnector::ReceiveController()
 
   while (!this->ServerStopFlag)
   {
-  igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
-  for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
+    std::vector<int> clientIds = this->GetClientIds();
+    for (std::vector<int>::iterator clientIdIt = clientIds.begin(); clientIdIt != clientIds.end(); ++clientIdIt)
     {
+      Client client = this->GetClient(*clientIdIt);
+      if (client.ID == -1)
+      {
+        continue;
+      }
+
       // check if connection is alive
-      if (!clientIt->Socket->GetConnected())
+      if (!client.Socket->GetConnected())
       {
         continue;
       }
@@ -424,7 +427,7 @@ int igtlioConnector::ReceiveController()
       vtkDebugMacro("Waiting for header of size: " << headerMsg->GetPackSize());
 
       // This may need to be parallelized so that other socket aren't waiting on timeouts
-      int r = clientIt->Socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+      int r = client.Socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
 
       vtkDebugMacro("Received header of size: " << headerMsg->GetPackSize());
 
@@ -460,7 +463,7 @@ int igtlioConnector::ReceiveController()
         int registered = this->GetDevice(key).GetPointer() != NULL;
         if (registered == 0)
         {
-          this->Skip(headerMsg->GetBodySizeToRead(), *clientIt);
+          this->Skip(headerMsg->GetBodySizeToRead(), client);
           continue; //  while (!this->ServerStopFlag)
         }
       }
@@ -474,7 +477,7 @@ int igtlioConnector::ReceiveController()
       // Intercept command devices before they are added to the circular buffer, and add them to the command queue
       if (std::strcmp(headerMsg->GetDeviceType(), "COMMAND") == 0 || std::strcmp(headerMsg->GetDeviceType(), "RTS_COMMAND") == 0)
       {
-        if (this->ReceiveCommandMessage(headerMsg, *clientIt))
+        if (this->ReceiveCommandMessage(headerMsg, client))
         {
           continue;
         }
@@ -508,7 +511,7 @@ int igtlioConnector::ReceiveController()
         vtkDebugMacro("Waiting to receive body:  size=" << buffer->GetPackBodySize()
           << ", GetBodySizeToRead=" << buffer->GetBodySizeToRead()
           << ", GetPackSize=" << buffer->GetPackSize());
-        int read = clientIt->Socket->Receive(buffer->GetPackBodyPointer(), buffer->GetPackBodySize());
+        int read = client.Socket->Receive(buffer->GetPackBodyPointer(), buffer->GetPackBodySize());
         vtkDebugMacro("Received body: " << read);
         if (read != buffer->GetPackBodySize())
         {
@@ -611,6 +614,18 @@ int igtlioConnector::Skip(int length, Client& client, int skipFully /* = 1 */)
   while (remain > 0 || (skipFully && n < block));
 
   return (length - remain);
+}
+
+//----------------------------------------------------------------------------
+std::vector<int> igtlioConnector::GetClientIds()
+{
+  std::vector<int> clientIds;
+  igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
+  for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
+  {
+    clientIds.push_back(clientIt->ID);
+  }
+  return clientIds;
 }
 
 //----------------------------------------------------------------------------
@@ -816,14 +831,20 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command, int clientId)
   igtl::MessageBase::MetaDataMap metaData = command->GetCommandMetaData();
   igtlioCommandConverter::toIGTL(headerData, content, &commandMessage, metaData);
 
-  Client client = GetClient(clientId);
+  Client client = this->GetClient(clientId);
   if (client.ID == -1)
   {
     bool result = true;
-    igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
-    for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
+    std::vector<int> clientIds = this->GetClientIds();
+    for (std::vector<int>::iterator clientIdIt = clientIds.begin(); clientIdIt != clientIds.end(); ++clientIdIt)
     {
-      int success = this->SendData(commandMessage->GetBufferSize(), (unsigned char*)commandMessage->GetBufferPointer(), *clientIt);
+      Client currentClient = this->GetClient(*clientIdIt);
+      if (currentClient.ID == -1)
+      {
+        continue;
+      }
+
+      int success = this->SendData(commandMessage->GetBufferSize(), (unsigned char*)commandMessage->GetBufferPointer(), currentClient);
       if (success)
       {
         {
@@ -1164,10 +1185,16 @@ int igtlioConnector::SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::ME
   if (client.ID == -1)
   {
     bool result = true;
-    igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
-    for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
+    std::vector<int> clientIds = this->GetClientIds();
+    for (std::vector<int>::iterator clientIdIt = clientIds.begin(); clientIdIt != clientIds.end(); ++clientIdIt)
     {
-      int r = this->SendData(msg->GetPackSize(), (unsigned char*)msg->GetPackPointer(), *clientIt);
+      Client currentClient = this->GetClient(*clientIdIt);
+      if (currentClient.ID == -1)
+      {
+        continue;
+      }
+
+      int r = this->SendData(msg->GetPackSize(), (unsigned char*)msg->GetPackPointer(), currentClient);
       if (r == 0)
       {
         vtkDebugMacro("Sending OpenIGTLinkMessage: " << device_id.type << "/" << device_id.name << " failed.");
@@ -1231,10 +1258,10 @@ int igtlioConnector::PushNode(igtlioDevicePointer node, int event, int clientId 
   // TODO: verify that removed event argument is OK
   // TODO: clientId doesn't make sense (whole function doesn't make sense), remove as parameter?
   bool result = true;
-  igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
-  for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
+  std::vector<int> clientIds = this->GetClientIds();
+  for (std::vector<int>::iterator clientIdIt = clientIds.begin(); clientIdIt != clientIds.end(); ++clientIdIt)
   {
-    result &= (this->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(node), igtlioDevice::MESSAGE_PREFIX_NOT_DEFINED, clientId) == 1);
+    result &= (this->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(node), igtlioDevice::MESSAGE_PREFIX_NOT_DEFINED, *clientIdIt) == 1);
   }
   return result ? 1 : 0;
 }
