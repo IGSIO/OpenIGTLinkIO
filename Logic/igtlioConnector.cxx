@@ -269,11 +269,7 @@ void* igtlioConnector::ThreadFunction(void* ptr)
   // Communication -- common to both Server and Client
   while (!connector->ServerStopFlag)
     {
-
-    {
-      igtlioLockGuard<vtkMutexLock> lock(connector->Mutex);
       connector->WaitForConnection();
-    }
 
     if (connector->IsConnected())
       {
