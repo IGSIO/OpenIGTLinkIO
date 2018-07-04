@@ -254,7 +254,8 @@ private:
   //----------------------------------------------------------------
   // Clients
   //----------------------------------------------------------------
-  Client GetClient(int clientId);
+  std::vector<int> GetClientIds(); // Thread safe
+  Client GetClient(int clientId); // Thread safe
 
   //----------------------------------------------------------------
   // Circular Buffer
@@ -340,7 +341,7 @@ protected:
   vtkMultiThreaderPointer                   Thread;
   vtkMutexLockPointer                       Mutex;
   igtl::ServerSocket::Pointer               ServerSocket;
-  std::vector<Client>                       Sockets;
+  std::vector<Client>                       Sockets; // Access is not thread safe, control usage with igtlioConenctor::Mutex
   unsigned int                              NextClientID;
   int                                       ThreadID;
   std::string                               ServerHostname;
