@@ -88,7 +88,7 @@ public:
   void PeriodicProcess();
 
   // ClientId of -1 means to all connected client
-  int SendCommand(igtlioCommandPointer command, int clientId = -1);
+  int SendCommand(igtlioCommandPointer command);
   igtlioCommandPointer SendCommand(std::string command, std::string content, IGTLIO_SYNCHRONIZATION_TYPE synchronized, double timeout_s = 5.0, igtl::MessageBase::MetaDataMap* metaData = NULL, int clientID = -1);
 
   int ConnectedClientsCount() const;
@@ -137,6 +137,8 @@ public:
     NewDeviceEvent              = 118949,
     DeviceContentModifiedEvent  = 118950, // invoked by the devices
     RemovedDeviceEvent          = 118951,
+    ClientConnectedEvent        = 118952,
+    ClientDisconnectedEvent     = 118953,
   };
 
   enum {
@@ -196,9 +198,12 @@ protected:
   {
     int                           ID;
     igtl::ClientSocket::Pointer   Socket;
-    Client(int id, igtl::ClientSocket::Pointer socket)
+    int ThreadID;
+    Client(int id, igtl::ClientSocket::Pointer socket, int threadID)
       : ID(id)
-      , Socket(socket) {}
+      , Socket(socket) 
+      , ThreadID(threadID)
+    {}
   };
 
 public:
@@ -233,6 +238,8 @@ public:
 
   bool IsConnected();
 
+  std::vector<int> GetClientIds(); // Thread safe
+
   //----------------------------------------------------------------
   // Thread Control
   //----------------------------------------------------------------
@@ -241,21 +248,21 @@ public:
   int Stop();
 
 private:
-  static void* ThreadFunction(void* ptr);
+  static void* ConnectionAcceptThreadFunction(void* ptr);
+  static void* ReceiverThreadFunction(void* ptr);
 
   //----------------------------------------------------------------
   // OpenIGTLink Message handlers
   //----------------------------------------------------------------
-  int WaitForConnection(); // called from Thread
-  int ReceiveController(); // called from Thread
+  bool ReceiveController(int clientID); // called from Thread
   int SendData(int size, unsigned char* data, Client& client);
   int Skip(int length, Client& client, int skipFully=1);
 
   //----------------------------------------------------------------
   // Clients
   //----------------------------------------------------------------
-  std::vector<int> GetClientIds(); // Thread safe
   Client GetClient(int clientId); // Thread safe
+  bool RemoveClient(int clientId); // Thread safe
 
   //----------------------------------------------------------------
   // Circular Buffer
@@ -325,6 +332,7 @@ protected:
   // Devices
   //----------------------------------------------------------------
   std::vector<igtlioDevicePointer>          Devices;
+  vtkMutexLockPointer                       DeviceMutex;
 
   //----------------------------------------------------------------
   // Connector configuration
@@ -339,11 +347,11 @@ protected:
   // Thread and Socket
   //----------------------------------------------------------------
   vtkMultiThreaderPointer                   Thread;
-  vtkMutexLockPointer                       Mutex;
+  vtkMutexLockPointer                       ClientMutex;
   igtl::ServerSocket::Pointer               ServerSocket;
-  std::vector<Client>                       Sockets; // Access is not thread safe, control usage with igtlioConenctor::Mutex
+  std::vector<Client>                       Sockets; // Access is not thread safe, control usage with igtlioConnector::ClientMutex
   unsigned int                              NextClientID;
-  int                                       ThreadID;
+  int                                       ConnectionThreadID;
   std::string                               ServerHostname;
   int                                       ServerPort;
   int                                       ServerStopFlag;
