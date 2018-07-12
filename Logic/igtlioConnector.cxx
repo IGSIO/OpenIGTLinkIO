@@ -230,6 +230,8 @@ int igtlioConnector::Stop()
     this->ServerStopFlag = true;
     while(this->ConnectionThreadID >= 0 || this->Sockets.size() > 0)
      {
+      // Sleep required to keep loop from hanging in release mode
+      igtl::Sleep(1);
      }
 
     return 1;
