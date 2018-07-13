@@ -226,6 +226,11 @@ int igtlioConnector::Stop()
   // Check if thread exists
   if (this->ConnectionThreadID >= 0)
   {
+    if (this->Type == TYPE_SERVER && this->ServerSocket.IsNotNull())
+    {
+      this->ServerSocket->CloseSocket();
+    }
+
     // NOTE: Thread should be killed by activating ServerStopFlag.
     this->ServerStopFlag = true;
     while(this->ConnectionThreadID >= 0 || this->Sockets.size() > 0)
@@ -249,7 +254,6 @@ void* igtlioConnector::ReceiverThreadFunction(void* ptr)
   igtlioConnector* connector = static_cast<igtlioConnector*>(vinfo->UserData);
   int currentThreadID = vinfo->ThreadID;
   int clientID = -1;
-  connector->State = STATE_WAIT_CONNECTION;
   bool connected = true;
   // Communication -- common to both Server and Client
   while (!connector->ServerStopFlag && connected)
@@ -266,17 +270,17 @@ void* igtlioConnector::ReceiverThreadFunction(void* ptr)
             break;
           }
         }
-
-        if (clientID == -1)
-          {
-          continue;
-          }
       }
 
     connected = connector->ReceiveController(clientID);
     }
 
   connector->RemoveClient(clientID);
+
+  // Signal to the threader that this thread has become free
+  vinfo->ActiveFlagLock->Lock();
+  (*vinfo->ActiveFlag) = 0;
+  vinfo->ActiveFlagLock->Unlock();
   return NULL; //why???
 }
 
@@ -320,6 +324,7 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
   vtkMultiThreader::ThreadInfo* vinfo = static_cast<vtkMultiThreader::ThreadInfo*>(ptr);
   igtlioConnector* connector = static_cast<igtlioConnector*>(vinfo->UserData);
 
+  connector->State = STATE_WAIT_CONNECTION;
   if (connector->Type == TYPE_SERVER)
     {
     connector->ServerSocket = igtl::ServerSocket::New();
@@ -381,6 +386,11 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
       }
     }
 
+  if (connector->Type == TYPE_SERVER && connector->ServerSocket.IsNotNull())
+    {
+    connector->ServerSocket->CloseSocket();
+    }
+
   igtlioLockGuard<vtkMutexLock> lock(connector->ClientMutex);
   for (std::vector<Client>::iterator clientIt = connector->Sockets.begin(); clientIt != connector->Sockets.end(); ++clientIt)
     {
@@ -390,14 +400,14 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
       }
     }
 
-  if (connector->Type == TYPE_SERVER && connector->ServerSocket.IsNotNull())
-  {
-    connector->ServerSocket->CloseSocket();
-  }
   connector->ConnectionThreadID = -1;
   connector->State = STATE_OFF;
   connector->RequestInvokeEvent(igtlioConnector::DeactivatedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
 
+  // Signal to the threader that this thread has become free
+  vinfo->ActiveFlagLock->Lock();
+  (*vinfo->ActiveFlag) = 0;
+  vinfo->ActiveFlagLock->Unlock();
   return 0;
 }
 
