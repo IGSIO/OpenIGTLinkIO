@@ -2,8 +2,16 @@
 #define IGTLIOUTILITIES_H
 
 #include "igtlioLogicExport.h"
+
+// std includes
 #include <string>
+
+// OpenIGTLink includes
 #include "igtlMessageBase.h"
+
+// VTK includes
+#include "vtkImageData.h"
+#include "vtkMatrix4x4.h"
 #include "vtkSmartPointer.h"
 
 typedef vtkSmartPointer<class igtlioDevice> igtlioDevicePointer;

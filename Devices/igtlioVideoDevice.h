@@ -85,6 +85,8 @@ protected:
 
   igtlioVideoConverter::ContentData Content;
 
+  igtl::GenericDecoder* VideoStreamDecoderI420;
+
   igtl::GenericDecoder* VideoStreamDecoderVPX;
 
   igtl::GenericDecoder* VideoStreamDecoderX265;
@@ -98,6 +100,8 @@ protected:
   igtl::SourcePicture* DecodedPic;
 
   std::string CurrentCodecType;
+
+  igtl::GenericEncoder* VideoStreamEncoderI420;
 
   igtl::GenericEncoder* VideoStreamEncoderVPX;
 
