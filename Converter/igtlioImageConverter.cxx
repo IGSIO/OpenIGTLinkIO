@@ -14,6 +14,8 @@
 
 #include "igtlioImageConverter.h"
 
+#include "igtlioConverterUtilities.h"
+
 #include <igtl_util.h>
 #include <igtlImageMessage.h>
 
@@ -299,67 +301,9 @@ int igtlioImageConverter::IGTLImageToVTKTransform(igtl::ImageMessage::Pointer im
   imgMsg->GetSpacing(spacing);
 
   igtl::Matrix4x4 matrix; // Image origin and orientation matrix
-
   imgMsg->GetMatrix(matrix);
 
-  float tx = matrix[0][0];
-  float ty = matrix[1][0];
-  float tz = matrix[2][0];
-  float sx = matrix[0][1];
-  float sy = matrix[1][1];
-  float sz = matrix[2][1];
-  float nx = matrix[0][2];
-  float ny = matrix[1][2];
-  float nz = matrix[2][2];
-  float px = matrix[0][3];
-  float py = matrix[1][3];
-  float pz = matrix[2][3];
-
-  // normalize
-  float psi = sqrt(tx*tx + ty*ty + tz*tz);
-  float psj = sqrt(sx*sx + sy*sy + sz*sz);
-  float psk = sqrt(nx*nx + ny*ny + nz*nz);
-  float ntx = tx / psi;
-  float nty = ty / psi;
-  float ntz = tz / psi;
-  float nsx = sx / psj;
-  float nsy = sy / psj;
-  float nsz = sz / psj;
-  float nnx = nx / psk;
-  float nny = ny / psk;
-  float nnz = nz / psk;
-
-  // Shift the center
-  // NOTE: The center of the image should be shifted due to different
-  // definitions of image origin between VTK (Slicer) and OpenIGTLink;
-  // OpenIGTLink image has its origin at the center, while VTK image
-  // has one at the corner.
-  float hfovi = spacing[0] * psi * (size[0]-1) / 2.0;
-  float hfovj = spacing[1] * psj * (size[1]-1) / 2.0;
-  float hfovk = spacing[2] * psk * (size[2]-1) / 2.0;
-  //float hfovk = 0;
-
-  float cx = ntx * hfovi + nsx * hfovj + nnx * hfovk;
-  float cy = nty * hfovi + nsy * hfovj + nny * hfovk;
-  float cz = ntz * hfovi + nsz * hfovj + nnz * hfovk;
-  px = px - cx;
-  py = py - cy;
-  pz = pz - cz;
-
-  // set volume orientation
-  ijk2ras->Identity();
-  ijk2ras->Element[0][0] = ntx*spacing[0];
-  ijk2ras->Element[1][0] = nty*spacing[0];
-  ijk2ras->Element[2][0] = ntz*spacing[0];
-  ijk2ras->Element[0][1] = nsx*spacing[1];
-  ijk2ras->Element[1][1] = nsy*spacing[1];
-  ijk2ras->Element[2][1] = nsz*spacing[1];
-  ijk2ras->Element[0][2] = nnx*spacing[2];
-  ijk2ras->Element[1][2] = nny*spacing[2];
-  ijk2ras->Element[2][2] = nnz*spacing[2];
-  ijk2ras->Element[0][3] = px;
-  ijk2ras->Element[1][3] = py;
-  ijk2ras->Element[2][3] = pz;
+  igtlioConverterUtilities::IGTLTransformToVTKTransform(size, spacing, matrix, ijk2ras);
 
   return 1;
 }
@@ -485,51 +429,8 @@ int igtlioImageConverter::toIGTL(const HeaderData& header, const ContentData& so
       imageData->GetScalarPointer(),
       msg->GetImageSize());
 
-  // Transform
-  float ntx = source.transform->Element[0][0] / (float)spacing[0];
-  float nty = source.transform->Element[1][0] / (float)spacing[0];
-  float ntz = source.transform->Element[2][0] / (float)spacing[0];
-  float nsx = source.transform->Element[0][1] / (float)spacing[1];
-  float nsy = source.transform->Element[1][1] / (float)spacing[1];
-  float nsz = source.transform->Element[2][1] / (float)spacing[1];
-  float nnx = source.transform->Element[0][2] / (float)spacing[2];
-  float nny = source.transform->Element[1][2] / (float)spacing[2];
-  float nnz = source.transform->Element[2][2] / (float)spacing[2];
-  float px  = source.transform->Element[0][3];
-  float py  = source.transform->Element[1][3];
-  float pz  = source.transform->Element[2][3];
-
-  // Shift the center
-  // NOTE: The center of the image should be shifted due to different
-  // definitions of image origin between VTK (Slicer) and OpenIGTLink;
-  // OpenIGTLink image has its origin at the center, while VTK image
-  // has one at the corner.
-
-  float hfovi = (float)spacing[0] * (float)(isize[0]-1) / 2.0;
-  float hfovj = (float)spacing[1] * (float)(isize[1]-1) / 2.0;
-  float hfovk = (float)spacing[2] * (float)(isize[2]-1) / 2.0;
-
-  float cx = ntx * hfovi + nsx * hfovj + nnx * hfovk;
-  float cy = nty * hfovi + nsy * hfovj + nny * hfovk;
-  float cz = ntz * hfovi + nsz * hfovj + nnz * hfovk;
-
-  px = px + cx;
-  py = py + cy;
-  pz = pz + cz;
-
   igtl::Matrix4x4 matrix; // Image origin and orientation matrix
-  matrix[0][0] = ntx;
-  matrix[1][0] = nty;
-  matrix[2][0] = ntz;
-  matrix[0][1] = nsx;
-  matrix[1][1] = nsy;
-  matrix[2][1] = nsz;
-  matrix[0][2] = nnx;
-  matrix[1][2] = nny;
-  matrix[2][2] = nnz;
-  matrix[0][3] = px;
-  matrix[1][3] = py;
-  matrix[2][3] = pz;
+  igtlioConverterUtilities::VTKTransformToIGTLTransform(source.transform, isize, spacing, matrix);
 
   msg->SetMatrix(matrix);
   msg->Pack();

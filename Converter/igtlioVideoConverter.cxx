@@ -11,6 +11,8 @@
 
 #include "igtlioVideoConverter.h"
 
+#include "igtlioConverterUtilities.h"
+
 #include <vtkImageData.h>
 #include <vtkMatrix4x4.h>
 #include <vtkVersion.h>
@@ -47,6 +49,12 @@ int igtlioVideoConverter::fromIGTL(igtl::MessageBase::Pointer source,
   dest->frameType = (VideoFrameType)frameType;
   strncpy(dest->codecName, "    ", IGTL_VIDEO_CODEC_NAME_SIZE);
   GenericDecoder* decoder = NULL;
+
+  if (videoMessage->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_I420) == 0)
+  {
+    decoder = decoders.find(IGTL_VIDEO_CODEC_NAME_I420)->second;
+    strncpy(dest->codecName, IGTL_VIDEO_CODEC_NAME_I420, IGTL_VIDEO_CODEC_NAME_SIZE);
+  }
 #if defined(OpenIGTLink_USE_H264)
  if(videoMessage->GetCodecType().compare(IGTL_VIDEO_CODEC_NAME_H264)==0)
    {
@@ -78,6 +86,13 @@ int igtlioVideoConverter::fromIGTL(igtl::MessageBase::Pointer source,
 #endif
   // get header
   if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(videoMessage), header, outMetaInfo))
+    return 0;
+
+  if (!dest->transform)
+    dest->transform = vtkSmartPointer<vtkMatrix4x4>::New();
+
+  // get transform
+  if (igtlioVideoConverter::IGTLFrameToVTKTransform(videoMessage, dest->transform) == 0)
     return 0;
 
   // get Video
@@ -189,6 +204,25 @@ int igtlioVideoConverter::toIGTL(const HeaderData& header, const ContentData& so
     return 0;
     }
 
+  double *spacing;       // spacing (mm/pixel)
+  spacing = frameImage->GetSpacing();
+  scalarType = frameImage->GetScalarType();
+  ncomp = frameImage->GetNumberOfScalarComponents();
+  
+  igtl::Matrix4x4 matrix; // Image origin and orientation matrix
+  igtlioConverterUtilities::VTKTransformToIGTLTransform(source.transform, frameImage->GetDimensions(), spacing, matrix);
+
+  // Check endianness of the machine
+  int endian = igtl::VideoMessage::ENDIAN_BIG;
+  if (igtl_is_little_endian())
+    {
+    endian = igtl::VideoMessage::ENDIAN_LITTLE;
+    }
+
+  videoMsg->SetMatrix(matrix);
+  videoMsg->SetSpacing((float)spacing[0], (float)spacing[1], (float)spacing[2]);
+  videoMsg->SetEndian(endian);
+
   int imageSizePixels[3] = { 0 };
 
   frameImage->GetDimensions(imageSizePixels);
@@ -240,4 +274,22 @@ int igtlioVideoConverter::IGTLToVTKScalarType(int igtlType)
       std::cerr << "Invalid IGTL scalar Type: "<<igtlType << std::endl;
       return VTK_VOID;
     }
+}
+
+//---------------------------------------------------------------------------
+int igtlioVideoConverter::IGTLFrameToVTKTransform(igtl::VideoMessage::Pointer videoMsg, vtkSmartPointer<vtkMatrix4x4> ijk2ras)
+{
+  igtl::Matrix4x4 matrix;
+  videoMsg->GetMatrix(matrix);
+
+  int imageSize[3];
+  imageSize[0] = videoMsg->GetWidth();
+  imageSize[1] = videoMsg->GetHeight();
+  imageSize[2] = videoMsg->GetAdditionalZDimension();
+
+  float imageSpacing[3];
+  videoMsg->GetSpacing(imageSpacing);
+  igtlioConverterUtilities::IGTLTransformToVTKTransform(imageSize, imageSpacing, matrix, ijk2ras);
+
+  return 1;
 }

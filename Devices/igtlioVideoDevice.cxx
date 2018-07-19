@@ -49,6 +49,8 @@ igtlioVideoDevice::igtlioVideoDevice()
   VideoStreamEncoderX265 = NULL;
   VideoStreamDecoderAV1 = NULL;
   VideoStreamEncoderAV1 = NULL;
+  VideoStreamEncoderI420 = new I420Encoder();
+  VideoStreamDecoderI420 = new I420Decoder();
 #if defined(OpenIGTLink_USE_H264)
   VideoStreamDecoderH264 = new H264Decoder();
   VideoStreamEncoderH264 = new H264Encoder();
@@ -82,8 +84,8 @@ igtlioVideoDevice::igtlioVideoDevice()
   DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_H264,VideoStreamDecoderH264));
   DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_VP9, VideoStreamDecoderVPX));
   DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_OPENHEVC,VideoStreamDecoderX265));
-  DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_AV1,
-      VideoStreamDecoderAV1));
+  DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_AV1, VideoStreamDecoderAV1));
+  DecodersMap.insert(std::pair<std::string, GenericDecoder*>(IGTL_VIDEO_CODEC_NAME_I420, VideoStreamDecoderI420));
   DecodedPic = new SourcePicture();
   this->CurrentCodecType = IGTL_VIDEO_CODEC_NAME_VP9;
 }
@@ -176,6 +178,14 @@ igtl::MessageBase::Pointer igtlioVideoDevice::GetIGTLMessage()
   int iReturn = 0;
   if(Content.videoMessage.IsNull())
     Content.videoMessage = igtl::VideoMessage::New();
+
+  if(this->CurrentCodecType.compare(IGTL_VIDEO_CODEC_NAME_I420) == 0)
+  {
+    VideoStreamEncoderI420->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
+    VideoStreamEncoderI420->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
+    Content.videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_I420);
+    iReturn = igtlioVideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderI420, this->metaInfo);
+  }
 #if defined(OpenIGTLink_USE_H264)
   if(this->CurrentCodecType.compare(IGTL_VIDEO_CODEC_NAME_H264) == 0)
     {
