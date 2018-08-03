@@ -84,6 +84,9 @@ set(OpenIGTLinkIO_Qt_CONFIG_CODE "")
 if (${IGTLIO_USE_GUI})
   add_subdirectory(GUI)
   list (APPEND OpenIGTLinkIO_TARGETS igtlioGUI)
+  # CMake is not able to generate the makefile on linux if the 
+  # target Qt5::X11Extras is not defined in this directory
+  # when IGTLIO_USE_GUI is ON.
   if(UNIX AND NOT APPLE)
     find_package(Qt5 COMPONENTS X11Extras REQUIRED)
   endif()
