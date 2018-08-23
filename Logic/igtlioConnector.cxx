@@ -354,7 +354,7 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
       if (connector->Sockets.empty())
         {
           igtl::ClientSocket::Pointer socket = igtl::ClientSocket::New();
-          int r = socket->ConnectToServer(connector->ServerHostname.c_str(), connector->ServerPort);
+          int r = socket->ConnectToServer(connector->ServerHostname.c_str(), connector->ServerPort, false);
           if (r == 0) // if connected to server
           {
             igtlioLockGuard<vtkMutexLock> lock(connector->ClientMutex);
@@ -362,6 +362,12 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
             Client clientInfo = Client(0, socket, clientThreadID);
             connector->Sockets.push_back(clientInfo);
             connector->RequestInvokeEvent(ClientConnectedEvent);
+          }
+          else
+          {
+            // Delay is required for situations where the ConnectToServer function exits without delay
+            // Without it, the loop will be processed extremely quickly and cause the program to hang
+            igtl::Sleep(100);
           }
         }
       }
