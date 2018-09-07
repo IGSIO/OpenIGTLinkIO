@@ -739,7 +739,9 @@ void igtlioConnector::ImportDataFromCircularBuffer()
         this->AddDevice(device);
       }
 
+      device->InvokeEvent(igtlioDevice::AboutToReceiveEvent);
       device->ReceiveIGTLMessage(messageFromBuffer, this->CheckCRC);
+      device->InvokeEvent(igtlioDevice::ReceiveEvent);
     }
     if (device)
       {

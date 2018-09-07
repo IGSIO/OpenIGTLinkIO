@@ -50,6 +50,7 @@ public:
  };
 
  enum {
+   AboutToReceiveEvent   = 118947,
    ReceiveEvent          = 118948,
    ResponseEvent         = 118952,
    ModifiedEvent         = vtkCommand::ModifiedEvent,

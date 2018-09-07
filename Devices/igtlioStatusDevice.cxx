@@ -49,15 +49,13 @@ std::string igtlioStatusDevice::GetDeviceType() const
 //---------------------------------------------------------------------------
 int igtlioStatusDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (igtlioStatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
- {
-   this->Modified();
-   this->InvokeEvent(StatusModifiedEvent, this);
-   this->InvokeEvent(ReceiveEvent);
-   return 1;
- }
-
- return 0;
+  int success = igtlioStatusConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo);
+  if (success)
+  {
+    this->Modified();
+    this->InvokeEvent(StatusModifiedEvent, this);
+  }
+  return success;
 }
 
 //---------------------------------------------------------------------------

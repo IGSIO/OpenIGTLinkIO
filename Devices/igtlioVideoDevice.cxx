@@ -140,26 +140,24 @@ igtl::VideoMessage::Pointer  igtlioVideoDevice::GetKeyFrameMessage()
 //---------------------------------------------------------------------------
 int igtlioVideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
+  int success = 0;
   igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
   headerMsg->Copy(buffer);
   if(strcmp(headerMsg->GetDeviceName(), this->GetDeviceName().c_str())==0)
     {
     // Copy the current received video message
 
-    int returnValue = 0;
     //To Do, we need to unpack the buffer to know the codec type, which is done in the converter
     // So the user need to set the correct CurrentCodecType before hand.
-    returnValue = igtlioVideoConverter::fromIGTL(buffer, &HeaderData, &Content, this->DecodersMap, checkCRC, this->metaInfo);
-
-    if (returnValue)
-     {
-     this->SetCurrentCodecType(std::string(Content.codecName));
-     this->Modified();
-     this->InvokeEvent(VideoModifiedEvent, this);
-     return 1;
-     }
-  }
- return 0;
+    success = igtlioVideoConverter::fromIGTL(buffer, &HeaderData, &Content, this->DecodersMap, checkCRC, this->metaInfo);
+    if (success)
+      {
+      this->SetCurrentCodecType(std::string(Content.codecName));
+      this->Modified();
+      this->InvokeEvent(VideoModifiedEvent, this);
+      }
+    }
+  return success;
 }
 
 

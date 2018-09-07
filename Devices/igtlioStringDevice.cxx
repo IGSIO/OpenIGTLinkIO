@@ -49,15 +49,13 @@ unsigned int igtlioStringDevice::GetDeviceContentModifiedEvent() const
 //---------------------------------------------------------------------------
 int igtlioStringDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (igtlioStringConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
- {
-   this->Modified();
-   this->InvokeEvent(ReceiveEvent);
-   this->InvokeEvent(StringModifiedEvent, this);
-   return 1;
- }
-
- return 0;
+  int success = igtlioStringConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo);
+  if (success)
+  {
+    this->Modified();
+    this->InvokeEvent(StringModifiedEvent, this);
+  }
+  return success;
 }
 
 //---------------------------------------------------------------------------
