@@ -76,15 +76,13 @@ igtlioImageConverter::ContentData igtlioImageDevice::GetContent()
 //---------------------------------------------------------------------------
 int igtlioImageDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (igtlioImageConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
-   {
-   this->Modified();
-   this->InvokeEvent(ImageModifiedEvent, this);
-   this->InvokeEvent(ReceiveEvent, NULL);
-   return 1;
-   }
-
- return 0;
+  int success = igtlioImageConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo);
+  if (success)
+    {
+    this->Modified();
+    this->InvokeEvent(ImageModifiedEvent, this);
+    }
+  return success;
 }
 
 

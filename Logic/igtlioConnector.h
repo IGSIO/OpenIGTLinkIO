@@ -133,7 +133,6 @@ public:
     DisconnectedEvent           = 118945,
     ActivatedEvent              = 118946,
     DeactivatedEvent            = 118947,
-//  ReceiveEvent                = 118948,
     NewDeviceEvent              = 118949,
     DeviceContentModifiedEvent  = 118950, // invoked by the devices
     RemovedDeviceEvent          = 118951,

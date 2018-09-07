@@ -63,15 +63,12 @@ std::string igtlioPolyDataDevice::GetDeviceType() const
 //---------------------------------------------------------------------------
 int igtlioPolyDataDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, bool checkCRC)
 {
- if (igtlioPolyDataConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo))
- {
-   this->Modified();
-   this->InvokeEvent(ReceiveEvent);
-   this->InvokeEvent(PolyDataModifiedEvent, this);
-   return 1;
- }
-
- return 0;
+  int success = igtlioPolyDataConverter::fromIGTL(buffer, &HeaderData, &Content, checkCRC, this->metaInfo);
+  if (success)
+  {
+    this->Modified();
+  }
+  return success;
 }
 
 //---------------------------------------------------------------------------
