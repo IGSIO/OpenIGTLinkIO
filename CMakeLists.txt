@@ -70,10 +70,6 @@ set (OpenIGTLinkIO_INCLUDE_DIRS
   ${CMAKE_CURRENT_SOURCE_DIR}/Tools
   )
 
-if (VTK_WRAP_PYTHON)
-  include(CMake/vtkMacroPythonWrap.cmake)
-endif()
-
 add_subdirectory(Converter)
 add_subdirectory(Devices)
 add_subdirectory(Logic)
