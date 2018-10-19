@@ -53,7 +53,7 @@ int qIGTLIODevicesModel::rowCount(const QModelIndex& parent) const
   qIGTLIODevicesModelNode* node = this->getNodeFromIndex(parent);
   if(!node)
   {
-      std::cout << "WARNING in: int qIGTLIODevicesModel::rowCount(const QModelIndex& parent) const: node is a NULL object! Returning 0." << std::endl;
+//      std::cout << "WARNING in: int qIGTLIODevicesModel::rowCount(const QModelIndex& parent) const: node is a NULL object! Returning 0." << std::endl;
       return 0;
   }
 
