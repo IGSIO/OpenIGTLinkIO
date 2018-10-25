@@ -59,7 +59,6 @@ int qIGTLIOConnectorModel::rowCount(const QModelIndex& parent) const
   {
     if (!Logic)
     {
-//        std::cout << "WARNING in: int qIGTLIOConnectorModel::rowCount(const QModelIndex& parent) const: Logic is a NULL object! Returning 0." << std::endl;
         return 0;
     }
     return Logic->GetNumberOfConnectors();
