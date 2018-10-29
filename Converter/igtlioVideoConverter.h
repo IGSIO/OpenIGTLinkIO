@@ -45,6 +45,7 @@
 
 class vtkImageData;
 class vtkMatrix4x4;
+class vtkUnsignedCharArray;
 
 using namespace igtl;
 
@@ -68,6 +69,7 @@ public:
     VideoMessage::Pointer keyFrameMessage; // for saving the compressed data.
     bool keyFrameUpdated;
     vtkSmartPointer<vtkMatrix4x4> transform; // ijk2ras, From image pixel space to RAS
+    vtkSmartPointer<vtkUnsignedCharArray> frameData;
   };
 
   static const char*  GetIGTLName() { return GetIGTLTypeName(); }

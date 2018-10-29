@@ -13,8 +13,10 @@
 
 #include "igtlioConverterUtilities.h"
 
+// VTK includes
 #include <vtkImageData.h>
 #include <vtkMatrix4x4.h>
+#include <vtkUnsignedCharArray.h>
 #include <vtkVersion.h>
 
 //---------------------------------------------------------------------------
@@ -98,6 +100,15 @@ int igtlioVideoConverter::fromIGTL(igtl::MessageBase::Pointer source,
   // get Video
   if (igtlioVideoConverter::IGTLToVTKImageData(dest, videoMessage, decoder) == 0)
     return 0;
+
+  if (!dest->frameData)
+  {
+    dest->frameData = vtkSmartPointer<vtkUnsignedCharArray>::New();
+  }
+
+  vtkSmartPointer<vtkUnsignedCharArray> frameData = dest->frameData;
+  frameData->Allocate(videoMessage->GetBitStreamSize());
+  memcpy(frameData->GetPointer(0), videoMessage->GetPackFragmentPointer(2), videoMessage->GetBitStreamSize());
 
   return 1;
 }
