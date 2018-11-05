@@ -70,6 +70,7 @@ public:
     bool keyFrameUpdated;
     vtkSmartPointer<vtkMatrix4x4> transform; // ijk2ras, From image pixel space to RAS
     vtkSmartPointer<vtkUnsignedCharArray> frameData;
+    bool grayscale;
   };
 
   static const char*  GetIGTLName() { return GetIGTLTypeName(); }

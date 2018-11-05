@@ -102,9 +102,9 @@ int igtlioVideoConverter::fromIGTL(igtl::MessageBase::Pointer source,
     return 0;
 
   if (!dest->frameData)
-  {
+    {
     dest->frameData = vtkSmartPointer<vtkUnsignedCharArray>::New();
-  }
+    }
 
   vtkSmartPointer<vtkUnsignedCharArray> frameData = dest->frameData;
   frameData->Allocate(videoMessage->GetBitStreamSize());
@@ -116,9 +116,24 @@ int igtlioVideoConverter::fromIGTL(igtl::MessageBase::Pointer source,
 //---------------------------------------------------------------------------
 int igtlioVideoConverter::IGTLToVTKImageData(ContentData *dest, igtl::VideoMessage::Pointer videoMessage, GenericDecoder *videoStreamDecoder)
 {
-  if(videoStreamDecoder == NULL)
+  igtl_uint16 frameType = videoMessage->GetFrameType();
+  bool isGrayImage = false;
+  if (frameType > 0x00FF)//Using first byte of video frame type to indicate gray or color video. It might be better to change the video stream protocol to add additional field for indicating Gray or color image.
     {
-    std::cerr<<"Failed to decode video message - input video message decoder is NULL";
+    isGrayImage = true;
+    frameType = frameType >> 8;
+    }
+  else
+    {
+    isGrayImage = false;
+    }
+  dest->grayscale = isGrayImage;
+
+  if (!videoStreamDecoder)
+    {
+    // If no codec is found, return without an error
+    // It is now the responsibility of the receiving application to deal with the raw frame data
+    return 1;
     }
   if (!dest->image)
     dest->image = vtkSmartPointer<vtkImageData>::New();
@@ -142,17 +157,7 @@ int igtlioVideoConverter::IGTLToVTKImageData(ContentData *dest, igtl::VideoMessa
     pDecodedPic->~SourcePicture();
     return 0;
     }
-  igtl_uint16 frameType = videoMessage->GetFrameType();
-  bool isGrayImage = false;
-  if(frameType > 0x00FF)//Using first byte of video frame type to indicate gray or color video. It might be better to change the video stream protocol to add additional field for indicating Gray or color image.
-    {
-    isGrayImage =  true;
-    frameType = frameType >> 8;
-    }
-  else
-    {
-    isGrayImage =  false;
-    }
+
   dest->keyFrameUpdated = false;
   if (frameType == FrameTypeKey)
     {
