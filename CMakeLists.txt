@@ -13,12 +13,29 @@ set (CMAKE_CXX_STANDARD 11)
 
 set(OpenIGTLinkIO_VERSION_SUFFIX "") # add a version suffix for parallel multi-version install
 
-set(OpenIGTLinkIO_BINARY_INSTALL "bin")
-set(OpenIGTLinkIO_LIBRARY_INSTALL "lib")
-set(OpenIGTLinkIO_ARCHIVE_INSTALL "lib")
-set(OpenIGTLinkIO_CMAKE_INSTALL "${OpenIGTLinkIO_LIBRARY_INSTALL}/cmake")
-set(OpenIGTLinkIO_PACKAGE_INSTALL "${OpenIGTLinkIO_CMAKE_INSTALL}/igtlio${OpenIGTLinkIO_VERSION_SUFFIX}")
-set(OpenIGTLinkIO_INCLUDE_INSTALL "include/igtlio${OpenIGTLinkIO_VERSION_SUFFIX}")
+IF(NOT OpenIGTLinkIO_BINARY_INSTALL)
+  set(OpenIGTLinkIO_BINARY_INSTALL "bin")
+ENDIF()
+
+IF(NOT OpenIGTLinkIO_LIBRARY_INSTALL)
+  set(OpenIGTLinkIO_LIBRARY_INSTALL "lib")
+ENDIF()
+
+IF(NOT OpenIGTLinkIO_ARCHIVE_INSTALL)
+  set(OpenIGTLinkIO_ARCHIVE_INSTALL "lib")
+ENDIF()
+
+IF(NOT OpenIGTLinkIO_CMAKE_INSTALL)
+  set(OpenIGTLinkIO_CMAKE_INSTALL "${OpenIGTLinkIO_LIBRARY_INSTALL}/cmake")
+ENDIF()
+
+IF(NOT OpenIGTLinkIO_PACKAGE_INSTALL)
+  set(OpenIGTLinkIO_PACKAGE_INSTALL "${OpenIGTLinkIO_CMAKE_INSTALL}/igtlio${OpenIGTLinkIO_VERSION_SUFFIX}")
+ENDIF()
+
+IF(NOT OpenIGTLinkIO_INCLUDE_INSTALL)
+  set(OpenIGTLinkIO_INCLUDE_INSTALL "include/igtlio${OpenIGTLinkIO_VERSION_SUFFIX}")
+ENDIF()
 
 ###########################################################
 # Re-used components
