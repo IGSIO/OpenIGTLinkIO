@@ -8,7 +8,7 @@
 #include <vtksys/SystemTools.hxx>
 #include "igtlioVideoConverter.h"
 #include <vtkImageDifference.h>
-#include "IGTLIOFixture.h"
+#include "igtlioFixture.h"
 #include "igtlioVideoDevice.h"
 #include "igtlioSession.h"
 #include "igtlMessageDebugFunction.h"
