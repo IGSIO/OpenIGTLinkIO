@@ -447,7 +447,7 @@ int igtlioImageConverter::IGTLToVTKScalarType(int igtlType)
     case igtl::ImageMessage::TYPE_UINT8: return VTK_UNSIGNED_CHAR;
     case igtl::ImageMessage::TYPE_INT16: return VTK_SHORT;
     case igtl::ImageMessage::TYPE_UINT16: return VTK_UNSIGNED_SHORT;
-    case igtl::ImageMessage::TYPE_INT32: return VTK_UNSIGNED_LONG;
+    case igtl::ImageMessage::TYPE_INT32: return VTK_LONG;
     case igtl::ImageMessage::TYPE_UINT32: return VTK_UNSIGNED_LONG;
     case igtl::ImageMessage::TYPE_FLOAT32: return VTK_FLOAT;
     case igtl::ImageMessage::TYPE_FLOAT64: return VTK_DOUBLE;
