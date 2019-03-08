@@ -363,12 +363,6 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
             connector->Sockets.push_back(clientInfo);
             connector->RequestInvokeEvent(ClientConnectedEvent);
           }
-          else
-          {
-            // Delay is required for situations where the ConnectToServer function exits without delay
-            // Without it, the loop will be processed extremely quickly and cause the program to hang
-            igtl::Sleep(100);
-          }
         }
       }
     else
@@ -390,6 +384,10 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
       connector->State = STATE_WAIT_CONNECTION;
       connector->RequestInvokeEvent(igtlioConnector::DisconnectedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
       }
+
+    // Delay is required for situations where the ConnectToServer function exits without delay
+    // Without it, the loop will be processed extremely quickly and cause the program to hang
+    igtl::Sleep(100);
     }
 
   if (connector->Type == TYPE_SERVER && connector->ServerSocket.IsNotNull())
