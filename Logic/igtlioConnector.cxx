@@ -1054,36 +1054,49 @@ void igtlioConnector::ParseCommands()
 //----------------------------------------------------------------------------
 void igtlioConnector::PruneCompletedCommands()
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->OutgoingCommandDequeMutex);
-
   igtlioCommandDequeType completedCommands = igtlioCommandDequeType();
-  for (igtlioCommandDequeType::iterator outgoingCommandIt = this->OutgoingCommandDeque.begin();
-       outgoingCommandIt != this->OutgoingCommandDeque.end(); ++outgoingCommandIt)
     {
-    igtlioCommandPointer command = (*outgoingCommandIt);
-    double currentTimestamp = vtkTimerLog::GetUniversalTime();
-    double elapsedTimeSec = currentTimestamp - command->GetSentTimestamp();
-    if (command->GetStatus() == CommandWaiting && elapsedTimeSec > command->GetTimeoutSec())
+    igtlioLockGuard<vtkMutexLock> lock(this->OutgoingCommandDequeMutex);
+
+    for (igtlioCommandDequeType::iterator outgoingCommandIt = this->OutgoingCommandDeque.begin();
+         outgoingCommandIt != this->OutgoingCommandDeque.end(); ++outgoingCommandIt)
       {
-      completedCommands.push_back(command);
-      command->SetStatus(CommandExpired);
-      this->InvokeEvent(igtlioCommand::CommandExpiredEvent, command.GetPointer());
-      command->InvokeEvent(igtlioCommand::CommandExpiredEvent);
+      igtlioCommandPointer command = (*outgoingCommandIt);
+      double currentTimestamp = vtkTimerLog::GetUniversalTime();
+      double elapsedTimeSec = currentTimestamp - command->GetSentTimestamp();
+      if (command->GetStatus() == CommandWaiting && elapsedTimeSec > command->GetTimeoutSec())
+        {
+        completedCommands.push_back(command);
+        command->SetStatus(CommandExpired);
+        this->InvokeEvent(igtlioCommand::CommandExpiredEvent, command.GetPointer());
+        command->InvokeEvent(igtlioCommand::CommandExpiredEvent);
+        }
+      else if (command->GetStatus() == CommandResponseReceived || command->GetStatus() == CommandCancelled)
+        {
+        completedCommands.push_back(command);
+        }
       }
-    else if (command->GetStatus() == CommandResponseReceived || command->GetStatus() == CommandCancelled)
+
+    // Remove completed commands from the deque
+    for (igtlioCommandDequeType::iterator completedCommandIt = completedCommands.begin();
+       completedCommandIt != completedCommands.end(); ++completedCommandIt)
       {
-      completedCommands.push_back(command);
+      igtlioCommandPointer command = (*completedCommandIt);
+      this->OutgoingCommandDeque.erase(
+        std::remove(this->OutgoingCommandDeque.begin(),
+                    this->OutgoingCommandDeque.end(),
+                    command),
+        this->OutgoingCommandDeque.end());
       }
     }
 
-  // Invoke igtlioCommand::CommandCompletedEvent on all pruned commands and remove them from the deque
+  // Invoke igtlioCommand::CommandCompletedEvent on all pruned commands
   for (igtlioCommandDequeType::iterator completedCommandIt = completedCommands.begin();
        completedCommandIt != completedCommands.end(); ++completedCommandIt)
     {
     igtlioCommandPointer command = (*completedCommandIt);
     this->InvokeEvent(igtlioCommand::CommandCompletedEvent, command.GetPointer());
     command->InvokeEvent(igtlioCommand::CommandCompletedEvent);
-    this->OutgoingCommandDeque.erase(std::remove(this->OutgoingCommandDeque.begin(), this->OutgoingCommandDeque.end(), command), this->OutgoingCommandDeque.end());
     }
 }
 
