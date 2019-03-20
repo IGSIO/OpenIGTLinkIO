@@ -67,6 +67,7 @@ int igtlioPolyDataDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, 
   if (success)
   {
     this->Modified();
+    this->InvokeEvent(igtlioPolyDataDevice::PolyDataModifiedEvent, this);
   }
   return success;
 }
