@@ -200,12 +200,23 @@ protected:
     int ThreadID;
     Client(int id, igtl::ClientSocket::Pointer socket, int threadID)
       : ID(id)
-      , Socket(socket) 
+      , Socket(socket)
       , ThreadID(threadID)
     {}
   };
 
 public:
+  struct SectionBufferKey
+  {
+    igtlioDeviceKeyType Key;
+    int ClientID;
+    SectionBufferKey(igtlioDeviceKeyType key, int clientID)
+    {
+      this->Key = key;
+      this->ClientID = clientID;
+    };
+  };
+
   vtkGetMacro( Name, std::string );
   vtkSetMacro( Name, std::string );
   vtkGetMacro( UID, int );
@@ -266,9 +277,9 @@ private:
   //----------------------------------------------------------------
   // Circular Buffer
   //----------------------------------------------------------------
-  typedef std::vector<igtlioDeviceKeyType> NameListType;
+  typedef std::vector<SectionBufferKey> NameListType;
   unsigned int GetUpdatedSectionBuffersList(NameListType& nameList); // TODO: this will be moved to private
-  igtlioCircularSectionBufferPointer GetCircularSectionBuffer(const igtlioDeviceKeyType& key);     // TODO: Is it OK to use device name as a key?
+  igtlioCircularSectionBufferPointer GetCircularSectionBuffer(const igtlioDeviceKeyType& key, const int clientID);     // TODO: Is it OK to use device name as a key?
 
   //----------------------------------------------------------------
   // Device Lists
@@ -358,7 +369,7 @@ protected:
   //----------------------------------------------------------------
   // Data
   //----------------------------------------------------------------
-  typedef std::map<igtlioDeviceKeyType, igtlioCircularSectionBufferPointer> igtlioCircularSectionBufferMap;
+  typedef std::map<SectionBufferKey, igtlioCircularSectionBufferPointer> igtlioCircularSectionBufferMap;
   igtlioCircularSectionBufferMap            SectionBuffer;
 
   vtkMutexLockPointer                       CircularBufferMutex;
@@ -401,5 +412,7 @@ protected:
   int                                       NextCommandID;
 
 };
+
+bool operator<(const igtlioConnector::SectionBufferKey& lhs, const igtlioConnector::SectionBufferKey& rhs);
 
 #endif

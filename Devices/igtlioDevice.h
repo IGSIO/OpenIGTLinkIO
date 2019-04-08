@@ -77,6 +77,8 @@ public:
  vtkGetMacro( MessageDirection, MESSAGE_DIRECTION );
  vtkSetMacro( Visibility, bool );
  vtkGetMacro( Visibility, bool );
+ vtkSetMacro( ClientID, int );
+ vtkGetMacro( ClientID, int );
 
  virtual double GetTimestamp() const;
  virtual void SetTimestamp(double val);
@@ -144,10 +146,10 @@ protected:
   virtual ~igtlioDevice();
 
 private:
- MESSAGE_DIRECTION MessageDirection;
- bool PushOnConnect;
- bool Visibility;
-
+  MESSAGE_DIRECTION MessageDirection;
+  bool PushOnConnect;
+  bool Visibility;
+  int ClientID;
 };
 
 //---------------------------------------------------------------------------
