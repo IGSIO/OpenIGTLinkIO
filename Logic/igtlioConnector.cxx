@@ -496,23 +496,22 @@ bool igtlioConnector::ReceiveController(int clientID)
     }
   }
 
-  igtlioCircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
-  if (iter == this->SectionBuffer.end()) // First time to refer the device name
+  igtlioCircularSectionBufferPointer circBuffer = this->GetCircularSectionBuffer(key, clientID);
+  if (!circBuffer)
   {
-    igtlioLockGuard<vtkMutexLock> lock(this->CircularBufferMutex);
-    this->SectionBuffer[key] = igtlioCircularSectionBufferPointer::New();
-    this->SectionBuffer[key]->SetPacketMode(igtlioCircularSectionBuffer::SinglePacketMode);
+    circBuffer = igtlioCircularSectionBufferPointer::New();
+    circBuffer->SetPacketMode(igtlioCircularSectionBuffer::SinglePacketMode);
     if (strcmp(headerMsg->GetDeviceType(), "VIDEO") == 0)
     {
-      this->SectionBuffer[key]->SetPacketMode(igtlioCircularSectionBuffer::MultiplePacketsMode);
+      circBuffer->SetPacketMode(igtlioCircularSectionBuffer::MultiplePacketsMode);
     }
+
+    igtlioLockGuard<vtkMutexLock> lock(this->CircularBufferMutex);
+    this->SectionBuffer[SectionBufferKey(key, clientID)] = circBuffer;
   }
 
   //----------------------------------------------------------------
   // Load to the circular buffer
-
-  igtlioCircularSectionBufferPointer circBuffer = this->SectionBuffer[key];
-
   if (circBuffer && circBuffer->StartPush() != -1)
   {
     //std::cerr << "Pushing into the circular buffer." << std::endl;
@@ -680,12 +679,12 @@ unsigned int igtlioConnector::GetUpdatedSectionBuffersList(NameListType& nameLis
 }
 
 //----------------------------------------------------------------------------
-igtlioCircularSectionBufferPointer igtlioConnector::GetCircularSectionBuffer(const igtlioDeviceKeyType &key)
+igtlioCircularSectionBufferPointer igtlioConnector::GetCircularSectionBuffer(const igtlioDeviceKeyType &key, const int clientID)
 {
-  igtlioCircularSectionBufferMap::iterator iter = this->SectionBuffer.find(key);
+  igtlioCircularSectionBufferMap::iterator iter = this->SectionBuffer.find(SectionBufferKey(key, clientID));
   if (iter != this->SectionBuffer.end())
     {
-    return this->SectionBuffer[key]; // the key has been found in the list
+    return this->SectionBuffer[SectionBufferKey(key, clientID)]; // the key has been found in the list
     }
   else
     {
@@ -702,8 +701,10 @@ void igtlioConnector::ImportDataFromCircularBuffer()
   igtlioConnector::NameListType::iterator nameIter;
   for (nameIter = nameList.begin(); nameIter != nameList.end(); nameIter ++)
     {
-    igtlioDeviceKeyType key = *nameIter;
-    igtlioCircularSectionBuffer* circBuffer = this->GetCircularSectionBuffer(key);
+    igtlioDeviceKeyType key = nameIter->Key;
+    int clientID = nameIter->ClientID;
+
+    igtlioCircularSectionBuffer* circBuffer = this->GetCircularSectionBuffer(key, clientID);
     circBuffer->StartPull();
     igtlioDevicePointer device = NULL;
     while(circBuffer->IsSectionBufferInProcess())
@@ -733,10 +734,11 @@ void igtlioConnector::ImportDataFromCircularBuffer()
     if (!device && !this->RestrictDeviceName)
       {
         device = deviceCreator->Create(key.name);
-        device->SetMessageDirection(igtlioDevice::MESSAGE_DIRECTION_IN);
         this->AddDevice(device);
       }
 
+      device->SetClientID(clientID);
+      device->SetMessageDirection(igtlioDevice::MESSAGE_DIRECTION_IN);
       device->InvokeEvent(igtlioDevice::AboutToReceiveEvent);
       device->ReceiveIGTLMessage(messageFromBuffer, this->CheckCRC);
       device->InvokeEvent(igtlioDevice::ReceiveEvent);
@@ -1128,7 +1130,7 @@ int igtlioConnector::AddDevice(igtlioDevicePointer device)
   igtlioLockGuard<vtkMutexLock> lock(this->DeviceMutex);
   this->Devices.push_back(device);
   }
-  
+
   //TODO: listen to device events?
   unsigned int deviceEvent = device->GetDeviceContentModifiedEvent();
   device->AddObserver((unsigned long)deviceEvent, this, &igtlioConnector::DeviceContentModified);
@@ -1310,3 +1312,17 @@ int igtlioConnector::PushNode(igtlioDevicePointer node, int event, int clientId 
   }
   return result ? 1 : 0;
 }
+
+//---------------------------------------------------------------------------
+bool operator<(const igtlioConnector::SectionBufferKey& lhs, const igtlioConnector::SectionBufferKey& rhs)
+{
+  if (lhs.Key < rhs.Key)
+  {
+    return true;
+  }
+  if (lhs.Key == rhs.Key)
+  {
+    return lhs.ClientID < rhs.ClientID;
+  }
+  return false;
+};
