@@ -9,10 +9,13 @@
 #include <vtkObjectFactory.h>
 
 #include "igtlioImageDevice.h"
+#include "igtlioImageMetaDevice.h"
+#include "igtlioLabelMetaDevice.h"
+#include "igtlioPolyDataDevice.h"
+#include "igtlioPointDevice.h"
 #include "igtlioStatusDevice.h"
 #include "igtlioStringDevice.h"
 #include "igtlioTransformDevice.h"
-#include "igtlioPolyDataDevice.h"
 #if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   #include "igtlioVideoDevice.h"
 #endif
@@ -23,10 +26,13 @@ vtkStandardNewMacro(igtlioDeviceFactory);
 igtlioDeviceFactory::igtlioDeviceFactory()
 {
   this->registerCreator<igtlioImageDeviceCreator>();
-  this->registerCreator<igtlioStatusDeviceCreator>();
-  this->registerCreator<igtlioTransformDeviceCreator>();
-  this->registerCreator<igtlioStringDeviceCreator>();
+  this->registerCreator<igtlioImageMetaDeviceCreator>();
+  this->registerCreator<igtlioLabelMetaDeviceCreator>();
   this->registerCreator<igtlioPolyDataDeviceCreator>();
+  this->registerCreator<igtlioPointDeviceCreator>();
+  this->registerCreator<igtlioStatusDeviceCreator>();
+  this->registerCreator<igtlioStringDeviceCreator>();
+  this->registerCreator<igtlioTransformDeviceCreator>(); 
 #if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   this->registerCreator<igtlioVideoDeviceCreator>();
 #endif

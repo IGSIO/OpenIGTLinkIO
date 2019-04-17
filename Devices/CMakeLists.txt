@@ -22,19 +22,25 @@ set(${PROJECT_NAME}_INCLUDE_DIRECTORIES PUBLIC
 set(${PROJECT_NAME}_SRCS
   igtlioDevice.cxx
   igtlioImageDevice.cxx
+  igtlioImageMetaDevice.cxx
+  igtlioLabelMetaDevice.cxx
+  igtlioPointDevice.cxx
+  igtlioPolyDataDevice.cxx
   igtlioStatusDevice.cxx
   igtlioStringDevice.cxx
   igtlioTransformDevice.cxx
-  igtlioPolyDataDevice.cxx
   )
 
 set(${PROJECT_NAME}_HDRS
   igtlioDevice.h
   igtlioImageDevice.h
+  igtlioImageMetaDevice.h
+  igtlioLabelMetaDevice.h
+  igtlioPointDevice.h
+  igtlioPolyDataDevice.h
   igtlioStatusDevice.h
   igtlioStringDevice.h
   igtlioTransformDevice.h
-  igtlioPolyDataDevice.h
   )
 
 IF(OpenIGTLink_ENABLE_VIDEOSTREAMING)
@@ -60,7 +66,7 @@ generate_export_header(${PROJECT_NAME} EXPORT_FILE_NAME ${PROJECT_NAME}Export.h 
 
 # --------------------------------------------------------------------------
 
-INSTALL(TARGETS ${PROJECT_NAME} EXPORT OpenIGTLinkIO 
+INSTALL(TARGETS ${PROJECT_NAME} EXPORT OpenIGTLinkIO
   RUNTIME DESTINATION "${OpenIGTLinkIO_BINARY_INSTALL}" COMPONENT RuntimeLibraries
   LIBRARY DESTINATION "${OpenIGTLinkIO_LIBRARY_INSTALL}" COMPONENT RuntimeLibraries
   ARCHIVE DESTINATION "${OpenIGTLinkIO_ARCHIVE_INSTALL}" COMPONENT Development
