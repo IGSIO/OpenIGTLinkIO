@@ -106,7 +106,6 @@ igtl::MessageBase::Pointer igtlioImageDevice::GetIGTLMessage()
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer igtlioImageDevice::GetIGTLMessage(MESSAGE_PREFIX prefix)
 {
-    /*
  if (prefix==MESSAGE_PREFIX_GET)
   {
    if (this->GetImageMessage.IsNull())
@@ -117,7 +116,7 @@ igtl::MessageBase::Pointer igtlioImageDevice::GetIGTLMessage(MESSAGE_PREFIX pref
    this->GetImageMessage->Pack();
    return dynamic_pointer_cast<igtl::MessageBase>(this->GetImageMessage);
   }
-  */
+
  if (prefix==MESSAGE_PREFIX_NOT_DEFINED)
    {
      return this->GetIGTLMessage();
@@ -131,6 +130,7 @@ std::set<igtlioDevice::MESSAGE_PREFIX> igtlioImageDevice::GetSupportedMessagePre
 {
  std::set<MESSAGE_PREFIX> retval;
  retval.insert(MESSAGE_PREFIX_NOT_DEFINED);
+ retval.insert(MESSAGE_PREFIX_GET);
  return retval;
 }
 

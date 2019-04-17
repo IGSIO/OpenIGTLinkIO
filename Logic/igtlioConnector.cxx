@@ -1219,6 +1219,13 @@ int igtlioConnector::SendMessage(igtlioDeviceKeyType device_id, igtlioDevice::ME
       return 0;
     }
 
+  std::set<igtlioDevice::MESSAGE_PREFIX> supportedPrefixes = device->GetSupportedMessagePrefixes();
+  if (supportedPrefixes.find(prefix) == supportedPrefixes.end())
+    {
+    vtkErrorMacro("Sending OpenIGTLinkMessage: " << device_id.type << "/" << device_id.name << ", invalid prefix");
+    return 0;
+    }
+
   //TODO replace prefix with message-type or similar - giving the basic message same status as the queries
   igtl::MessageBase::Pointer msg = device->GetIGTLMessage(prefix);
 

@@ -20,24 +20,31 @@ set(${PROJECT_NAME}_INCLUDE_DIRECTORIES PUBLIC
   )
 set(${PROJECT_NAME}_SRCS
   igtlioBaseConverter.cxx
-  igtlioImageConverter.cxx
-  igtlioPolyDataConverter.cxx
-  igtlioStatusConverter.cxx
-  igtlioTransformConverter.cxx
   igtlioCommandConverter.cxx
-  igtlioStringConverter.cxx
   igtlioConverterUtilities.cxx
+  igtlioImageConverter.cxx
+  igtlioImageMetaConverter.cxx
+  igtlioLabelMetaConverter.cxx
+  igtlioPolyDataConverter.cxx
+  igtlioPointConverter.cxx
+  igtlioStatusConverter.cxx
+  igtlioStringConverter.cxx
+  igtlioTransformConverter.cxx
   )
 
 set(${PROJECT_NAME}_HDRS
   igtlioBaseConverter.h
-  igtlioImageConverter.h
-  igtlioPolyDataConverter.h
-  igtlioStatusConverter.h
-  igtlioTransformConverter.h
-  igtlioStringConverter.h
-  igtlioUsSectorDefinitions.h
+  igtlioCommandConverter.h
   igtlioConverterUtilities.h
+  igtlioImageConverter.h
+  igtlioImageMetaConverter.h
+  igtlioLabelMetaConverter.h
+  igtlioPolyDataConverter.h
+  igtlioPointConverter.h
+  igtlioStatusConverter.h
+  igtlioStringConverter.h
+  igtlioTransformConverter.h
+  igtlioUsSectorDefinitions.h
   )
 
 IF(OpenIGTLink_ENABLE_VIDEOSTREAMING)
@@ -62,7 +69,7 @@ generate_export_header(${PROJECT_NAME} EXPORT_FILE_NAME ${PROJECT_NAME}Export.h 
 
 # --------------------------------------------------------------------------
 
-INSTALL(TARGETS ${PROJECT_NAME} EXPORT OpenIGTLinkIO 
+INSTALL(TARGETS ${PROJECT_NAME} EXPORT OpenIGTLinkIO
   RUNTIME DESTINATION "${OpenIGTLinkIO_BINARY_INSTALL}" COMPONENT RuntimeLibraries
   LIBRARY DESTINATION "${OpenIGTLinkIO_LIBRARY_INSTALL}" COMPONENT RuntimeLibraries
   ARCHIVE DESTINATION "${OpenIGTLinkIO_ARCHIVE_INSTALL}" COMPONENT Development
