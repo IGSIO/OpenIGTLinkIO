@@ -77,7 +77,7 @@ igtl::MessageBase::Pointer igtlioImageMetaDevice::GetIGTLMessage(MESSAGE_PREFIX 
     igtl::GetImageMetaMessage::Pointer getImageMetaMessage = igtl::GetImageMetaMessage::New();
     getImageMetaMessage->SetDeviceName(this->GetDeviceName());
     getImageMetaMessage->Pack();
-    return getImageMetaMessage;
+    return dynamic_pointer_cast<igtl::MessageBase>(getImageMetaMessage);
   }
 
   return igtl::MessageBase::Pointer();

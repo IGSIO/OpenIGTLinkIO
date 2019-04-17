@@ -80,7 +80,7 @@ igtl::MessageBase::Pointer igtlioPointDevice::GetIGTLMessage(MESSAGE_PREFIX pref
     igtl::GetPointMessage::Pointer getPointMessage = igtl::GetPointMessage::New();
     getPointMessage->SetDeviceName(this->GetDeviceName());
     getPointMessage->Pack();
-    return getPointMessage;
+    return dynamic_pointer_cast<igtl::MessageBase>(getPointMessage);
   }
 
   return igtl::MessageBase::Pointer();
