@@ -16,8 +16,8 @@
 template <class T, class U>
 igtl::SmartPointer<T> dynamic_pointer_cast(const igtl::SmartPointer<U>& sp) //noexcept
 {
- T* ptr = dynamic_cast<T*>(sp.GetPointer());
- return igtl::SmartPointer<T>(ptr);
+  T* ptr = dynamic_cast<T*>(sp.GetPointer());
+  return igtl::SmartPointer<T>(ptr);
 }
 //---------------------------------------------------------------------------
 
@@ -33,14 +33,14 @@ public:
    */
   struct HeaderData
   {
-  std::string deviceName;
-  double timestamp;
+    std::string deviceName;
+    double timestamp;
   };
 
   static int IGTLtoHeader(igtl::MessageBase::Pointer source, HeaderData* header, igtl::MessageBase::MetaDataMap& outMetaInfo);
   static int HeadertoIGTL(const HeaderData& header, igtl::MessageBase::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo = igtl::MessageBase::MetaDataMap());
 
-  static int IGTLToTimestamp(igtl::MessageBase::Pointer msg, HeaderData *dest);
+  static int IGTLToTimestamp(igtl::MessageBase::Pointer msg, HeaderData* dest);
 };
 
 #endif // IGTLIOBASECONVERTER_H

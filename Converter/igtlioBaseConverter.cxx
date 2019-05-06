@@ -1,9 +1,22 @@
 #include "igtlioBaseConverter.h"
 
+
+// IGTL includes
+#include <igtl_tdata.h>
+
 //---------------------------------------------------------------------------
 int igtlioBaseConverter::IGTLtoHeader(igtl::MessageBase::Pointer source, HeaderData *header, igtl::MessageBase::MetaDataMap& outMetaInfo)
 {
-  header->deviceName = source->GetDeviceName();
+  std::string name;
+  source->GetMetaDataElement(IGTL_DEVICE_NAME_METADATA_KEY, name);
+  if (!name.empty())
+  {
+    header->deviceName = name;
+  }
+  else
+  {
+    header->deviceName = source->GetDeviceName();
+  }
   // get timestamp
   if (IGTLToTimestamp(source, header) == 0)
     return 0;
@@ -23,7 +36,11 @@ int igtlioBaseConverter::IGTLtoHeader(igtl::MessageBase::Pointer source, HeaderD
 //---------------------------------------------------------------------------
 int igtlioBaseConverter::HeadertoIGTL(const HeaderData &header, igtl::MessageBase::Pointer *dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
-  (*dest)->SetDeviceName(header.deviceName.c_str());
+  (*dest)->SetDeviceName(header.deviceName.substr(0, IGTL_TDATA_LEN_NAME).c_str());
+  if (header.deviceName.length() > IGTL_TDATA_LEN_NAME)
+  {
+    (*dest)->SetMetaDataElement(IGTL_DEVICE_NAME_METADATA_KEY, IANA_TYPE_US_ASCII, header.deviceName);
+  }
   for (igtl::MessageBase::MetaDataMap::const_iterator it = metaInfo.begin(); it != metaInfo.end(); ++it)
     {
     std::string key = it->first;
