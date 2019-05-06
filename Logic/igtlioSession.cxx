@@ -172,8 +172,8 @@ igtlioTransformDevicePointer igtlioSession::SendTransform(std::string device_id,
   device = igtlioTransformDevice::SafeDownCast(Connector->AddDeviceIfNotPresent(key));
 
   igtlioTransformConverter::ContentData contentdata = device->GetContent();
-  contentdata.deviceName = device_id;
   contentdata.transform = transform;
+  device->SetDeviceName(device_id);
   device->SetContent(contentdata);
 
   Connector->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(device));

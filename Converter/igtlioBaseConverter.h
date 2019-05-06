@@ -27,6 +27,8 @@ igtl::SmartPointer<T> dynamic_pointer_cast(const igtl::SmartPointer<U>& sp) //no
 class OPENIGTLINKIO_CONVERTER_EXPORT igtlioBaseConverter
 {
 public:
+  static std::string device_name;
+
   /**
    * This structure contains data common to all igtl messages,
    * TODO: add header xml-data here.

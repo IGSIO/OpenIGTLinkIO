@@ -94,7 +94,6 @@ int igtlioTransformConverter::fromIGTL(igtl::MessageBase::Pointer source,
     //transformToParent->Print(cerr);
 
     dest->transform = transform;
-    dest->deviceName = transMsg->GetDeviceName();
 
     return 1;
 
@@ -158,7 +157,6 @@ int igtlioTransformConverter::toIGTL(const HeaderData& header, const ContentData
   igtlmatrix[3][3]  = matrix->Element[3][3];
 
   msg->SetMatrix(igtlmatrix);
-  msg->SetDeviceName(source.deviceName.c_str());
   msg->Pack();
 
   return 1;

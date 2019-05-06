@@ -36,7 +36,6 @@ public:
   struct ContentData
   {
   vtkSmartPointer<vtkMatrix4x4> transform;
-  std::string deviceName;
   std::string streamIdTo;
   std::string streamIdFrom;
   };
