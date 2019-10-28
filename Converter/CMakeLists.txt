@@ -30,6 +30,7 @@ set(${PROJECT_NAME}_SRCS
   igtlioStatusConverter.cxx
   igtlioStringConverter.cxx
   igtlioTransformConverter.cxx
+  igtlioTrackingDataConverter.cxx
   )
 
 set(${PROJECT_NAME}_HDRS
@@ -45,6 +46,7 @@ set(${PROJECT_NAME}_HDRS
   igtlioStringConverter.h
   igtlioTransformConverter.h
   igtlioUsSectorDefinitions.h
+  igtlioTrackingDataConverter.h
   )
 
 IF(OpenIGTLink_ENABLE_VIDEOSTREAMING)
