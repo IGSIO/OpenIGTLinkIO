@@ -68,9 +68,9 @@ int igtlioTrackingDataConverter::fromIGTL(igtl::MessageBase::Pointer source,
       }
     }
 
-    if (transformName.empty())
+    if (!transformName.empty())
     {
-      continue;
+        dest->trackingDataElements[i].transformName = transformName;
     }
 
     transMsg->GetTrackingDataElement(i, elem);
@@ -108,6 +108,7 @@ int igtlioTrackingDataConverter::fromIGTL(igtl::MessageBase::Pointer source,
 
     dest->trackingDataElements[i].transform = transform;
     dest->trackingDataElements[i].deviceName = elem->GetName();
+    dest->trackingDataElements[i].type = elem->GetType();
   }
 
   return 1;
@@ -180,6 +181,7 @@ int igtlioTrackingDataConverter::toIGTL(const HeaderData& header, const ContentD
     igtl::TrackingDataElement::Pointer elem = igtl::TrackingDataElement::New();
     elem->SetMatrix(igtlmatrix);
     elem->SetName(entry->second.deviceName.c_str());
+    elem->SetType(entry->second.type);
     msg->AddTrackingDataElement(elem);
 
     std::stringstream ss;

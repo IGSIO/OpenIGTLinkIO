@@ -39,6 +39,7 @@ public:
     vtkSmartPointer<vtkMatrix4x4> transform;
     std::string deviceName;
     std::string transformName;
+    igtlUint8 type;
   };
   struct ContentData
   {
