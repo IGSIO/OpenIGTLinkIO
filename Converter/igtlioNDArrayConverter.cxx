@@ -1,8 +1,9 @@
-#include "igtlioNDArrayMessageConverter.h"
+#include "igtlioNDArrayConverter.h"
 #include "igtlNDArrayMessage.h"
 #include <igtl_util.h>
+#include <vtkDataArray.h>
 
-int igtlioNDArrayMessageConverter::fromIGTL(igtl::MessageBase::Pointer source,
+int igtlioNDArrayConverter::fromIGTL(igtl::MessageBase::Pointer source,
                                             HeaderData* header,
                                             ContentData* dest,
                                             bool checkCRC,
@@ -13,6 +14,8 @@ int igtlioNDArrayMessageConverter::fromIGTL(igtl::MessageBase::Pointer source,
     msg->Copy(source);
 
     int c = msg->Unpack(checkCRC);
+    
+
 
     if ((c & igtl::MessageHeader::UNPACK_BODY == 0))
         {
@@ -21,14 +24,15 @@ int igtlioNDArrayMessageConverter::fromIGTL(igtl::MessageBase::Pointer source,
 
     if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(msg), header, outMetaInfo))
         return 0;
-    
-    dest->NDArray_msg = msg->GetArray();
 
+    vtkSmartPointer<vtkDataArray> NDArray_msg = dest->NDArray_msg;
+    NDArray_msg->Allocate(msg->GetPackSize());
+    memcpy(NDArray_msg->GetVoidPointer(0), msg->GetPackPointer(), msg->GetBodySizeToRead());
 
     return 1;
 }
 
-int igtlioNDArrayMessageConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::NDArrayMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
+int igtlioNDArrayConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::NDArrayMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
   if (dest->IsNull())
     *dest = igtl::NDArrayMessage::New();
@@ -41,9 +45,7 @@ int igtlioNDArrayMessageConverter::toIGTL(const HeaderData& header, const Conten
     }
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
   HeadertoIGTL(header, &basemsg, metaInfo);
-
-  msg->SetArray(source.NDArray_msg);
+  
   msg->Pack();
-
   return 1;
 }

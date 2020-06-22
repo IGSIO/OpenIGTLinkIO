@@ -4,14 +4,15 @@
 #include "igtlioConverterExport.h"
 #include <igtlNDArrayMessage.h>
 #include "igtlioBaseConverter.h"
-class OPENIGTLINKIO_CONVERTER_EXPORT igtlioNDArrayMessageConverter : public igtlioBaseConverter
+class vtkDataArray;
+class OPENIGTLINKIO_CONVERTER_EXPORT igtlioNDArrayConverter : public igtlioBaseConverter
 {
 public:
 
 
     struct ContentData
     {
-    igtl::NDArrayMessage NDArray_msg;
+    vtkSmartPointer<vtkDataArray> NDArray_msg;
     };
 
     static const char* GetIGTLName() { return GetIGTlTypeName(); }
