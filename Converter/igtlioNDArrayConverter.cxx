@@ -16,7 +16,7 @@ int igtlioNDArrayConverter::fromIGTL(igtl::MessageBase::Pointer source,
     int c = msg->Unpack(checkCRC);
     
 
-
+    cbcbcpa
     if ((c & igtl::MessageHeader::UNPACK_BODY == 0))
         {
         return 0;
@@ -28,7 +28,7 @@ int igtlioNDArrayConverter::fromIGTL(igtl::MessageBase::Pointer source,
     vtkSmartPointer<vtkDataArray> NDArray_msg = dest->NDArray_msg;
     NDArray_msg->Allocate(msg->GetPackSize());
     memcpy(NDArray_msg->GetVoidPointer(0), msg->GetPackPointer(), msg->GetBodySizeToRead());
-
+    dest->NDArray_msg = NDArray_msg;
     return 1;
 }
 
