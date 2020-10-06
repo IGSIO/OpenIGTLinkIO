@@ -278,9 +278,17 @@ void* igtlioConnector::ReceiverThreadFunction(void* ptr)
   connector->RemoveClient(clientID);
 
   // Signal to the threader that this thread has become free
+#if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
   vinfo->ActiveFlagLock->Lock();
+#else
+  vinfo->ActiveFlagLock->lock();
+#endif
   (*vinfo->ActiveFlag) = 0;
-  vinfo->ActiveFlagLock->Unlock();
+#if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
+  vinfo->ActiveFlagLock->UnLock();
+#else
+  vinfo->ActiveFlagLock->unlock();
+#endif
   return NULL; //why???
 }
 
@@ -409,9 +417,17 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
   connector->RequestInvokeEvent(igtlioConnector::DeactivatedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
 
   // Signal to the threader that this thread has become free
+#if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
   vinfo->ActiveFlagLock->Lock();
+#else
+  vinfo->ActiveFlagLock->lock();
+#endif
   (*vinfo->ActiveFlag) = 0;
-  vinfo->ActiveFlagLock->Unlock();
+#if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
+  vinfo->ActiveFlagLock->UnLock();
+#else
+  vinfo->ActiveFlagLock->unlock();
+#endif
   return 0;
 }
 
@@ -836,7 +852,7 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command)
 {
   if (command->IsInProgress())
     {
-    vtkWarningMacro("SendCommand: Command " << command->GetCommandId() << "-" << command->GetName() << " is already in progress! Attempting to cancel and resend.")
+    vtkWarningMacro("SendCommand: Command " << command->GetCommandId() << "-" << command->GetName() << " is already in progress! Attempting to cancel and resend.");
     this->CancelCommand(command);
     }
 
