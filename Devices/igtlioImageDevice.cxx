@@ -91,7 +91,7 @@ igtl::MessageBase::Pointer igtlioImageDevice::GetIGTLMessage()
 {
  if (!Content.image)
   {
-  vtkWarningMacro("Image is NULL, message not generated.")
+  vtkWarningMacro("Image is NULL, message not generated.");
   return 0;
   }
 

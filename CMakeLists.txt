@@ -45,6 +45,13 @@ include(GenerateExportHeader)
 # Find dependencies
 find_package(OpenIGTLink REQUIRED NO_MODULE)
 find_package(VTK REQUIRED NO_MODULE)
+if(VTK_VERSION VERSION_LESS 8.9.0)
+  set(IGTLIO_VTK_PREFIX VTK::)
+  set(IGTLIO_MODULE_PREFIX vtk)
+else()
+  set(IGTLIO_VTK_PREFIX vtk)
+  set(IGTLIO_MODULE_PREFIX "")
+endif()
 include(${OpenIGTLink_USE_FILE})
 
 ###########################################################
