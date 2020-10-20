@@ -285,7 +285,7 @@ void* igtlioConnector::ReceiverThreadFunction(void* ptr)
 #endif
   (*vinfo->ActiveFlag) = 0;
 #if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
-  vinfo->ActiveFlagLock->UnLock();
+  vinfo->ActiveFlagLock->Unlock();
 #else
   vinfo->ActiveFlagLock->unlock();
 #endif
@@ -424,7 +424,7 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
 #endif
   (*vinfo->ActiveFlag) = 0;
 #if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
-  vinfo->ActiveFlagLock->UnLock();
+  vinfo->ActiveFlagLock->Unlock();
 #else
   vinfo->ActiveFlagLock->unlock();
 #endif
