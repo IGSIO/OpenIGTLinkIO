@@ -20,7 +20,6 @@
 #include "igtlioImageConverter.h"
 #include "igtlioDevice.h"
 
-
 class vtkImageData;
 
 typedef vtkSmartPointer<class igtlioImageDevice> igtlioImageDevicePointer;

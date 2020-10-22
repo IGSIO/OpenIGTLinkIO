@@ -26,9 +26,16 @@ Ontario with funds provided by the Ontario Ministry of Health and Long-Term Care
 // VTK includes
 #include <vtkObject.h>
 #include <vtkSmartPointer.h>
+#include <vtkVersionMacros.h>
 
 // IGTL includes
 #include <igtlCommandMessage.h>
+
+#if VTK_MAJOR_VERSION >= 9
+#ifndef VTK_OVERRIDE
+#define VTK_OVERRIDE override
+#endif
+#endif
 
 typedef vtkSmartPointer<class igtlioCommand> igtlioCommandPointer;
 

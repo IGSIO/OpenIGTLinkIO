@@ -17,10 +17,17 @@
 
 #include <vtkCommand.h>
 #include <vtkIntArray.h>
+#include <vtkVersionMacros.h>
 #include <set>
 
 #include "igtlioDevicesExport.h"
 #include "igtlioBaseConverter.h"
+
+#if VTK_MAJOR_VERSION >= 9
+#ifndef VTK_OVERRIDE
+#define VTK_OVERRIDE override
+#endif
+#endif
 
 typedef vtkSmartPointer<class igtlioDevice> igtlioDevicePointer;
 

@@ -309,3 +309,15 @@ int igtlioVideoConverter::IGTLFrameToVTKTransform(igtl::VideoMessage::Pointer vi
 
   return 1;
 }
+
+//---------------------------------------------------------------------------
+int igtlioVideoConverter::VTKTransformToIGTLFrame(const vtkMatrix4x4& ijk2ras, int imageSize[3], double spacing[3], double origin[3], igtl::VideoMessage::Pointer videoMsg)
+{
+  igtl::Matrix4x4 matrix;
+  vtkSmartPointer<vtkMatrix4x4> ijk2ras_mat = vtkSmartPointer<vtkMatrix4x4>::New();
+  ijk2ras_mat->DeepCopy(&ijk2ras);
+  igtlioConverterUtilities::VTKTransformToIGTLTransform(ijk2ras_mat, imageSize, spacing, matrix);
+  videoMsg->SetMatrix(matrix);
+
+  return 1;
+}

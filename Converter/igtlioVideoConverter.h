@@ -55,7 +55,7 @@ using namespace igtl;
 class OPENIGTLINKIO_CONVERTER_EXPORT igtlioVideoConverter : public igtlioBaseConverter
 {
 public:
-  igtlioVideoConverter();
+  igtlioVideoConverter() {};
   /**
    * This structure contains everything that igtl::VideoMessage is able to contain,
    * in a vtk-friendly format.

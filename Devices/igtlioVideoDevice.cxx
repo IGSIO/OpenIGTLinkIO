@@ -12,11 +12,14 @@
 
 ==========================================================================*/
 
+// Local includes
 #include "igtlioVideoDevice.h"
 
+// VTK includes
 #include <vtkImageData.h>
+#include <vtkMatrix4x4.h>
 #include <vtkObjectFactory.h>
-#include "vtkMatrix4x4.h"
+#include <vtkUnsignedCharArray.h>
 
 //---------------------------------------------------------------------------
 igtlioDevicePointer igtlioVideoDeviceCreator::Create(std::string device_name)
@@ -33,11 +36,10 @@ std::string igtlioVideoDeviceCreator::GetDeviceType() const
 }
 
 //---------------------------------------------------------------------------
+
 vtkStandardNewMacro(igtlioVideoDeviceCreator);
-
-
-//---------------------------------------------------------------------------
 vtkStandardNewMacro(igtlioVideoDevice);
+
 //---------------------------------------------------------------------------
 igtlioVideoDevice::igtlioVideoDevice()
 {
@@ -102,13 +104,13 @@ unsigned int igtlioVideoDevice::GetDeviceContentModifiedEvent() const
   return VideoModifiedEvent;
 }
 
-
 //---------------------------------------------------------------------------
 std::string igtlioVideoDevice::GetDeviceType() const
 {
   return igtlioVideoConverter::GetIGTLTypeName();
 }
 
+//---------------------------------------------------------------------------
 void igtlioVideoDevice::SetContent(igtlioVideoConverter::ContentData content)
 {
   Content = content;
@@ -116,11 +118,13 @@ void igtlioVideoDevice::SetContent(igtlioVideoConverter::ContentData content)
   this->InvokeEvent(VideoModifiedEvent, this);
 }
 
+//---------------------------------------------------------------------------
 igtlioVideoConverter::ContentData igtlioVideoDevice::GetContent()
 {
   return Content;
 }
 
+//---------------------------------------------------------------------------
 igtl::VideoMessage::Pointer  igtlioVideoDevice::GetCompressedIGTLMessage()
 {
   igtl::VideoMessage::Pointer videoMessage = igtl::VideoMessage::New();
@@ -129,6 +133,7 @@ igtl::VideoMessage::Pointer  igtlioVideoDevice::GetCompressedIGTLMessage()
   return videoMessage;
 }
 
+//---------------------------------------------------------------------------
 igtl::VideoMessage::Pointer  igtlioVideoDevice::GetKeyFrameMessage()
 {
   igtl::VideoMessage::Pointer videoMessage = igtl::VideoMessage::New();
@@ -160,13 +165,12 @@ int igtlioVideoDevice::ReceiveIGTLMessage(igtl::MessageBase::Pointer buffer, boo
   return success;
 }
 
-
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer igtlioVideoDevice::GetIGTLMessage()
 {
  if (!Content.image)
   {
-  vtkWarningMacro("Video is NULL, message not generated.")
+  vtkWarningMacro("Video is NULL, message not generated.");
   return 0;
   }
   int imageSizePixels[3] = { 0 };

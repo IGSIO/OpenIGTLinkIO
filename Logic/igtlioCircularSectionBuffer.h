@@ -12,11 +12,18 @@
 
 #include <string>
 #include <vtkObject.h>
+#include <vtkVersionMacros.h>
 #include <igtlMessageBase.h>
 #include "igtlioLogicExport.h"
 
 #define IGTLCB_CIRC_BUFFER_SIZE                3
 #define IGTLCB_CIRC_BUFFER_SIZE_VIDEOSTREAM   50
+#define IGTLCB_CIRC_BUFFER_SIZE    3
+#if VTK_MAJOR_VERSION >= 9
+#ifndef VTK_OVERRIDE
+#define VTK_OVERRIDE override
+#endif
+#endif
 
 class vtkMutexLock;
 
