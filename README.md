@@ -25,10 +25,9 @@ cmake -G"generator_name" \
       -DOpenIGTLink_DIR:PATH=path/to/igtl/build \
       -DVTK_DIR:PATH=path/to/vtk/build \
       -DCTK_DIR:PATH=path/to/ctk/build \
+      -DQt5_DIR:PATH=path/to/Qt/lib/cmake/Qt5
       path/to/source
 ```
-
-Make sure Qt 4 or 5 is in your path.
 
 If you use a single configuration generator, you can explicitly select the configuration passing `-DCMAKE_BUILD_TYPE:STRING=Release` or `-DCMAKE_BUILD_TYPE:STRING=Debug`.
 
@@ -45,7 +44,6 @@ The following is an example of how to build the library with all prerequisites:
 ```bash
 # prerequisites:
 #
-# cmake is in path
 # qmake is in path
 
 mkdir ~/dev
@@ -54,14 +52,14 @@ cd ~/dev
 git clone git@github.com:Kitware/VTK.git
 mkdir -p VTK_build
 cd VTK_build
-cmake ../VTK -DVTK_QT_VERSION:STRING=5 -DModule_vtkGUISupportQt:BOOL=ON
+cmake ../VTK -DVTK_QT_VERSION:STRING=5 -DModule_vtkGUISupportQt:BOOL=ON -DQt5_DIR:PATH=/path/to/Qt5/lib/cmake/Qt5
 make -j6
 cd ..
 
 git clone git@github.com:commontk/CTK.git
 mkdir -p CTK_build
 cd CTK_build
-cmake ../CTK -DCTK_QT_VERSION:STRING=5 -DCTK_LIB_Visualization/VTK/Core:BOOL=ON -DVTK_DIR:PATH=~/dev/VTK_build -DBUILD_TESTING:BOOL=OFF
+cmake ../CTK -DCTK_QT_VERSION:STRING=5 -DCTK_LIB_Visualization/VTK/Core:BOOL=ON -DVTK_DIR:PATH=~/dev/VTK_build -DBUILD_TESTING:BOOL=OFF -DQt5_DIR:PATH=/path/to/Qt5/lib/cmake/Qt5
 make -j6
 cd ..
 
