@@ -28,14 +28,15 @@ Version:   $Revision: 1.4 $
 #include <igtlServerSocket.h>
 
 // VTK includes
-#include <vtkCommand.h>
 #include <vtkCollection.h>
+#include <vtkCommand.h>
 #include <vtkImageData.h>
 #include <vtkIntArray.h>
 #include <vtkMultiThreader.h>
 #include <vtkMutexLock.h>
 #include <vtkObjectFactory.h>
 #include <vtkTimerLog.h>
+#include <vtkVersionMacros.h>
 
 // vtksys includes
 #include <vtksys/SystemTools.hxx>

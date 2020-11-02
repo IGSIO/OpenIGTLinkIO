@@ -15,14 +15,22 @@
 #ifndef IGTLIODEVICE_H
 #define IGTLIODEVICE_H
 
+// VTK includes
 #include <vtkCommand.h>
 #include <vtkIntArray.h>
+
+// STL includes
 #include <set>
 
+// local includes
 #include "igtlioDevicesExport.h"
 #include "igtlioBaseConverter.h"
 
 typedef vtkSmartPointer<class igtlioDevice> igtlioDevicePointer;
+
+#ifndef VTK_OVERRIDE
+#define VTK_OVERRIDE override
+#endif
 
 /// A vtkIGTLIODevice represents one device connected over OpenIGTLink.
 ///

@@ -32,6 +32,10 @@ Ontario with funds provided by the Ontario Ministry of Health and Long-Term Care
 
 typedef vtkSmartPointer<class igtlioCommand> igtlioCommandPointer;
 
+#ifndef VTK_OVERRIDE
+  #define VTK_OVERRIDE override
+#endif
+
 enum igtlioCommandStatus
 {
   CommandUnknown,
