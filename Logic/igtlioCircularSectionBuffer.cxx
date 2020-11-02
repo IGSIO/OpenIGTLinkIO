@@ -188,6 +188,7 @@ void igtlioCircularSectionBuffer::EndPull()
 }
 
 
+//---------------------------------------------------------------------------
 bool igtlioCircularSectionBuffer::IsSectionBufferInProcess()
 {
   if (InUseBegin>=0)

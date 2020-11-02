@@ -10,15 +10,26 @@
 #ifndef IGTLIOCIRCULARSECTIONBUFFER_H
 #define IGTLIOCIRCULARSECTIONBUFFER_H
 
+// STL includes
 #include <string>
+
+// VTK includes
 #include <vtkObject.h>
+
+// OpenIGTLink includes
 #include <igtlMessageBase.h>
+
+// Local includes
 #include "igtlioLogicExport.h"
 
 #define IGTLCB_CIRC_BUFFER_SIZE                3
 #define IGTLCB_CIRC_BUFFER_SIZE_VIDEOSTREAM   50
 
 class vtkMutexLock;
+
+#ifndef VTK_OVERRIDE
+#define VTK_OVERRIDE override
+#endif
 
 class OPENIGTLINKIO_LOGIC_EXPORT igtlioCircularSectionBuffer : public vtkObject
 {
