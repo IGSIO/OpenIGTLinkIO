@@ -2,13 +2,20 @@ project(igtlioGUI)
 
 set(${PROJECT_NAME}_EXPORT_DIRECTIVE "OPENIGTLINKIO_GUI_EXPORT")
     
+set(VTK_MODULES
+  ${IGTLIO_MODULE_PREFIX}IOImage
+  ${IGTLIO_MODULE_PREFIX}ImagingMath
+  ${IGTLIO_MODULE_PREFIX}GUISupportQt
+)
+
 find_package(VTK REQUIRED NO_MODULE
   COMPONENTS
-    vtkIOImage
-    vtkImagingMath
-    vtkGUISupportQt
+    ${VTK_MODULES}
   )
-include(${VTK_USE_FILE})
+
+if(VTK_VERSION VERSION_LESS 8.9.0)
+    include(${VTK_USE_FILE})
+endif()
 
 set(OpenIGTLinkIO_Qt_Modules 
   Widgets 

@@ -16,6 +16,7 @@
 
 #include <vtkImageData.h>
 #include <vtkObjectFactory.h>
+#include <vtkUnsignedCharArray.h>
 #include "vtkMatrix4x4.h"
 
 //---------------------------------------------------------------------------
@@ -166,7 +167,7 @@ igtl::MessageBase::Pointer igtlioVideoDevice::GetIGTLMessage()
 {
  if (!Content.image)
   {
-  vtkWarningMacro("Video is NULL, message not generated.")
+  vtkWarningMacro("Video is NULL, message not generated.");
   return 0;
   }
   int imageSizePixels[3] = { 0 };

@@ -5,6 +5,7 @@
 #include "qIGTLIOConnectorListWidget.h"
 #include "qIGTLIODevicesWidget.h"
 #include "qIGTLIOCommandWidget.h"
+#include "igtlioLogic.h"
 
 qIGTLIOClientWidget::qIGTLIOClientWidget()
 {
