@@ -92,5 +92,6 @@ int igtlioLabelMetaConverter::toIGTL(const HeaderData& header, const ContentData
     msg->AddLabelMetaElement(labelMetaElement);
   }
 
+  msg->Pack();
   return 1;
 }

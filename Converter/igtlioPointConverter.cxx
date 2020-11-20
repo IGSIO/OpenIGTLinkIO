@@ -80,17 +80,33 @@ int igtlioPointConverter::toIGTL(const HeaderData& header, const ContentData& so
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
   HeadertoIGTL(header, &basemsg, metaInfo);
 
+  if (msg->GetNumberOfPointElement() > source.PointElements.size())
+  {
+    // there is no API to delete a single element, so if we need to delete then we delete all
+    msg->ClearPointElement();
+  }
+  int pointIndex = 0;
   for (PointList::const_iterator pointIt = source.PointElements.begin(); pointIt != source.PointElements.end(); ++pointIt)
   {
-    igtl::PointElement::Pointer pointElement = igtl::PointElement::New();
+    igtl::PointElement::Pointer pointElement;
+    if (pointIndex < msg->GetNumberOfPointElement())
+    {
+      msg->GetPointElement(pointIndex, pointElement);
+    }
+    else
+    {
+      pointElement = igtl::PointElement::New();
+      msg->AddPointElement(pointElement);
+    }
     pointElement->SetName(pointIt->Name.c_str());
     pointElement->SetGroupName(pointIt->GroupName.c_str());
     pointElement->SetRGBA(pointIt->RGBA[0], pointIt->RGBA[1], pointIt->RGBA[2], pointIt->RGBA[3]);
     pointElement->SetPosition(pointIt->Position[0], pointIt->Position[1], pointIt->Position[2]);
     pointElement->SetRadius(pointIt->Radius);
     pointElement->SetOwner(pointIt->Owner.c_str());
-    msg->AddPointElement(pointElement);
+    pointIndex++;
   }
 
+  msg->Pack();
   return 1;
 }
