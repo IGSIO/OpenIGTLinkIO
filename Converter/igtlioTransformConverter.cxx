@@ -34,7 +34,6 @@ int igtlioTransformConverter::fromIGTL(igtl::MessageBase::Pointer source,
     // Deserialize the transform data
     // If CheckCRC==0, CRC check is skipped.
     int c = transMsg->Unpack(checkCRC);
-
     if (!(c & igtl::MessageHeader::UNPACK_BODY)) // if CRC check fails
       {
       // TODO: error handling
@@ -43,12 +42,15 @@ int igtlioTransformConverter::fromIGTL(igtl::MessageBase::Pointer source,
 
     // get header
     if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(transMsg), header, outMetaInfo))
+    {
       return 0;
+    }
 
     // get additional transform header info
     if (!IGTLHeaderToTransformInfo(dynamic_pointer_cast<igtl::MessageBase>(transMsg), dest))
+    {
       return 0;
-
+    }
 
     igtl::Matrix4x4 matrix;
     transMsg->GetMatrix(matrix);
@@ -122,20 +124,24 @@ int igtlioTransformConverter::IGTLHeaderToTransformInfo(igtl::MessageBase::Point
 int igtlioTransformConverter::toIGTL(const HeaderData& header, const ContentData& source, igtl::TransformMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo)
 {
   if (dest->IsNull())
+  {
     *dest = igtl::TransformMessage::New();
+  }
   (*dest)->InitPack();
   igtl::TransformMessage::Pointer msg = *dest;
 
   if (!metaInfo.empty())
-    {
+  {
     msg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
-    }
+  }
   igtl::MessageBase::Pointer basemsg = dynamic_pointer_cast<igtl::MessageBase>(msg);
   HeadertoIGTL(header, &basemsg, metaInfo);
   TransformMetaDataToIGTL(source, &basemsg);
 
-  if (source.transform.Get()==NULL)
+  if (source.transform.Get() == NULL)
+  {
     std::cerr << "Got NULL input transform" << std::endl;
+  }
 
   vtkSmartPointer<vtkMatrix4x4> matrix = source.transform;
   igtl::Matrix4x4 igtlmatrix;

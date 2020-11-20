@@ -97,5 +97,6 @@ int igtlioImageMetaConverter::toIGTL(const HeaderData& header, const ContentData
     msg->AddImageMetaElement(imageMetaElement);
   }
 
+  msg->Pack();
   return 1;
 }
