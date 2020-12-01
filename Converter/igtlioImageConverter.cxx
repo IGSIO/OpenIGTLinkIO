@@ -150,7 +150,7 @@ int igtlioImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg,
     imageData->SetDimensions(size[0], size[1], size[2]);
     imageData->SetExtent(0, size[0]-1, 0, size[1]-1, 0, size[2]-1);
     imageData->SetOrigin(0.0, 0.0, 0.0);
-    imageData->SetSpacing(1.0, 1.0, 1.0);
+    imageData->SetSpacing(spacing[0], spacing[1], spacing[2]);
 #if (VTK_MAJOR_VERSION <= 5)
     imageData->SetNumberOfScalarComponents(numComponents);
     imageData->SetScalarType(scalarType);
