@@ -115,6 +115,7 @@ int igtlioImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg,
   // Retrieve the image data
   int   size[3];          // image dimension
   float spacing[3];       // spacing (mm/pixel)
+  float origin[3];        // origin (mm)
   int   svsize[3];        // sub-volume size
   int   svoffset[3];      // sub-volume offset
   int   scalarType;       // VTK scalar type
@@ -125,10 +126,11 @@ int igtlioImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg,
   endian = imgMsg->GetEndian();
   imgMsg->GetDimensions(size);
   imgMsg->GetSpacing(spacing);
+  imgMsg->GetOrigin(origin);
   numComponents = imgMsg->GetNumComponents();
   imgMsg->GetSubVolume(svsize, svoffset);
 
-  // check if the IGTL data fits to the current MRML node  
+  // check if the IGTL data fits to the current MRML node
   int sizeInNode[3]={0,0,0};
   int scalarTypeInNode=VTK_VOID;
   int numComponentsInNode=0;
@@ -139,7 +141,7 @@ int igtlioImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg,
     scalarTypeInNode = imageData->GetScalarType();
     numComponentsInNode = imageData->GetNumberOfScalarComponents();
     }
-    
+
   if (imageData.GetPointer()==NULL
       || sizeInNode[0] != size[0] || sizeInNode[1] != size[1] || sizeInNode[2] != size[2]
       || scalarType != scalarTypeInNode
@@ -149,7 +151,7 @@ int igtlioImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg,
     dest->image = imageData;
     imageData->SetDimensions(size[0], size[1], size[2]);
     imageData->SetExtent(0, size[0]-1, 0, size[1]-1, 0, size[2]-1);
-    imageData->SetOrigin(0.0, 0.0, 0.0);
+    imageData->SetOrigin(origin[0], origin[1], origin[2]);
     imageData->SetSpacing(spacing[0], spacing[1], spacing[2]);
 #if (VTK_MAJOR_VERSION <= 5)
     imageData->SetNumberOfScalarComponents(numComponents);
