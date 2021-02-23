@@ -19,8 +19,10 @@
 #include <igtl_util.h>
 #include <igtlImageMessage.h>
 
+#include <vtkDataArray.h>
 #include <vtkImageData.h>
 #include <vtkMatrix4x4.h>
+#include <vtkPointData.h>
 #include <vtkVersion.h>
 
 namespace // unnamed namespace
@@ -286,7 +288,13 @@ int igtlioImageConverter::IGTLToVTKImageData(igtl::ImageMessage::Pointer imgMsg,
       }
 
     }
-  
+
+  // Mark scalars as modified
+  // This is required for getting up-to-date scalar range.
+  if (imageData->GetPointData() && imageData->GetPointData()->GetScalars())
+    {
+    imageData->GetPointData()->GetScalars()->Modified();
+    }
   imageData->Modified();
 
   return 1;
