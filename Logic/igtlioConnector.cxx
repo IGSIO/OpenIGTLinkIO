@@ -457,7 +457,8 @@ bool igtlioConnector::ReceiveController(int clientID)
   vtkDebugMacro("Waiting for header of size: " << headerMsg->GetPackSize());
 
   // This may need to be parallelized so that other socket aren't waiting on timeouts
-  int r = client.Socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+  bool timeout(false);
+  int r = client.Socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize(), timeout);
 
   vtkDebugMacro("Received header of size: " << headerMsg->GetPackSize());
 
@@ -540,7 +541,8 @@ bool igtlioConnector::ReceiveController(int clientID)
     vtkDebugMacro("Waiting to receive body:  size=" << buffer->GetPackBodySize()
       << ", GetBodySizeToRead=" << buffer->GetBodySizeToRead()
       << ", GetPackSize=" << buffer->GetPackSize());
-    int read = client.Socket->Receive(buffer->GetPackBodyPointer(), buffer->GetPackBodySize());
+    bool timeout(false);
+    int read = client.Socket->Receive(buffer->GetPackBodyPointer(), buffer->GetPackBodySize(), timeout);
     vtkDebugMacro("Received body: " << read);
     if (read != buffer->GetPackBodySize())
     {
@@ -574,7 +576,8 @@ bool igtlioConnector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerM
   vtkDebugMacro("Waiting to receive body:  size=" << buffer->GetBufferBodySize()
     << ", GetBodySizeToRead=" << buffer->GetBodySizeToRead()
     << ", GetPackSize=" << buffer->GetPackSize());
-  int read = client.Socket->Receive(buffer->GetBufferBodyPointer(), buffer->GetBufferBodySize());
+  bool timeout(false);
+  int read = client.Socket->Receive(buffer->GetBufferBodyPointer(), buffer->GetBufferBodySize(), timeout);
   vtkDebugMacro("Received body: " << read);
   if (read != buffer->GetBufferBodySize())
   {
@@ -592,7 +595,7 @@ bool igtlioConnector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerM
 }
 
 //----------------------------------------------------------------------------
-int igtlioConnector::SendData(int size, unsigned char* data, Client& client)
+int igtlioConnector::SendData(igtlUint64 size, unsigned char* data, Client& client)
 {
   if (client.Socket.IsNull())
     {
@@ -609,12 +612,12 @@ int igtlioConnector::SendData(int size, unsigned char* data, Client& client)
 }
 
 //----------------------------------------------------------------------------
-int igtlioConnector::Skip(int length, Client& client, int skipFully /* = 1 */)
+int igtlioConnector::Skip(igtlUint64 length, Client& client, int skipFully /* = 1 */)
 {
   unsigned char dummy[256];
-  int block  = 256;
-  int n      = 0;
-  int remain = length;
+  igtlUint64 block  = 256;
+  igtlUint64 n      = 0;
+  igtlUint64 remain = length;
 
   do
     {
@@ -623,7 +626,8 @@ int igtlioConnector::Skip(int length, Client& client, int skipFully /* = 1 */)
       block = remain;
       }
 
-    n = client.Socket->Receive(dummy, block, skipFully);
+    bool timeout(false);
+    n = client.Socket->Receive(dummy, block, timeout, skipFully);
     remain -= n;
     }
   while (remain > 0 || (skipFully && n < block));
