@@ -265,8 +265,8 @@ private:
   // OpenIGTLink Message handlers
   //----------------------------------------------------------------
   bool ReceiveController(int clientID); // called from Thread
-  int SendData(int size, unsigned char* data, Client& client);
-  int Skip(int length, Client& client, int skipFully=1);
+  int SendData(igtlUint64 size, unsigned char* data, Client& client);
+  int Skip(igtlUint64 length, Client& client, int skipFully=1);
 
   //----------------------------------------------------------------
   // Clients
