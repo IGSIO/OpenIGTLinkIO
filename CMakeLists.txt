@@ -179,7 +179,7 @@ install(EXPORT OpenIGTLinkIO
   FILE "OpenIGTLinkIOTargets.cmake"
   )
 
-install(FILES ${CMAKE_BINARY_DIR}/CMakeFiles/install/OpenIGTLinkIOConfig.cmake
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/install/OpenIGTLinkIOConfig.cmake
   DESTINATION "${OpenIGTLinkIO_PACKAGE_INSTALL}"
   COMPONENT CMakeFiles
   )
