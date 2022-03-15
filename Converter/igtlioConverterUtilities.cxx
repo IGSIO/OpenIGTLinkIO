@@ -13,6 +13,7 @@ Version:   $Revision: 1.0 $
 =========================================================================auto=*/
 
 #include "igtlioConverterUtilities.h"
+#include <cmath>
 
 //---------------------------------------------------------------------------
 void igtlioConverterUtilities::VTKTransformToIGTLTransform(vtkSmartPointer<vtkMatrix4x4> ijk2ras, const int imageSize[3], const double spacing[3], igtl::Matrix4x4 &matrix)
