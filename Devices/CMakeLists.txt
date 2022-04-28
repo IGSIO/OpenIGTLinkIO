@@ -32,8 +32,10 @@ set(${PROJECT_NAME}_SRCS
   igtlioPolyDataDevice.cxx
   igtlioStatusDevice.cxx
   igtlioStringDevice.cxx
+  igtlioNDArrayDevice.cxx
   igtlioTransformDevice.cxx
   igtlioTrackingDataDevice.cxx
+
   )
 
 set(${PROJECT_NAME}_HDRS
@@ -45,6 +47,7 @@ set(${PROJECT_NAME}_HDRS
   igtlioPolyDataDevice.h
   igtlioStatusDevice.h
   igtlioStringDevice.h
+  igtlioNDArrayDevice.h
   igtlioTransformDevice.h
   igtlioTrackingDataDevice.h
   )
