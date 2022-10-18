@@ -4,6 +4,7 @@
 #include "igtlioLogicExport.h"
 
 // std includes
+#include <mutex>
 #include <string>
 
 // OpenIGTLink includes
@@ -53,28 +54,27 @@ bool operator<(const igtlioDeviceKeyType& lhs, const igtlioDeviceKeyType& rhs);
 ///
 /// Example:
 /// \code
-/// igtlioLockGuard<vtkMutexLock> updateMutexGuardedLock(this->UpdateMutex);
+/// igtlioLockGuard updateMutexGuardedLock(this->UpdateMutex);
 /// \endcode
 ///
-template <typename T>
-class igtlioLockGuard
+class OPENIGTLINKIO_LOGIC_EXPORT igtlioLockGuard
 {
 public:
-  igtlioLockGuard(T* lockableObject)
+  igtlioLockGuard(std::mutex &lockableObject)
   {
-    m_LockableObject = lockableObject;
-    m_LockableObject->Lock();
+    m_LockableObject = &lockableObject;
+    m_LockableObject->lock();
   }
   ~igtlioLockGuard()
   {
-    m_LockableObject->Unlock();
+    m_LockableObject->unlock();
     m_LockableObject = NULL;
   }
 private:
   igtlioLockGuard(igtlioLockGuard&);
   void operator=(igtlioLockGuard&);
 
-  T* m_LockableObject;
+  std::mutex* m_LockableObject;
 };
 
 #endif // IGTLIOUTILITIES_H

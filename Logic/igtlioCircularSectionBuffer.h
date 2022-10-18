@@ -12,6 +12,7 @@
 
 // STL includes
 #include <string>
+#include <mutex>
 
 // VTK includes
 #include <vtkObject.h>
@@ -25,7 +26,7 @@
 #define IGTLCB_CIRC_BUFFER_SIZE                3
 #define IGTLCB_CIRC_BUFFER_SIZE_VIDEOSTREAM   50
 
-class vtkMutexLock;
+class vtkCriticalSection;
 
 #ifndef VTK_OVERRIDE
 #define VTK_OVERRIDE override
@@ -84,7 +85,7 @@ class OPENIGTLINKIO_LOGIC_EXPORT igtlioCircularSectionBuffer : public vtkObject
 
  protected:
 
-  vtkMutexLock*      Mutex;
+  std::mutex         Mutex;
   int                Last;        // updated by connector thread
   int                First;       // updated by connector thread
   int                InPush;      // updated by connector thread

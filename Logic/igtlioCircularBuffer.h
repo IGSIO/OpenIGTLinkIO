@@ -12,6 +12,7 @@
 
 // STL includes
 #include <string>
+#include <mutex>
 
 // VTK includes
 #include <vtkObject.h>
@@ -28,7 +29,7 @@
   #define VTK_OVERRIDE override
 #endif
 
-class vtkMutexLock;
+class vtkCriticalSection;
 
 class OPENIGTLINKIO_LOGIC_EXPORT igtlioCircularBuffer : public vtkObject
 {
@@ -56,7 +57,7 @@ protected:
 
 protected:
 
-  vtkMutexLock*      Mutex;
+  std::mutex         Mutex;
   int                Last;        // updated by connector thread
   int                InPush;      // updated by connector thread
   int                InUse;       // updated by main thread

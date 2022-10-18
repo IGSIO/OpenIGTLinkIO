@@ -38,7 +38,6 @@
 #include <set>
 #include <queue>
 
-typedef vtkSmartPointer<class vtkMutexLock> vtkMutexLockPointer;
 typedef vtkSmartPointer<class vtkMultiThreader> vtkMultiThreaderPointer;
 typedef std::vector< vtkSmartPointer<igtlioDevice> >   igtlioMessageDeviceListType;
 typedef std::deque<igtlioCommandPointer> igtlioCommandDequeType;
@@ -342,7 +341,7 @@ protected:
   // Devices
   //----------------------------------------------------------------
   std::vector<igtlioDevicePointer>          Devices;
-  vtkMutexLockPointer                       DeviceMutex;
+  std::mutex                                DeviceMutex;
 
   //----------------------------------------------------------------
   // Connector configuration
@@ -357,7 +356,7 @@ protected:
   // Thread and Socket
   //----------------------------------------------------------------
   vtkMultiThreaderPointer                   Thread;
-  vtkMutexLockPointer                       ClientMutex;
+  mutable std::mutex                        ClientMutex;
   igtl::ServerSocket::Pointer               ServerSocket;
   std::vector<Client>                       Sockets; // Access is not thread safe, control usage with igtlioConnector::ClientMutex
   unsigned int                              NextClientID;
@@ -372,14 +371,14 @@ protected:
   typedef std::map<SectionBufferKey, igtlioCircularSectionBufferPointer> igtlioCircularSectionBufferMap;
   igtlioCircularSectionBufferMap            SectionBuffer;
 
-  vtkMutexLockPointer                       CircularBufferMutex;
+  std::mutex                                CircularBufferMutex;
   int                                       RestrictDeviceName;  // Flag to restrict incoming and outgoing data by device names
 
   // Event queueing mechanism is needed to send all event notifications from the main thread.
   // Events can be pushed to the end of the EventQueue by calling RequestInvoke from any thread,
   // and they will be Invoked in the main thread.
   std::list<unsigned long>                  EventQueue;
-  vtkMutexLockPointer                       EventQueueMutex;
+  std::mutex                                EventQueueMutex;
 
   // Collect commands before they enter the circular buffer, in order to make sure that they are not overwritten
   //typedef int ClientIDType;
@@ -394,20 +393,20 @@ protected:
   typedef std::queue<IncomingCommandType>   IncomingCommandQueueType;
 
   IncomingCommandQueueType                  IncomingCommandQueue;
-  vtkMutexLockPointer                       IncomingCommandQueueMutex;
+  std::mutex                                IncomingCommandQueueMutex;
 
   // Flag for the push outgoing message request
   // If the flag is ON, the external timer will update the outgoing nodes with
   // "OpenIGTLinkIF.pushOnConnection" attribute to push the nodes to the network.
   int                                       PushOutgoingMessageFlag;
-  vtkMutexLockPointer                       PushOutgoingMessageMutex;
+  std::mutex                                PushOutgoingMessageMutex;
 
   igtlioDeviceFactoryPointer                DeviceFactory;
 
   bool                                      CheckCRC;
 
   igtlioCommandDequeType                    OutgoingCommandDeque;
-  vtkMutexLockPointer                       OutgoingCommandDequeMutex;
+  std::mutex                                OutgoingCommandDequeMutex;
 
   int                                       NextCommandID;
 

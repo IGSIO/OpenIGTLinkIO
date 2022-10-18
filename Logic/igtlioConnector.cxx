@@ -33,10 +33,13 @@ Version:   $Revision: 1.4 $
 #include <vtkImageData.h>
 #include <vtkIntArray.h>
 #include <vtkMultiThreader.h>
-#include <vtkMutexLock.h>
+#include <vtkCriticalSection.h>
 #include <vtkObjectFactory.h>
 #include <vtkTimerLog.h>
 #include <vtkVersionMacros.h>
+#if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
+#include <vtkMutexLock.h>
+#endif
 
 // vtksys includes
 #include <vtksys/SystemTools.hxx>
@@ -74,19 +77,12 @@ igtlioConnector::igtlioConnector()
   , State(STATE_OFF)
   , Persistent(PERSISTENT_OFF)
   , Thread(vtkMultiThreaderPointer::New())
-  , ClientMutex(vtkMutexLockPointer::New())
   , ConnectionThreadID(-1)
   , ServerHostname("localhost")
   , ServerPort(18944)
   , ServerStopFlag(false)
-  , CircularBufferMutex(vtkMutexLockPointer::New())
   , RestrictDeviceName(0)
-  , EventQueueMutex(vtkMutexLockPointer::New())
-  , IncomingCommandQueueMutex(vtkMutexLockPointer::New())
-  , OutgoingCommandDequeMutex(vtkMutexLockPointer::New())
   , PushOutgoingMessageFlag(0)
-  , PushOutgoingMessageMutex(vtkMutexLockPointer::New())
-  , DeviceMutex(vtkMutexLockPointer::New())
   , DeviceFactory(igtlioDeviceFactoryPointer::New())
   , CheckCRC(true)
   , NextCommandID(1)
@@ -296,7 +292,7 @@ void* igtlioConnector::ReceiverThreadFunction(void* ptr)
 //----------------------------------------------------------------------------
 igtlioCommandPointer igtlioConnector::GetOutgoingCommand(int commandId, int clientId)
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->OutgoingCommandDequeMutex);
+  igtlioLockGuard lock(this->OutgoingCommandDequeMutex);
   igtlioCommandPointer command = NULL;
   if (!this->OutgoingCommandDeque.empty())
     {
@@ -316,14 +312,14 @@ igtlioCommandPointer igtlioConnector::GetOutgoingCommand(int commandId, int clie
 //----------------------------------------------------------------------------
 void igtlioConnector::RequestInvokeEvent(unsigned long eventId)
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->EventQueueMutex);
+  igtlioLockGuard lock(this->EventQueueMutex);
   this->EventQueue.push_back(eventId);
 }
 
 //----------------------------------------------------------------------------
 void igtlioConnector::RequestPushOutgoingMessages()
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->PushOutgoingMessageMutex);
+  igtlioLockGuard lock(this->PushOutgoingMessageMutex);
   this->PushOutgoingMessageFlag = 1;
 }
 
@@ -351,7 +347,7 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
       igtl::ClientSocket::Pointer client = connector->ServerSocket->WaitForConnection(1000);
       if (client.IsNotNull()) // if client connected
         {
-        igtlioLockGuard<vtkMutexLock> lock(connector->ClientMutex);
+        igtlioLockGuard lock(connector->ClientMutex);
         int clientThreadID = connector->Thread->SpawnThread((vtkThreadFunctionType)&igtlioConnector::ReceiverThreadFunction, connector);
         Client clientInfo = Client(connector->NextClientID++, client, clientThreadID);
         connector->Sockets.push_back(clientInfo);
@@ -366,7 +362,7 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
           int r = socket->ConnectToServer(connector->ServerHostname.c_str(), connector->ServerPort, false);
           if (r == 0) // if connected to server
           {
-            igtlioLockGuard<vtkMutexLock> lock(connector->ClientMutex);
+            igtlioLockGuard lock(connector->ClientMutex);
             int clientThreadID = connector->Thread->SpawnThread((vtkThreadFunctionType)&igtlioConnector::ReceiverThreadFunction, connector);
             Client clientInfo = Client(0, socket, clientThreadID);
             connector->Sockets.push_back(clientInfo);
@@ -404,7 +400,7 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
     connector->ServerSocket->CloseSocket();
     }
 
-  igtlioLockGuard<vtkMutexLock> lock(connector->ClientMutex);
+  igtlioLockGuard lock(connector->ClientMutex);
   for (std::vector<Client>::iterator clientIt = connector->Sockets.begin(); clientIt != connector->Sockets.end(); ++clientIt)
     {
     if (clientIt->Socket.IsNotNull())
@@ -524,7 +520,7 @@ bool igtlioConnector::ReceiveController(int clientID)
       circBuffer->SetPacketMode(igtlioCircularSectionBuffer::MultiplePacketsMode);
     }
 
-    igtlioLockGuard<vtkMutexLock> lock(this->CircularBufferMutex);
+    igtlioLockGuard lock(this->CircularBufferMutex);
     this->SectionBuffer[SectionBufferKey(key, clientID)] = circBuffer;
   }
 
@@ -588,7 +584,7 @@ bool igtlioConnector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerM
     return false;
   }
 
-  igtlioLockGuard<vtkMutexLock> lock(this->IncomingCommandQueueMutex);
+  igtlioLockGuard lock(this->IncomingCommandQueueMutex);
   this->IncomingCommandQueue.push(IncomingCommandType(client.ID, buffer));
 
   return true;
@@ -639,7 +635,7 @@ int igtlioConnector::Skip(igtlUint64 length, Client& client, int skipFully /* = 
 std::vector<int> igtlioConnector::GetClientIds()
 {
   std::vector<int> clientIds;
-  igtlioLockGuard<vtkMutexLock> lock(this->ClientMutex);
+  igtlioLockGuard lock(this->ClientMutex);
   for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
   {
     clientIds.push_back(clientIt->ID);
@@ -650,7 +646,7 @@ std::vector<int> igtlioConnector::GetClientIds()
 //----------------------------------------------------------------------------
 igtlioConnector::Client igtlioConnector::GetClient(int clientId)
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->ClientMutex);
+  igtlioLockGuard lock(this->ClientMutex);
   for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
   {
     if (clientIt->ID == clientId)
@@ -665,7 +661,7 @@ igtlioConnector::Client igtlioConnector::GetClient(int clientId)
 //----------------------------------------------------------------------------
 bool igtlioConnector::RemoveClient(int clientId)
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->ClientMutex);
+  igtlioLockGuard lock(this->ClientMutex);
   std::vector<Client>::iterator clientIt = (std::find_if(
     this->Sockets.begin(),
     this->Sockets.end(),
@@ -782,7 +778,7 @@ void igtlioConnector::ImportEventsFromEventBuffer()
   do
   {
     emptyQueue=true;
-    igtlioLockGuard<vtkMutexLock> lock(this->EventQueueMutex);
+    igtlioLockGuard lock(this->EventQueueMutex);
     if (this->EventQueue.size()>0)
     {
       eventId=this->EventQueue.front();
@@ -803,14 +799,14 @@ void igtlioConnector::PushOutgoingMessages()
 
   // Read PushOutgoingMessageFlag and reset it.
   {
-    igtlioLockGuard<vtkMutexLock> lock(this->PushOutgoingMessageMutex);
+    igtlioLockGuard lock(this->PushOutgoingMessageMutex);
     push = this->PushOutgoingMessageFlag;
     this->PushOutgoingMessageFlag = 0;
   }
 
   if (push)
     {
-      igtlioLockGuard<vtkMutexLock> lock(this->DeviceMutex);
+      igtlioLockGuard lock(this->DeviceMutex);
       for (unsigned i=0; i<this->Devices.size(); ++i)
         {
           if (this->Devices[i]->MessageDirectionIsOut() && this->Devices[i]->GetPushOnConnect())
@@ -894,7 +890,7 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command)
       if (success)
       {
         {
-          igtlioLockGuard<vtkMutexLock> lock(this->OutgoingCommandDequeMutex);
+          igtlioLockGuard lock(this->OutgoingCommandDequeMutex);
           this->OutgoingCommandDeque.push_back(command);
         }
         command->SetStatus(igtlioCommandStatus::CommandWaiting);
@@ -921,7 +917,7 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command)
     if (success)
     {
       {
-        igtlioLockGuard<vtkMutexLock> lock(this->OutgoingCommandDequeMutex);
+        igtlioLockGuard lock(this->OutgoingCommandDequeMutex);
         this->OutgoingCommandDeque.push_back(command);
       }
       command->SetStatus(igtlioCommandStatus::CommandWaiting);
@@ -946,7 +942,7 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command)
 int igtlioConnector::ConnectedClientsCount() const
 {
   int total(0);
-  igtlioLockGuard<vtkMutexLock> lock(this->ClientMutex);
+  igtlioLockGuard lock(this->ClientMutex);
   for (std::vector<Client>::const_iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
   {
     if (clientIt->Socket->GetConnected())
@@ -1024,7 +1020,7 @@ void igtlioConnector::CancelCommand(igtlioCommandPointer command)
 //----------------------------------------------------------------------------
 void igtlioConnector::ParseCommands()
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->IncomingCommandQueueMutex);
+  igtlioLockGuard lock(this->IncomingCommandQueueMutex);
 
   while (!this->IncomingCommandQueue.empty())
     {
@@ -1079,7 +1075,7 @@ void igtlioConnector::PruneCompletedCommands()
 {
   igtlioCommandDequeType completedCommands = igtlioCommandDequeType();
     {
-    igtlioLockGuard<vtkMutexLock> lock(this->OutgoingCommandDequeMutex);
+    igtlioLockGuard lock(this->OutgoingCommandDequeMutex);
 
     for (igtlioCommandDequeType::iterator outgoingCommandIt = this->OutgoingCommandDeque.begin();
          outgoingCommandIt != this->OutgoingCommandDeque.end(); ++outgoingCommandIt)
@@ -1148,7 +1144,7 @@ int igtlioConnector::AddDevice(igtlioDevicePointer device)
 
   device->SetTimestamp(vtkTimerLog::GetUniversalTime());
   {
-  igtlioLockGuard<vtkMutexLock> lock(this->DeviceMutex);
+  igtlioLockGuard lock(this->DeviceMutex);
   this->Devices.push_back(device);
   }
 
@@ -1172,7 +1168,7 @@ void igtlioConnector::DeviceContentModified(vtkObject *caller, unsigned long eve
 //----------------------------------------------------------------------------
 int igtlioConnector::RemoveDevice(igtlioDevicePointer device)
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->DeviceMutex);
+  igtlioLockGuard lock(this->DeviceMutex);
   igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(device);
   for (unsigned i=0; i< this->Devices.size(); ++i)
   {
@@ -1196,7 +1192,7 @@ unsigned int igtlioConnector::GetNumberOfDevices() const
 //---------------------------------------------------------------------------
 void igtlioConnector::RemoveDevice(int index)
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->DeviceMutex);
+  igtlioLockGuard lock(this->DeviceMutex);
   //TODO: disconnect listen to device events?
   igtlioDevicePointer device = this->Devices[index]; // ensure object lives until event has completed
   this->Devices.erase(this->Devices.begin()+index);
@@ -1206,14 +1202,14 @@ void igtlioConnector::RemoveDevice(int index)
 //---------------------------------------------------------------------------
 igtlioDevicePointer igtlioConnector::GetDevice(int index)
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->DeviceMutex);
+  igtlioLockGuard lock(this->DeviceMutex);
   return this->Devices[index];
 }
 
 //---------------------------------------------------------------------------
 igtlioDevicePointer igtlioConnector::GetDevice(igtlioDeviceKeyType key)
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->DeviceMutex);
+  igtlioLockGuard lock(this->DeviceMutex);
   for (unsigned i=0; i< this->Devices.size(); ++i)
     if (igtlioDeviceKeyType::CreateDeviceKey(this->Devices[i])==key)
       return this->Devices[i];
@@ -1223,7 +1219,7 @@ igtlioDevicePointer igtlioConnector::GetDevice(igtlioDeviceKeyType key)
 //---------------------------------------------------------------------------
 bool igtlioConnector::HasDevice(igtlioDevicePointer d )
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->DeviceMutex);
+  igtlioLockGuard lock(this->DeviceMutex);
     for(unsigned i=0; i< this->Devices.size(); ++i)
         if( this->Devices[i] == d )
             return true;
@@ -1312,7 +1308,7 @@ void igtlioConnector::SetDeviceFactory(igtlioDeviceFactoryPointer val)
 //----------------------------------------------------------------------------
 bool igtlioConnector::IsConnected()
 {
-  igtlioLockGuard<vtkMutexLock> lock(this->ClientMutex);
+  igtlioLockGuard lock(this->ClientMutex);
   for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
     {
     if (clientIt->Socket.IsNotNull())

@@ -7,11 +7,11 @@
 
  ==========================================================================*/
 
-// VTK includes
+ // VTK includes
 #include "igtlioCircularBuffer.h"
 
 #include <vtkObjectFactory.h>
-#include <vtkMutexLock.h>
+#include <vtkCriticalSection.h>
 #include <vtksys/SystemTools.hxx>
 
 // OpenIGTLink includes
@@ -29,49 +29,46 @@ vtkStandardNewMacro(igtlioCircularBuffer);
 //---------------------------------------------------------------------------
 igtlioCircularBuffer::igtlioCircularBuffer()
 {
-this->Mutex = vtkMutexLock::New();
-igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
-// Allocate Circular buffer for the new device
-this->InUse = -1;
-this->Last  = -1;
-for (int i = 0; i < IGTLCB_CIRC_BUFFER_SIZE; i ++)
+  igtlioLockGuard lock(this->Mutex);
+  // Allocate Circular buffer for the new device
+  this->InUse = -1;
+  this->Last = -1;
+  for (int i = 0; i < IGTLCB_CIRC_BUFFER_SIZE; i++)
   {
-  this->DeviceType[i] = "";
-  this->Size[i]       = 0;
-  this->Data[i]       = NULL;
-  this->Messages[i] = igtl::MessageBase::New();
-  this->Messages[i]->InitPack();
+    this->DeviceType[i] = "";
+    this->Size[i] = 0;
+    this->Data[i] = NULL;
+    this->Messages[i] = igtl::MessageBase::New();
+    this->Messages[i]->InitPack();
   }
 
-this->UpdateFlag = 0;
+  this->UpdateFlag = 0;
 }
 
 
 //---------------------------------------------------------------------------
 igtlioCircularBuffer::~igtlioCircularBuffer()
 {
-
-{
-  igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
-  this->InUse = -1;
-  this->Last = -1;
-}
-
-for (int i = 0; i < IGTLCB_CIRC_BUFFER_SIZE; i ++)
   {
-  if (this->Data[i] != NULL)
+    igtlioLockGuard lock(this->Mutex);
+    this->InUse = -1;
+    this->Last = -1;
+  }
+
+  for (int i = 0; i < IGTLCB_CIRC_BUFFER_SIZE; i++)
+  {
+    if (this->Data[i] != NULL)
     {
-    delete this->Data[i];
+      delete this->Data[i];
     }
   }
-this->Mutex->Delete();
 }
 
 
 //---------------------------------------------------------------------------
 void igtlioCircularBuffer::PrintSelf(ostream& os, vtkIndent indent)
 {
-this->vtkObject::PrintSelf(os, indent);
+  this->vtkObject::PrintSelf(os, indent);
 }
 
 
@@ -88,28 +85,28 @@ this->vtkObject::PrintSelf(os, indent);
 //---------------------------------------------------------------------------
 int igtlioCircularBuffer::StartPush()
 {
-igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
-this->InPush = (this->Last + 1) % IGTLCB_CIRC_BUFFER_SIZE;
-if (this->InPush == this->InUse)
-  {
+  igtlioLockGuard lock(this->Mutex);
   this->InPush = (this->Last + 1) % IGTLCB_CIRC_BUFFER_SIZE;
+  if (this->InPush == this->InUse)
+  {
+    this->InPush = (this->Last + 1) % IGTLCB_CIRC_BUFFER_SIZE;
   }
 
-return this->InPush;
+  return this->InPush;
 }
 
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer igtlioCircularBuffer::GetPushBuffer()
 {
-return this->Messages[this->InPush];
+  return this->Messages[this->InPush];
 }
 
 //---------------------------------------------------------------------------
 void igtlioCircularBuffer::EndPush()
 {
-igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
-this->Last = this->InPush;
-this->UpdateFlag = 1;
+  igtlioLockGuard lock(this->Mutex);
+  this->Last = this->InPush;
+  this->UpdateFlag = 1;
 }
 
 
@@ -125,23 +122,23 @@ this->UpdateFlag = 1;
 //---------------------------------------------------------------------------
 int igtlioCircularBuffer::StartPull()
 {
-igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
-this->InUse = this->Last;
-this->UpdateFlag = 0;
-return this->Last;   // return -1 if it is not available
+  igtlioLockGuard lock(this->Mutex);
+  this->InUse = this->Last;
+  this->UpdateFlag = 0;
+  return this->Last;   // return -1 if it is not available
 }
 
 
 //---------------------------------------------------------------------------
 igtl::MessageBase::Pointer igtlioCircularBuffer::GetPullBuffer()
 {
-return this->Messages[this->InUse];
+  return this->Messages[this->InUse];
 }
 
 
 //---------------------------------------------------------------------------
 void igtlioCircularBuffer::EndPull()
 {
-igtlioLockGuard<vtkMutexLock> lock(this->Mutex);
-this->InUse = -1;
+  igtlioLockGuard lock(this->Mutex);
+  this->InUse = -1;
 }
