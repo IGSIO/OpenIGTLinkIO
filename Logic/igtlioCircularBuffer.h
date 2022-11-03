@@ -57,7 +57,7 @@ protected:
 
 protected:
 
-  std::mutex         Mutex;
+  std::recursive_mutex         Mutex;
   int                Last;        // updated by connector thread
   int                InPush;      // updated by connector thread
   int                InUse;       // updated by main thread

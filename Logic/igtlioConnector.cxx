@@ -37,7 +37,7 @@ Version:   $Revision: 1.4 $
 #include <vtkObjectFactory.h>
 #include <vtkTimerLog.h>
 #include <vtkVersionMacros.h>
-#if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
+#if VTK_MAJOR_VERSION < 9 // change to std::recursive_mutex with v9.0.0
 #include <vtkMutexLock.h>
 #endif
 
@@ -275,13 +275,13 @@ void* igtlioConnector::ReceiverThreadFunction(void* ptr)
   connector->RemoveClient(clientID);
 
   // Signal to the threader that this thread has become free
-#if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
+#if VTK_MAJOR_VERSION < 9 // change to std::recursive_mutex with v9.0.0
   vinfo->ActiveFlagLock->Lock();
 #else
   vinfo->ActiveFlagLock->lock();
 #endif
   (*vinfo->ActiveFlag) = 0;
-#if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
+#if VTK_MAJOR_VERSION < 9 // change to std::recursive_mutex with v9.0.0
   vinfo->ActiveFlagLock->Unlock();
 #else
   vinfo->ActiveFlagLock->unlock();
@@ -292,7 +292,7 @@ void* igtlioConnector::ReceiverThreadFunction(void* ptr)
 //----------------------------------------------------------------------------
 igtlioCommandPointer igtlioConnector::GetOutgoingCommand(int commandId, int clientId)
 {
-  std::lock_guard<std::mutex> lock(this->OutgoingCommandDequeMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->OutgoingCommandDequeMutex);
   igtlioCommandPointer command = NULL;
   if (!this->OutgoingCommandDeque.empty())
     {
@@ -319,7 +319,7 @@ void igtlioConnector::RequestInvokeEvent(unsigned long eventId)
 //----------------------------------------------------------------------------
 void igtlioConnector::RequestPushOutgoingMessages()
 {
-  std::lock_guard<std::mutex> lock(this->PushOutgoingMessageMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->PushOutgoingMessageMutex);
   this->PushOutgoingMessageFlag = 1;
 }
 
@@ -347,7 +347,7 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
       igtl::ClientSocket::Pointer client = connector->ServerSocket->WaitForConnection(1000);
       if (client.IsNotNull()) // if client connected
         {
-        std::lock_guard<std::mutex> lock(connector->ClientMutex);
+        std::lock_guard<std::recursive_mutex> lock(connector->ClientMutex);
         int clientThreadID = connector->Thread->SpawnThread((vtkThreadFunctionType)&igtlioConnector::ReceiverThreadFunction, connector);
         Client clientInfo = Client(connector->NextClientID++, client, clientThreadID);
         connector->Sockets.push_back(clientInfo);
@@ -362,7 +362,7 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
           int r = socket->ConnectToServer(connector->ServerHostname.c_str(), connector->ServerPort, false);
           if (r == 0) // if connected to server
           {
-            std::lock_guard<std::mutex> lock(connector->ClientMutex);
+            std::lock_guard<std::recursive_mutex> lock(connector->ClientMutex);
             int clientThreadID = connector->Thread->SpawnThread((vtkThreadFunctionType)&igtlioConnector::ReceiverThreadFunction, connector);
             Client clientInfo = Client(0, socket, clientThreadID);
             connector->Sockets.push_back(clientInfo);
@@ -400,7 +400,7 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
     connector->ServerSocket->CloseSocket();
     }
 
-  std::lock_guard<std::mutex> lock(connector->ClientMutex);
+  std::lock_guard<std::recursive_mutex> lock(connector->ClientMutex);
   for (std::vector<Client>::iterator clientIt = connector->Sockets.begin(); clientIt != connector->Sockets.end(); ++clientIt)
     {
     if (clientIt->Socket.IsNotNull())
@@ -414,13 +414,13 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
   connector->RequestInvokeEvent(igtlioConnector::DeactivatedEvent); // need to Request the InvokeEvent, because we are not on the main thread now
 
   // Signal to the threader that this thread has become free
-#if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
+#if VTK_MAJOR_VERSION < 9 // change to std::recursive_mutex with v9.0.0
   vinfo->ActiveFlagLock->Lock();
 #else
   vinfo->ActiveFlagLock->lock();
 #endif
   (*vinfo->ActiveFlag) = 0;
-#if VTK_MAJOR_VERSION < 9 // change to std::mutex with v9.0.0
+#if VTK_MAJOR_VERSION < 9 // change to std::recursive_mutex with v9.0.0
   vinfo->ActiveFlagLock->Unlock();
 #else
   vinfo->ActiveFlagLock->unlock();
@@ -520,7 +520,7 @@ bool igtlioConnector::ReceiveController(int clientID)
       circBuffer->SetPacketMode(igtlioCircularSectionBuffer::MultiplePacketsMode);
     }
 
-    std::lock_guard<std::mutex> lock(this->CircularBufferMutex);
+    std::lock_guard<std::recursive_mutex> lock(this->CircularBufferMutex);
     this->SectionBuffer[SectionBufferKey(key, clientID)] = circBuffer;
   }
 
@@ -584,7 +584,7 @@ bool igtlioConnector::ReceiveCommandMessage(igtl::MessageHeader::Pointer headerM
     return false;
   }
 
-  std::lock_guard<std::mutex> lock(this->IncomingCommandQueueMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->IncomingCommandQueueMutex);
   this->IncomingCommandQueue.push(IncomingCommandType(client.ID, buffer));
 
   return true;
@@ -635,7 +635,7 @@ int igtlioConnector::Skip(igtlUint64 length, Client& client, int skipFully /* = 
 std::vector<int> igtlioConnector::GetClientIds()
 {
   std::vector<int> clientIds;
-  std::lock_guard<std::mutex> lock(this->ClientMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->ClientMutex);
   for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
   {
     clientIds.push_back(clientIt->ID);
@@ -646,7 +646,7 @@ std::vector<int> igtlioConnector::GetClientIds()
 //----------------------------------------------------------------------------
 igtlioConnector::Client igtlioConnector::GetClient(int clientId)
 {
-  std::lock_guard<std::mutex> lock(this->ClientMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->ClientMutex);
   for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
   {
     if (clientIt->ID == clientId)
@@ -661,7 +661,7 @@ igtlioConnector::Client igtlioConnector::GetClient(int clientId)
 //----------------------------------------------------------------------------
 bool igtlioConnector::RemoveClient(int clientId)
 {
-  std::lock_guard<std::mutex> lock(this->ClientMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->ClientMutex);
   std::vector<Client>::iterator clientIt = (std::find_if(
     this->Sockets.begin(),
     this->Sockets.end(),
@@ -799,14 +799,14 @@ void igtlioConnector::PushOutgoingMessages()
 
   // Read PushOutgoingMessageFlag and reset it.
   {
-    std::lock_guard<std::mutex> lock(this->PushOutgoingMessageMutex);
+    std::lock_guard<std::recursive_mutex> lock(this->PushOutgoingMessageMutex);
     push = this->PushOutgoingMessageFlag;
     this->PushOutgoingMessageFlag = 0;
   }
 
   if (push)
     {
-      std::lock_guard<std::mutex> lock(this->DeviceMutex);
+      std::lock_guard<std::recursive_mutex> lock(this->DeviceMutex);
       for (unsigned i=0; i<this->Devices.size(); ++i)
         {
           if (this->Devices[i]->MessageDirectionIsOut() && this->Devices[i]->GetPushOnConnect())
@@ -890,7 +890,7 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command)
       if (success)
       {
         {
-          std::lock_guard<std::mutex> lock(this->OutgoingCommandDequeMutex);
+          std::lock_guard<std::recursive_mutex> lock(this->OutgoingCommandDequeMutex);
           this->OutgoingCommandDeque.push_back(command);
         }
         command->SetStatus(igtlioCommandStatus::CommandWaiting);
@@ -917,7 +917,7 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command)
     if (success)
     {
       {
-        std::lock_guard<std::mutex> lock(this->OutgoingCommandDequeMutex);
+        std::lock_guard<std::recursive_mutex> lock(this->OutgoingCommandDequeMutex);
         this->OutgoingCommandDeque.push_back(command);
       }
       command->SetStatus(igtlioCommandStatus::CommandWaiting);
@@ -942,7 +942,7 @@ int igtlioConnector::SendCommand(igtlioCommandPointer command)
 int igtlioConnector::ConnectedClientsCount() const
 {
   int total(0);
-  std::lock_guard<std::mutex> lock(this->ClientMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->ClientMutex);
   for (std::vector<Client>::const_iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
   {
     if (clientIt->Socket->GetConnected())
@@ -1020,7 +1020,7 @@ void igtlioConnector::CancelCommand(igtlioCommandPointer command)
 //----------------------------------------------------------------------------
 void igtlioConnector::ParseCommands()
 {
-  std::lock_guard<std::mutex> lock(this->IncomingCommandQueueMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->IncomingCommandQueueMutex);
 
   while (!this->IncomingCommandQueue.empty())
     {
@@ -1075,7 +1075,7 @@ void igtlioConnector::PruneCompletedCommands()
 {
   igtlioCommandDequeType completedCommands = igtlioCommandDequeType();
     {
-    std::lock_guard<std::mutex> lock(this->OutgoingCommandDequeMutex);
+    std::lock_guard<std::recursive_mutex> lock(this->OutgoingCommandDequeMutex);
 
     for (igtlioCommandDequeType::iterator outgoingCommandIt = this->OutgoingCommandDeque.begin();
          outgoingCommandIt != this->OutgoingCommandDeque.end(); ++outgoingCommandIt)
@@ -1144,7 +1144,7 @@ int igtlioConnector::AddDevice(igtlioDevicePointer device)
 
   device->SetTimestamp(vtkTimerLog::GetUniversalTime());
   {
-  std::lock_guard<std::mutex> lock(this->DeviceMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->DeviceMutex);
   this->Devices.push_back(device);
   }
 
@@ -1168,7 +1168,7 @@ void igtlioConnector::DeviceContentModified(vtkObject *caller, unsigned long eve
 //----------------------------------------------------------------------------
 int igtlioConnector::RemoveDevice(igtlioDevicePointer device)
 {
-  std::lock_guard<std::mutex> lock(this->DeviceMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->DeviceMutex);
   igtlioDeviceKeyType key = igtlioDeviceKeyType::CreateDeviceKey(device);
   for (unsigned i=0; i< this->Devices.size(); ++i)
   {
@@ -1192,7 +1192,7 @@ unsigned int igtlioConnector::GetNumberOfDevices() const
 //---------------------------------------------------------------------------
 void igtlioConnector::RemoveDevice(int index)
 {
-  std::lock_guard<std::mutex> lock(this->DeviceMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->DeviceMutex);
   //TODO: disconnect listen to device events?
   igtlioDevicePointer device = this->Devices[index]; // ensure object lives until event has completed
   this->Devices.erase(this->Devices.begin()+index);
@@ -1202,14 +1202,14 @@ void igtlioConnector::RemoveDevice(int index)
 //---------------------------------------------------------------------------
 igtlioDevicePointer igtlioConnector::GetDevice(int index)
 {
-  std::lock_guard<std::mutex> lock(this->DeviceMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->DeviceMutex);
   return this->Devices[index];
 }
 
 //---------------------------------------------------------------------------
 igtlioDevicePointer igtlioConnector::GetDevice(igtlioDeviceKeyType key)
 {
-  std::lock_guard<std::mutex> lock(this->DeviceMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->DeviceMutex);
   for (unsigned i=0; i< this->Devices.size(); ++i)
     if (igtlioDeviceKeyType::CreateDeviceKey(this->Devices[i])==key)
       return this->Devices[i];
@@ -1219,7 +1219,7 @@ igtlioDevicePointer igtlioConnector::GetDevice(igtlioDeviceKeyType key)
 //---------------------------------------------------------------------------
 bool igtlioConnector::HasDevice(igtlioDevicePointer d )
 {
-  std::lock_guard<std::mutex> lock(this->DeviceMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->DeviceMutex);
     for(unsigned i=0; i< this->Devices.size(); ++i)
         if( this->Devices[i] == d )
             return true;
@@ -1308,7 +1308,7 @@ void igtlioConnector::SetDeviceFactory(igtlioDeviceFactoryPointer val)
 //----------------------------------------------------------------------------
 bool igtlioConnector::IsConnected()
 {
-  std::lock_guard<std::mutex> lock(this->ClientMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->ClientMutex);
   for (std::vector<Client>::iterator clientIt = this->Sockets.begin(); clientIt != this->Sockets.end(); ++clientIt)
     {
     if (clientIt->Socket.IsNotNull())

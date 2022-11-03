@@ -341,7 +341,7 @@ protected:
   // Devices
   //----------------------------------------------------------------
   std::vector<igtlioDevicePointer>          Devices;
-  std::mutex                                DeviceMutex;
+  std::recursive_mutex                      DeviceMutex;
 
   //----------------------------------------------------------------
   // Connector configuration
@@ -356,7 +356,7 @@ protected:
   // Thread and Socket
   //----------------------------------------------------------------
   vtkMultiThreaderPointer                   Thread;
-  mutable std::mutex                        ClientMutex;
+  mutable std::recursive_mutex              ClientMutex;
   igtl::ServerSocket::Pointer               ServerSocket;
   std::vector<Client>                       Sockets; // Access is not thread safe, control usage with igtlioConnector::ClientMutex
   unsigned int                              NextClientID;
@@ -371,7 +371,7 @@ protected:
   typedef std::map<SectionBufferKey, igtlioCircularSectionBufferPointer> igtlioCircularSectionBufferMap;
   igtlioCircularSectionBufferMap            SectionBuffer;
 
-  std::mutex                                CircularBufferMutex;
+  std::recursive_mutex                      CircularBufferMutex;
   int                                       RestrictDeviceName;  // Flag to restrict incoming and outgoing data by device names
 
   // Event queueing mechanism is needed to send all event notifications from the main thread.
@@ -393,20 +393,20 @@ protected:
   typedef std::queue<IncomingCommandType>   IncomingCommandQueueType;
 
   IncomingCommandQueueType                  IncomingCommandQueue;
-  std::mutex                                IncomingCommandQueueMutex;
+  std::recursive_mutex                      IncomingCommandQueueMutex;
 
   // Flag for the push outgoing message request
   // If the flag is ON, the external timer will update the outgoing nodes with
   // "OpenIGTLinkIF.pushOnConnection" attribute to push the nodes to the network.
   int                                       PushOutgoingMessageFlag;
-  std::mutex                                PushOutgoingMessageMutex;
+  std::recursive_mutex                      PushOutgoingMessageMutex;
 
   igtlioDeviceFactoryPointer                DeviceFactory;
 
   bool                                      CheckCRC;
 
   igtlioCommandDequeType                    OutgoingCommandDeque;
-  std::mutex                                OutgoingCommandDequeMutex;
+  std::recursive_mutex                      OutgoingCommandDequeMutex;
 
   int                                       NextCommandID;
 

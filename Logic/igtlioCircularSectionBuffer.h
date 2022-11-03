@@ -85,7 +85,7 @@ class OPENIGTLINKIO_LOGIC_EXPORT igtlioCircularSectionBuffer : public vtkObject
 
  protected:
 
-  std::mutex         Mutex;
+  std::recursive_mutex         Mutex;
   int                Last;        // updated by connector thread
   int                First;       // updated by connector thread
   int                InPush;      // updated by connector thread

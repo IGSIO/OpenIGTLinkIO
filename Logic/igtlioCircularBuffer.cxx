@@ -29,7 +29,7 @@ vtkStandardNewMacro(igtlioCircularBuffer);
 //---------------------------------------------------------------------------
 igtlioCircularBuffer::igtlioCircularBuffer()
 {
-  std::lock_guard<std::mutex> lock(this->Mutex);
+  std::lock_guard<std::recursive_mutex> lock(this->Mutex);
   // Allocate Circular buffer for the new device
   this->InUse = -1;
   this->Last = -1;
@@ -50,7 +50,7 @@ igtlioCircularBuffer::igtlioCircularBuffer()
 igtlioCircularBuffer::~igtlioCircularBuffer()
 {
   {
-    std::lock_guard<std::mutex> lock(this->Mutex);
+    std::lock_guard<std::recursive_mutex> lock(this->Mutex);
     this->InUse = -1;
     this->Last = -1;
   }
@@ -85,7 +85,7 @@ void igtlioCircularBuffer::PrintSelf(ostream& os, vtkIndent indent)
 //---------------------------------------------------------------------------
 int igtlioCircularBuffer::StartPush()
 {
-  std::lock_guard<std::mutex> lock(this->Mutex);
+  std::lock_guard<std::recursive_mutex> lock(this->Mutex);
   this->InPush = (this->Last + 1) % IGTLCB_CIRC_BUFFER_SIZE;
   if (this->InPush == this->InUse)
   {
@@ -104,7 +104,7 @@ igtl::MessageBase::Pointer igtlioCircularBuffer::GetPushBuffer()
 //---------------------------------------------------------------------------
 void igtlioCircularBuffer::EndPush()
 {
-  std::lock_guard<std::mutex> lock(this->Mutex);
+  std::lock_guard<std::recursive_mutex> lock(this->Mutex);
   this->Last = this->InPush;
   this->UpdateFlag = 1;
 }
@@ -122,7 +122,7 @@ void igtlioCircularBuffer::EndPush()
 //---------------------------------------------------------------------------
 int igtlioCircularBuffer::StartPull()
 {
-  std::lock_guard<std::mutex> lock(this->Mutex);
+  std::lock_guard<std::recursive_mutex> lock(this->Mutex);
   this->InUse = this->Last;
   this->UpdateFlag = 0;
   return this->Last;   // return -1 if it is not available
@@ -139,6 +139,6 @@ igtl::MessageBase::Pointer igtlioCircularBuffer::GetPullBuffer()
 //---------------------------------------------------------------------------
 void igtlioCircularBuffer::EndPull()
 {
-  std::lock_guard<std::mutex> lock(this->Mutex);
+  std::lock_guard<std::recursive_mutex> lock(this->Mutex);
   this->InUse = -1;
 }
