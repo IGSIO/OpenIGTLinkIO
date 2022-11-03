@@ -312,7 +312,7 @@ igtlioCommandPointer igtlioConnector::GetOutgoingCommand(int commandId, int clie
 //----------------------------------------------------------------------------
 void igtlioConnector::RequestInvokeEvent(unsigned long eventId)
 {
-  std::lock_guard<std::mutex> lock(this->EventQueueMutex);
+  std::lock_guard<std::recursive_mutex> lock(this->EventQueueMutex);
   this->EventQueue.push_back(eventId);
 }
 
@@ -778,7 +778,7 @@ void igtlioConnector::ImportEventsFromEventBuffer()
   do
   {
     emptyQueue=true;
-    std::lock_guard<std::mutex> lock(this->EventQueueMutex);
+    std::lock_guard<std::recursive_mutex> lock(this->EventQueueMutex);
     if (this->EventQueue.size()>0)
     {
       eventId=this->EventQueue.front();

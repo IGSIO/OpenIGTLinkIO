@@ -378,7 +378,7 @@ protected:
   // Events can be pushed to the end of the EventQueue by calling RequestInvoke from any thread,
   // and they will be Invoked in the main thread.
   std::list<unsigned long>                  EventQueue;
-  std::mutex                                EventQueueMutex;
+  std::recursive_mutex                      EventQueueMutex;
 
   // Collect commands before they enter the circular buffer, in order to make sure that they are not overwritten
   //typedef int ClientIDType;
