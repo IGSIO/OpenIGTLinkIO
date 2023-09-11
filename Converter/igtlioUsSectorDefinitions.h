@@ -11,6 +11,8 @@
 #define IGTLIO_KEY_LINEAR_WIDTH "LinearWidth"
 #define IGTLIO_KEY_SPACING_X    "SpacingX"
 #define IGTLIO_KEY_SPACING_Y    "SpacingY"
+#define IGTLIO_KEY_SPACING_Z    "SpacingZ"
+#define IGTLIO_KEY_TIMESTAMP    "Timestamp"
 
 enum IGTLIO_PROBE_TYPE
 {
