@@ -12,7 +12,7 @@
 #define IGTLIO_KEY_SPACING_X    "SpacingX"
 #define IGTLIO_KEY_SPACING_Y    "SpacingY"
 #define IGTLIO_KEY_SPACING_Z    "SpacingZ"
-#define IGTLIO_KEY_TIMESTAMP    "Timestamp"
+#define IGTLIO_KEY_TIMESTAMP    "ScannerTimestamp"
 
 enum IGTLIO_PROBE_TYPE
 {
