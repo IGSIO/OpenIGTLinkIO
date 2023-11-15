@@ -52,6 +52,8 @@ public:
   static int fromIGTL(igtl::MessageBase::Pointer source, HeaderData* header, ContentData* content, bool checkCRC, igtl::MessageBase::MetaDataMap& outMetaInfo);
   static int toIGTL(const HeaderData& header, const ContentData& source, igtl::TrackingDataMessage::Pointer* dest, igtl::MessageBase::MetaDataMap metaInfo = igtl::MessageBase::MetaDataMap());
 
+  static int fromIGTLResponse(igtl::MessageBase::Pointer source, HeaderData *header, ContentData *dest, bool checkCRC, igtl::MessageBase::MetaDataMap& outMetaInfo);
+
   static int IGTLToVTKTDATA(const igtl::Matrix4x4& igtlTDATA, vtkSmartPointer<vtkMatrix4x4> vtkTDATA);
   static int VTKToIGTLTDATA(const vtkMatrix4x4& vtkTDATA, igtl::Matrix4x4& igtlTDATA);
 
