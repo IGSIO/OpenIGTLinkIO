@@ -22,7 +22,7 @@ int igtlioTrackingDataConverter::fromIGTL(igtl::MessageBase::Pointer source,
 {
 
   // Process an RTS_TDATA sub-type message
-  if (strncmp(source->GetDeviceType(), "RTS_", 4) == 0)
+  if (source->GetMessageType().compare(0, 4, "RTS_") == 0)
   {
     return fromIGTLResponse(source, header, dest, checkCRC, outMetaInfo);
   }
