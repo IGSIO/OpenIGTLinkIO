@@ -20,6 +20,13 @@ int igtlioTrackingDataConverter::fromIGTL(igtl::MessageBase::Pointer source,
     bool checkCRC,
     igtl::MessageBase::MetaDataMap& outMetaInfo)
 {
+
+  // Process an RTS_TDATA sub-type message
+  if (source->GetMessageType().compare(0, 4, "RTS_") == 0)
+  {
+    return fromIGTLResponse(source, header, dest, checkCRC, outMetaInfo);
+  }
+
   // Create a message buffer to receive image data
   igtl::TrackingDataMessage::Pointer transMsg;
   transMsg = igtl::TrackingDataMessage::New();
@@ -114,6 +121,42 @@ int igtlioTrackingDataConverter::fromIGTL(igtl::MessageBase::Pointer source,
   return 1;
 
 }
+
+
+//---------------------------------------------------------------------------
+int igtlioTrackingDataConverter::fromIGTLResponse(igtl::MessageBase::Pointer source, HeaderData *header, ContentData *dest, bool checkCRC, igtl::MessageBase::MetaDataMap& outMetaInfo)
+{
+  // Handler for RTS_* message
+  // TODO: This could be implemented in the parent class.
+
+  igtl::RTSTrackingDataMessage::Pointer rtsMsg;
+  rtsMsg = igtl::RTSTrackingDataMessage::New();
+  rtsMsg->Copy(source);
+
+  // Deserialize the transform data
+  // If CheckCRC==0, CRC check is skipped.
+  int c = rtsMsg->Unpack(checkCRC);
+
+  if (!(c & igtl::MessageHeader::UNPACK_BODY)) // if CRC check fails
+  {
+    // TODO: error handling
+    return 0;
+  }
+
+  // get header
+  if (!IGTLtoHeader(dynamic_pointer_cast<igtl::MessageBase>(rtsMsg), header, outMetaInfo))
+  {
+    return 0;
+  }
+
+  //
+  // TODO: RTS status should be passed to dest (ContentData needs to be updated to store the RTS status)
+  //
+
+  return 1;
+
+}
+
 
 //---------------------------------------------------------------------------
 int igtlioTrackingDataConverter::IGTLHeaderToTDATAInfo(igtl::MessageBase::Pointer source, ContentData* dest)
