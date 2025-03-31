@@ -33,7 +33,6 @@ Version:   $Revision: 1.4 $
 #include <vtkImageData.h>
 #include <vtkIntArray.h>
 #include <vtkMultiThreader.h>
-#include <vtkCriticalSection.h>
 #include <vtkObjectFactory.h>
 #include <vtkTimerLog.h>
 #include <vtkVersionMacros.h>

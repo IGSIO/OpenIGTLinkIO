@@ -11,7 +11,6 @@
 #include "igtlioCircularSectionBuffer.h"
 
 #include <vtkObjectFactory.h>
-#include <vtkCriticalSection.h>
 #include <vtksys/SystemTools.hxx>
 
 // OpenIGTLink includes
