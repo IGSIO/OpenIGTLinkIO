@@ -78,10 +78,10 @@ if(NOT IGTLIO_QT_VERSION)
   set(IGTLIO_QT_VERSION "5" CACHE STRING "Expected Qt version")
   mark_as_advanced( IGTLIO_QT_VERSION )
 endif()
-set_property(CACHE IGTLIO_QT_VERSION PROPERTY STRINGS 4 5)
+set_property(CACHE IGTLIO_QT_VERSION PROPERTY STRINGS 5 6)
 
-if(NOT (IGTLIO_QT_VERSION VERSION_EQUAL "4" OR IGTLIO_QT_VERSION VERSION_EQUAL "5"))
-    message(FATAL_ERROR "Expected value for IGTLIO_QT_VERSION is either '4' or '5'")
+if(NOT (IGTLIO_QT_VERSION VERSION_EQUAL "5" OR IGTLIO_QT_VERSION VERSION_EQUAL "6"))
+    message(FATAL_ERROR "Expected value for IGTLIO_QT_VERSION is either '5' or '6'")
 endif()
 
 set (OpenIGTLinkIO_TARGETS igtlioLogic igtlioDevices igtlioConverter igtlioTools )
@@ -104,14 +104,6 @@ set(OpenIGTLinkIO_Qt_CONFIG_CODE "")
 if (${IGTLIO_USE_GUI})
   add_subdirectory(GUI)
   list (APPEND OpenIGTLinkIO_TARGETS igtlioGUI)
-  # CMake is not able to generate the makefile on Linux if the 
-  # target Qt5::X11Extras is not defined in this directory
-  # when IGTLIO_USE_GUI is ON. The fix is necessary because
-  # X11Extras is a private dependency of vtk at least 
-  # until vtk-8.1 and maybe later.
-  if(UNIX AND NOT APPLE)
-    find_package(Qt5 COMPONENTS X11Extras REQUIRED)
-  endif()
 endif()
 
 option(IGTLIO_USE_EXAMPLES "Build IGTLIO examples" ON)

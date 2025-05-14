@@ -38,6 +38,12 @@
 #include <set>
 #include <queue>
 
+
+// The macro SendMessage in winuser.h clashes with the method name in igtlioConnector.
+// A simple workaround is to undefine this macro to avoid name conflict (https://stackoverflow.com/a/69041270)
+#pragma push_macro("SendMessage")
+#undef SendMessage
+
 typedef vtkSmartPointer<class vtkMultiThreader> vtkMultiThreaderPointer;
 typedef std::vector< vtkSmartPointer<igtlioDevice> >   igtlioMessageDeviceListType;
 typedef std::deque<igtlioCommandPointer> igtlioCommandDequeType;
@@ -414,4 +420,5 @@ protected:
 
 bool operator<(const igtlioConnector::SectionBufferKey& lhs, const igtlioConnector::SectionBufferKey& rhs);
 
+#pragma pop_macro("SendMessage")
 #endif

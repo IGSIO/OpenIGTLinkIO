@@ -11,17 +11,20 @@
 #include <QItemSelectionModel>
 #include "vtkIGTLIONode.h"
 
+#pragma push_macro("SendMessage")
+#undef SendMessage
+
 qIGTLIODeviceButtonsWidget::qIGTLIODeviceButtonsWidget()
 {
   QVBoxLayout* topLayout = new QVBoxLayout(this);
-  topLayout->setMargin(0);
+  topLayout->setContentsMargins(0, 0, 0, 0);
 
   QFrame* buttonFrame = new QFrame;
   buttonFrame->setFrameShape(QFrame::NoFrame);
   buttonFrame->setFrameShadow(QFrame::Plain);
   topLayout->addWidget(buttonFrame);
   QHBoxLayout* buttonLayout = new QHBoxLayout(buttonFrame);
-  buttonLayout->setMargin(0);
+  buttonLayout->setContentsMargins(0, 0, 0, 0);
 
   QStringList actionNames = QStringList() << "SEND";
 
@@ -96,3 +99,5 @@ void qIGTLIODeviceButtonsWidget::onActionClicked()
   node->connector->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(node->device), prefix);
 
 }
+
+#pragma pop_macro("SendMessage")

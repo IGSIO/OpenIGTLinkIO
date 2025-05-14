@@ -14,6 +14,9 @@
   #include "igtlioVideoDevice.h"
 #endif
 
+#pragma push_macro("SendMessage")
+#undef SendMessage
+
 //---------------------------------------------------------------------------
 vtkStandardNewMacro(igtlioSession);
 
@@ -214,3 +217,5 @@ igtlioStatusDevicePointer igtlioSession::SendStatus(std::string device_id, int c
 
   return device;
 }
+
+#pragma pop_macro("SendMessage")

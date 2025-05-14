@@ -50,6 +50,9 @@ Version:   $Revision: 1.4 $
 
 #include "igtlioConnector.h"
 
+#pragma push_macro("SendMessage")
+#undef SendMessage
+
 //------------------------------------------------------------------------------
 vtkStandardNewMacro(igtlioConnector);
 //----------------------------------------------------------------------------
@@ -1349,3 +1352,5 @@ bool operator<(const igtlioConnector::SectionBufferKey& lhs, const igtlioConnect
   }
   return false;
 };
+
+#pragma pop_macro("SendMessage")

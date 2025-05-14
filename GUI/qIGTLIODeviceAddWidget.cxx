@@ -17,14 +17,14 @@
 qIGTLIODeviceAddWidget::qIGTLIODeviceAddWidget()
 {
   QVBoxLayout* topLayout = new QVBoxLayout(this);
-  topLayout->setMargin(0);
+  topLayout->setContentsMargins(0, 0, 0, 0);
 
   QFrame* buttonFrame = new QFrame;
   buttonFrame->setFrameShape(QFrame::NoFrame);
   buttonFrame->setFrameShadow(QFrame::Plain);
   topLayout->addWidget(buttonFrame);
   QHBoxLayout* buttonLayout = new QHBoxLayout(buttonFrame);
-  buttonLayout->setMargin(0);
+  buttonLayout->setContentsMargins(0, 0, 0, 0);
 
   mAddDeviceAction = new QAction("Add Device", this);
   connect(mAddDeviceAction, SIGNAL(triggered()), this, SLOT(onAddDevice()));
