@@ -15,7 +15,7 @@ qIGTLIOConnectorListWidget::qIGTLIOConnectorListWidget()
   ConnectorModel = new qIGTLIOConnectorModel(this);
 
   QVBoxLayout* topLayout = new QVBoxLayout(this);
-  topLayout->setMargin(0);
+  topLayout->setContentsMargins(0, 0, 0, 0);
 
   ConnectorListView = new QTreeView;
   ConnectorListView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -54,7 +54,7 @@ void qIGTLIOConnectorListWidget::addButtonFrame(QVBoxLayout* topLayout)
   buttonFrame->setFrameShadow(QFrame::Plain);
   topLayout->addWidget(buttonFrame);
   QHBoxLayout* buttonLayout = new QHBoxLayout(buttonFrame);
-  buttonLayout->setMargin(0);
+  buttonLayout->setContentsMargins(0, 0, 0, 0);
 
   QAction* addAction = new QAction("+", this);
   connect(addAction, SIGNAL(triggered()), this, SLOT(onAddConnectorButtonClicked()));

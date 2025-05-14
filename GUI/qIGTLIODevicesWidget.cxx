@@ -19,7 +19,7 @@ qIGTLIODevicesWidget::qIGTLIODevicesWidget()
   DevicesModel = new qIGTLIODevicesModel(this);
 
   QVBoxLayout* topLayout = new QVBoxLayout(this);
-  topLayout->setMargin(0);
+  topLayout->setContentsMargins(0, 0, 0, 0);
 
   DevicesListView = new QTreeView;
   DevicesListView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

@@ -21,13 +21,12 @@ set(${PROJECT_NAME}_TARGET_LIBRARIES
   igtlioGUI
   )
 
-if(IGTLIO_QT_VERSION VERSION_GREATER "4")
+if(IGTLIO_QT_VERSION VERSION_EQUAL "5")
   find_package(Qt5 COMPONENTS Widgets REQUIRED)
   list(APPEND ${PROJECT_NAME}_TARGET_LIBRARIES Qt5::Widgets)
 else()
-  find_package(Qt4)
-  include(${QT_USE_FILE})
-  list(APPEND ${PROJECT_NAME}_TARGET_LIBRARIES Qt4::QtGui)
+  find_package(Qt6 COMPONENTS Widgets REQUIRED)
+  list(APPEND ${PROJECT_NAME}_TARGET_LIBRARIES Qt6::Widgets)
 endif()
 
 add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})

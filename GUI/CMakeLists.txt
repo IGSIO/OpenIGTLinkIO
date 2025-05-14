@@ -25,7 +25,7 @@ set(OpenIGTLinkIO_Qt_Modules
   Sql
   )
 
-if(IGTLIO_QT_VERSION VERSION_GREATER "4")
+if(IGTLIO_QT_VERSION VERSION_EQUAL "5")
   find_package(Qt5 COMPONENTS ${OpenIGTLinkIO_Qt_Modules} REQUIRED)
   if(Qt5_FOUND AND NOT Qt5_DIR)
     # Sometimes Qt5_DIR is not populated
@@ -62,16 +62,41 @@ if(IGTLIO_QT_VERSION VERSION_GREATER "4")
     OpenIGTLinkIO_Qt_CONFIG_CODE ${OpenIGTLinkIO_Qt_CONFIG_CODE}
    )
 else()
-  find_package(Qt4 REQUIRED)
-  include(${QT_USE_FILE})
+  find_package(Qt6 COMPONENTS ${OpenIGTLinkIO_Qt_Modules} REQUIRED)
+  if(Qt6_FOUND AND NOT Qt6_DIR)
+    # Sometimes Qt5_DIR is not populated
+    get_filename_component(Qt6_DIR ${Qt6Core_DIR} DIRECTORY)
+    set(Qt6_DIR ${Qt6_DIR}/Qt6)
+  endif()
 
-  # Prepare Config file code for Qt
+  # Prepare config file code for Qt
   set(OpenIGTLinkIO_Qt_CONFIG_CODE [=[
-    # using Qt4
-    set(QT_QMAKE_EXECUTABLE "@QT_QMAKE_EXECUTABLE@")
-    find_package(Qt4 COMPONENTS @OpenIGTLinkIO_Qt_Modules@ REQUIRED)
+    if(Qt6_FOUND)
+      # using Qt5
+      set(IGTL_Qt6_FOUND True)
+    elseif(NOT Qt6_DIR)
+      # only set, if not in cache
+      set(Qt6_DIR "@Qt6_DIR@")
+    endif()
+    find_package(Qt6 COMPONENTS @OpenIGTLinkIO_Qt_Modules@ REQUIRED)
+    if(IGTL_Qt6_FOUND)
+      @_VERSION_CONFIG_CODE@
+    endif()
     ]=])
-  string(REPLACE "@QT_QMAKE_EXECUTABLE@" "${QT_QMAKE_EXECUTABLE}" OpenIGTLinkIO_Qt_CONFIG_CODE ${OpenIGTLinkIO_Qt_CONFIG_CODE})
+
+  set(_VERSION_CONFIG_CODE)
+  foreach(qt_module IN LISTS OpenIGTLinkIO_Qt_Modules)
+    set(_VERSION_CONFIG_CODE "${_VERSION_CONFIG_CODE}\nif(TARGET Qt6::${qt_module} AND NOT \"${Qt6${qt_module}_VERSION}\" VERSION_EQUAL \${Qt6${qt_module}_VERSION})")
+    set(_VERSION_CONFIG_CODE "${_VERSION_CONFIG_CODE}\nmessage(SEND_ERROR \"Using different Qt Versions for Qt6::${qt_module} in OpenIGTLinkIO (${Qt6${qt_module}_VERSION}) and superceeding project (\${Qt6${qt_module}_VERSION}).\")")
+    set(_VERSION_CONFIG_CODE "${_VERSION_CONFIG_CODE}\nendif()")
+  endforeach()
+
+  string(REPLACE "@_VERSION_CONFIG_CODE@" "${_VERSION_CONFIG_CODE}" 
+    OpenIGTLinkIO_Qt_CONFIG_CODE ${OpenIGTLinkIO_Qt_CONFIG_CODE}
+   )
+  string(REPLACE "@Qt6_DIR@" "${Qt6_DIR}"
+    OpenIGTLinkIO_Qt_CONFIG_CODE ${OpenIGTLinkIO_Qt_CONFIG_CODE}
+   )
 endif()
 
 string(REPLACE ";" " " OpenIGTLinkIO_Qt_Modules_Glued "${OpenIGTLinkIO_Qt_Modules}")
@@ -140,9 +165,7 @@ set(${PROJECT_NAME}_INCLUDE_DIRECTORIES PUBLIC
   $<INSTALL_INTERFACE:${OpenIGTLinkIO_INCLUDE_INSTALL}/DeviceWidgets>
   )
 
-if(IGTLIO_QT_VERSION VERSION_GREATER "4")
-  qt5_wrap_ui(${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_UI_SRCS})
-  qt5_wrap_cpp( ${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_MOC_SRCS})
+if(IGTLIO_QT_VERSION VERSION_EQUAL "5")
   set( igtlio_qt_libraries 
     Qt5::Widgets 
     Qt5::Concurrent 
@@ -150,12 +173,18 @@ if(IGTLIO_QT_VERSION VERSION_GREATER "4")
     Qt5::Xml 
     Qt5::OpenGL
    )
+  qt5_wrap_ui(${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_UI_SRCS})
+  qt5_wrap_cpp( ${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_MOC_SRCS})
 else()
-  QT4_WRAP_CPP( ${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_MOC_SRCS})
-  QT4_WRAP_UI( ${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_UI_SRCS})
   set( igtlio_qt_libraries 
-    Qt4::QtGui 
+    Qt6::Widgets 
+    Qt6::Concurrent 
+    Qt6::Sql 
+    Qt6::Xml 
+    Qt6::OpenGL
    )
+  qt6_wrap_ui(${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_UI_SRCS})
+  qt6_wrap_cpp( ${PROJECT_NAME}_SRCS ${${PROJECT_NAME}_MOC_SRCS})
 endif()
 
 set(${PROJECT_NAME}_TARGET_LIBRARIES
