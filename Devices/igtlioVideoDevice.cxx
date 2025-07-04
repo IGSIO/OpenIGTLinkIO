@@ -181,7 +181,7 @@ igtl::MessageBase::Pointer igtlioVideoDevice::GetIGTLMessage()
   if(this->CurrentCodecType.compare(IGTL_VIDEO_CODEC_NAME_I420) == 0)
   {
     VideoStreamEncoderI420->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
-    VideoStreamEncoderI420->SetRCTargetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
+    VideoStreamEncoderI420->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
     Content.videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_I420);
     iReturn = igtlioVideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderI420, this->metaInfo);
   }
@@ -190,7 +190,7 @@ igtl::MessageBase::Pointer igtlioVideoDevice::GetIGTLMessage()
     {
     VideoStreamEncoderH264->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
     //newEncoder->SetKeyFrameDistance(25);
-    VideoStreamEncoderH264->SetRCTargetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
+    VideoStreamEncoderH264->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
     Content.videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_H264);
     iReturn = igtlioVideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderH264, this->metaInfo);
     }
@@ -200,7 +200,7 @@ igtl::MessageBase::Pointer igtlioVideoDevice::GetIGTLMessage()
     {
     VideoStreamEncoderVPX->SetPicWidthAndHeight(imageSizePixels[0], imageSizePixels[1]);
     //newEncoder->SetKeyFrameDistance(25);
-    VideoStreamEncoderVPX->SetRCTargetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
+    VideoStreamEncoderVPX->SetRCTaregetBitRate((int)(imageSizePixels[0] * imageSizePixels[1] * 8 * frameRate * bitRatePercent));
     Content.videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_VP9);
     iReturn = igtlioVideoConverter::toIGTL(HeaderData, Content, VideoStreamEncoderVPX, this->metaInfo);
     }
