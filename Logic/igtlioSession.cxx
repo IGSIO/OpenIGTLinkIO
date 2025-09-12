@@ -194,6 +194,7 @@ igtlioStringDevicePointer igtlioSession::SendString(std::string device_id, std::
   igtlioStringConverter::ContentData contentdata = device->GetContent();
   contentdata.encoding = 3; //what should this be?
   contentdata.string_msg = content;
+  device->SetContent(contentdata);
 
   Connector->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(device));
 
@@ -212,6 +213,7 @@ igtlioStatusDevicePointer igtlioSession::SendStatus(std::string device_id, int c
   contentdata.errorname = errorname;
   contentdata.statusstring = statusstring;
   contentdata.subcode = subcode;
+  device->SetContent(contentdata);
 
   Connector->SendMessage(igtlioDeviceKeyType::CreateDeviceKey(device));
 
