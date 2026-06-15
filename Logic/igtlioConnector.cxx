@@ -246,10 +246,13 @@ int igtlioConnector::Stop()
       }
     }
 
-    while(this->ConnectionThreadID >= 0 || this->Sockets.size() > 0)
+    bool socketsEmpty = false;
+    while(this->ConnectionThreadID >= 0 || !socketsEmpty)
      {
       // Sleep required to keep loop from hanging in release mode
       igtl::Sleep(1);
+      std::lock_guard<std::recursive_mutex> lock(this->ClientMutex);
+      socketsEmpty = this->Sockets.empty();
      }
 
     return 1;
