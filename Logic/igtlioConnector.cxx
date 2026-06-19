@@ -271,23 +271,29 @@ void* igtlioConnector::ReceiverThreadFunction(void* ptr)
   int currentThreadID = vinfo->ThreadID;
   int clientID = -1;
   bool connected = true;
+
+  // Find our clientID before entering the main loop. The entry is added to
+  // Sockets by ConnectionAcceptThreadFunction immediately after SpawnThread,
+  // so this loop normally succeeds on the first or second attempt.
+  while (clientID == -1)
+    {
+    std::vector<int> clientIds = connector->GetClientIds();
+    for (std::vector<int>::iterator clientIdIt = clientIds.begin(); clientIdIt != clientIds.end(); ++clientIdIt)
+      {
+      Client client = connector->GetClient(*clientIdIt);
+      if (client.ThreadID == currentThreadID)
+        {
+        clientID = *clientIdIt;
+        break;
+        }
+      }
+    if (clientID == -1)
+      igtl::Sleep(1);
+    }
+
   // Communication -- common to both Server and Client
   while (!connector->ServerStopFlag && connected)
     {
-    if (clientID == -1)
-      {
-      std::vector<int> clientIds = connector->GetClientIds();
-      for (std::vector<int>::iterator clientIdIt = clientIds.begin(); clientIdIt != clientIds.end(); ++clientIdIt)
-        {
-        Client client = connector->GetClient(*clientIdIt);
-        if (client.ThreadID == currentThreadID)
-          {
-            clientID = *clientIdIt;
-            break;
-          }
-        }
-      }
-
     connected = connector->ReceiveController(clientID);
     }
 
@@ -375,7 +381,7 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
       }
     else if (connector->Type == TYPE_CLIENT) // if this->Type == TYPE_CLIENT
       {
-      if (connector->Sockets.empty())
+      if (connector->Sockets.empty() && !connector->ServerStopFlag)
         {
           igtl::ClientSocket::Pointer socket = igtl::ClientSocket::New();
           int r = socket->ConnectToServer(connector->ServerHostname.c_str(), connector->ServerPort, false);
