@@ -274,8 +274,10 @@ void* igtlioConnector::ReceiverThreadFunction(void* ptr)
 
   // Find our clientID before entering the main loop. The entry is added to
   // Sockets by ConnectionAcceptThreadFunction immediately after SpawnThread,
-  // so this loop normally succeeds on the first or second attempt.
-  while (clientID == -1)
+  // so this loop normally succeeds on the first or second attempt. Give up
+  // after about a second rather than spinning forever if it never appears.
+  const int maxAttempts = 1000;
+  for (int attempt = 0; clientID == -1 && attempt < maxAttempts; ++attempt)
     {
     std::vector<int> clientIds = connector->GetClientIds();
     for (std::vector<int>::iterator clientIdIt = clientIds.begin(); clientIdIt != clientIds.end(); ++clientIdIt)
