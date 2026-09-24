@@ -232,10 +232,27 @@ int igtlioConnector::Stop()
 
     // NOTE: Thread should be killed by activating ServerStopFlag.
     this->ServerStopFlag = true;
-    while(this->ConnectionThreadID >= 0 || this->Sockets.size() > 0)
+
+    // Close all client sockets so that ReceiverThreadFunction threads
+    // unblock from their blocking Receive() call and can exit cleanly.
+    {
+      std::lock_guard<std::recursive_mutex> lock(this->ClientMutex);
+      for (Client& client : this->Sockets)
+      {
+        if (client.Socket.IsNotNull())
+        {
+          client.Socket->CloseSocket();
+        }
+      }
+    }
+
+    bool socketsEmpty = false;
+    while(this->ConnectionThreadID >= 0 || !socketsEmpty)
      {
       // Sleep required to keep loop from hanging in release mode
       igtl::Sleep(1);
+      std::lock_guard<std::recursive_mutex> lock(this->ClientMutex);
+      socketsEmpty = this->Sockets.empty();
      }
 
     return 1;
@@ -254,23 +271,31 @@ void* igtlioConnector::ReceiverThreadFunction(void* ptr)
   int currentThreadID = vinfo->ThreadID;
   int clientID = -1;
   bool connected = true;
+
+  // Find our clientID before entering the main loop. The entry is added to
+  // Sockets by ConnectionAcceptThreadFunction immediately after SpawnThread,
+  // so this loop normally succeeds on the first or second attempt. Give up
+  // after about a second rather than spinning forever if it never appears.
+  const int maxAttempts = 1000;
+  for (int attempt = 0; clientID == -1 && attempt < maxAttempts; ++attempt)
+    {
+    std::vector<int> clientIds = connector->GetClientIds();
+    for (std::vector<int>::iterator clientIdIt = clientIds.begin(); clientIdIt != clientIds.end(); ++clientIdIt)
+      {
+      Client client = connector->GetClient(*clientIdIt);
+      if (client.ThreadID == currentThreadID)
+        {
+        clientID = *clientIdIt;
+        break;
+        }
+      }
+    if (clientID == -1)
+      igtl::Sleep(1);
+    }
+
   // Communication -- common to both Server and Client
   while (!connector->ServerStopFlag && connected)
     {
-    if (clientID == -1)
-      {
-      std::vector<int> clientIds = connector->GetClientIds();
-      for (std::vector<int>::iterator clientIdIt = clientIds.begin(); clientIdIt != clientIds.end(); ++clientIdIt)
-        {
-        Client client = connector->GetClient(*clientIdIt);
-        if (client.ThreadID == currentThreadID)
-          {
-            clientID = *clientIdIt;
-            break;
-          }
-        }
-      }
-
     connected = connector->ReceiveController(clientID);
     }
 
@@ -358,7 +383,7 @@ void* igtlioConnector::ConnectionAcceptThreadFunction(void* ptr)
       }
     else if (connector->Type == TYPE_CLIENT) // if this->Type == TYPE_CLIENT
       {
-      if (connector->Sockets.empty())
+      if (connector->Sockets.empty() && !connector->ServerStopFlag)
         {
           igtl::ClientSocket::Pointer socket = igtl::ClientSocket::New();
           int r = socket->ConnectToServer(connector->ServerHostname.c_str(), connector->ServerPort, false);
